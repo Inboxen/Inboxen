@@ -1,3 +1,6 @@
+# inboxen specific
+inboxen/settings.py
+
 *.py[cod]
 
 # C extensions
