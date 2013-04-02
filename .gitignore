@@ -1,5 +1,5 @@
 # inboxen specific
-inboxen/settings.py
+inboxen/inboxen/settings.py*
 
 *.py[cod]
 
