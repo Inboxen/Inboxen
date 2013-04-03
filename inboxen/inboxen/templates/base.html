@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Inboxen - {{ page }}</title>
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+    </head>
+    <body>
+        <div class="heading">
+            <span class="logo">Inboxen</span>
+            <span class="menu">
+            <ul>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/register">Register</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            </span>
+        </div>
+        {% block 'content' %}
+        {% endblock %} 
+    </body>
+</html>
