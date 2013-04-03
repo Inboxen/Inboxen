@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^contact/', 'inboxen.views.contact', name="Contact"),
     url(r'^accounts/profile/', 'inboxen.views.profile', name='profile'),
     url(r'^add-alias/', 'inboxen.views.add_alias'),
+    url(r'^settings/', 'inboxen.views.settings'),
     url(r'^logout/', 'inboxen.views.logout_user', name="logout"),
     # url(r'^inboxen/', include('inboxen.foo.urls')),
 

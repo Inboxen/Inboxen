@@ -26,6 +26,9 @@ def register(request):
 def add_alias(request):
     return render(request, "add_alias.html", {})
 
+def settings(request):
+    return render(request "settings.html", {})
+
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect("/")
