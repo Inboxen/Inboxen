@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     url(r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
     url(r'^register/', 'inboxen.views.register', name="register"),
     url(r'^contact/', 'inboxen.views.contact', name="Contact"),
-    url(r'^accounts/profile', 'inboxen.views.profile', name='profile'),
+    url(r'^accounts/profile/', 'inboxen.views.profile', name='profile'),
     url(r'^logout/', 'inboxen.views.logout_user', name="logout"),
     # url(r'^inboxen/', include('inboxen.foo.urls')),
 
