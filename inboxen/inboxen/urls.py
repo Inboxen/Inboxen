@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     url(r'^register/', 'inboxen.views.register', name="register"),
     url(r'^contact/', 'inboxen.views.contact', name="Contact"),
     url(r'^accounts/profile', 'inboxen.views.profile', name='profile'),
+    url(r'^logout/', 'inboxen.views.logout_user', name="logout"),
     # url(r'^inboxen/', include('inboxen.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

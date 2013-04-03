@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import Http404
 
+from django.contrib.auth import logout
+
 from django import forms
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
@@ -22,6 +24,10 @@ def register(request):
     }
 
     return render(request, "register.html", context)
+
+def logout_user(request):
+    logout(request)
+    return HttpResponseRedirect("/")
 
 def profile(request):
     
