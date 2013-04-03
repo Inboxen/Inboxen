@@ -1,3 +1,6 @@
+inboxen/logs
+inboxen/run
+
 *.py[cod]
 
 # C extensions
