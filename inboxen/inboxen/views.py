@@ -23,6 +23,9 @@ def register(request):
 
     return render(request, "register.html", context, context_instance=RequestContext(request))
 
+def add_alias(request):
+    return render(request, "add_alias.html", {})
+
 def logout_user(request):
     logout(request)
     return HttpResponseRedirect("/")
