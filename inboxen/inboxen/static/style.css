@@ -125,3 +125,23 @@ td:first-child {
     margin-left:-75px;
     padding-bottom:10px;
 }
+
+h1 {
+    padding-left:100px;
+    padding-top:30px;
+}
+
+.registration {
+    padding-top:15px;
+    padding-left:130px;
+}
+
+.registration label {
+    float:left;
+    display:block;
+    width:250px;
+}
+
+.helptext {
+    display:none;
+}

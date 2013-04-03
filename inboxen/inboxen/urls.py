@@ -8,6 +8,8 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'inboxen.views.home', name='home'),
     url(r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
+    url(r'^register/', 'inboxen.views.register', name="register"),
+    url(r'^contact/', 'inboxen.views.contact', name="Contact"),
     url(r'^accounts/profile', 'inboxen.views.profile', name='profile'),
     # url(r'^inboxen/', include('inboxen.foo.urls')),
 
