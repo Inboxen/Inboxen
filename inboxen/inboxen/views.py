@@ -24,10 +24,17 @@ def register(request):
     return render(request, "register.html", context, context_instance=RequestContext(request))
 
 def add_alias(request):
-    return render(request, "add_alias.html", {})
+    context = {
+        "page":"Add Alias",
+    }
+    
+    return render(request, "add_alias.html", context)
 
 def settings(request):
-    return render(request "settings.html", {})
+    context = {
+        "page":"Settings",
+    }
+    return render(request, "settings.html", context)
 
 def logout_user(request):
     logout(request)
@@ -41,7 +48,9 @@ def profile(request):
     return render(request, "profile.html", context)
 
 def login(request):
-    context = {} 
+    context = {
+        "page":"Login",
+    } 
 
     return render(request, "login.html", context)
 

@@ -3,7 +3,9 @@
 {% block content %}
 
     <form action="/add-alias" method="POST">
-        
+        <label for="alias">Alias</label>: {{ alias }}
+        <label for="tag">Tag</label><input id="tag" name="tag">
+        <input type="submit" value="Add">        
     </form>
 
 {% endblock %}
