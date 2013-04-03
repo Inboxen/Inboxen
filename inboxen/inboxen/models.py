@@ -8,9 +8,18 @@ class Alias(models.Model):
 class Attachment(models.Model):
 	pass
 
+class Tag(models.Model):
+    alias = models.ForeignKey(Alias)
+    tag = models.CharField(max_length=256)
+
 class Header(models.Model):
 	name = models.CharField(max_length=1024)
 	data = models.CharField(max_length=1024)	
+
+class UserProfile(models.Model):
+    user = models.ForeignKey(User, unique=True)
+    spam_filtering = models.BooleanField()
+    premium = models.BooleanField()  
 
 class Email(models.Model):
 	headers = models.ManyToManyField(Header)
