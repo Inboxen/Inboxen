@@ -2,7 +2,7 @@
 import logging
 
 accepted_queue_dir = 'run/accepted'
-accepted_queue+opts = {'safe': False, 'oversize_dir': None}
+accepted_queue_opts = {'safe': False, 'oversize_dir': None}
 
 receiver_config = {'host': 'localhost', 'port': 8823}
 
