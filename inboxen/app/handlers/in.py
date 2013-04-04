@@ -1,6 +1,6 @@
 import logging
-from lamson.routing import route, route_like, stateless
-from config.settings import queue
+from lamson.routing import route, stateless, nolocking
+from config.settings import accepted_queue
 from lamson import view
 
 
@@ -8,5 +8,5 @@ from lamson import view
 @stateless
 @nolocking
 def START(message, address=None, host=None):
-    queue.push(message)
+    accepted_queue.push(message)
 
