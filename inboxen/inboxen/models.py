@@ -5,10 +5,16 @@ class Domain(models.Model):
     # these are the domains available to create aliases from
     domain = models.CharField(max_length=256)
 
+    def __unicode__(self):
+        return self.domain
+
 class Alias(models.Model):
     alias = models.CharField(max_length=512)
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
+
+    def __unicode__(self):
+        return u"%s@%s" % (self.alias, self.domain.domain)
 
 class Attachment(models.Model):
     pass
@@ -16,6 +22,9 @@ class Attachment(models.Model):
 class Tag(models.Model):
     alias = models.ForeignKey(Alias)
     tag = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.tag
 
 class Header(models.Model):
     name = models.CharField(max_length=1024)
@@ -33,3 +42,4 @@ class Email(models.Model):
     body = models.TextField()
     attachments = models.ManyToManyField(Attachment)
     recieved_date = models.DateTimeField('Recieved Date')
+
