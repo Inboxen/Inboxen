@@ -12,6 +12,7 @@ class Alias(models.Model):
     alias = models.CharField(max_length=512)
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
+    created = models.DateTimeField('Created')
 
     def __unicode__(self):
         return u"%s@%s" % (self.alias, self.domain.domain)

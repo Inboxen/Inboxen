@@ -7,6 +7,7 @@ from django.template import RequestContext
 from django import forms
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 
 from inboxen.models import Domain, Alias
 
@@ -29,6 +30,7 @@ def register(request):
 
     return render(request, "register.html", context, context_instance=RequestContext(request))
 
+@login_required
 def add_alias(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect("/login")
@@ -55,6 +57,7 @@ def add_alias(request):
     
     return render(request, "add_alias.html", context)
 
+@login_required
 def settings(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect("/login")
@@ -65,12 +68,14 @@ def settings(request):
 
     return render(request, "settings.html", context)
 
+@login_required
 def logout_user(request):
     if request.user.is_authenticated():
         logout(request)
 
     return HttpResponseRedirect("/")
 
+@login_required
 def profile(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect("/login")
@@ -81,6 +86,7 @@ def profile(request):
     
     return render(request, "profile.html", context)
 
+@login_required
 def login(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect("/accounts/profile")
