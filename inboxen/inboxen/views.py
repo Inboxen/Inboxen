@@ -32,9 +32,6 @@ def register(request):
 
 @login_required
 def add_alias(request):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect("/login")
-
     alias = "%s-%s" % (time.time(), request.user.username) 
     domains = Domain.objects.all()
     
@@ -59,9 +56,7 @@ def add_alias(request):
 
 @login_required
 def settings(request):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect("/login")
-    
+   
     context = {
         "page":"Settings",
     }
@@ -70,23 +65,19 @@ def settings(request):
 
 @login_required
 def logout_user(request):
-    if request.user.is_authenticated():
-        logout(request)
-
+    
+    logout(request)
     return HttpResponseRedirect("/")
 
 @login_required
 def profile(request):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect("/login")
- 
+
     context = {
         "page":"Profile",
     }
     
     return render(request, "profile.html", context)
 
-@login_required
 def login(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect("/accounts/profile")
