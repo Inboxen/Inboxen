@@ -2,10 +2,21 @@
 
 {% block content %}
 
-    <form action="/add-alias" method="POST">
-        <label for="alias">Alias</label>: {{ alias }}
-        <label for="tag">Tag</label><input id="tag" name="tag">
-        <input type="submit" value="Add">        
-    </form>
+    <div class="login">
+
+        <form action="/add-alias/" method="POST">
+            {% csrf_token %}
+            <label for="alias">Alias:</label> {{ alias }}@
+            <select name="domain">
+            {% for domain in domains %}
+                <option value="{{ domain }}">{{domain}}</option>
+            {% endfor %}
+            </select>
+            <br />
+            <label for="tag">Tag:</label><input id="tag" name="tag"><br />
+            <input type="submit" value="Add">        
+        </form>
+
+    </div>
 
 {% endblock %}

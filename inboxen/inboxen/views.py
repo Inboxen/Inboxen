@@ -1,13 +1,19 @@
+import hashlib, time, random
+
 from django.shortcuts import render
 from django.http import Http404
-
 from django.contrib.auth import logout
 from django.template import RequestContext
 from django import forms
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 
+from inboxen.models import Domain, Alias
+
 def register(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/accounts/profile")
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -24,23 +30,51 @@ def register(request):
     return render(request, "register.html", context, context_instance=RequestContext(request))
 
 def add_alias(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect("/login")
+
+    alias = "%s-%s" % (time.time(), request.user.username) 
+    domains = Domain.objects.all()
+    
+    alias = ""
+    count = 0
+    while not alias and count < 10:
+        alias = "%s-%s" % (time.time(), request.user.username)
+        alias = hashlib.sha1(alias).hexdigest()[:count+5]
+        try:
+            Alias.objects.get(alias=alias)
+            alias = ""
+            count += 1
+        except:
+            pass
     context = {
         "page":"Add Alias",
+        "domains":domains,
+        "alias":alias,
     }
     
     return render(request, "add_alias.html", context)
 
 def settings(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect("/login")
+    
     context = {
         "page":"Settings",
     }
+
     return render(request, "settings.html", context)
 
 def logout_user(request):
-    logout(request)
+    if request.user.is_authenticated():
+        logout(request)
+
     return HttpResponseRedirect("/")
 
-def profile(request): 
+def profile(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect("/login")
+ 
     context = {
         "page":"Profile",
     }
@@ -48,6 +82,9 @@ def profile(request):
     return render(request, "profile.html", context)
 
 def login(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/accounts/profile")
+
     context = {
         "page":"Login",
     } 
@@ -62,6 +99,9 @@ def contact(request):
     return render(request, "contact.html", context)
 
 def home(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/accounts/profile")
+
     context = {
         "page":"Home",
     }
