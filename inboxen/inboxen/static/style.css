@@ -117,7 +117,18 @@ td:first-child {
 
 .login {
     padding-top:150px;
+}
+
+.login p {
     text-align:center;
+}
+
+.login form {
+    padding-left:25%;
+}
+
+.centre {
+    padding-left:27%;
 }
 
 .error {
