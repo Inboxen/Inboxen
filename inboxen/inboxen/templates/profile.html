@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+
 {% load i18n %}
+
 {% block content %}
 
 <div class="content">
+
+{{ tags }}
 
     <h2> {% trans "Alises" %} </h2>
     {% if not aliases %}
@@ -13,14 +17,19 @@
             <tr>
                 <th>{% trans "Alias" %}</th>
                 <th>{% trans "Created" %}</th>
+                <th>{% trans "Tags" %}</th>
                 <th>{% trans "Inbox" %}</th>
+                <th>{% trans "Delete" %}</th>
             </tr>
             
             {% for alias in aliases %}
+
                 <tr>
                     <td>{{ alias.alias }}@{{ alias.domain }}</td>
                     <td>{{ alias.created }}</td>
-                    <td><a href="/inbox/{{ alias.alias }}">{% trans "View" %}</a></td>
+                    <td></td>
+                    <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{% trans "View" %}</a></td>
+                    <td><a href="/delete/{{ alias.alias }}@{{ alias.domain }}">{% trans "Delete" %}</a></td>
                 </tr>
             {% endfor %}
         </table>
