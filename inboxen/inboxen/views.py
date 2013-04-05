@@ -1,5 +1,7 @@
 import hashlib, time, random
 
+from datetime import datetime
+
 from django.shortcuts import render
 from django.http import Http404
 from django.contrib.auth import logout
@@ -9,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
-from inboxen.models import Domain, Alias
+from inboxen.models import Tag, Domain, Alias
 
 def register(request):
     if request.user.is_authenticated():
@@ -32,6 +34,20 @@ def register(request):
 
 @login_required
 def add_alias(request):
+    
+    if request.method == "POST":
+        alias = request.POST["alias"]
+        domain = Domain.objects.get(domain=request.POST["domain"])
+        tag = Tag(tag=request.POST["tag"])
+        new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())
+        new_alias.save()
+        
+        tag = Tag(tag=tag)
+        tag.alias = new_alias
+        tag.save()
+
+        return HttpResponseRedirect("/accounts/profile")
+
     alias = "%s-%s" % (time.time(), request.user.username) 
     domains = Domain.objects.all()
     
