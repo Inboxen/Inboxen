@@ -33,8 +33,6 @@ class Header(models.Model):
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
-    spam_filtering = models.BooleanField()
-    premium = models.BooleanField()  
 
 class Email(models.Model):
     headers = models.ManyToManyField(Header)

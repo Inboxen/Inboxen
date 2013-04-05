@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block content %}
 
     <div class="login">
 
         <form action="/add-alias/" method="POST">
             {% csrf_token %}
-            <label for="alias">Alias:</label> {{ alias }}@
+            <label for="alias">{% trans "Alias:" %}</label> {{ alias }}@
             <input type="hidden" name="alias" value="{{ alias }}">
             <select name="domain">
             {% for domain in domains %}
@@ -14,8 +14,8 @@
             {% endfor %}
             </select>
             <br />
-            <label for="tag">Tag:</label><input id="tag" name="tag"><br />
-            <input type="submit" value="Add">        
+            <label for="tag">{% trans "Tag:" %}</label><input id="tag" name="tag"><br />
+            <input type="submit" value="{% trans "Add" %}">        
         </form>
 
     </div>
