@@ -144,3 +144,20 @@ h1 {
 .helptext {
     display:none;
 }
+
+.content {
+    padding-top:2%;
+    margin-left:5%;
+}
+
+h2 {
+    font-size:20pt;
+}   
+
+p, table {
+    margin-left:5%;
+}
+
+.content a {
+    color:#111;
+}

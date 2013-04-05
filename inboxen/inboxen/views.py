@@ -88,8 +88,15 @@ def logout_user(request):
 @login_required
 def profile(request):
 
+    try:
+        aliases = Alias.objects.filter(user=request.user).order_by('created')
+    except:
+        raise
+        aliases = []
+
     context = {
         "page":"Profile",
+        "aliases":aliases,
     }
     
     return render(request, "profile.html", context)
