@@ -1,5 +1,8 @@
 # This file contains python variables that configure Lamson for email processing.
 import logging
+import os
+
+os.environ['DJANGO_SETTINGS_MODULE’] = 'front-end.settings'
 
 accepted_queue_dir = 'run/accepted'
 accepted_queue_opts = {'safe': False, 'oversize_dir': None}
