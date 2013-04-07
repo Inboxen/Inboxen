@@ -129,6 +129,33 @@ def login(request):
 
     return render(request, "login.html", context)
 
+@login_required
+def delete_alias(request, email):
+    if request.method == "POST":
+        if request.POST["confirm"] != email:
+            raise Http404
+        else:
+            try:
+                email = email.split("@")
+                domain = Domain.objects.get(domain=email[1])
+                alias = Alias.objects.filter(alias=email[0], domain=domain)
+                for a in alias:
+                    if a.user == request.user:
+                        a.delete()
+            except:
+                raise
+                raise Http404
+        return HttpResponseRedirect("/accounts/profile")
+    
+    context = {
+        "page":"Delete Alias",
+        "alias":email
+    }
+
+    return render(request, "confirm.html", context)
+
+    
+
 def contact(request):
     context ={
         "page":"Contact",

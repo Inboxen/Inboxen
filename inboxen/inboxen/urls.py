@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     url(r'^settings/', 'inboxen.views.settings'),
     url(r'^inbox/(?P<inbox>\w+)@(?P<domain>\w+)/$', 'inboxen.views.inbox'),
     url(r'^logout/', 'inboxen.views.logout_user', name="logout"),
+    url(r'^delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.delete_alias'),
+
     # url(r'^inboxen/', include('inboxen.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
