@@ -38,14 +38,16 @@ def add_alias(request):
     if request.method == "POST":
         alias = request.POST["alias"]
         domain = Domain.objects.get(domain=request.POST["domain"])
-        tag = Tag(tag=request.POST["tag"])
+        tags = request.POST["tag"].split(",")
+        
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())
         new_alias.save()
         
-        tag = Tag(tag=tag)
-        tag.alias = new_alias
-        tag.save()
-
+        for i, tag in enumerate(tags):
+            tags[i] = Tag(tag=tag)
+            tags[i].alias = new_alias
+            tags[i].save()
+ 
         return HttpResponseRedirect("/accounts/profile")
 
     alias = "%s-%s" % (time.time(), request.user.username) 
@@ -86,6 +88,13 @@ def logout_user(request):
     return HttpResponseRedirect("/")
 
 @login_required
+def inbox(request, inbox, domain):
+    context = {
+        "page":inbox,
+    }
+    return render(request, "inbox.html", context)
+
+@login_required
 def profile(request):
 
     try:
@@ -94,9 +103,18 @@ def profile(request):
         raise
         aliases = []
 
+    tags = {}
+    try:
+        for alias in aliases:
+            tag = Tag.objects.filter(alias=alias)
+            tags[alias] = ", ".join([t.tag for t in tag])
+    except:
+        pass
+
     context = {
         "page":"Profile",
         "aliases":aliases,
+        "tags":tags,
     }
     
     return render(request, "profile.html", context)
