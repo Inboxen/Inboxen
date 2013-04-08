@@ -1,4 +1,17 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% block context %}
+{% block content %}
+
+    <form action="/settings" action="POST">
+
+        <h2> {% trans "General" %} </h2><br />
+        <input type="checkbox" name="spam_filtering"> {% trans "Spam Filtering?" %}<br />
+        <br />
+        <h2> {% trans "Change Password" %} </h2><br />
+        {% trans "Old Password:" %} <input type="password" name="password1"><br />
+        {% trans "New Password:" %} <input type="password" name="password2"><br />
+        <br />
+        <input type="submit" value="Save">
+
+    </form>
 {% endblock %}
