@@ -35,6 +35,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
 
 class Email(models.Model):
+    read = models.BooleanField()
     headers = models.ManyToManyField(Header)
     user = models.ForeignKey(User, related_name='user')
     inbox = models.ForeignKey(Alias)
