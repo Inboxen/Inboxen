@@ -40,6 +40,12 @@ def add_alias(request):
         domain = Domain.objects.get(domain=request.POST["domain"])
         tags = request.POST["tag"].split(",")
         
+        try:
+            alias_test = Alias.objects.get(alias=alias, domain=domain)
+            return HttpResponseRedirect("/accounts/profile")
+        except:
+            pass 
+
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())
         new_alias.save()
         
@@ -143,7 +149,6 @@ def delete_alias(request, email):
                     if a.user == request.user:
                         a.delete()
             except:
-                raise
                 raise Http404
         return HttpResponseRedirect("/accounts/profile")
     
@@ -155,6 +160,27 @@ def delete_alias(request, email):
     return render(request, "confirm.html", context)
 
     
+@login_required
+def specific(request, inbox=""):
+    context = {
+        "page":"Inbox",
+    }
+
+    if inbox:
+        inbox = inbox.split("@")
+        domain = Domain.objects.get(domain=inbox[1])
+        alias = Alias.objects.get(alias=inbox[0], domain=domain)
+        
+        if alias.user != request.user:
+            raise Http404
+        
+        return render(request, "inbox.html", context)
+    
+    else:
+        alises = Alias.objects.filter(user=request.user)
+        return render(request, "inbox.html", context) 
+            
+
 
 def contact(request):
     context ={
