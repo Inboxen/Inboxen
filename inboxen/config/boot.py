@@ -8,10 +8,6 @@ import jinja2
 
 logging.config.fileConfig("config/logging.conf")
 
-# the relay host to actually send the final message to
-settings.accepted_queue = queue.Queue(settings.accepted_queue_dir,
-                            **settings.accepted_queue_opts)
-
 # where to listen for incoming messages
 settings.receiver = SMTPReceiver(settings.receiver_config['host'],
                                  settings.receiver_config['port'])
