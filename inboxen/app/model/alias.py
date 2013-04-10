@@ -1,7 +1,7 @@
-from frontend.models import Alias, Domain
+from inboxen.models import Alias, Domain
 
 def alias_exists(alias, domain):
-    if Alias.objects.filter(alias=alias, domain=domain):
+    if Alias.objects.filter(alias=alias, domain__domain=domain):
         return True
     else:
         return False
