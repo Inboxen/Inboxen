@@ -1,6 +1,6 @@
 inboxen/logs
 inboxen/run
-inboxen/front-end/settings.py
+inboxen/frontend/settings.py
 
 *.py[cod]
 

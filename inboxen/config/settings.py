@@ -2,7 +2,7 @@
 import logging
 import os
 
-os.environ['DJANGO_SETTINGS_MODULE’] = 'front-end.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'frontend.settings'
 
 accepted_queue_dir = 'run/accepted'
 accepted_queue_opts = {'safe': False, 'oversize_dir': None}
