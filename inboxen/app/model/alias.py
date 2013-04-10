@@ -1,12 +1,12 @@
 from front-end.models import Alias, Domain
 
-def AliasExists(alias, domain):
+def alias_exists(alias, domain):
     if Alias.objects.filter(alias=alias, domain=domain):
         return True
     else:
         return False
 
-def DomainExists(domain):
+def domain_exists(domain):
     if Domain.objects.filter(domain=domain):
         return True
     else:
