@@ -9,4 +9,6 @@ from lamson import view
 @nolocking
 def START(message, address=None, host=None):
     database.push(message)
+    #split email into headers. body (if it exists), mime parts
+    #push to db
 

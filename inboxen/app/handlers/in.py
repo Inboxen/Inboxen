@@ -9,5 +9,9 @@ from app.model.alias import alias_exists
 def START(message, alias=None, domain=None):
     """Does this alias exist? If yes, queue it. If no, drop it."""
     if alias_exists(alias, domain):
+        #if spam filtering is enabled, do so
+
+        #if not spam, or not filter:
         accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts)
         accept_queue.push(message)
+
