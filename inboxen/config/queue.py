@@ -1,6 +1,6 @@
 from config import settings
 from lamson.routing import Router
-from lamson.server import SMTPReceiver
+from lamson.server import QueueReceiver
 from lamson import view, queue
 import logging
 import logging.config
@@ -8,12 +8,8 @@ import jinja2
 
 logging.config.fileConfig("config/logging.conf")
 
-settings.accepted_queue = queue.Queue(settings.accepted_queue_dir,
+settings.receiver = QueueReceiver(settings.accepted_queue_dir,
                             **settings.accepted_queue_opts)
-
-##
-# TODO: add something to dump messages into db
-##
 
 Router.defaults(**settings.router_defaults)
 Router.load(settings.out_handlers)

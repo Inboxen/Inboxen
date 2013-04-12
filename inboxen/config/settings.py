@@ -5,7 +5,7 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'inboxen.settings'
 
 accepted_queue_dir = 'run/accepted'
-accepted_queue_opts = {'safe': False, 'oversize_dir': None}
+accepted_queue_opts = {'sleep': 10, 'safe': False, 'oversize_dir': None}
 
 receiver_config = {'host': 'localhost', 'port': 8823}
 
