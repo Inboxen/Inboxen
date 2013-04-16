@@ -18,7 +18,21 @@ class Alias(models.Model):
         return u"%s@%s" % (self.alias, self.domain.domain)
 
 class Attachment(models.Model):
-    pass
+    content_type = models.CharField(max_length=256)
+    content_transfer_encoding = models.CharField(max_length=256)
+    content_disposition = models.CharField(max_length=512)
+
+    _data = models.TextField(
+        db_column='data',
+        blank=True)
+
+    def set_data(self, data):
+        self._data = base64.encodestring(data)
+
+    def get_data(self):
+        return base64.decodestring(self._data)
+
+    data = property(get_data, set_data)
 
 class Tag(models.Model):
     alias = models.ForeignKey(Alias)
@@ -39,7 +53,7 @@ class Email(models.Model):
     headers = models.ManyToManyField(Header)
     user = models.ForeignKey(User, related_name='user')
     inbox = models.ForeignKey(Alias)
-    body = models.TextField()
+    body = models.TextField(null=True)
     attachments = models.ManyToManyField(Attachment)
     recieved_date = models.DateTimeField('Recieved Date')
 
