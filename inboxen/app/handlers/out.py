@@ -1,8 +1,6 @@
-import logging
 from lamson.routing import route, stateless
-from config.settings import database
-from lamson import view
-
+from config.settings import datetime_format
+from datetime import datetime
 
 @route("(alias)@(domain)", alias=".+", domain=".+")
 @stateless
