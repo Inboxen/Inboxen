@@ -5,7 +5,8 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'inboxen.settings'
 
 accepted_queue_dir = 'run/accepted'
-accepted_queue_opts = {'sleep': 10, 'safe': False, 'oversize_dir': None}
+accepted_queue_opts_in = {}
+accepted_queue_opts_out = {}
 
 receiver_config = {'host': 'localhost', 'port': 8823}
 
@@ -16,6 +17,7 @@ router_defaults = {}
 
 template_config = {'dir': 'app', 'module': 'templates'}
 
-datetime_format = "%Y-%m-%d %H:%M:%S %z"
+datetime_format = "%Y-%m-%d %H:%M:%S"
+recieved_header_name = 'x-lamson-recieved'
 
 # the config/boot.py will turn these values into variables set in settings
