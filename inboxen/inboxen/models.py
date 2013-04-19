@@ -21,7 +21,6 @@ class Alias(models.Model):
 
 class Attachment(models.Model):
     content_type = models.CharField(max_length=256)
-    content_transfer_encoding = models.CharField(max_length=256)
     content_disposition = models.CharField(max_length=512)
 
     _data = models.TextField(
@@ -51,7 +50,7 @@ class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
 
 class Email(models.Model):
-    read = models.BooleanField()
+    read = models.BooleanField(default=False)
     headers = models.ManyToManyField(Header)
     user = models.ForeignKey(User, related_name='user')
     inbox = models.ForeignKey(Alias)
