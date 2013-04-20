@@ -1,6 +1,7 @@
 from config import settings
 from lamson.routing import Router
 from lamson.server import QueueReceiver
+from lamson import queue
 import logging
 import logging.config
 
