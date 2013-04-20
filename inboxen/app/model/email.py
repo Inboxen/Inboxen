@@ -10,6 +10,7 @@ def make_email(message, alias, domain):
     del message[recieved_header_name]
 
     email = Email(user=user, inbox=inbox, recieved_date=recieved_date)
+    email.save()
 
     for name in message.keys():
         email.headers.create(name=name, data=message[name])
