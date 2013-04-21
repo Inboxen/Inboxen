@@ -109,18 +109,16 @@ def profile(request):
         raise
         aliases = []
 
-    tags = {}
     try:
         for alias in aliases:
             tag = Tag.objects.filter(alias=alias)
-            tags[alias] = ", ".join([t.tag for t in tag])
+            alias.tags = ", ".join([t.tag for t in tag])
     except:
         pass
 
     context = {
         "page":"Profile",
         "aliases":aliases,
-        "tags":tags,
     }
     
     return render(request, "profile.html", context)
