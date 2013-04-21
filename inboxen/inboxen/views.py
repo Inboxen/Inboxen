@@ -13,6 +13,18 @@ from django.contrib.auth.decorators import login_required
 
 from inboxen.models import Tag, Domain, Alias, Email
 
+## not for direct display
+def error_out(request=None, template="error.html", page="Error", message="There has been a server error"):
+    """ Produces an error response """
+
+    context = {
+        "page":page,
+        "error":message,
+    }
+
+    return render(request, template, context)
+
+
 def register(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect("/accounts/profile")
@@ -94,17 +106,17 @@ def logout_user(request):
     return HttpResponseRedirect("/")
 
 @login_required
-def inbox(request, email=""):
+def inbox(request, email_address=""):
 
     error = ""
 
-    if not email:
+    if not email_address:
         # assuming global unified inbox
         emails = Email.objects.filter(user=request.user).order_by('recieved_date')
 
     else:
         # a specific alias
-        alias, domain = email.split("@", 1)
+        alias, domain = email_address.split("@", 1)
         try:
             alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
             emails = Email.objects.filter(user=request.user, inbox=alias).order_by('recieved_date') 
@@ -113,7 +125,7 @@ def inbox(request, email=""):
 
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     for email in emails:
-        email.sender, email.subject = "", ""
+        email.sender, email.subject = "", "(No Subject)"
         for header in email.headers.all():
             if header.name == "From":
                 email.sender = header.data
@@ -121,13 +133,46 @@ def inbox(request, email=""):
                 email.subject = header.data
 
     context = {
-        "page":"%s - Inbox" % email,
+        "page":"%s - Inbox" % email_address,
         "error":error,
         "emails":emails,
-        "email_address":email,
+        "email_address":email_address,
     }
     
     return render(request, "inbox.html", context)
+
+@login_required
+def read_email(request, email_address, emailid):
+
+    alias, domain = email_address.split("@", 1)
+    
+    try:
+        alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
+    except:
+        return error_out(page="Inbox", message="Alias doesn't exist")
+
+    try:
+        email = Email.objects.get(id=emailid)
+    except:
+        return error_out(page="Inbox", message="Can't find email")
+
+    email.subject = "(No subject)"
+
+    # okay we've got the alias and email.
+    # now lets get the subject 'n shit
+    for header in email.headers.all():
+        if header.name == "Subject":
+            email.subject = header.data
+        elif header.name == "From":
+            email.sender = header.data 
+     
+
+    context = {
+        "page":"",
+        "email":email,
+    }
+ 
+    return render(request, "email.html", context)
 
 @login_required
 def profile(request):

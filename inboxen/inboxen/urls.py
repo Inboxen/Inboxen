@@ -14,9 +14,10 @@ urlpatterns = patterns('',
     url(r'^add-alias/', 'inboxen.views.add_alias'),
     url(r'^settings/', 'inboxen.views.settings'),
     url(r'^logout/', 'inboxen.views.logout_user', name="logout"),
-    url(r'^inbox/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.inbox'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/(?P<emailid>\d)', 'inboxen.views.read_email'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)', 'inboxen.views.inbox'),
     url(r'^delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.delete_alias'),
-    
+ 
     # API stuff.
     #url(r'^api/alias/create', 'inboxen.api.alias_create'),
     #url(r'^api/alias/delete', 'inboxen.api.alias_delete'),

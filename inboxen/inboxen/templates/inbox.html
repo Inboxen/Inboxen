@@ -28,14 +28,14 @@
                 <tr class="unread">
             {% endif %}
 
+
                 <td><input type="checkbox" name="email"></td>
                 <td> {{ email.sender }}</td>
                 {% if email.subject %}
-                    <td> {{ email.subject }} </td>
-                {% else %}
-                    <td> (No subject) </td>
+                    <td><a href="/inbox/{{ email_address }}/{{ email.id }}"> {{ email.subject }} </a></td>
                 {% endif %}
                 <td> {{ email.recieved_date }} </td>
+
             </tr>
         </form>
         
