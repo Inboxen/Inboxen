@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+
+<strong>{% trans "From" %}</strong>: {{ email.sender }}<br />
+<strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br /><br />
+
+<strong>{% trans "Message" %}</strong>:<br />
+{{ email.body }}
+
+{% endblock %}
