@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
-from inboxen.models import Tag, Domain, Alias
+from inboxen.models import Tag, Domain, Alias, Email
 
 def register(request):
     if request.user.is_authenticated():
@@ -94,10 +94,39 @@ def logout_user(request):
     return HttpResponseRedirect("/")
 
 @login_required
-def inbox(request, inbox, domain):
+def inbox(request, email=""):
+
+    error = ""
+
+    if not email:
+        # assuming global unified inbox
+        emails = Email.objects.filter(user=request.user).order_by('recieved_date')
+
+    else:
+        # a specific alias
+        alias, domain = email.split("@", 1)
+        try:
+            alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
+            emails = Email.objects.filter(user=request.user, inbox=alias).order_by('recieved_date') 
+        except:
+            error = "Can't find email address"
+
+    # lets add the important headers (subject and who sent it (a.k.a. sender))
+    for email in emails:
+        email.sender, email.subject = "", ""
+        for header in email.headers.all():
+            if header.name == "From":
+                email.sender = header.data
+            elif header.name == "Subject":
+                email.subject = header.data
+
     context = {
-        "page":inbox,
+        "page":"%s - Inbox" % email,
+        "error":error,
+        "emails":emails,
+        "email_address":email,
     }
+    
     return render(request, "inbox.html", context)
 
 @login_required
@@ -156,28 +185,6 @@ def delete_alias(request, email):
     }
 
     return render(request, "confirm.html", context)
-
-    
-@login_required
-def specific(request, inbox=""):
-    context = {
-        "page":"Inbox",
-    }
-
-    if inbox:
-        inbox = inbox.split("@")
-        domain = Domain.objects.get(domain=inbox[1])
-        alias = Alias.objects.get(alias=inbox[0], domain=domain)
-        
-        if alias.user != request.user:
-            raise Http404
-        
-        return render(request, "inbox.html", context)
-    
-    else:
-        alises = Alias.objects.filter(user=request.user)
-        return render(request, "inbox.html", context) 
-            
 
 
 def contact(request):

@@ -1,2 +1,48 @@
 {% extends 'base.html' %}
 {% load i18n %}
+
+{% block content %}
+
+<h2> Emails </h2>
+
+{% if error %}
+    <p> {{ error }} </p>
+
+{% elif not emails %}
+    <p> {% trans "You don't have any emails :(" %}
+
+{% else %}
+    <table>
+    <tr>
+        <th></th>
+        <th>From</th>
+        <th>Subject</th>
+        <th>Recieved</th>
+    </tr>
+    
+    {% for email in emails %}
+        <form action="/inbox/{{ email_address }}" method="POST">
+            {% if email.read %}
+                <tr class="read">
+            {% else %}
+                <tr class="unread">
+            {% endif %}
+
+                <td><input type="checkbox" name="email"></td>
+                <td> {{ email.sender }}</td>
+                {% if email.subject %}
+                    <td> {{ email.subject }} </td>
+                {% else %}
+                    <td> (No subject) </td>
+                {% endif %}
+                <td> {{ email.recieved_date }} </td>
+            </tr>
+        </form>
+        
+
+    {% endfor %}
+    </table>
+
+{% endif %}
+
+{% endblock %}
