@@ -168,7 +168,7 @@ def read_email(request, email_address, emailid):
      
 
     context = {
-        "page":"",
+        "page":email.subject,
         "email":email,
     }
  
