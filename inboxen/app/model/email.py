@@ -9,7 +9,7 @@ def make_email(message, alias, domain):
     recieved_date = datetime.strptime(message[recieved_header_name], datetime_format)
     del message[recieved_header_name]
 
-    email = Email(user=user, inbox=inbox, recieved_date=recieved_date)
+    email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
     email.save()
 
     for name in message.keys():
