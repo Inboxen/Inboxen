@@ -2,10 +2,15 @@
 {% load i18n %}
 {% block content %}
 
-    <form action="/settings" action="POST">
+    <form action="/settings/" method="POST">{% csrf_token %}
 
         <h2> {% trans "General" %} </h2><br />
-        <input type="checkbox" name="spam_filtering"> {% trans "Spam Filtering?" %}<br />
+        {% if spamfiltering %}
+            <input type="checkbox" name="spam_filtering" checked="yes">
+        {% else %}
+            <input type="checkbox" name="spam_filtering">
+        {% endif %}
+        {% trans "Spam Filtering?" %}<br />
         <br />
         <h2> {% trans "Change Password" %} </h2><br />
         {% trans "Old Password:" %} <input type="password" name="password1"><br />

@@ -10,6 +10,7 @@ from django import forms
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 
 from inboxen.models import Tag, Domain, Alias, Email
 
@@ -92,9 +93,35 @@ def add_alias(request):
 
 @login_required
 def settings(request):
-   
+
+    if request.method == "POST":
+        try:
+            spamfiltering = request.POST["spam_filtering"]
+        except:
+            spamfiltering = False
+
+        sfg = Group.objects.get(name="SpamFiltering") # spam filtering group
+
+        if spamfiltering and not request.user.groups.filter(name="SpamFiltering").exists():
+            request.user.groups.add(sfg)
+        elif not spamfiltering and request.user.groups.filter(name="SpamFiltering").exists():
+            request.user.groups.remove(sfg)
+
+        request.user.save()
+
+        # Check if they wanted to change the password
+        return HttpResponseRedirect("/accounts/profile")
+
+    # okay they're viewing the settings page
+    # we need to load their settings first.
+    if request.user.groups.filter(name="SpamFiltering").exists():
+        sf = True
+    else:
+        sf = False
+
     context = {
         "page":"Settings",
+        "spamfiltering":sf
     }
 
     return render(request, "settings.html", context)
