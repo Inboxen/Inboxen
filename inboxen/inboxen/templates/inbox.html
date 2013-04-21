@@ -34,7 +34,7 @@
                 {% if email.subject %}
                     <td><a href="/inbox/{{ email_address }}/{{ email.id }}"> {{ email.subject }} </a></td>
                 {% endif %}
-                <td> {{ email.recieved_date }} </td>
+                    <td><span title="{{email.recieved_date }}"> {{ email.recieved_date|timesince }} ago </span></td>
 
             </tr>
         </form>

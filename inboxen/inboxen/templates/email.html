@@ -5,7 +5,8 @@
 {% block content %}
 
 <strong>{% trans "From" %}</strong>: {{ email.sender }}<br />
-<strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br /><br />
+<strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br />
+<strong>{% trans "Recveied" %}</strong>: {{ email.recieved_date }} ({{ email.recieved_date|timesince }} ago)<br /><br />
 
 <strong>{% trans "Message" %}</strong>:<br />
 {{ email.body }}
