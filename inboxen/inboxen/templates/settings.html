@@ -13,6 +13,11 @@
         {% trans "Spam Filtering?" %}<br />
         <br />
         <h2> {% trans "Change Password" %} </h2><br />
+        
+        {% if error %}
+            <p> {{ error }} </p><br />
+        {% endif %}
+
         {% trans "Old Password:" %} <input type="password" name="password1"><br />
         {% trans "New Password:" %} <input type="password" name="password2"><br />
         <br />

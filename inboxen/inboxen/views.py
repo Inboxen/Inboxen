@@ -94,6 +94,8 @@ def add_alias(request):
 @login_required
 def settings(request):
 
+    error = ""
+
     if request.method == "POST":
         try:
             spamfiltering = request.POST["spam_filtering"]
@@ -110,7 +112,18 @@ def settings(request):
         request.user.save()
 
         # Check if they wanted to change the password
-        return HttpResponseRedirect("/accounts/profile")
+        if "password1" in request.POST and "password2" in request.POST:
+            if request.POST["password1"] == request.POST["password2"]:
+                request.user.set_password(request.POST["password1"])
+                request.user.save()
+            else:
+                # oh dear lets quickly say no
+                error = "Passwords don't match"
+        
+        if not error:
+            # now redirect back to their profile
+            return HttpResponseRedirect("/accounts/profile")
+
 
     # okay they're viewing the settings page
     # we need to load their settings first.
@@ -121,7 +134,8 @@ def settings(request):
 
     context = {
         "page":"Settings",
-        "spamfiltering":sf
+        "spamfiltering":sf,
+        "error":error,
     }
 
     return render(request, "settings.html", context)
