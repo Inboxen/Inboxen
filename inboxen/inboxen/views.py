@@ -219,7 +219,7 @@ def read_email(request, email_address, emailid):
 def profile(request):
 
     try:
-        aliases = Alias.objects.filter(user=request.user).order_by('created')
+        aliases = Alias.objects.filter(user=request.user).order_by('-created')
     except:
         raise
         aliases = []
