@@ -18,7 +18,8 @@ def make_email(message, alias, domain):
     for part in message.all_parts():
         email.attachments.create(
                         content_type=part.content_encoding['Content-Type'][0],
-                        content_disposition=part.content_encoding['Content-Disposition'][0]
+                        content_disposition=part.content_encoding['Content-Disposition'][0],
+                        data=part.body
                         )
 
     email.save()
