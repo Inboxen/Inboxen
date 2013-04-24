@@ -20,8 +20,8 @@ class Alias(models.Model):
         return u"%s@%s" % (self.alias, self.domain.domain)
 
 class Attachment(models.Model):
-    content_type = models.CharField(max_length=256)
-    content_disposition = models.CharField(max_length=512)
+    content_type = models.CharField(max_length=256, null=True, blank=True)
+    content_disposition = models.CharField(max_length=512, null=True, blank=True)
 
     _data = models.TextField(
         db_column='data',
