@@ -44,7 +44,7 @@ def add_alias(request):
     alias = ""
     count = 0
     while not alias and count < 15:
-        alias = gen_alias(count)
+        alias = gen_alias(count+5)
         try:
             Alias.objects.get(alias=alias)
         except Alias.DoesNotExist:
