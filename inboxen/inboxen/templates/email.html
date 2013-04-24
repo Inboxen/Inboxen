@@ -15,7 +15,8 @@
 
 <br />
 <strong>{% trans "Attachments" %}</strong>:<br />
-{% for attachment in attachments %}
+{{ attachments }}
+{% for attachment in email.attachments.all %}
     <a href="/email/attachment/{{ attachment.id }}">{{ attachment.content_disposition }} ({{ attachment.content_type }})</a><br />
 {% endfor %}
 
