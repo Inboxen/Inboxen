@@ -4,9 +4,16 @@ from datetime import datetime
 from django.http import Http404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.utils.crypto import get_random_string
 
 from inboxen.models import Domain, Alias, Tag
+
+def gen_alias(count, alias=""):
+    if count <= 0:
+        return alias
+    
+    alias += random.choice(string.ascii_lowercase)
+    
+    return gen_alias(count-1, alias)
 
 @login_required
 def add_alias(request):
@@ -36,14 +43,15 @@ def add_alias(request):
     
     alias = ""
     count = 0
-    while not alias and count < 10:
-        alias = get_random_string(count, string.ascii_lowercase)
+    while not alias and count < 15:
+        alias = gen_alias(count)
         try:
             Alias.objects.get(alias=alias)
             alias = ""
             count += 1
         except Exception:
             pass
+    
     context = {
         "page":"Add Alias",
         "domains":domains,
