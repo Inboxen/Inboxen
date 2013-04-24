@@ -15,7 +15,9 @@ def make_email(message, alias, domain):
     for name in message.keys():
         email.headers.create(name=name, data=message[name])
 
-    for part in message.all_parts():
+    for part in message.walk():
+        if not part.body:
+            part.body = u''
         email.attachments.create(
                         content_type=part.content_encoding['Content-Type'][0],
                         content_disposition=part.content_encoding['Content-Disposition'][0],
