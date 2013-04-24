@@ -153,14 +153,14 @@ def inbox(request, email_address=""):
 
     if not email_address:
         # assuming global unified inbox
-        emails = Email.objects.filter(user=request.user).order_by('recieved_date')
+        emails = Email.objects.filter(user=request.user).order_by('-recieved_date')
 
     else:
         # a specific alias
         alias, domain = email_address.split("@", 1)
         try:
             alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
-            emails = Email.objects.filter(user=request.user, inbox=alias).order_by('recieved_date') 
+            emails = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date') 
         except:
             error = "Can't find email address"
 
