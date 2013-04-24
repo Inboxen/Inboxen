@@ -1,4 +1,4 @@
-import time, string
+import time, string, random
 from datetime import datetime
 
 from django.http import Http404
@@ -49,7 +49,7 @@ def add_alias(request):
             Alias.objects.get(alias=alias)
             alias = ""
             count += 1
-        except Exception:
+        except Alias.DoesNotExist:
             pass
     
     context = {
