@@ -43,14 +43,18 @@ def add_alias(request):
     
     alias = ""
     count = 0
+    
+    min_length = 5 # minimum length of alias
+    
     while not alias and count < 15:
-        alias = gen_alias(count+5)
+        alias = gen_alias(count+min_length)
         try:
             Alias.objects.get(alias=alias)
-        except Alias.DoesNotExist:
             alias = ""
             count += 1
-    
+        except Alias.DoesNotExist:
+            pass
+            
     context = {
         "page":"Add Alias",
         "domains":domains,
