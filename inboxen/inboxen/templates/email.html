@@ -9,6 +9,8 @@
 <strong>{% trans "Recveied" %}</strong>: {{ email.recieved_date }} ({{ email.recieved_date|timesince }} {% trans "ago" %})<br /><br />
 
 <strong>{% trans "Message" %}</strong>:<br />
+<pre>
 {{ email.body }}
+</pre>
 
 {% endblock %}
