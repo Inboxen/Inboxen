@@ -24,7 +24,7 @@
 
                 <tr>
                     <td>{{ alias.alias }}@{{ alias.domain }}</td>
-                    <td><span title="{{ alias.created }}">{{ alias.created|timesince }}</span></td>
+                    <td><span title="{{ alias.created }}">{{ alias.created|timesince }} {% trans "ago" %}</span></td>
                     <td>{{ alias.tags }}</td>
                     <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{% trans "View" %}</a></td>
                     <td><a href="/delete/{{ alias.alias }}@{{ alias.domain }}">{% trans "Delete" %}</a></td>
