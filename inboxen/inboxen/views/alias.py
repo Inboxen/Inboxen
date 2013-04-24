@@ -18,7 +18,7 @@ def add_alias(request):
         try:
             alias_test = Alias.objects.get(alias=alias, domain=domain)
             return HttpResponseRedirect("/profile")
-        except:
+        except Exception:
             pass 
 
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())
@@ -43,7 +43,7 @@ def add_alias(request):
             Alias.objects.get(alias=alias)
             alias = ""
             count += 1
-        except:
+        except Exception:
             pass
     context = {
         "page":"Add Alias",
@@ -66,7 +66,7 @@ def delete_alias(request, email):
                 for a in alias:
                     if a.user == request.user:
                         a.delete()
-            except:
+            except Exception:
                 raise Http404
         return HttpResponseRedirect("/profile")
     
