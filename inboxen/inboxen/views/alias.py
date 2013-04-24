@@ -1,9 +1,10 @@
-import hashlib, time
+import time, string
 from datetime import datetime
 
 from django.http import Http404
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.utils.crypto import get_random_string
 
 from inboxen.models import Domain, Alias, Tag
 
@@ -31,14 +32,12 @@ def add_alias(request):
  
         return HttpResponseRedirect("/profile")
 
-    alias = "%s-%s" % (time.time(), request.user.username) 
     domains = Domain.objects.all()
     
     alias = ""
     count = 0
     while not alias and count < 10:
-        alias = "%s-%s" % (time.time(), request.user.username)
-        alias = hashlib.sha1(alias).hexdigest()[:count+5]
+        alias = get_random_string(count, string.ascii_lowercase)
         try:
             Alias.objects.get(alias=alias)
             alias = ""
