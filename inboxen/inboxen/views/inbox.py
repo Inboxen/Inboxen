@@ -2,7 +2,21 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
+from django.http import HttpResponse
+
 from inboxen.models import Alias, Email
+
+@login_required
+def download_attachment(request, attachment_id):
+    try:
+        attachment = Attachment.objects.get(id=attachment_id)
+    except Exception:
+        return HttpResponseRedirect("/")
+
+    response = HttpResponse(attachment.get_data(), content_type=attachment.content_type)
+    response["Content-Disposition"] = "attachment; filename=bluhbluh-%s" % attachment_id
+
+    return response
 
 @login_required
 def inbox(request, email_address=""):

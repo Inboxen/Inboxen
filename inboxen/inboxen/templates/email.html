@@ -13,4 +13,9 @@
 {{ email.body }}
 </pre>
 
+<strong>{% trans "Attachments" %}</strong>:<br />
+{% for attachment in attachments %}
+    <a href="/email/attachment/{{ attachment.id }}">{{ attachment.content_disposition }} ({{ attachment.content_type }})</a><br />
+{% endfor %}
+
 {% endblock %}
