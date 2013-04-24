@@ -13,7 +13,7 @@ def download_attachment(request, attachment_id):
     except Exception:
         return HttpResponseRedirect("/")
 
-    response = HttpResponse(attachment.get_data(), content_type=attachment.content_type)
+    response = HttpResponse(attachment.data, content_type=attachment.content_type)
     response["Content-Disposition"] = "attachment; filename=bluhbluh-%s" % attachment_id
 
     return response
