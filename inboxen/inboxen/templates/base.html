@@ -11,6 +11,9 @@
             <span class="menu">
             <ul>
                 {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <li><a href="/admin">{% trans "Admin" %}</li></a>
+                    {% endif %}
                     <li><a href="/add-alias">{% trans "Add Alias" %}</li></a>
                     <li><a href="/settings">{% trans "Settings" %}</a></li>
                     <li><a href="/logout">{% trans "Logout" %}</a></li>
