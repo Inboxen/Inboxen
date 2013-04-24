@@ -113,7 +113,7 @@ def settings(request):
 
         # Check if they wanted to change the password
         if "password1" in request.POST and "password2" in request.POST:
-            if request.POST["password1"] == request.POST["password2"]:
+            if request.POST["password1"] == request.POST["password2"] and request.POST["password1"]:
                 request.user.set_password(request.POST["password1"])
                 request.user.save()
             else:
