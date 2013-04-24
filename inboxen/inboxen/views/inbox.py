@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 from inboxen.models import Alias, Email
 
