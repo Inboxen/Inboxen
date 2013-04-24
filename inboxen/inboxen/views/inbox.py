@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.http import HttpResponse, HttpResponseRedirect
 
-from inboxen.models import Alias, Email
+from inboxen.models import Alias, Email, Attachment
 
 @login_required
 def download_attachment(request, attachment_id):
