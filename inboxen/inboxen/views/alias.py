@@ -47,10 +47,9 @@ def add_alias(request):
         alias = gen_alias(count)
         try:
             Alias.objects.get(alias=alias)
+        except Alias.DoesNotExist:
             alias = ""
             count += 1
-        except Alias.DoesNotExist:
-            pass
     
     context = {
         "page":"Add Alias",
