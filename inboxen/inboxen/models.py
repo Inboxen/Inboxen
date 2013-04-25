@@ -53,6 +53,7 @@ class Header(models.Model):
 
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
+    html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
 
 class Email(models.Model):
     read = models.BooleanField(default=False)
