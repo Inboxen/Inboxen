@@ -28,6 +28,11 @@ class Attachment(models.Model):
         blank=True)
 
     def set_data(self, data):
+        try:
+            data = data.encode("utf-8")
+        except UnicodeError:
+            data = u''
+
         self._data = base64.encodestring(data)
 
     def get_data(self):
