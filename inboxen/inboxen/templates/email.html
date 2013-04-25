@@ -4,19 +4,24 @@
 
 {% block content %}
 
-<strong>{% trans "From" %}</strong>: {{ email.sender }}<br />
+<strong>{% trans "From" %}</strong>: {{ email.from }}<br />
 <strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br />
-<strong>{% trans "Recveied" %}</strong>: {{ email.recieved_date }} ({{ email.recieved_date|timesince }} {% trans "ago" %})<br /><br />
+<strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
 
 <strong>{% trans "Message" %}</strong>:<br />
-<pre>
+{% if plain_message %}
+    <pre>
+{% endif %}
+
 {{ email.body }}
-</pre>
+
+{% if plain_message %}
+    </pre>
+{% endif %}
 
 <br />
 <strong>{% trans "Attachments" %}</strong>:<br />
-{{ attachments }}
-{% for attachment in email.attachments.all %}
+{% for attachment in email.attachments %}
     <a href="/email/attachment/{{ attachment.id }}">{{ attachment.content_disposition }} ({{ attachment.content_type }})</a><br />
 {% endfor %}
 

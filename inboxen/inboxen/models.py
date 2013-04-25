@@ -40,6 +40,9 @@ class Attachment(models.Model):
 
     data = property(get_data, set_data)
 
+    def __unicode__(self):
+        return self.data
+
 class Tag(models.Model):
     alias = models.ForeignKey(Alias)
     tag = models.CharField(max_length=256)

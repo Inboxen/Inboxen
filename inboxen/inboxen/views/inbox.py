@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 
 from inboxen.models import Alias, Email, Attachment
-from inboxen.helper.email import email 
+from inboxen.helper.email import get_email 
 
 @login_required
 def download_attachment(request, attachment_id):
@@ -66,25 +66,15 @@ def read_email(request, email_address, emailid):
         return error_out(page="Inbox", message="Alias doesn't exist")
 
     try:
-        email = email(request.user, emailid)
+        email = get_email(request.user, emailid)
     except:
-        return
-
-    email.subject = "(No subject)"
-
-    # okay we've got the alias and email.
-    # now lets get the subject 'n shit
-    for header in email.headers.all():
-        if header.name == "Subject":
-            email.subject = header.data
-        elif header.name == "From":
-            email.sender = header.data 
-     
+        raise
+        return HttpResponseRedirect("")
 
     context = {
-        "page":email.subject,
-        "body":email[0],
-        "attachments":email[1],
+        "page":email["subject"],
+        "email":email,
+        "plain_message":email["plain"]
     }
  
     return render(request, "email.html", context)
