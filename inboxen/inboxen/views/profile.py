@@ -1,16 +1,19 @@
-
-
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 
 from django.contrib.auth.models import Group
-from inboxen.models import Alias
+from inboxen.models import Alias, UserProfile
+from inboxen.helper.user import user_profile
 
 @login_required
 def settings(request):
-
     error = ""
-
+    
+    # check their html preferences
+    profile = user_profile(request.user)
+    
+    # they submitting it?
     if request.method == "POST":
         try:
             spamfiltering = request.POST["spam_filtering"]
@@ -27,13 +30,16 @@ def settings(request):
         request.user.save()
 
         # Check if they wanted to change the password
-        if "password1" in request.POST and "password2" in request.POST:
-            if request.POST["password1"] == request.POST["password2"] and request.POST["password1"]:
+        if "password1" in request.POST and "password2" in request.POST and request.POST["password1"]:
+            if request.POST["password1"] == request.POST["password2"]:
                 request.user.set_password(request.POST["password1"])
                 request.user.save()
             else:
                 # oh dear lets quickly say no
                 error = "Passwords don't match"
+        
+        profile.html_preference = int(request.POST["html-preference"])
+        profile.save()        
         
         if not error:
             # now redirect back to their profile
@@ -51,6 +57,7 @@ def settings(request):
         "page":"Settings",
         "spamfiltering":sf,
         "error":error,
+        "htmlpreference":int(profile.html_preference),
     }
 
     return render(request, "settings.html", context)

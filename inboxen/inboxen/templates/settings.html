@@ -12,6 +12,27 @@
         {% endif %}
         {% trans "Spam Filtering?" %}<br />
         <br />
+        <h2> {% trans "Email" %} </h2><br />
+        HTML Email: 
+        <select name="html-preference">
+            {% if htmlpreference == 0 %}
+                <option value="0" selected="selected">{% trans "Reject HTML" %}</option>
+            {% else %}
+                <option value="0">{% trans "Reject HTML" %}</option>
+            {% endif %}
+            
+            {% if htmlpreference == 1 %}
+                <option value="1" selected="selected">{% trans "Prefer Plain-text" %}</option>
+            {% else %}
+                <option value="1">{% trans "Prefer Plain-text" %}</option>
+            {% endif %}
+            
+            {% if htmlpreference == 2 %}
+                <option value="2" selected="selected">{% trans "Prefer HTML" %}</option>
+            {% else %}
+                <option value="2">{% trans "Prefer HTML" %}</option>
+            {% endif %}
+        </select><br /><br />
         <h2> {% trans "Change Password" %} </h2><br />
         
         {% if error %}
