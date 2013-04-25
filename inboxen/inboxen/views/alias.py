@@ -1,7 +1,7 @@
 import time, string, random
 from datetime import datetime
 
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
