@@ -1,0 +1,34 @@
+{% extends base.html %}
+
+{% load i18n %}
+
+{% block content %}
+
+<h1> FAQ </h1>
+
+<h3> How is this different from tempory email services? </h3>
+<p>
+- Perminant email addresses
+- Requires authentication to access
+- provides optional spam filtering
+- fully open source (website and mail server open source)
+</p>
+
+<h3> How is this different from address extensions (user+extension@domain.com)?
+<p>
+- Completely unique address
+- extensions are trivial to scrub
+- No privacy leakage by domain
+</p>
+
+<h3> Why should I trust you with my emails? </h3>
+<p>
+You don't have to, you can <a href="https://github.com/Inboxen/front-end/howtodeploy.md">deploy your own </a>
+</p>
+
+<h3> I don't care about privacy... </h3>
+<p>
+OK.
+</p>
+
+{% endblock %}
