@@ -3,7 +3,11 @@ from config.settings import datetime_format, recieved_header_name
 from datetime import datetime
 
 def make_email(message, alias, domain):
-    inbox = Alias.objects.filter(alias=alias, domain__domain=domain)[0]
+    """Push message to the database.
+
+    Will throw an Alias.DoesNotExist exception if alias and domain are not valid"""
+
+    inbox = Alias.objects.get(alias=alias, domain__domain=domain) # will exist
     user = inbox.user
     body = message.base.body
     recieved_date = datetime.strptime(message[recieved_header_name], datetime_format)

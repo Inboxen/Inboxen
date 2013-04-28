@@ -5,4 +5,7 @@ from app.model.email import make_email
 @nolocking
 @stateless
 def START(message, alias=None, domain=None):
+
+    # alias should have already have been checked before the email entered the
+    # queue
     make_email(message, alias, domain)
