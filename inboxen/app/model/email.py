@@ -12,16 +12,24 @@ def make_email(message, alias, domain):
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
     email.save()
 
+    head_list = []
     for name in message.keys():
-        email.headers.create(name=name, data=message[name])
+        header = Header(name=name, data=message[name])
+        header.save()
+        head_list.append(header)
+    # add all the headers at once should save us some queries
+    email.headers.add(*head_list)
 
+    attach_list = []
     for part in message.walk():
         if not part.body:
             part.body = u''
-        email.attachments.create(
+        attachment = Attachment(
                         content_type=part.content_encoding['Content-Type'][0],
                         content_disposition=part.content_encoding['Content-Disposition'][0],
                         data=part.body
                         )
-
-    email.save()
+        attachment.save()
+        attach_list.append(attachment)
+    # as with headers above
+    email.attachments.add(*attach_list)
