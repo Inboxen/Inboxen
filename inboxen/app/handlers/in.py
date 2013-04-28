@@ -4,6 +4,9 @@ from config.settings import accepted_queue_dir, accepted_queue_opts_in, datetime
 from app.model.alias import alias_exists
 from datetime import datetime
 
+# We don't change state based on who the sender is, so we're stateless and
+# don't return any other state. Locking is done by the queue (on the filesystem
+# at the time of writing)
 @route("(alias)@(domain)", alias=".+", domain=".+")
 @stateless
 @nolocking
