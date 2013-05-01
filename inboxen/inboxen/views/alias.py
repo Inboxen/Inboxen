@@ -21,7 +21,13 @@ def add_alias(request):
     if request.method == "POST":
         alias = request.POST["alias"]
         domain = Domain.objects.get(domain=request.POST["domain"])
-        tags = request.POST["tag"].split(",")
+        tags = request.POST["tag"]
+
+        # if there are no , then we'll assume a space sporated list
+        if "," in tags:
+            tags = tags.split(", ")
+        else:
+            tags = tags.split() # split on space
         
         try:
             alias_test = Alias.objects.get(alias=alias, domain=domain)
