@@ -25,7 +25,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'^$', 'inboxen.views.home', name='home'),
     url(r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
     url(r'^register/', 'inboxen.views.login.register', name="register"),
