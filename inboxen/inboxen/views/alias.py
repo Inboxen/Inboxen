@@ -33,6 +33,7 @@ def add_alias(request):
         new_alias.save()
         
         for i, tag in enumerate(tags):
+            tag = tag.rstrip(" ").lstrip(" ")
             tags[i] = Tag(tag=tag)
             tags[i].alias = new_alias
             tags[i].save()
