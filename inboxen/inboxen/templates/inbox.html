@@ -43,6 +43,23 @@
     {% endfor %}
     </table>
 
+<!-- lifted from the django docs >.> -->
+<div class="pagination">
+    <span class="step-links">
+        {% if emails.has_previous %}
+            <a href="?page={{ emails.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ emails.number }} of {{ emails.paginator.num_pages }}.
+        </span>
+
+        {% if emails.has_next %}
+            <a href="?page={{ emails.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
 {% endif %}
 
 {% endblock %}

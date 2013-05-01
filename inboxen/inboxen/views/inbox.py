@@ -39,22 +39,31 @@ def download_attachment(request, attachment_id):
     return response
 
 @login_required
-def inbox(request, email_address=""):
+def inbox(request, email_address="", page=1):
 
     error = ""
 
     if not email_address:
         # assuming global unified inbox
-        emails = Email.objects.filter(user=request.user).order_by('-recieved_date')
+        inbox = Email.objects.filter(user=request.user).order_by('-recieved_date')
 
     else:
         # a specific alias
         alias, domain = email_address.split("@", 1)
         try:
             alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
-            emails = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date') 
+            inbox = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date')
         except:
             error = "Can't find email address"
+
+    paginator = Paginator(inbox, 100)
+
+    try:
+        emails = paginator.page(page)
+    except PageNotAnInteger:
+        emails = paginator.page(1)
+    except EmptyPage:
+        emails = paginator.page(paginator.num_pages)
 
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     for email in emails:
