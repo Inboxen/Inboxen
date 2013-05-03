@@ -1,18 +1,22 @@
-"""
-WSGI config for inboxen project.
+##
+#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#   
+#    This file is part of Inboxen front-end.
+#
+#    Inboxen front-end is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    Inboxen front-end is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
+##
 
-This module contains the WSGI application used by Django's development server
-and any production WSGI deployments. It should expose a module-level variable
-named ``application``. Django's ``runserver`` and ``runfcgi`` commands discover
-this application via the ``WSGI_APPLICATION`` setting.
-
-Usually you will have the standard Django WSGI application here, but it also
-might make sense to replace the whole Django WSGI application with a custom one
-that later delegates to the Django one. For example, you could introduce WSGI
-middleware here, or combine a Django application with an application of another
-framework.
-
-"""
 import os
 
 # We defer to a DJANGO_SETTINGS_MODULE already in the environment. This breaks
