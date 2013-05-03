@@ -11,3 +11,8 @@ This will hopefully allow us fine tune the performance of either wwithout worryi
 Requires Lamson and Django
 
 Join us in our IRC channel! We're in the #inboxen channel on [MegNet](https://www.megworld.co.uk/irc/)
+
+copyright
+=========
+
+This part of Inboxen is licensed under the GPLv3
