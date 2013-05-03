@@ -16,4 +16,6 @@ Settings.py
 ===========
 You need to ensure that certain settings are in the settings file
 
-- LOGIN_URL 
+- LOGIN_URL
+- ENABLE REGISTRATION 
+

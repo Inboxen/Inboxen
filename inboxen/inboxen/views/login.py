@@ -17,7 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-
+from django.conf import settings
 from django.shortcuts import render
 from django.template import RequestContext
 
@@ -33,6 +33,7 @@ def login(request):
 
     context = {
         "page":"Login",
+        "registration_enabled":settings.ENABLE_REGISTRATION,
     } 
 
     return render(request, "login.html", context)
@@ -40,6 +41,9 @@ def login(request):
 def register(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect("/profile")
+
+    if not settings.ENABLE_REGISTRATION:
+        return HttpResponseRedirect("/")
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST)

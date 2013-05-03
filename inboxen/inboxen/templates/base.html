@@ -19,7 +19,9 @@
                     <li><a href="/logout">{% trans "Logout" %}</a></li>
                 {% else %}
                     <li><a href="/login">{% trans "Login" %}</a></li>
-                    <li><a href="/register">{% trans "Register" %}</a></li>
+                    {% if registration_enabled %}
+                        <li><a href="/register">{% trans "Register" %}</a></li>
+                    {% endif %}
                     <li><a href="/contact">{% trans "Contact" %}</a></li>
                 {% endif %}
             </ul>
