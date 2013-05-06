@@ -90,10 +90,15 @@ def read_email(request, email_address, emailid):
         raise
         return HttpResponseRedirect("")
 
+    if "plain" in email:
+        plain_message = email["plain"]
+    else:
+        plain_message = ""
+
     context = {
         "page":email["subject"],
         "email":email,
-        "plain_message":email["plain"]
+        "plain_message":plain_message,
     }
  
     return render(request, "email.html", context)
