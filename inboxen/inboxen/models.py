@@ -1,25 +1,26 @@
 ##
+#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#   
+#    This file is part of Inboxen front-end.
 #
-# Copyright 2013 Jessica Tallon, Matt Molyneaux
-# 
-# This file is part of Inboxen back-end.
+#    Inboxen front-end is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
 #
-# Inboxen back-end is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+#    Inboxen front-end is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
 #
-# Inboxen back-end is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Inboxen back-end.  If not, see <http://www.gnu.org/licenses/>.
-#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+
+
 import base64
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -36,8 +37,13 @@ class Alias(models.Model):
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
 
+    deleted = models.BooleanField(default=False)
+
     def __unicode__(self):
-        return u"%s@%s" % (self.alias, self.domain.domain)
+        deleted = ""
+        if self.deleted:
+            deleted = "(deleted)"
+        return u"%s@%s %s" % (self.alias, self.domain.domain, deleted)
 
 class Attachment(models.Model):
     content_type = models.CharField(max_length=256, null=True, blank=True)
@@ -59,6 +65,9 @@ class Attachment(models.Model):
         return base64.decodestring(self._data)
 
     data = property(get_data, set_data)
+
+    def __unicode__(self):
+        return self.data
 
 class Tag(models.Model):
     alias = models.ForeignKey(Alias)
