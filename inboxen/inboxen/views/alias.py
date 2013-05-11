@@ -24,7 +24,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from inboxen.models import Domain, Alias, Tag
+from inboxen.models import Email, Domain, Alias, Tag
 
 def gen_alias(count, alias=""):
     if count <= 0:
@@ -101,7 +101,18 @@ def delete_alias(request, email):
                 alias = Alias.objects.filter(alias=email[0], domain=domain)
                 for a in alias:
                     if a.user == request.user:
-                        a.delete()
+                        a.deleted = True
+                        a.save()
+
+                        # also got to delete emails
+                        emails = Email.objects.filter(inbox=a)
+                        for email in emails:
+                            email.delete()
+                        
+                        # now delete tags
+                        tags = Tag.objects.filter(alias=a)
+                        for tag in tags:
+                            tag.delete()
             except Exception:
                 raise Http404
         return HttpResponseRedirect("/profile")

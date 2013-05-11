@@ -37,8 +37,13 @@ class Alias(models.Model):
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
 
+    deleted = models.BooleanField(default=False)
+
     def __unicode__(self):
-        return u"%s@%s" % (self.alias, self.domain.domain)
+        deleted = ""
+        if self.deleted:
+            deleted = "(deleted)"
+        return u"%s@%s %s" % (self.alias, self.domain.domain, deleted)
 
 class Attachment(models.Model):
     content_type = models.CharField(max_length=256, null=True, blank=True)

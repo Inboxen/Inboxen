@@ -86,7 +86,7 @@ def settings(request):
 def profile(request):
 
     try:
-        aliases = Alias.objects.filter(user=request.user).order_by('-created')
+        aliases = Alias.objects.filter(user=request.user, deleted=False).order_by('-created')
     except:
         raise
         aliases = []
