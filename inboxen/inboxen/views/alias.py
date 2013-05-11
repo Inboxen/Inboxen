@@ -25,6 +25,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from inboxen.models import Email, Domain, Alias, Tag
+from inboxen.helper.alias import delete_alias
 
 def gen_alias(count, alias=""):
     if count <= 0:
@@ -90,31 +91,14 @@ def add_alias(request):
     return render(request, "add_alias.html", context)
     
 @login_required
-def delete_alias(request, email):
+def confirm_delete(request, email):
     if request.method == "POST":
         if request.POST["confirm"] != email:
             raise Http404
         else:
-            try:
-                email = email.split("@")
-                domain = Domain.objects.get(domain=email[1])
-                alias = Alias.objects.filter(alias=email[0], domain=domain)
-                for a in alias:
-                    if a.user == request.user:
-                        a.deleted = True
-                        a.save()
-
-                        # also got to delete emails
-                        emails = Email.objects.filter(inbox=a)
-                        for email in emails:
-                            email.delete()
-                        
-                        # now delete tags
-                        tags = Tag.objects.filter(alias=a)
-                        for tag in tags:
-                            tag.delete()
-            except Exception:
+            if not delete_alias(email, request.user):
                 raise Http404
+
         return HttpResponseRedirect("/profile")
     
     context = {
