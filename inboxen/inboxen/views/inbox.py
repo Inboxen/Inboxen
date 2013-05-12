@@ -59,15 +59,10 @@ def inbox(request, email_address="", page=1):
 
     paginator = Paginator(inbox, 100)
 
-    try:
-        emails = paginator.page(page)
-    except PageNotAnInteger:
-        emails = paginator.page(1)
-    except EmptyPage:
-        emails = paginator.page(paginator.num_pages)
-
+    email = paginator.page(page)
+    
     # lets add the important headers (subject and who sent it (a.k.a. sender))
-    for email in emails:
+    for email in emails.object_list:
         email.sender, email.subject = "", "(No Subject)"
         for header in email.headers.all():
             if header.name == "From":

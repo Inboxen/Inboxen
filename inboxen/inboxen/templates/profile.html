@@ -32,12 +32,17 @@
             {% endfor %}
         </table>
         <div class="paginator">
-            {% if aliases.has_previous %}
-                <span class="paginator-prev"><a href="/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>
-            {% endif %}
-            {% if aliases.has_next %}
-                <span class="paginator-next"><a href="/profile/{{ aliases.next_page_number }}">{% trans "Next" %}</a></span>
-            {% endif %}
+            <span class="step-link">
+                {% if aliases.has_previous %}
+                    <span class="paginator-prev"><a href="/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>
+                {% endif %}
+                <span class="current">
+                    {% trans "Page" %} {{ aliases.number }} {% trans "of" %} {{ aliases.paginator.num_pages }}.
+                </span>
+                {% if aliases.has_next %}
+                    <span class="paginator-next"><a href="/profile/{{ aliases.next_page_number }}">{% trans "Next" %}</a></span>
+                {% endif %}
+            </span>
        </div>                
     {% endif %}
 

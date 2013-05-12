@@ -20,7 +20,7 @@
         <th>Recieved</th>
     </tr>
     
-    {% for email in emails %}
+    {% for email in emails.object_list %}
         <form action="/inbox/{{ email_address }}" method="POST">
             {% if email.read %}
                 <tr class="read">
@@ -43,22 +43,30 @@
     {% endfor %}
     </table>
 
-<!-- lifted from the django docs >.> -->
-<div class="pagination">
-    <span class="step-links">
-        {% if emails.has_previous %}
-            <a href="?page={{ emails.previous_page_number }}">previous</a>
-        {% endif %}
+    <!-- lifted from the django docs >.> -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if emails.has_previous %}
+                {% if email_address %}
+                    <a href="/inbox/{{ email_address }}/{{ emails.previous_page_number }}">{% trans "previous" %}</a>
+                {% else %} 
+                    <a href="/inbox/{{ emails.previous_page_number }}">{% trans "previous" %}</a>
+                {% endif %}
+            {% endif %}
 
-        <span class="current">
-            Page {{ emails.number }} of {{ emails.paginator.num_pages }}.
+            <span class="current">
+                Page {{ emails.number }} of {{ emails.paginator.num_pages }}.
+            </span>
+
+            {% if emails.has_next %}
+                {% if email_address %}
+                    <a href="/inbox/{{ email_address }}/{{ emails.next_page_number }}">{% trans "next" %}</a>
+                {% else %}
+                    <a href="/inbox/{{ emails.next_page_number }}">{% trans "next" %}</a>
+                {% endif %}
+            {% endif %}
         </span>
-
-        {% if emails.has_next %}
-            <a href="?page={{ emails.next_page_number }}">next</a>
-        {% endif %}
-    </span>
-</div>
+    </div>
 
 {% endif %}
 
