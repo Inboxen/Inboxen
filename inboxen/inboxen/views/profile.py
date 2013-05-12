@@ -21,6 +21,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
 
 from django.contrib.auth.models import Group
 from inboxen.models import Alias, UserProfile, Tag
@@ -83,7 +84,7 @@ def settings(request):
     return render(request, "settings.html", context)
     
 @login_required
-def profile(request):
+def profile(request, page=1):
 
     try:
         aliases = Alias.objects.filter(user=request.user, deleted=False).order_by('-created')
@@ -100,7 +101,7 @@ def profile(request):
 
     context = {
         "page":"Profile",
-        "aliases":aliases,
+        "aliases":Paginator(aliases, 100).page(page),
     }
     
     return render(request, "profile.html", context)
