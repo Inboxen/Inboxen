@@ -59,7 +59,7 @@ def inbox(request, email_address="", page=1):
 
     paginator = Paginator(inbox, 100)
 
-    email = paginator.page(page)
+    emails = paginator.page(page)
     
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     for email in emails.object_list:
