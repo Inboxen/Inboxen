@@ -11,7 +11,8 @@
         <p>{% trans "You have not added any alises yet, this makes me a sad panda :(" %} </p>
     {% else %}
 
-        <table class="alias-table">
+        <table class="table table-hover table-centre table-bordered">
+            <thead>
             <tr>
                 <th>{% trans "Alias" %}</th>
                 <th>{% trans "Created" %}</th>
@@ -19,19 +20,23 @@
                 <th>{% trans "Inbox" %}</th>
                 <th>{% trans "Delete" %}</th>
             </tr>
-            
+            </thead>
             {% for alias in aliases.object_list %}
 
                 <tr>
                     <td>{{ alias.alias }}@{{ alias.domain }}</td>
                     <td><span title="{{ alias.created }}">{{ alias.created|timesince }} {% trans "ago" %}</span></td>
-                    <td>{{ alias.tags }}</td>
+                    {% if alias.tags %}
+                        <td>{{ alias.tags }}</td>
+                    {% else %}
+                        <td>&nbsp;</td>
+                    {% endif %}
                     <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{% trans "View" %}</a></td>
                     <td><a href="/delete/{{ alias.alias }}@{{ alias.domain }}">{% trans "Delete" %}</a></td>
                 </tr>
             {% endfor %}
         </table>
-        <div class="paginator">
+        <div class="paginator text-right">
             <span class="step-link">
                 {% if aliases.has_previous %}
                     <span class="paginator-prev"><a href="/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>

@@ -3,29 +3,44 @@
 <html>
     <head>
         <title>Inboxen - {{ page }}</title>
-        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="/static/css/inboxen.css" rel="stylesheet">
     </head>
     <body>
-        <div class="heading">
-            <span class="logo"><a href="/">Inboxen</a></span>
-            <span class="menu">
-            <ul>
-                {% if user.is_authenticated %}
-                    {% if user.is_staff %}
-                        <li><a href="/admin">{% trans "Admin" %}</li></a>
+        <div class="navbar-wrapper">
+          <div class="container">
+
+            <div class="navbar navbar-inverse">
+              <div class="navbar-inner">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="/">Inboxen</a>
+                <div class="nav-collapse collapse">
+                  <ul class="nav">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <li><a href="/admin">{% trans "Admin" %}</a></li>
+                        {% endif %}
+                        <li><a href="/add-alias">{% trans "Add Alias" %}</a></li>
+                        <li><a href="/settings">{% trans "Settings" %}</a></li>
+                        <li><a href="/logout">{% trans "Logout" %}</a></li>
+                    {% else %}
+                        <li><a href="/login">{% trans "Login" %}</a></li>
+                        {% if registration_enabled %}
+                            <li><a href="/register">{% trans "Register" %}</a></li>
+                        {% endif %}
+                        <li><a href="/contact">{% trans "Contact" %}</a></li>
                     {% endif %}
-                    <li><a href="/add-alias">{% trans "Add Alias" %}</li></a>
-                    <li><a href="/settings">{% trans "Settings" %}</a></li>
-                    <li><a href="/logout">{% trans "Logout" %}</a></li>
-                {% else %}
-                    <li><a href="/login">{% trans "Login" %}</a></li>
-                    {% if registration_enabled %}
-                        <li><a href="/register">{% trans "Register" %}</a></li>
-                    {% endif %}
-                    <li><a href="/contact">{% trans "Contact" %}</a></li>
-                {% endif %}
-            </ul>
-            </span>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="content">
             {% block content %}
