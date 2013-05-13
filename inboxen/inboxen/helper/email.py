@@ -43,7 +43,7 @@ def get_email(user, email_id, preference=None):
     plain_attachments = email.attachments.filter(content_type="text/plain")
     html_attachments = email.attachments.filter(content_type="text/html")
     
-    if email.body and html_preference < 2:
+    if email.body and (html_preference < 2 or not html_attachments.exists()):
         # I think we can give them this?
         # I hope noone sets HTML in the email.body
         message["body"] = email.body
