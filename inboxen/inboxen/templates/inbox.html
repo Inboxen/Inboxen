@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h2> Emails </h2>
+<h2> {% trans "Emails" %} </h2>
 
 {% if error %}
     <p> {{ error }} </p>
@@ -15,9 +15,9 @@
     <table>
     <tr>
         <th></th>
-        <th>From</th>
-        <th>Subject</th>
-        <th>Recieved</th>
+        <th>{% trans "From" %}</th>
+        <th>{% trans "Subject" %}</th>
+        <th>{% trans "Recieved" %}</th>
     </tr>
     
     {% for email in emails.object_list %}
@@ -32,9 +32,9 @@
                 <td><input type="checkbox" name="email"></td>
                 <td> {{ email.sender }}</td>
                 {% if email.subject %}
-                    <td><a href="/inbox/{{ email_address }}/{{ email.id }}"> {{ email.subject }} </a></td>
+                    <td><a href="/inbox/{{ email_address }}/view/{{ email.id }}"> {{ email.subject }} </a></td>
                 {% endif %}
-                    <td><span title="{{email.recieved_date }}"> {{ email.recieved_date|timesince }} ago </span></td>
+                    <td><span title="{{email.recieved_date }}"> {{ email.recieved_date|timesince }}{% trans "ago" %}</span></td>
 
             </tr>
         </form>
