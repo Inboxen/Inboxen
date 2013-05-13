@@ -20,7 +20,7 @@
 from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -59,8 +59,13 @@ def inbox(request, email_address="", page=1):
 
     paginator = Paginator(inbox, 100)
 
-    emails = paginator.page(page)
-    
+    try:
+        emails = paginator.page(page)
+    except PageNotAnInteger: # sometimes it's None
+        emails = paginator.page(1)
+    except EmptyPage: # sometimes the user will try different numbers
+        emails = paginator.page(paginator.num_pages)
+
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     for email in emails.object_list:
         email.sender, email.subject = "", "(No Subject)"
