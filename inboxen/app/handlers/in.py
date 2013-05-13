@@ -35,6 +35,11 @@ def START(message, alias=None, domain=None):
     """Does this alias exist? If yes, queue it. If no, drop it."""
     if alias_exists(alias, domain):
         message[recieved_header_name] = datetime.utcnow().strftime(datetime_format)
+
+        # the queue needs to know who the message is for
+        message['x-original-to'] = message['to']
+        message['to'] = "%s@%s" % (alias, domain)
+
         #if spam filtering is enabled, do so
 
         #if not spam, or not filter:
