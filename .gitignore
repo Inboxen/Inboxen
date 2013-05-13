@@ -3,6 +3,8 @@ inboxen/run
 inboxen/inboxen/settings.py
 
 *.py[cod]
+*.sw?
+*~
 
 # C extensions
 *.so
