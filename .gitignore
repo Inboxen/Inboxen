@@ -1,7 +1,11 @@
 # inboxen specific
 inboxen/inboxen/settings.py*
+inboxen/inboxen/migrations
 
 *.py[cod]
+*.sw?
+*~
+
 
 # C extensions
 *.so
