@@ -41,9 +41,6 @@ def download_attachment(request, attachment_id):
 
 @login_required
 def inbox(request, email_address="", page=1):
-
-    error = ""
-
     if not email_address:
         # assuming global unified inbox
         inbox = Email.objects.filter(user=request.user).order_by('-recieved_date')
@@ -54,8 +51,15 @@ def inbox(request, email_address="", page=1):
         try:
             alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
             inbox = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date')
-        except:
-            error = "Can't find email address"
+        except DoesNotExist:
+            context = {
+                "page":"%s - Inbox" % email_address,
+                "error":"Can't find email address",
+                "emails":[],
+                "email_address":email_address,
+            }
+            
+            return render(request, "inbox.html", context)
 
     paginator = Paginator(inbox, 100)
 
@@ -77,7 +81,7 @@ def inbox(request, email_address="", page=1):
 
     context = {
         "page":"%s - Inbox" % email_address,
-        "error":error,
+        "error":"",
         "emails":emails,
         "email_address":email_address,
     }
