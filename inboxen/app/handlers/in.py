@@ -18,6 +18,7 @@
 # along with Inboxen back-end.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##
+from pytz import utc
 
 from lamson.routing import route, stateless, nolocking
 from lamson.queue import Queue
@@ -34,7 +35,7 @@ from datetime import datetime
 def START(message, alias=None, domain=None):
     """Does this alias exist? If yes, queue it. If no, drop it."""
     if alias_exists(alias, domain):
-        message[recieved_header_name] = datetime.utcnow().strftime(datetime_format)
+        message[recieved_header_name] = datetime.now(utc).strftime(datetime_format)
 
         # the queue needs to know who the message is for
         message['x-original-to'] = message['to']
