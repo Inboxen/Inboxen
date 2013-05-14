@@ -24,8 +24,9 @@ from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from inboxen.models import Email, Domain, Alias, Tag
-from inboxen.helper.alias import delete_alias, find_alias, clean_tags
+from inboxen.models import Email, Domain, Alias, Tag, Request
+from inboxen.helper.alias import delete_alias, find_alias, clean_tags, alias_available
+from inboxen.helper.user import user_profile
 
 def gen_alias(count, alias=""):
     if count <= 0:
@@ -36,8 +37,51 @@ def gen_alias(count, alias=""):
     return gen_alias(count-1, alias)
 
 @login_required
+def request(request):
+    available = alias_available(request.user)
+    prior_requests = Request.objects.filter(requester=request.user).order_by('-date')
+
+    if available > 10:
+        context = {
+            "error":"You need to have less than 10 aliases available to request more, you currently have %s available." % available,
+            "page":"Request",
+            "request":None,
+            "prior_requests":prior_requests,
+        }
+
+        return render(request, 'email/request.html', context)
+
+    if request.method == "POST":
+        # lets first deduce what amount to request
+        profile = user_profile(request.user)
+        amount = profile.pool_amount + 500
+        current_request = Request(amount=amount, date=datetime.now())
+        current_request.requester = request.user
+        current_request.save()
+
+        return HttpResponseRedirect("/email/request/")
+
+
+    if prior_requests.filter(succeeded=None):
+        current_request = False
+    else:
+        current_request = True
+
+    context = {
+        "page":"Request",
+        "request":current_request,
+        "prior_requests":prior_requests,
+    }
+
+    return render(request, "email/request.html", context)
+
+@login_required
 def add_alias(request):
-    
+
+    available = alias_available(request.user)
+    if not available:
+        return HttpResponseRedirect("/email/request")
+
     if request.method == "POST":
         alias = request.POST["alias"]
         domain = Domain.objects.get(domain=request.POST["domain"])

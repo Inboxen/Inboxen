@@ -26,6 +26,7 @@ from django.core.paginator import Paginator
 from django.contrib.auth.models import Group
 from inboxen.models import Alias, Tag
 from inboxen.helper.user import user_profile
+from inboxen.helper.alias import alias_available
 
 @login_required
 def settings(request):
@@ -101,9 +102,7 @@ def profile(request, page=1):
     except Tag.DoesNotExist:
         pass
 
-    # work out alias stats
-    pool = user_profile(request.user).pool_amount
-    available = pool-used
+    available = alias_available(request.user, aliases=aliases)
 
     context = {
         "page":"Profile",

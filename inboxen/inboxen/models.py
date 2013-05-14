@@ -45,6 +45,16 @@ class Alias(models.Model):
             deleted = " (deleted)"
         return u"%s@%s%s" % (self.alias, self.domain.domain, deleted)
 
+
+class Request(models.Model):
+    amount = models.IntegerField()
+    succeeded = models.NullBooleanField(default=None)
+    date = models.DateTimeField('requested')
+    authorizer = models.ForeignKey(User, blank=True, null=True)
+    requester = models.ForeignKey(User, related_name="requester")
+    result = models.CharField(max_length=1024, blank=True, null=True)
+
+
 class Attachment(models.Model):
     content_type = models.CharField(max_length=256, null=True, blank=True)
     content_disposition = models.CharField(max_length=512, null=True, blank=True)

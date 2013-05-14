@@ -19,6 +19,7 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 from inboxen.models import Email, Tag, Alias, Domain
+from inboxen.helper.user import user_profile
 
 def delete_alias(email, user=None):
     """ Deletes the email and all the data """
@@ -73,4 +74,18 @@ def find_alias(email, user=None, deleted=False):
         return None
 
     return (alias, domain)
+
+def alias_available(user, aliases=None):
+    """ Returns the amount of aliases available """
+
+    profile = user_profile(user)
+    pool = profile.pool_amount
+
+    if aliases:
+        used = aliases.count()
+    else:
+        aliases = Alias.objects.filter(user=user)
+        used = aliases.count()
+
+    return pool - used
 
