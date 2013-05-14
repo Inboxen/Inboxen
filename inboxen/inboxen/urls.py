@@ -20,9 +20,6 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'inboxen.views.index.index'),
@@ -64,11 +61,5 @@ urlpatterns = patterns('',
 
     url(r'^inbox/', 'inboxen.views.inbox.inbox.inbox'),
 
-    # url(r'^inboxen/', include('inboxen.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', "inboxen.views.admin.index.index"),
 )
