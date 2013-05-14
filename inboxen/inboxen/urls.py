@@ -17,7 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
@@ -26,7 +26,15 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'inboxen.views.home', name='home'),
-    url(r'^login/', 'django.contrib.auth.views.login', {'template_name': 'login.html'}),
+    url(r'^login/', 'django.contrib.auth.views.login', 
+        {
+            'template_name': 'login.html',
+            'extra_context': {
+                'page':'Login',
+                'registration_enabled':settings.ENABLE_REGISTRATION,
+            },
+        },
+    ),
     url(r'^register/', 'inboxen.views.login.register', name="register"),
     url(r'^contact/', 'inboxen.views.contact', name="Contact"),
     url(r'^profile/(?P<page>\d+)', 'inboxen.views.profile.profile', name='profile'),

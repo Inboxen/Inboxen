@@ -27,16 +27,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import logout
 
-def login(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect("/profile")
-
-    context = {
-        "page":"Login",
-        "registration_enabled":settings.ENABLE_REGISTRATION,
-    } 
-
-    return render(request, "login.html", context)
 
 def register(request):
     if request.user.is_authenticated():
