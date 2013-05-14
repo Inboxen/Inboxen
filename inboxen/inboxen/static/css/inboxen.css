@@ -165,3 +165,12 @@ dt {
 .inline {
 	display:inline;
 }
+
+/*
+This should remove the arrow from dropdown select boxes
+http://stackoverflow.com/questions/5912791/how-to-remove-the-arrow-from-a-select-tag-in-firefox
+*/
+select { 
+    overflow:hidden;
+    width: 120%;
+}

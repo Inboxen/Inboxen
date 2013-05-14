@@ -9,7 +9,8 @@
     <form action="/email/delete/{{ alias }}" method="POST">
         {% csrf_token %} 
         <input type="hidden" name="confirm" value="{{ alias }}">
-        <input type="submit" value="Delete">
+        <button class="btn btn-primary text-left">Delete</button>
+        <a class="btn" href="/user/profile">Keep it!</a>
     </form>
 
 {% endblock %}
