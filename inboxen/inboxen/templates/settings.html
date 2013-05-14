@@ -16,8 +16,7 @@
         </div>
 
         <br />
-        <div class="input-prepend" >
-            <span class="add-on">{% trans "Email Format" %}</span>
+        <div class="input-append" >
             <select name="html-preference">
                 {% if htmlpreference == 0 %}
                     <option value="0" selected="selected">{% trans "Reject HTML" %}</option>
@@ -36,7 +35,9 @@
                 {% else %}
                     <option value="2">{% trans "Prefer HTML" %}</option>
                 {% endif %}
-            </select><br /><br />
+            </select>
+            <span class="add-on">{% trans "for my emails" %}</span>
+            <br /><br />
         </div><br />
         
         {% if error %}
