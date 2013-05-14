@@ -58,7 +58,7 @@ def add_alias(request):
         for i, tag in enumerate(tags):
             tag = Tag(tag=tag)
             tag.alias = new_alias
-            tags.save()
+            tag.save()
             tags[i] = tag
 
  
@@ -86,7 +86,7 @@ def add_alias(request):
         "alias":alias,
     }
     
-    return render(request, "add_alias.html", context)
+    return render(request, "email/add.html", context)
 
 @login_required
 def edit(request, email):
@@ -129,7 +129,7 @@ def edit(request, email):
         "tags":display_tags[2:],
     }
 
-    return render(request, "edit.html", context)
+    return render(request, "email/edit.html", context)
 
 @login_required
 def confirm_delete(request, email):
@@ -147,4 +147,4 @@ def confirm_delete(request, email):
         "alias":email
     }
 
-    return render(request, "confirm.html", context)
+    return render(request, "email/delete/confirm.html", context)

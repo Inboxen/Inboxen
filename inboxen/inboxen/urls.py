@@ -31,7 +31,7 @@ urlpatterns = patterns('',
 
     url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
-            'template_name': 'login.html',
+            'template_name': 'user/login.html',
             'extra_context': {
                 'page':'Login',
                 'registration_enabled':settings.ENABLE_REGISTRATION,
@@ -41,6 +41,15 @@ urlpatterns = patterns('',
     url(r'^user/register/', 'inboxen.views.login.register'),
     url(r'^user/profile/(?P<page>\d+)', 'inboxen.views.profile.profile'),
     url(r'^user/profile/', 'inboxen.views.profile.profile'),
+    url(r'^user/settings/password', 'django.contrib.auth.views.password_change',
+        {
+            'template_name':'user/settings/password/change.html',
+            'post_change_redirect':'user/settings/passsword/done.html',
+            'extra_context':{
+                'page':'Change Password',
+            },
+        },
+    ),
     url(r'^user/settings/', 'inboxen.views.profile.settings'),
     url(r'^user/logout/', 'inboxen.views.login.logout_user'),
 

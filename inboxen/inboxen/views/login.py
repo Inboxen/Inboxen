@@ -49,7 +49,7 @@ def register(request):
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
-    return render(request, "register.html", context, context_instance=RequestContext(request))
+    return render(request, "user/register.html", context, context_instance=RequestContext(request))
     
 @login_required
 def logout_user(request):

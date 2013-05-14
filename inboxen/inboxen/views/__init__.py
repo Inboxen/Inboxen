@@ -25,7 +25,7 @@ def contact(request):
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
-    return render(request, "contact.html", context)
+    return render(request, "help/contact.html", context)
 
 def home(request):
     if request.user.is_authenticated():

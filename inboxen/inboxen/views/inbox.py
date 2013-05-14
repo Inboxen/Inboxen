@@ -89,7 +89,7 @@ def inbox(request, email_address="", page=1):
         "email_address":email_address,
     }
     
-    return render(request, "inbox.html", context)
+    return render(request, "inbox/inbox.html", context)
     
 @login_required
 def read_email(request, email_address, emailid):
@@ -118,4 +118,4 @@ def read_email(request, email_address, emailid):
         "plain_message":plain_message,
     }
  
-    return render(request, "email.html", context)
+    return render(request, "inbox/email.html", context)

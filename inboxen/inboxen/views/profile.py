@@ -81,7 +81,7 @@ def settings(request):
         "htmlpreference":int(profile.html_preference),
     }
 
-    return render(request, "settings.html", context)
+    return render(request, "user/settings.html", context)
     
 @login_required
 def profile(request, page=1):
@@ -111,6 +111,6 @@ def profile(request, page=1):
         "available":available,
     }
     
-    return render(request, "profile.html", context)
+    return render(request, "user/profile.html", context)
     
 

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+{% if form.errors %}
+	<span style="padding-left:50px; padding-right:50px;" class="alert error">
+		<strong>Error</strong> {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </span>
+{% endif %}
+
+<form style="margin-top:20px;" class="form" action="{% url 'django.contrib.auth.views.password_change' %}" method="post">{% csrf_token %}
+
+
+	    {{ form.old_password.errors }}
+	<input id="id_old_password" name="old_password" type="password" placeholder="{% trans "Old Password" %}" />
+
+	    {{ form.new_password1.errors }}
+	<input id="id_new_password1" name="new_password1" type="password" placeholder="{% trans "New Password" %}" />
+
+	{{ form.new_password2.errors }}
+	<input id="id_new_password2" name="new_password2" type="password" placeholder="{% trans "New Password (again)" %}" />
+
+	<button class="btn btn-primary">{% trans "Change" %}</button>
+	<a href="/user/settings/" class="btn">{% trans "Don't change" %}</button>
+</form>
+
+{% endblock %}
