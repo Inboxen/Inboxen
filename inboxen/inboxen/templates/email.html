@@ -23,7 +23,7 @@
 	<br />
 	<strong>{% trans "Attachments" %}</strong>:<br />
 	{% for attachment in email.attachments %}
-	    {{ attachment.content_disposition }} ({{ attachment.content_type }})<a href="/email/attachment/{{ attachment.id }}/download" class="btn">{% trans "Download" %}</a><a href="/email/attachment/{{ attachment.id }}/view">{% trans "View" %}</a><br />
+	    {{ attachment.content_disposition }} ({{ attachment.content_type }})<a href="/email/attachment/{{ attachment.id }}/download" class="btn">{% trans "Download" %}</a><a href="/email/attachment/{{ attachment.id }}/view" class="btn">{% trans "View" %}</a><br />
 	{% endfor %}
 
 </div>

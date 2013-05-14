@@ -47,7 +47,7 @@ urlpatterns = patterns('',
 #    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)', 'inboxen.views.inbox.inbox'),
     url(r'^inbox/', 'inboxen.views.inbox.inbox'),
     url(r'^delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.confirm_delete'),
-    url(r'^email/attachment/(?P<attachment_id>\d+)/(?P<method>\w+)', 'inboxen.views.inbox.download_attachment'),
+    url(r'^email/attachment/(?P<attachment_id>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.download_attachment'),
 
    # API stuff.
     #url(r'^api/alias/create', 'inboxen.api.alias_create'),
