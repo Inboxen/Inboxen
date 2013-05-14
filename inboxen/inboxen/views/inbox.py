@@ -38,7 +38,7 @@ def download_attachment(request, attachment_id, method="download"):
     response = HttpResponse(attachment.data, content_type=attachment.content_type)
     response["Content-Disposition"] = "filename=attachment-%s" % attachment_id
     if method == "download":
-        respose["Content-Disposition"] = "attachment; %s" % response["Content-Disposition"]
+        response["Content-Disposition"] = "attachment; %s" % response["Content-Disposition"]
 
     return response
 

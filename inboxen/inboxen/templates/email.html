@@ -23,7 +23,13 @@
 	<br />
 	<strong>{% trans "Attachments" %}</strong>:<br />
 	{% for attachment in email.attachments %}
-	    {{ attachment.content_disposition }} ({{ attachment.content_type }})<a href="/email/attachment/{{ attachment.id }}/download" class="btn">{% trans "Download" %}</a><a href="/email/attachment/{{ attachment.id }}/view" class="btn">{% trans "View" %}</a><br />
+	    <div class="input-prepend">
+	    	<span class="add-on">{{ attachment.content_disposition }} ({{ attachment.content_type }})</span>
+	    	<span class="btn-group" id="prependedInput">
+	    	<a href="/email/attachment/{{ attachment.id }}/download" class="btn">{% trans "Download" %}</a>
+	    	<a href="/email/attachment/{{ attachment.id }}/view" class="btn">{% trans "View" %}</a>
+	    </span>
+	    <br />
 	{% endfor %}
 
 </div>
