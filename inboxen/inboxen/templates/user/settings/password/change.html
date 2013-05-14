@@ -8,7 +8,7 @@
     </span>
 {% endif %}
 
-<form style="margin-top:20px;" class="form" action="{% url 'django.contrib.auth.views.password_change' %}" method="post">{% csrf_token %}
+<form style="margin-top:20px;" class="form" action="/user/settings/password/change/" method="post">{% csrf_token %}
 
 
 	    {{ form.old_password.errors }}

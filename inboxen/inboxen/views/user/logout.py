@@ -17,13 +17,12 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.contrib.auth import logout as auth_logout
 
-def error_out(request=None, template="error.html", page="Error", message="There has been a server error"):
-    """ Produces an error response """
-
-    context = {
-        "page":page,
-        "error":message,
-    }
-
-    return render(request, template, context)
+@login_required
+def logout(request):
+    
+    auth_logout(request)
+    return HttpResponseRedirect("/")

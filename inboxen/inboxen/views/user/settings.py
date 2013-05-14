@@ -17,16 +17,12 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.core.paginator import Paginator
 
 from django.contrib.auth.models import Group
-from inboxen.models import Alias, Tag
 from inboxen.helper.user import user_profile
-from inboxen.helper.alias import alias_available
 
 @login_required
 def settings(request):
@@ -50,15 +46,6 @@ def settings(request):
             request.user.groups.remove(sfg)
 
         request.user.save()
-
-        # Check if they wanted to change the password
-        if "password1" in request.POST and "password2" in request.POST and request.POST["password1"]:
-            if request.POST["password1"] == request.POST["password2"]:
-                request.user.set_password(request.POST["password1"])
-                request.user.save()
-            else:
-                # oh dear lets quickly say no
-                error = "Passwords don't match"
         
         profile.html_preference = int(request.POST["html-preference"])
         profile.save()        
@@ -83,33 +70,3 @@ def settings(request):
     }
 
     return render(request, "user/settings.html", context)
-    
-@login_required
-def profile(request, page=1):
-
-    try:
-        aliases = Alias.objects.filter(user=request.user).order_by('-created')
-        used = aliases.count()
-        aliases = aliases.filter(deleted=False)
-    except Alias.DoesNotExist:
-        raise
-        aliases = []
-
-    try:
-        for alias in aliases:
-            tag = Tag.objects.filter(alias=alias)
-            alias.tags = ", ".join([t.tag for t in tag])
-    except Tag.DoesNotExist:
-        pass
-
-    available = alias_available(request.user, aliases=aliases)
-
-    context = {
-        "page":"Profile",
-        "aliases":Paginator(aliases, 100).page(page),
-        "available":available,
-    }
-    
-    return render(request, "user/profile.html", context)
-    
-

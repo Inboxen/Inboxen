@@ -20,13 +20,8 @@
 from django.conf import settings
 from django.shortcuts import render
 from django.template import RequestContext
-
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import logout
-
 
 def register(request):
     if request.user.is_authenticated():
@@ -50,9 +45,3 @@ def register(request):
     }
 
     return render(request, "user/register.html", context, context_instance=RequestContext(request))
-    
-@login_required
-def logout_user(request):
-    
-    logout(request)
-    return HttpResponseRedirect("/")

@@ -16,3 +16,27 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+from django.shortcuts import render
+from django.http import Http404, HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
+
+from inboxen.helper.alias import delete_alias 
+
+@login_required
+def confirm(request, email):
+    if request.method == "POST":
+        if request.POST["confirm"] != email:
+            raise Http404
+        else:
+            if not delete_alias(email, request.user):
+                raise Http404
+
+        return HttpResponseRedirect("/user/profile")
+    
+    context = {
+        "page":"Delete Alias",
+        "alias":email
+    }
+
+    return render(request, "email/delete/confirm.html", context)

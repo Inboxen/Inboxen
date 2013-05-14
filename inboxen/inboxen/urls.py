@@ -25,9 +25,9 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'inboxen.views.home'),
+    url(r'^$', 'inboxen.views.index.index'),
     
-    url(r'^help/contact/', 'inboxen.views.contact'),
+    url(r'^help/contact/', 'inboxen.views.help.contact.contact'),
 
     url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
@@ -38,37 +38,31 @@ urlpatterns = patterns('',
             },
         },
     ),
-    url(r'^user/register/', 'inboxen.views.login.register'),
-    url(r'^user/profile/(?P<page>\d+)', 'inboxen.views.profile.profile'),
-    url(r'^user/profile/', 'inboxen.views.profile.profile'),
+    url(r'^user/register/', 'inboxen.views.user.register.register'),
+    url(r'^user/profile/(?P<page>\d+)', 'inboxen.views.user.profile.profile'),
+    url(r'^user/profile/', 'inboxen.views.user.profile.profile'),
     url(r'^user/settings/password', 'django.contrib.auth.views.password_change',
         {
             'template_name':'user/settings/password/change.html',
-            'post_change_redirect':'user/settings/passsword/done.html',
+            'post_change_redirect':'/',
             'extra_context':{
                 'page':'Change Password',
             },
         },
     ),
-    url(r'^user/settings/', 'inboxen.views.profile.settings'),
-    url(r'^user/logout/', 'inboxen.views.login.logout_user'),
+    url(r'^user/settings/', 'inboxen.views.user.settings.settings'),
+    url(r'^user/logout/', 'inboxen.views.user.logout.logout'),
 
-    url(r'^email/add/', 'inboxen.views.alias.add_alias'),
-    url(r'^email/request/', 'inboxen.views.alias.request'),
-    url(r'^email/edit/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.edit'),
-    url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.confirm_delete'),
+    url(r'^email/add/', 'inboxen.views.email.add.add'),
+    url(r'^email/request/', 'inboxen.views.email.request.request'),
+    url(r'^email/edit/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.edit.edit'),
+    url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.delete.confirm'),
 
-    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.read_email'),
-    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox'),
-    url(r'^email/attachment/(?P<attachment_id>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.download_attachment'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox.inbox'),
+    url(r'^inbox/attachment/(?P<attachment_id>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.attachment.download'),
 
-    url(r'^inbox/', 'inboxen.views.inbox.inbox'),
-
-
-   # API stuff.
-    #url(r'^api/alias/create', 'inboxen.api.alias_create'),
-    #url(r'^api/alias/delete', 'inboxen.api.alias_delete'),
-    #url(r'^api/alias', 'inboxen.api.alises'),
+    url(r'^inbox/', 'inboxen.views.inbox.inbox.inbox'),
 
     # url(r'^inboxen/', include('inboxen.foo.urls')),
 

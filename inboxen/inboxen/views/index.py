@@ -14,3 +14,18 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+from django.conf import settings
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
+def index(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect("/user/profile")
+
+    context = {
+        "page":"Home",
+        "registration_enabled":settings.ENABLE_REGISTRATION,
+    }
+
+    return render(request, "index.html", context)

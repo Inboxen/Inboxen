@@ -1,0 +1,53 @@
+##
+#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#   
+#    This file is part of Inboxen front-end.
+#
+#    Inboxen front-end is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    Inboxen front-end is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+from inboxen.models import Alias
+from inboxen.helper.email import get_email 
+
+@login_required
+def view(request, email_address, emailid):
+
+    alias, domain = email_address.split("@", 1)
+    
+    try:
+        alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
+    except Alias.DoesNotExist:
+        return error_out(page="Inbox", message="Alias doesn't exist")
+
+    try:
+        email = get_email(request.user, emailid)
+    except Email.DoesNotExist:
+        raise
+        return HttpResponseRedirect("")
+
+    if "plain" in email:
+        plain_message = email["plain"]
+    else:
+        plain_message = ""
+
+    context = {
+        "page":email["subject"],
+        "email":email,
+        "plain_message":plain_message,
+    }
+ 
+    return render(request, "inbox/email.html", context)

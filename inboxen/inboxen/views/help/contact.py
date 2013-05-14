@@ -14,3 +14,14 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+from django.conf import settings
+from django.shortcuts import render
+
+def contact(request):
+    context ={
+        "page":"Contact",
+        "registration_enabled":settings.ENABLE_REGISTRATION,
+    }
+
+    return render(request, "help/contact.html", context)

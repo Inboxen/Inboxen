@@ -18,29 +18,12 @@
 ##
 
 from django.shortcuts import render
-from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
 
-from django.http import HttpResponse, HttpResponseRedirect
+from inboxen.models import Alias, Email
 
-from inboxen.models import Alias, Email, Attachment
-from inboxen.helper.email import get_email 
-
-@login_required
-def download_attachment(request, attachment_id, method="download"):
-    try:
-        attachment = Attachment.objects.get(id=attachment_id)
-    except Attachment.DoesNotExist:
-        return HttpResponseRedirect("/user/profile")
-
-    response = HttpResponse(attachment.data, content_type=attachment.content_type)
-    response["Content-Disposition"] = "filename=attachment-%s" % attachment_id
-    if method == "download":
-        response["Content-Disposition"] = "attachment; %s" % response["Content-Disposition"]
-
-    return response
 
 @login_required
 def inbox(request, email_address="", page=1):
@@ -90,32 +73,3 @@ def inbox(request, email_address="", page=1):
     }
     
     return render(request, "inbox/inbox.html", context)
-    
-@login_required
-def read_email(request, email_address, emailid):
-
-    alias, domain = email_address.split("@", 1)
-    
-    try:
-        alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
-    except Alias.DoesNotExist:
-        return error_out(page="Inbox", message="Alias doesn't exist")
-
-    try:
-        email = get_email(request.user, emailid)
-    except Email.DoesNotExist:
-        raise
-        return HttpResponseRedirect("")
-
-    if "plain" in email:
-        plain_message = email["plain"]
-    else:
-        plain_message = ""
-
-    context = {
-        "page":email["subject"],
-        "email":email,
-        "plain_message":plain_message,
-    }
- 
-    return render(request, "inbox/email.html", context)

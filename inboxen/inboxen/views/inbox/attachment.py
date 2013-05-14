@@ -14,3 +14,23 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+
+from inboxen.models import Attachment
+
+@login_required
+def download(request):
+    try:
+        attachment = Attachment.objects.get(id=attachment_id)
+    except Attachment.DoesNotExist:
+        return HttpResponseRedirect("/user/profile")
+
+    response = HttpResponse(attachment.data, content_type=attachment.content_type)
+    response["Content-Disposition"] = "filename=attachment-%s" % attachment_id
+    if method == "download":
+        response["Content-Disposition"] = "attachment; %s" % response["Content-Disposition"]
+
+    return response
