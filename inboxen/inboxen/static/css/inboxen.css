@@ -125,6 +125,8 @@ h2 {
 p {
 	margin-left:10%;
 	padding-left:20px;
+
+	width:80%;
 }
 
 .text-right {
@@ -134,4 +136,23 @@ p {
 .email {
 	margin-left:10%;
 	width:80%;
+}
+
+dl {
+	margin-left:10%;
+	padding-left:20px;
+	width:80%;
+}
+
+dt {
+	padding-top:10px;
+}
+
+.big-paragraph {
+	font-size:12pt;
+}
+
+.span4 {
+	margin-left:10%;
+	padding-left:20px;
 }
