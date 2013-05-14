@@ -10,7 +10,16 @@
     {% if not aliases %}
         <p>{% trans "You have not added any alises yet, this makes me a sad panda :(" %} </p>
     {% else %}
-
+    <div class="label-right">
+        {% if not available %}
+            <span class="label label-important text-rigth">
+        {% elif available < 10 %}
+            <span class="label label-warning text-right">
+        {% else %}
+            <span class="label label-success text-right">
+        {% endif %}
+        {% trans "Available:" %} {{ available }}</span>
+    </div>
         <table class="table table-hover table-centre table-bordered">
             <thead>
             <tr>

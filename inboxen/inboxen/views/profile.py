@@ -24,7 +24,7 @@ from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator
 
 from django.contrib.auth.models import Group
-from inboxen.models import Alias, UserProfile, Tag
+from inboxen.models import Alias, Tag
 from inboxen.helper.user import user_profile
 
 @login_required
@@ -87,7 +87,9 @@ def settings(request):
 def profile(request, page=1):
 
     try:
-        aliases = Alias.objects.filter(user=request.user, deleted=False).order_by('-created')
+        aliases = Alias.objects.filter(user=request.user).order_by('-created')
+        used = aliases.count()
+        aliases = aliases.filter(deleted=False)
     except Alias.DoesNotExist:
         raise
         aliases = []
@@ -99,9 +101,14 @@ def profile(request, page=1):
     except Tag.DoesNotExist:
         pass
 
+    # work out alias stats
+    pool = user_profile(request.user).pool_amount
+    available = pool-used
+
     context = {
         "page":"Profile",
         "aliases":Paginator(aliases, 100).page(page),
+        "available":available,
     }
     
     return render(request, "profile.html", context)

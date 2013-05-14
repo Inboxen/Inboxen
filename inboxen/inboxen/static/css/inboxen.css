@@ -152,7 +152,8 @@ dt {
 	font-size:12pt;
 }
 
-.span4 {
-	margin-left:10%;
-	padding-left:20px;
+.label-right {
+	margin-right:8%;
+	padding-right:1px;
+	float:right;
 }
