@@ -45,6 +45,7 @@ urlpatterns = patterns('',
     url(r'^user/logout/', 'inboxen.views.login.logout_user'),
 
     url(r'^email/add/', 'inboxen.views.alias.add_alias'),
+    url(r'^email/edit/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.edit'),
     url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.confirm_delete'),
 
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.read_email'),

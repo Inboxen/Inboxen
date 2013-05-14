@@ -3,10 +3,9 @@
 {% load i18n %}
 
 {% block content %}
-<h2> {{ email.subject }} </h2>
+<div class="page-header">
+	<h1>{{ email.subject }}</h2> <small> {{ email.from }} </small>
 <div class="email">
-	<strong>{% trans "From" %}</strong>: {{ email.from }}<br />
-	<strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br />
 	<strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
 
 	<strong>{% trans "Message" %}</strong>:<br />

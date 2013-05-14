@@ -25,7 +25,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 from inboxen.models import Email, Domain, Alias, Tag
-from inboxen.helper.alias import delete_alias
+from inboxen.helper.alias import delete_alias, find_alias, clean_tags
 
 def gen_alias(count, alias=""):
     if count <= 0:
@@ -44,10 +44,6 @@ def add_alias(request):
         tags = request.POST["tag"]
 
         # if there are no , then we'll assume a space sporated list
-        if "," in tags:
-            tags = tags.split(", ")
-        else:
-            tags = tags.split() # split on space
         
         try:
             alias_test = Alias.objects.get(alias=alias, domain=domain)
@@ -58,11 +54,13 @@ def add_alias(request):
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())
         new_alias.save()
         
+        tags = clean_tags(tags)
         for i, tag in enumerate(tags):
-            tag = tag.rstrip(" ").lstrip(" ")
-            tags[i] = Tag(tag=tag)
-            tags[i].alias = new_alias
-            tags[i].save()
+            tag = Tag(tag=tag)
+            tag.alias = new_alias
+            tags.save()
+            tags[i] = tag
+
  
         return HttpResponseRedirect("/user/profile")
 
@@ -89,7 +87,50 @@ def add_alias(request):
     }
     
     return render(request, "add_alias.html", context)
-    
+
+@login_required
+def edit(request, email):
+
+    alias = find_alias(email, user=request.user, deleted=False)
+
+    if not alias:
+        # display a proper error here?
+        return HttpResponseRedirect("/user/profile")
+    else:
+        alias = alias
+
+    if request.method == "POST":
+        if "tags" in request.POST and request.POST["tags"]:
+            tags = clean_tags(request.POST["tags"])
+
+            # remove old tags
+            for old_tag in Tag.objects.filter(alias=alias[0]):
+                old_tag.delete()
+
+            for i, tag in enumerate(tags):
+                tags[i] = Tag(tag=tag)
+                tags[i].alias = alias[0]
+                tags[i].save()
+
+
+        return HttpResponseRedirect("/user/profile")
+
+    tags = Tag.objects.filter(alias=alias[0])
+    display_tags = ""
+    for tag in tags:
+        display_tags += ", %s" % str(tag)
+
+
+    context = {
+        "page":"Edit %s" % email,
+        "email":email,
+        "alias":alias[0].alias,
+        "domain":alias[1],
+        "tags":display_tags[2:],
+    }
+
+    return render(request, "edit.html", context)
+
 @login_required
 def confirm_delete(request, email):
     if request.method == "POST":

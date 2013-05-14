@@ -19,21 +19,15 @@
 
 from django.core.exceptions import ObjectDoesNotExist
 from inboxen.models import Email, Tag, Alias, Domain
-import traceback
 
 def delete_alias(email, user=None):
     """ Deletes the email and all the data """
-    try:
-        alias, domain = email.split("@", 1)
-        domain = Domain.objects.get(domain=domain)
-        if user:
-            alias = Alias.objects.get(alias=alias, domain=domain, deleted=False, user=user)
-        else:
-            alias = Alias.objects.get(alias=alias, domain=domain, deleted=False)
+    alias = find_alias(email, user=user)
 
-    except ObjectDoesNotExist:
-        traceback.print_exc()
+    if not alias:
         return False
+    else:
+        alias = alias[0]
 
     alias.deleted = True
     alias.save()
@@ -50,3 +44,33 @@ def delete_alias(email, user=None):
         tag.delete()
 
     return True
+
+
+def clean_tags(tags):
+    """ Tags some tags from user input """
+    if "," in tags:
+        tags = tags.split(",")
+    else:
+        tags = tags.split()
+
+    for i, tag in enumerate(tags):
+        tag = tag.rstrip(" ").lstrip(" ")
+        tags[i] = tag
+
+    return tags
+
+def find_alias(email, user=None, deleted=False):
+    """ Returns a alias object from an email """
+    alias, domain = email.split("@", 1)
+
+    try:
+        domain = Domain.objects.get(domain=domain)
+        if user:
+            alias = Alias.objects.get(alias=alias, domain=domain, deleted=deleted, user=user)
+        else:
+            alias = Alias.objects.get(alias=alias, domain=domain, deleted=deleted)
+    except ObjectDoesNotExist:
+        return None
+
+    return (alias, domain)
+
