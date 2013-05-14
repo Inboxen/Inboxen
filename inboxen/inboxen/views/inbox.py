@@ -29,14 +29,16 @@ from inboxen.models import Alias, Email, Attachment
 from inboxen.helper.email import get_email 
 
 @login_required
-def download_attachment(request, attachment_id):
+def download_attachment(request, attachment_id, method="download"):
     try:
         attachment = Attachment.objects.get(id=attachment_id)
     except Attachment.DoesNotExist:
         return HttpResponseRedirect("/")
 
     response = HttpResponse(attachment.data, content_type=attachment.content_type)
-    response["Content-Disposition"] = "attachment; filename=bluhbluh-%s" % attachment_id
+    response["Content-Disposition"] = "filename=attachment-%s" % attachment_id
+    if method == "download":
+        respose["Content-Disposition"] = "attachment; %s" % response["Content-Disposition"]
 
     return response
 
