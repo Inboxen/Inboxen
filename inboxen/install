@@ -23,7 +23,7 @@ import sys, os, subprocess
 # try and impot django stuff 
 try:
     from django.utils.crypto import get_random_string
-except:
+except ImportError:
     pass # it'll be cought further down.
 
 def test_django_install():
@@ -35,7 +35,7 @@ def test_django_install():
         else:
             return (False, "You need version 1.5 or higher, you currently have django %s" % get_version())
                
-    except:
+    except ImportError:
         return (False, "You need to install django 1.5 or higher.")
 
 def generate_key():
@@ -89,15 +89,3 @@ if __name__ == "__main__":
             except Exception:
                 print "Please report this to the inboxen github"
                 raise
-
-    
-    
-    
-       
-    
-    
-     
-    
-    
-       
-    

@@ -52,7 +52,7 @@ def add_alias(request):
         try:
             alias_test = Alias.objects.get(alias=alias, domain=domain)
             return HttpResponseRedirect("/profile")
-        except Exception:
+        except Alias.DoesNotExist:
             pass 
 
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())

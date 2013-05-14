@@ -21,6 +21,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -31,7 +32,7 @@ from inboxen.helper.email import get_email
 def download_attachment(request, attachment_id):
     try:
         attachment = Attachment.objects.get(id=attachment_id)
-    except Exception:
+    except Attachment.DoesNotExist:
         return HttpResponseRedirect("/")
 
     response = HttpResponse(attachment.data, content_type=attachment.content_type)
@@ -51,7 +52,7 @@ def inbox(request, email_address="", page=1):
         try:
             alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
             inbox = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date')
-        except DoesNotExist:
+        except ObjectDoesNotExist:
             context = {
                 "page":"%s - Inbox" % email_address,
                 "error":"Can't find email address",
@@ -95,12 +96,12 @@ def read_email(request, email_address, emailid):
     
     try:
         alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
-    except:
+    except Alias.DoesNotExist:
         return error_out(page="Inbox", message="Alias doesn't exist")
 
     try:
         email = get_email(request.user, emailid)
-    except:
+    except Email.DoesNotExist:
         raise
         return HttpResponseRedirect("")
 

@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.core.exceptions import ObjectDoesNotExist
 from inboxen.models import Email, Tag, Alias, Domain
 import traceback
 
@@ -30,7 +31,7 @@ def delete_alias(email, user=None):
         else:
             alias = Alias.objects.get(alias=alias, domain=domain, deleted=False)
 
-    except Exception:
+    except ObjectDoesNotExist:
         traceback.print_exc()
         return False
 

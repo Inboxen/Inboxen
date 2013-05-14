@@ -38,7 +38,7 @@ def settings(request):
     if request.method == "POST":
         try:
             spamfiltering = request.POST["spam_filtering"]
-        except:
+        except KeyError:
             spamfiltering = False
 
         sfg = Group.objects.get(name="SpamFiltering") # spam filtering group
@@ -88,7 +88,7 @@ def profile(request, page=1):
 
     try:
         aliases = Alias.objects.filter(user=request.user, deleted=False).order_by('-created')
-    except:
+    except Alias.DoesNotExist:
         raise
         aliases = []
 
@@ -96,7 +96,7 @@ def profile(request, page=1):
         for alias in aliases:
             tag = Tag.objects.filter(alias=alias)
             alias.tags = ", ".join([t.tag for t in tag])
-    except:
+    except Tag.DoesNotExist:
         pass
 
     context = {
