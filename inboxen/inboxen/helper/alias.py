@@ -35,6 +35,9 @@ def delete_alias(email, user=None):
         traceback.print_exc()
         return False
 
+    alias.deleted = True
+    alias.save()
+
     # okay now we need to look up the emails
     # we don't want to keep emails for that alias
     emails = Email.objects.filter(inbox=alias)
@@ -45,8 +48,5 @@ def delete_alias(email, user=None):
     tags = Tag.objects.filter(alias=alias)
     for tag in tags:
         tag.delete()
-
-    alias.deleted = True
-    alias.save()
 
     return True
