@@ -4,7 +4,7 @@
 
     <div class="login">
 
-        <form action="/add-alias/" class="form" method="POST">
+        <form action="/email/add/" class="form" method="POST">
             {% csrf_token %}
             <input type="hidden" name="alias" value="{{ alias }}">
             <div class="input-prepend">

@@ -51,7 +51,7 @@ def add_alias(request):
         
         try:
             alias_test = Alias.objects.get(alias=alias, domain=domain)
-            return HttpResponseRedirect("/profile")
+            return HttpResponseRedirect("/user/profile")
         except Alias.DoesNotExist:
             pass 
 
@@ -64,7 +64,7 @@ def add_alias(request):
             tags[i].alias = new_alias
             tags[i].save()
  
-        return HttpResponseRedirect("/profile")
+        return HttpResponseRedirect("/user/profile")
 
     domains = Domain.objects.all()
     
@@ -99,7 +99,7 @@ def confirm_delete(request, email):
             if not delete_alias(email, request.user):
                 raise Http404
 
-        return HttpResponseRedirect("/profile")
+        return HttpResponseRedirect("/user/profile")
     
     context = {
         "page":"Delete Alias",

@@ -25,8 +25,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'inboxen.views.home', name='home'),
-    url(r'^login/', 'django.contrib.auth.views.login', 
+    url(r'^$', 'inboxen.views.home'),
+    
+    url(r'^help/contact/', 'inboxen.views.contact'),
+
+    url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
             'template_name': 'login.html',
             'extra_context': {
@@ -35,19 +38,21 @@ urlpatterns = patterns('',
             },
         },
     ),
-    url(r'^register/', 'inboxen.views.login.register', name="register"),
-    url(r'^contact/', 'inboxen.views.contact', name="Contact"),
-    url(r'^profile/(?P<page>\d+)', 'inboxen.views.profile.profile', name='profile'),
-    url(r'^profile/', 'inboxen.views.profile.profile'),
-    url(r'^add-alias/', 'inboxen.views.alias.add_alias'),
-    url(r'^settings/', 'inboxen.views.profile.settings'),
-    url(r'^logout/', 'inboxen.views.login.logout_user', name="logout"),
+    url(r'^user/register/', 'inboxen.views.login.register'),
+    url(r'^user/profile/(?P<page>\d+)', 'inboxen.views.profile.profile'),
+    url(r'^user/profile/', 'inboxen.views.profile.profile'),
+    url(r'^user/settings/', 'inboxen.views.profile.settings'),
+    url(r'^user/logout/', 'inboxen.views.login.logout_user'),
+
+    url(r'^email/add/', 'inboxen.views.alias.add_alias'),
+    url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.confirm_delete'),
+
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.read_email'),
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox'),
-#    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)', 'inboxen.views.inbox.inbox'),
-    url(r'^inbox/', 'inboxen.views.inbox.inbox'),
-    url(r'^delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.alias.confirm_delete'),
     url(r'^email/attachment/(?P<attachment_id>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.download_attachment'),
+
+    url(r'^inbox/', 'inboxen.views.inbox.inbox'),
+
 
    # API stuff.
     #url(r'^api/alias/create', 'inboxen.api.alias_create'),

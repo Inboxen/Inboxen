@@ -26,15 +26,15 @@
                         {% if user.is_staff %}
                             <li><a href="/admin">{% trans "Admin" %}</a></li>
                         {% endif %}
-                        <li><a href="/add-alias">{% trans "Add Alias" %}</a></li>
-                        <li><a href="/settings">{% trans "Settings" %}</a></li>
-                        <li><a href="/logout">{% trans "Logout" %}</a></li>
+                        <li><a href="/email/add">{% trans "Add Alias" %}</a></li>
+                        <li><a href="/user/settings">{% trans "Settings" %}</a></li>
+                        <li><a href="/user/logout">{% trans "Logout" %}</a></li>
                     {% else %}
-                        <li><a href="/login">{% trans "Login" %}</a></li>
+                        <li><a href="/user/login">{% trans "Login" %}</a></li>
                         {% if registration_enabled %}
-                            <li><a href="/register">{% trans "Register" %}</a></li>
+                            <li><a href="/user/register">{% trans "Register" %}</a></li>
                         {% endif %}
-                        <li><a href="/contact">{% trans "Contact" %}</a></li>
+                        <li><a href="/help/contact">{% trans "Contact" %}</a></li>
                     {% endif %}
                   </ul>
                 </div>

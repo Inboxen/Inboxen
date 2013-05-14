@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block content %}
 
-    <form action="/settings/" class="form form-settings" method="POST">{% csrf_token %}
+    <form action="/user/settings/" class="form form-settings" method="POST">{% csrf_token %}
 
         <div class="input-prepend input-append">
             <span class="add-on">
@@ -48,7 +48,7 @@
         <input type="password" name="password3" placeholder="Repeat Password"><br />
         <br />
         <button class="btn btn-primary">{% trans "Save" %}</button>
-        <a href="/" class="btn">{% trans "Cancel" %}</a>
+        <a href="/user/profile" class="btn">{% trans "Cancel" %}</a>
 
     </form>
 {% endblock %}

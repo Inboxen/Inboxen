@@ -64,7 +64,7 @@ def settings(request):
         
         if not error:
             # now redirect back to their profile
-            return HttpResponseRedirect("/profile")
+            return HttpResponseRedirect("/user/profile")
 
 
     # okay they're viewing the settings page

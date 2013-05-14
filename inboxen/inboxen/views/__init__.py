@@ -29,7 +29,7 @@ def contact(request):
 
 def home(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect("/profile")
+        return HttpResponseRedirect("/user/profile")
 
     context = {
         "page":"Home",

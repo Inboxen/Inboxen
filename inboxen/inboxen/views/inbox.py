@@ -33,7 +33,7 @@ def download_attachment(request, attachment_id, method="download"):
     try:
         attachment = Attachment.objects.get(id=attachment_id)
     except Attachment.DoesNotExist:
-        return HttpResponseRedirect("/")
+        return HttpResponseRedirect("/user/profile")
 
     response = HttpResponse(attachment.data, content_type=attachment.content_type)
     response["Content-Disposition"] = "filename=attachment-%s" % attachment_id

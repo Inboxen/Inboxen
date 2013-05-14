@@ -30,7 +30,7 @@ from django.contrib.auth import logout
 
 def register(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect("/profile")
+        return HttpResponseRedirect("/user/profile")
 
     if not settings.ENABLE_REGISTRATION:
         return HttpResponseRedirect("/")
@@ -39,7 +39,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             new_user = form.save()
-            return HttpResponseRedirect('/profile')
+            return HttpResponseRedirect('/user/profile')
     else:
         form = UserCreationForm()
     
