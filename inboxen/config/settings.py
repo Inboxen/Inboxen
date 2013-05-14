@@ -17,7 +17,7 @@ router_defaults = {}
 
 template_config = {'dir': 'app', 'module': 'templates'}
 
-datetime_format = "%Y-%m-%d %H:%M:%S"
+datetime_format = "%Y-%m-%d %H:%M:%S %z"
 recieved_header_name = 'x-lamson-recieved'
 
 # the config/boot.py will turn these values into variables set in settings
