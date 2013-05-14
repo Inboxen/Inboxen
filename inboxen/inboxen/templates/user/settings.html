@@ -44,11 +44,8 @@
             <p> {{ error }} </p><br />
         {% endif %}
 
-        <input type="password" name="password1" placeholder="Old Password"><br />
-        <input type="password" name="password2" placeholder="New Password"><br />
-        <input type="password" name="password3" placeholder="Repeat Password"><br />
-        <br />
         <button class="btn btn-primary">{% trans "Save" %}</button>
+        <a class="btn" href="/user/settings/password">{% trans "Change Password" %}</a>
         <a href="/user/profile" class="btn">{% trans "Cancel" %}</a>
 
     </form>
