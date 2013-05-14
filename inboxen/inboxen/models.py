@@ -42,8 +42,18 @@ class Alias(models.Model):
     def __unicode__(self):
         deleted = ""
         if self.deleted:
-            deleted = "(deleted)"
-        return u"%s@%s %s" % (self.alias, self.domain.domain, deleted)
+            deleted = " (deleted)"
+        return u"%s@%s%s" % (self.alias, self.domain.domain, deleted)
+
+
+class Request(models.Model):
+    amount = models.IntegerField()
+    succeeded = models.NullBooleanField(default=None)
+    date = models.DateTimeField('requested')
+    authorizer = models.ForeignKey(User, blank=True, null=True)
+    requester = models.ForeignKey(User, related_name="requester")
+    result = models.CharField(max_length=1024, blank=True, null=True)
+
 
 class Attachment(models.Model):
     content_type = models.CharField(max_length=256, null=True, blank=True)
@@ -83,6 +93,7 @@ class Header(models.Model):
 class UserProfile(models.Model):
     user = models.ForeignKey(User, unique=True)
     html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
+    pool_amount = models.IntegerField(default=500)
 
 class Email(models.Model):
     read = models.BooleanField(default=False)
