@@ -3,26 +3,29 @@
 {% load i18n %}
 
 {% block content %}
+<h2> {{ email.subject }} </h2>
+<div class="email">
+	<strong>{% trans "From" %}</strong>: {{ email.from }}<br />
+	<strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br />
+	<strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
 
-<strong>{% trans "From" %}</strong>: {{ email.from }}<br />
-<strong>{% trans "Subject" %}</strong>: {{ email.subject }}<br />
-<strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
+	<strong>{% trans "Message" %}</strong>:<br />
+	{% if plain_message %}
+	    <pre>
+	{% endif %}
 
-<strong>{% trans "Message" %}</strong>:<br />
-{% if plain_message %}
-    <pre>
-{% endif %}
+	{{ email.body }}
 
-{{ email.body }}
+	{% if plain_message %}
+	    </pre>
+	{% endif %}
 
-{% if plain_message %}
-    </pre>
-{% endif %}
+	<br />
+	<strong>{% trans "Attachments" %}</strong>:<br />
+	{% for attachment in email.attachments %}
+	    <a href="/email/attachment/{{ attachment.id }}">{{ attachment.content_disposition }} ({{ attachment.content_type }})</a><br />
+	{% endfor %}
 
-<br />
-<strong>{% trans "Attachments" %}</strong>:<br />
-{% for attachment in email.attachments %}
-    <a href="/email/attachment/{{ attachment.id }}">{{ attachment.content_disposition }} ({{ attachment.content_type }})</a><br />
-{% endfor %}
+</div>
 
 {% endblock %}

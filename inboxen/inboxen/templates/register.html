@@ -2,13 +2,16 @@
 {% load i18n %}
 {% block content %}
 
-<h1>{% trans "Create an account" %}</h1>
 <div class="registration">
 
-  <form action="" method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <input type="submit" value="{% trans "Create the account" %}">
+  <form action="" class="form form-login" method="post">
+		{% csrf_token %}
+		<input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
+		<input id="id_password1" name="password1" type="password" placeholder="Password" />
+		<input id="id_password2" name="password2" type="password" placeholder="Repeat Password" />
+
+
+		<button class="btn btn-primary btn-centre">Sign up!</button>
   </form>
 
 </div>

@@ -8,20 +8,18 @@
         <p class="error">{% trans "Your username and password didn't match. Please try again." %}</p>
     {% endif %}
 
-    <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+    <form method="post" class="form" action="{% url 'django.contrib.auth.views.login' %}">
     {% csrf_token %}
     <table>
     <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
+        <td><input id="id_username" maxlength="254" name="username" type="text" placeholder="{% trans "Username" %}"/></td>
     </tr>
     <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
+        <td><input id="id_password" name="password" type="password" placeholder="{% trans "Password" %} "/></td>
     </tr>
     </table>
 
-    <span class="centre"><input type="submit" value="{% trans "Login" %}" /></span>
+    <button type="submit" class="btn btn-primary btn-centre">{% trans "Login" %}</button>
     <input type="hidden" name="next" value="/profile" />
     </form>
 

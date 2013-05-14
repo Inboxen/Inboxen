@@ -56,6 +56,7 @@ def register(request):
     context = {
         "form":form,
         "page":"Register",
+        "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
     return render(request, "register.html", context, context_instance=RequestContext(request))

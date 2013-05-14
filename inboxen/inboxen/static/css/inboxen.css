@@ -3,6 +3,7 @@ First off, some styling to bootstrap
 These have been adapted from: http://twitter.github.io/bootstrap/examples/carousel.html
 */
 body {
+
 	padding-bottom: 40px;
     color: #5a5a5a;
 }
@@ -60,8 +61,51 @@ body {
 }
 
 /*
+Form stuff
+Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
+*/
+.error {
+	margin-left:35%;
+}
+
+.form {
+	max-width: 210px;
+	padding: 19px 19px 19px;
+	margin: 0 auto 20px;
+	background-color: #FFF;
+	border: 1px solid #e5e5e5;
+}
+
+
+.form-settings {
+	max-width:80%;
+	margin-left:10%;
+}
+
+.form input {
+	height: auto;
+	padding: 4px 7px;
+}
+
+.form select {
+	width: 78%;
+}
+
+.btn {
+	margin-top:5px;
+}
+
+.btn-centre {
+	margin-left:30%;
+}
+
+/*
 Right now some other stuff
 */
+
+.constant-alias {
+	width:100px;
+}
 
 .content {
 	margin-top:100px;
@@ -85,4 +129,9 @@ p {
 
 .text-right {
 	margin-right:10%;
+}
+
+.email {
+	margin-left:10%;
+	width:80%;
 }

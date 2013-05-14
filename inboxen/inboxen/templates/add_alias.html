@@ -4,18 +4,20 @@
 
     <div class="login">
 
-        <form action="/add-alias/" method="POST">
+        <form action="/add-alias/" class="form" method="POST">
             {% csrf_token %}
-            <label for="alias">{% trans "Alias:" %}</label> {{ alias }}@
             <input type="hidden" name="alias" value="{{ alias }}">
-            <select name="domain">
-            {% for domain in domains %}
-                <option value="{{ domain }}">{{domain}}</option>
-            {% endfor %}
-            </select>
+            <div class="input-prepend">
+                <span class="add-on constant-alias">{{ alias }}@</span>
+                <select id="prependedInput" name="domain">
+                {% for domain in domains %}
+                    <option value="{{ domain }}">{{domain}}</option>
+                {% endfor %}
+                </select>
+            </div>
             <br />
-            <label for="tag">{% trans "Tag:" %}</label><input id="tag" name="tag"><br />
-            <input type="submit" value="{% trans "Add" %}">        
+            <input id="tag" name="tag" placeholder="{% trans "Tag" %}"><br />
+            <button class="btn btn-primary btn-centre">{% trans "Add" %}</button>        
         </form>
 
     </div>

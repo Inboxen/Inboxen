@@ -2,47 +2,53 @@
 {% load i18n %}
 {% block content %}
 
-    <form action="/settings/" method="POST">{% csrf_token %}
+    <form action="/settings/" class="form form-settings" method="POST">{% csrf_token %}
 
-        <h2> {% trans "General" %} </h2><br />
-        {% if spamfiltering %}
-            <input type="checkbox" name="spam_filtering" checked="yes">
-        {% else %}
-            <input type="checkbox" name="spam_filtering">
-        {% endif %}
-        {% trans "Spam Filtering?" %}<br />
+        <div class="input-prepend input-append">
+            <span class="add-on">
+            {% if spamfiltering %}
+                <input type="checkbox" id="appendedInput" name="spam_filtering" checked="yes">
+            {% else %}
+                <input type="checkbox" id="appendedInput" name="spam_filtering">
+            {% endif %}
+            </span>
+            <span class="add-on">{% trans "Spam Filtering" %}</span>
+        </div>
+
         <br />
-        <h2> {% trans "Email" %} </h2><br />
-        HTML Email: 
-        <select name="html-preference">
-            {% if htmlpreference == 0 %}
-                <option value="0" selected="selected">{% trans "Reject HTML" %}</option>
-            {% else %}
-                <option value="0">{% trans "Reject HTML" %}</option>
-            {% endif %}
-            
-            {% if htmlpreference == 1 %}
-                <option value="1" selected="selected">{% trans "Prefer Plain-text" %}</option>
-            {% else %}
-                <option value="1">{% trans "Prefer Plain-text" %}</option>
-            {% endif %}
-            
-            {% if htmlpreference == 2 %}
-                <option value="2" selected="selected">{% trans "Prefer HTML" %}</option>
-            {% else %}
-                <option value="2">{% trans "Prefer HTML" %}</option>
-            {% endif %}
-        </select><br /><br />
-        <h2> {% trans "Change Password" %} </h2><br />
+        <div class="input-prepend" >
+            <span class="add-on">{% trans "Email Format" %}</span>
+            <select name="html-preference">
+                {% if htmlpreference == 0 %}
+                    <option value="0" selected="selected">{% trans "Reject HTML" %}</option>
+                {% else %}
+                    <option value="0">{% trans "Reject HTML" %}</option>
+                {% endif %}
+                
+                {% if htmlpreference == 1 %}
+                    <option value="1" selected="selected">{% trans "Prefer Plain-text" %}</option>
+                {% else %}
+                    <option value="1">{% trans "Prefer Plain-text" %}</option>
+                {% endif %}
+                
+                {% if htmlpreference == 2 %}
+                    <option value="2" selected="selected">{% trans "Prefer HTML" %}</option>
+                {% else %}
+                    <option value="2">{% trans "Prefer HTML" %}</option>
+                {% endif %}
+            </select><br /><br />
+        </div><br />
         
         {% if error %}
             <p> {{ error }} </p><br />
         {% endif %}
 
-        {% trans "Old Password:" %} <input type="password" name="password1"><br />
-        {% trans "New Password:" %} <input type="password" name="password2"><br />
+        <input type="password" name="password1" placeholder="Old Password"><br />
+        <input type="password" name="password2" placeholder="New Password"><br />
+        <input type="password" name="password3" placeholder="Repeat Password"><br />
         <br />
-        <input type="submit" value="Save">
+        <button class="btn btn-primary">{% trans "Save" %}</button>
+        <a href="/" class="btn">{% trans "Cancel" %}</a>
 
     </form>
 {% endblock %}

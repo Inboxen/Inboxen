@@ -12,13 +12,15 @@
     <p> {% trans "You don't have any emails :(" %}
 
 {% else %}
-    <table class="email-table">
+    <table class="table table-hover table-centre table-bordered">
+    <thead>
     <tr>
-        <th></th>
+        <th>&nbsp;</th>
         <th>{% trans "From" %}</th>
         <th>{% trans "Subject" %}</th>
         <th>{% trans "Recieved" %}</th>
     </tr>
+    </thead>
     
     {% for email in emails.object_list %}
         <form action="/inbox/{{ email_address }}" method="POST">
@@ -34,7 +36,7 @@
                 {% if email.subject %}
                     <td><a href="/inbox/{{ email.inbox }}/view/{{ email.id }}"> {{ email.subject }} </a></td>
                 {% endif %}
-                    <td><span title="{{email.recieved_date }}"> {{ email.recieved_date|timesince }}{% trans "ago" %}</span></td>
+                    <td><span title="{{email.recieved_date }}">{{ email.recieved_date|timesince }} {% trans "ago" %}</span></td>
 
             </tr>
         </form>
@@ -44,7 +46,7 @@
     </table>
 
     <!-- lifted from the django docs >.> -->
-    <div class="pagination">
+    <div class="pagination text-right">
         <span class="step-links">
             {% if emails.has_previous %}
                 {% if email_address %}
