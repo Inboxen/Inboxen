@@ -21,7 +21,7 @@
 
 from inboxen.models import Alias, Attachment, Email, Header
 from config.settings import datetime_format, recieved_header_name
-from datetime import datetime
+from dateutil import parser
 
 def make_email(message, alias, domain):
     """Push message to the database.
@@ -31,7 +31,7 @@ def make_email(message, alias, domain):
     inbox = Alias.objects.get(alias=alias, domain__domain=domain) # will exist
     user = inbox.user
     body = message.base.body
-    recieved_date = datetime.strptime(message[recieved_header_name], datetime_format)
+    recieved_date = parser.parse(message[recieved_header_name])
     del message[recieved_header_name]
 
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
