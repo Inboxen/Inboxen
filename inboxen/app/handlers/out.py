@@ -20,6 +20,7 @@
 ##
 
 from lamson.routing import route, stateless, nolocking
+from config.settings import DEBUG
 from app.model.email import make_email
 
 @route("(alias)@(domain)", alias=".+", domain=".+")

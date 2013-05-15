@@ -22,9 +22,10 @@ from pytz import utc
 
 from lamson.routing import route, stateless, nolocking
 from lamson.queue import Queue
-from config.settings import accepted_queue_dir, accepted_queue_opts_in, datetime_format, recieved_header_name
+from config.settings import DEBUG, reject_dir, accepted_queue_dir, accepted_queue_opts_in, datetime_format, recieved_header_n
 from app.model.alias import alias_exists
 from datetime import datetime
+import logging
 
 # We don't change state based on who the sender is, so we're stateless and
 # don't return any other state. Locking is done by the queue (on the filesystem
@@ -46,4 +47,9 @@ def START(message, alias=None, domain=None):
         #if not spam, or not filter:
         accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts_in)
         accept_queue.push(message)
+        logging.debug("APPROVED alias %s on domain %s" % (alias, domain))
+    elif DEBUG:
+        queue = Queue(reject_dir, **accepted_queue_opts_in)
+        queue.push(message)
+        logging.debug("REJECTED alias %s on domain %s" % (alias, domain))
 
