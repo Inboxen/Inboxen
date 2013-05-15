@@ -153,6 +153,7 @@ dt {
 }
 
 .label-right {
+	margin-top:10px;
 	margin-right:8%;
 	padding-right:1px;
 	float:right;
