@@ -47,7 +47,7 @@ urlpatterns = patterns('',
             },
         },
     ),
-    url(r'^user/settings/', 'inboxen.views.user.settings.settings'),
+    url(r'^user/settings/', 'inboxen.views.user.settings.settings.settings'),
     url(r'^user/logout/', 'inboxen.views.user.logout.logout'),
 
     url(r'^email/add/', 'inboxen.views.email.add.add'),
