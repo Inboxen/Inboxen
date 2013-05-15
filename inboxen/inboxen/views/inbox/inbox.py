@@ -65,8 +65,13 @@ def inbox(request, email_address="", page=1):
             elif header.name == "Subject":
                 email.subject = header.data
 
+    if email_address:
+        page = "%s - Inbox" % email_address
+    else:
+        page = "Inbox"
+
     context = {
-        "page":"%s - Inbox" % email_address,
+        "page":page,
         "error":"",
         "emails":emails,
         "email_address":email_address,
