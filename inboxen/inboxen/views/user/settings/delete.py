@@ -17,6 +17,9 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 from inboxen.helper.user import delete as delete_user
 
 @login_required
@@ -34,4 +37,4 @@ def delete(request):
 		"page":"Delete Account",
 	}
 
-	return render(request, "user/settings/delete.html", context)
+	return render(request, "user/settings/delete/confirm.html", context)

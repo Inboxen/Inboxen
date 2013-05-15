@@ -47,6 +47,7 @@ urlpatterns = patterns('',
             },
         },
     ),
+    url(r'^user/settings/delete', 'inboxen.views.user.settings.delete.delete'),
     url(r'^user/settings/', 'inboxen.views.user.settings.settings.settings'),
     url(r'^user/logout/', 'inboxen.views.user.logout.logout'),
 

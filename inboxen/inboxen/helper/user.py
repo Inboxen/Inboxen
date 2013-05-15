@@ -27,3 +27,7 @@ def user_profile(user):
         # doesn't exist
         user_profile = UserProfile.objects.get_or_create(user=user)[0]
         return user_profile
+
+
+def delete(user):
+	pass
