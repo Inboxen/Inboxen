@@ -10,37 +10,29 @@
     </head>
     <body>
         <div class="navbar-wrapper">
-          <div class="container">
-
-            <div class="navbar navbar-inverse">
-              <div class="navbar-inner">
-                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                  <span class="icon-bar"></span>
-                </button>
-                <a class="brand" href="/">Inboxen</a>
-                <div class="nav-collapse collapse">
-                  <ul class="nav">
-                    {% if user.is_authenticated %}
-                        {% if user.is_staff %}
-                            <li><a href="/admin">{% trans "Admin" %}</a></li>
-                        {% endif %}
-                        <li><a href="/email/add">{% trans "Add Alias" %}</a></li>
-                        <li><a href="/user/settings">{% trans "Settings" %}</a></li>
-                        <li><a href="/user/logout">{% trans "Logout" %}</a></li>
-                    {% else %}
-                        <li><a href="/user/login">{% trans "Login" %}</a></li>
-                        {% if registration_enabled %}
-                            <li><a href="/user/register">{% trans "Register" %}</a></li>
-                        {% endif %}
-                        <li><a href="/help/contact">{% trans "Contact" %}</a></li>
-                    {% endif %}
-                  </ul>
+            <div class="container">
+                <div class="navbar navbar-inverse">
+                    <div class="navbar-inner">
+                        <a class="brand" href="/">Inboxen</a>
+                        <ul class="nav">
+                            {% if user.is_authenticated %}
+                                {% if user.is_staff %}
+                                    <li><a href="/admin">{% trans "Admin" %}</a></li>
+                                {% endif %}
+                                <li><a href="/email/add">{% trans "Add Alias" %}</a></li>
+                                <li><a href="/user/settings">{% trans "Settings" %}</a></li>
+                                <li><a href="/user/logout">{% trans "Logout" %}</a></li>
+                            {% else %}
+                                <li><a href="/user/login">{% trans "Login" %}</a></li>
+                                {% if registration_enabled %}
+                                    <li><a href="/user/register">{% trans "Register" %}</a></li>
+                                {% endif %}
+                                <li><a href="/help/contact">{% trans "Contact" %}</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
         </div>
         <div class="content">
             {% block content %}
