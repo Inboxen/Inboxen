@@ -97,6 +97,10 @@ Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
 	border: 1px solid #e5e5e5;
 }
 
+.wide-form {
+	max-width: 100%;
+}
+
 .form input {
 	height: auto;
 	padding: 4px 7px;
@@ -128,10 +132,6 @@ Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
 	background-color: rgb(230, 230, 230);
 }
 
-table {
-	margin-left:0;
-	margin-right:0;
-}
 
 /*
 Right now some other stuff
