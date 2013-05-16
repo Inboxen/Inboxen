@@ -48,6 +48,7 @@ def get_email(user, email_id, preference=None):
         # I hope noone sets HTML in the email.body
         message["body"] = email.body
         message["attachments"] = email.attachments.all()
+        message["plain"] = True
      
     if preference < 2 and plain_attachments.exists():
         body = plain_attachments[0]
