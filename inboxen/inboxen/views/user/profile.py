@@ -28,13 +28,10 @@ from inboxen.helper.alias import alias_available
 @login_required
 def profile(request, page=1):
 
-    try:
-        aliases = Alias.objects.filter(user=request.user).order_by('-created')
-        used = aliases.count()
-        aliases = aliases.filter(deleted=False)
-    except Alias.DoesNotExist:
-        raise
-        aliases = []
+    aliases = Alias.objects.filter(user=request.user).order_by('-created')
+    available = alias_available(request.user, aliases=aliases)
+    used = aliases.count()
+    aliases = aliases.filter(deleted=False)
 
     try:
         for alias in aliases:
@@ -42,8 +39,6 @@ def profile(request, page=1):
             alias.tags = ", ".join([t.tag for t in tag])
     except Tag.DoesNotExist:
         pass
-
-    available = alias_available(request.user, aliases=aliases)
 
     context = {
         "page":"Profile",
