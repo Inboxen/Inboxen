@@ -15,7 +15,6 @@
             <span class="add-on">{% trans "Spam Filtering" %}</span>
         </div>
         <br />
-        <br />
         <div class="input-append" >
             <select name="html-preference">
                 {% if htmlpreference == 0 %}
@@ -46,6 +45,7 @@
 
         <a class="btn" href="/user/settings/password">{% trans "Change Password" %}</a><br />
         <a class="btn btn-danger" href="/user/settings/delete">{% trans "Delete Account" %}</a><br />
+        <br />
         <button class="btn">{% trans "Save" %}</button>
         <a href="/user/profile" class="btn">{% trans "Cancel" %}</a>
 
