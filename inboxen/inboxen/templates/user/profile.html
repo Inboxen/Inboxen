@@ -4,64 +4,60 @@
 
 {% block content %}
 
-<div class="content">
-
-    <h2 class="inline"> {% trans "Alises" %} </h2>
-    {% if not aliases %}
-        <p>{% trans "You have not added any alises yet, this makes me a sad panda :(" %} </p>
+<h2 class="inline"> {% trans "Alises" %} </h2>
+{% if not aliases %}
+    <p>{% trans "You have not added any alises yet, this makes me a sad panda :(" %} </p>
+{% else %}
+<a class="label-right" href="/email/request">
+    {% if not available %}
+        <span class="label label-important text-rigth">
+    {% elif available < 10 %}
+        <span class="label label-warning text-right">
     {% else %}
-    <a class="label-right" href="/email/request">
-        {% if not available %}
-            <span class="label label-important text-rigth">
-        {% elif available < 10 %}
-            <span class="label label-warning text-right">
-        {% else %}
-            <span class="label label-success text-right">
-        {% endif %}
-        {% trans "Available:" %} {{ available }}</span>
-    </a>
-        <table class="table table-hover table-centre table-bordered">
-            <thead>
-            <tr>
-                <th>{% trans "Alias" %}</th>
-                <th>{% trans "Created" %}</th>
-                <th>{% trans "Tags" %}</th>
-                <th>{% trans "Inbox" %}</th>
-                <th>{% trans "Edit" %}</th>
-                <th>{% trans "Delete" %}</th>
-            </tr>
-            </thead>
-            {% for alias in aliases.object_list %}
-
-                <tr>
-                    <td>{{ alias.alias }}@{{ alias.domain }}</td>
-                    <td><span title="{{ alias.created }}">{{ alias.created|timesince }} {% trans "ago" %}</span></td>
-                    {% if alias.tags %}
-                        <td>{{ alias.tags }}</td>
-                    {% else %}
-                        <td>&nbsp;</td>
-                    {% endif %}
-                    <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{% trans "View" %}</a></td>
-                    <td><a href="/email/edit/{{ alias.alias }}@{{ alias.domain }}">{% trans "Edit" %}</a></td>
-                    <td><a href="/email/delete/{{ alias.alias }}@{{ alias.domain }}">{% trans "Delete" %}</a></td>
-                </tr>
-            {% endfor %}
-        </table>
-        <div class="paginator text-right">
-            <span class="step-link">
-                {% if aliases.has_previous %}
-                    <span class="paginator-prev"><a href="/user/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>
-                {% endif %}
-                <span class="current">
-                    {% trans "Page" %} {{ aliases.number }} {% trans "of" %} {{ aliases.paginator.num_pages }}.
-                </span>
-                {% if aliases.has_next %}
-                    <span class="paginator-next"><a href="/user/profile/{{ aliases.next_page_number }}">{% trans "Next" %}</a></span>
-                {% endif %}
-            </span>
-       </div>                
+        <span class="label label-success text-right">
     {% endif %}
+    {% trans "Available:" %} {{ available }}</span>
+</a>
+    <table class="table table-hover table-centre table-bordered">
+        <thead>
+        <tr>
+            <th>{% trans "Alias" %}</th>
+            <th>{% trans "Created" %}</th>
+            <th>{% trans "Tags" %}</th>
+            <th>{% trans "Inbox" %}</th>
+            <th>{% trans "Edit" %}</th>
+            <th>{% trans "Delete" %}</th>
+        </tr>
+        </thead>
+        {% for alias in aliases.object_list %}
 
-</div>
+            <tr>
+                <td>{{ alias.alias }}@{{ alias.domain }}</td>
+                <td><span title="{{ alias.created }}">{{ alias.created|timesince }} {% trans "ago" %}</span></td>
+                {% if alias.tags %}
+                    <td>{{ alias.tags }}</td>
+                {% else %}
+                    <td>&nbsp;</td>
+                {% endif %}
+                <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{% trans "View" %}</a></td>
+                <td><a href="/email/edit/{{ alias.alias }}@{{ alias.domain }}">{% trans "Edit" %}</a></td>
+                <td><a href="/email/delete/{{ alias.alias }}@{{ alias.domain }}">{% trans "Delete" %}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="paginator text-right">
+        <span class="step-link">
+            {% if aliases.has_previous %}
+                <span class="paginator-prev"><a href="/user/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>
+            {% endif %}
+            <span class="current">
+                {% trans "Page" %} {{ aliases.number }} {% trans "of" %} {{ aliases.paginator.num_pages }}.
+            </span>
+            {% if aliases.has_next %}
+                <span class="paginator-next"><a href="/user/profile/{{ aliases.next_page_number }}">{% trans "Next" %}</a></span>
+            {% endif %}
+        </span>
+   </div>                
+{% endif %}
 
 {% endblock %}

@@ -97,12 +97,6 @@ Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
 	border: 1px solid #e5e5e5;
 }
 
-
-.form-settings {
-	max-width:80%;
-	margin-left:10%;
-}
-
 .form input {
 	height: auto;
 	padding: 4px 7px;
@@ -132,9 +126,12 @@ Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
 .btn-danger:hover {
 	color: rgb(200, 0, 0);
 	background-color: rgb(230, 230, 230);
-
 }
 
+table {
+	margin-left:0;
+	margin-right:0;
+}
 
 /*
 Right now some other stuff
@@ -146,44 +143,14 @@ Right now some other stuff
 
 .content {
 	margin-top:100px;
-}
 
-h2 {
 	margin-left:10%;
-}
-
-.table-centre
-{
-  width:80%;
-  margin-left:11%;
-
-}
-
-p {
-	margin-left:10%;
-	padding-left:20px;
-
-	width:80%;
-}
-
-.text-right {
 	margin-right:10%;
+
+	padding-left:10px;
+	padding-right:10px;
 }
 
-.email {
-	margin-left:10%;
-	width:80%;
-}
-
-dl {
-	margin-left:10%;
-	padding-left:20px;
-	width:80%;
-}
-
-dt {
-	padding-top:10px;
-}
 
 .big-paragraph {
 	font-size:12pt;
@@ -191,8 +158,6 @@ dt {
 
 .label-right {
 	margin-top:10px;
-	margin-right:8%;
-	padding-right:1px;
 	float:right;
 }
 
