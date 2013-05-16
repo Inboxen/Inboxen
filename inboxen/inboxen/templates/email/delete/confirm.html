@@ -10,7 +10,7 @@
         {% csrf_token %} 
         <input type="hidden" name="confirm" value="{{ alias }}">
         <p>
-        	<button class="btn btn-primary text-left">Delete</button>
+        	<button class="btn btn-danger text-left">Delete</button>
         	<a class="btn text-left" href="/user/profile">Keep it!</a>
         </p>
     </form>

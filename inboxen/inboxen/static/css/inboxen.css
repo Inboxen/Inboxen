@@ -114,10 +114,25 @@ Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
 
 .btn {
 	margin-top:5px;
+	border-color: #BBB;
 }
 
 .btn-centre {
 	margin-left:30%;
+}
+
+.btn-danger {
+	color: rgb(200, 0, 0);
+	font-weight: bold;
+	text-shadow: none;
+	background-image: linear-gradient(to bottom, rgb(255, 255, 255), rgb(230, 230, 230));
+	border-color: #BBB;
+}
+
+.btn-danger:hover {
+	color: rgb(200, 0, 0);
+	background-color: rgb(230, 230, 230);
+
 }
 
 
