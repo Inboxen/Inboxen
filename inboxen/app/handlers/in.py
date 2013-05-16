@@ -18,13 +18,19 @@
 # along with Inboxen back-end.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##
-from pytz import utc
+
+from config.settings import (DEBUG,
+                            reject_dir,
+                            accepted_queue_dir,
+                            accepted_queue_opts_in,
+                            datetime_format,
+                            recieved_header_name)
 
 from lamson.routing import route, stateless, nolocking
 from lamson.queue import Queue
-from config.settings import DEBUG, reject_dir, accepted_queue_dir, accepted_queue_opts_in, datetime_format, recieved_header_n
 from app.model.alias import alias_exists
 from datetime import datetime
+from pytz import utc
 import logging
 
 # We don't change state based on who the sender is, so we're stateless and
