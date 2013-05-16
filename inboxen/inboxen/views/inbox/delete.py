@@ -27,7 +27,7 @@ from inboxen.models import Email
 def delete(request, email_address, emailid):
 
 	try:
-		email = Email.objects.get(id=email_id, user=request.user)
+		email = Email.objects.get(id=emailid, user=request.user)
 		email.delete()
 	except Email.DoesNotExist:
 		pass
