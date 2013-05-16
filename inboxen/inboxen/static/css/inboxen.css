@@ -20,8 +20,13 @@ body {
 }
 
 .navbar .navbar-inner {
+	background-image: none;
+	background-color: rgb(238, 238, 238);
 	border-radius: 0px 0px 4px 4px;
+	border: 1px solid rgb(204, 204, 204);;
 }
+
+
 
 .navbar .brand {
 	padding: 14px 20px 16px;
@@ -35,6 +40,10 @@ body {
 
 .navbar .btn-navbar {
 	margin-top: 10px;
+}
+
+.navbar-inverse .brand, .navbar-inverse .nav > li > a {
+	text-shadow: none;
 }
 
 @media (max-width: 979px) {
