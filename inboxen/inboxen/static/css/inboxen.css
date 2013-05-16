@@ -168,3 +168,14 @@ Right now some other stuff
 .inline {
 	display:inline;
 }
+
+/*
+* Labels
+*/
+
+.label {
+	color: #555;
+	font-weight: normal;
+	text-shadow: none;
+	background-color: rgb(238, 238, 238);
+}
