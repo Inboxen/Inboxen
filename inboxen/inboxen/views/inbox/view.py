@@ -34,7 +34,7 @@ def view(request, email_address, emailid):
         return error_out(page="Inbox", message="Alias doesn't exist")
 
     try:
-        email = get_email(request.user, emailid)
+        email = get_email(request.user, emailid, read=True)
     except Email.DoesNotExist:
         raise
         return HttpResponseRedirect("")
@@ -43,11 +43,6 @@ def view(request, email_address, emailid):
         plain_message = email["plain"]
     else:
         plain_message = ""
-
-
-    # They've now read the email =]
-    email.read = True
-    emai.save() 
 
     context = {
         "page":email["subject"],

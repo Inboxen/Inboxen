@@ -59,7 +59,7 @@ def send_email(user, alias, sender, subject=None, body=""):
 
 
 
-def get_email(user, email_id, preference=None):
+def get_email(user, email_id, preference=None, read=False):
     """ Gets an email based on user preferences and id of the email """
     # does the user want HTML emails?
     # 0 - don't ever give HTML
@@ -75,6 +75,10 @@ def get_email(user, email_id, preference=None):
     message = {
         "date":email.recieved_date
     }
+
+    if read:
+        email.read = True
+        email.save()
 
     plain_attachments = email.attachments.filter(content_type="text/plain")
     html_attachments = email.attachments.filter(content_type="text/html")
