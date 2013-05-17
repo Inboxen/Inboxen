@@ -26,9 +26,9 @@
     {% for email in emails.object_list %}
         <form action="/inbox/{{ email_address }}" method="POST">
             {% if email.read %}
-                <tr class="read">
+                <tr>
             {% else %}
-                <tr class="unread">
+                <tr class="warning">
             {% endif %}
 
 

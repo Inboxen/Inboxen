@@ -44,6 +44,11 @@ def view(request, email_address, emailid):
     else:
         plain_message = ""
 
+
+    # They've now read the email =]
+    email.read = True
+    emai.save() 
+
     context = {
         "page":email["subject"],
         "email":email,

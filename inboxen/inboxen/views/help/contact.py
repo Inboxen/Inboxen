@@ -18,8 +18,12 @@
 from django.conf import settings
 from django.shortcuts import render
 
+from inboxen.helper.email import send_email 
+
 def contact(request):
-    context ={
+
+
+    context = {
         "page":"Contact",
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }

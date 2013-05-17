@@ -1,2 +1,13 @@
 {% extends 'base.html' %}
 {% load i18n %}
+
+{% block content %}
+
+<form action="/help/contact/" method="POST" class="form wide-form">
+	<input type="text" name="email" placeholder="Email (optional)"><br />
+	<input type="text" name="subject" placeholder="Subject"><br />
+	<textarea rows="10" name="body" class="input-xxlarge"></textarea><br />
+	<button class="btn">Send</button>
+</form>
+
+{% endblock %}

@@ -16,12 +16,48 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
-
+from datetime import datetime
+from pytz import utc
 
 from django.utils.safestring import mark_safe
 
-from inboxen.models import Email, Attachment
+from inboxen.models import Email, Attachment, Alias, Header
 from inboxen.helper.user import user_profile
+
+def send_email(user, alias, sender, subject=None, body=""):
+    """ Sends an email to an internal alias """
+    email = Email(
+        read=False,
+        user=user,
+        inbox=alias,
+        recieved_date=datetime.now(utc)
+    )
+
+    if body:
+        email.body = body
+
+    sender = Header(
+        name="From",
+        data=sender,
+    )
+
+    email.headers.add(sender)
+
+    if subject:
+        subject = Header(
+            name="Subject",
+            data=subject
+        )
+
+        email.headers.add(subject)
+
+    email.send()
+
+    
+
+
+
+
 
 def get_email(user, email_id, preference=None):
     """ Gets an email based on user preferences and id of the email """
