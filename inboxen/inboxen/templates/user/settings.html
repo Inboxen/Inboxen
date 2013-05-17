@@ -4,17 +4,6 @@
 
     <form action="/user/settings/" class="form wide-form" method="POST">{% csrf_token %}
 
-        <div class="input-prepend input-append">
-            <span class="add-on">
-            {% if spamfiltering %}
-                <input type="checkbox" id="appendedInput" name="spam_filtering" checked="yes">
-            {% else %}
-                <input type="checkbox" id="appendedInput" name="spam_filtering">
-            {% endif %}
-            </span>
-            <span class="add-on">{% trans "Spam Filtering" %}</span>
-        </div>
-        <br />
         <div class="input-append" >
             <select name="html-preference">
                 {% if htmlpreference == 0 %}

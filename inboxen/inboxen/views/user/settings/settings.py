@@ -21,7 +21,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from django.contrib.auth.models import Group
 from inboxen.helper.user import user_profile
 
 @login_required
@@ -33,19 +32,6 @@ def settings(request):
     
     # they submitting it?
     if request.method == "POST":
-        try:
-            spamfiltering = request.POST["spam_filtering"]
-        except KeyError:
-            spamfiltering = False
-
-        sfg = Group.objects.get(name="SpamFiltering") # spam filtering group
-
-        if spamfiltering and not request.user.groups.filter(name="SpamFiltering").exists():
-            request.user.groups.add(sfg)
-        elif not spamfiltering and request.user.groups.filter(name="SpamFiltering").exists():
-            request.user.groups.remove(sfg)
-
-        request.user.save()
         
         profile.html_preference = int(request.POST["html-preference"])
         profile.save()        
@@ -55,16 +41,8 @@ def settings(request):
             return HttpResponseRedirect("/user/settings")
 
 
-    # okay they're viewing the settings page
-    # we need to load their settings first.
-    if request.user.groups.filter(name="SpamFiltering").exists():
-        sf = True
-    else:
-        sf = False
-
     context = {
         "page":"Settings",
-        "spamfiltering":sf,
         "error":error,
         "htmlpreference":int(profile.html_preference),
     }
