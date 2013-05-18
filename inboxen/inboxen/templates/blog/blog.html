@@ -3,6 +3,10 @@
 {% load i18n %}
 {% load markup %}
 
+{% block feeds %}
+	<link href="http://inboxen.org/blog/feed" rel="alternate" type="application/rss+xml" title="Inboxen Blog" />
+{% endblock %}
+
 {% block content %}
 
 	{% if user.is_staff %}

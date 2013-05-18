@@ -19,14 +19,16 @@
 
 from django.conf import settings
 from django.conf.urls import patterns, include, url
-
+from inboxen.views.blog.feed import RssFeed as BlogFeed
 
 urlpatterns = patterns('',
     url(r'^$', 'inboxen.views.index.index'),
     
     url(r'^blog/add/', 'inboxen.views.blog.add.add'),
+    url(r'^blog/post/(?P<postid>\d+)', 'inboxen.views.blog.view.post'),
     url(r'^blog/delete/(?P<postid>\d+)', 'inboxen.views.blog.delete.delete'),
     url(r'^blog/edit/(?P<postid>\d+)', 'inboxen.views.blog.edit.edit'),
+    url(r'^blog/feed/', BlogFeed()),
     url(r'^blog/', 'inboxen.views.blog.view.view'),
 
     url(r'^help/contact/', 'inboxen.views.help.contact.contact'),

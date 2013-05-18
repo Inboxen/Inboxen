@@ -39,7 +39,8 @@ def add(request):
 				subject=request.POST["title"],
 				body=request.POST["body"],
 				date=datetime.now(utc),
-				author=request.user
+				author=request.user,
+				modified=datetime.now(utc)
 			)
 
 			post.save()

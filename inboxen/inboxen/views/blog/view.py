@@ -20,6 +20,8 @@
 from inboxen.models import BlogPost
 
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
 
 def view(request):
 	posts = BlogPost.objects.all().order_by("-date")
@@ -30,3 +32,16 @@ def view(request):
 	}
 
 	return render(request, "blog/blog.html", context)
+
+def post(request, postid):
+	try:
+		p = BlogPost.objects.get(id=postid)
+	except BlogPost.DoesNotExist:
+		return HttpResponseRedirect("/blog/")
+
+	context = {
+		"page":p.subject,
+		"post":p,
+	}
+
+	return render(request, "blog/post.html", context)

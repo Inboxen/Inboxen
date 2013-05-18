@@ -17,8 +17,6 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-
-
 import base64
 
 from django.db import models
@@ -28,7 +26,9 @@ class BlogPost(models.Model):
     subject = models.CharField(max_length=512)
     body = models.TextField()
     date = models.DateTimeField('posted')
+    modified = models.DateTimeField('modified')
     author = models.ForeignKey(User)
+
 
 class Domain(models.Model):
     # these are the domains available to create aliases from

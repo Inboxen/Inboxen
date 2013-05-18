@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load markup %}
+
+{% block feeds %}
+	<link href="http://inboxen.org/blog/feed" rel="alternate" type="application/rss+xml" title="Inboxen Blog" />
+{% endblock %}
+
+{% block content %}
+
+	{% if user.is_staff %}
+		<p class="text-right">
+			<a href="/blog/edit/{{ post.id }}" class="btn">{% trans "Edit" %}</a>
+			<a href="/blog/delete/{{ post.id }}" class="btn">{% trans "Delete" %}</a>
+		</p>
+	{% endif %}
+
+	<h2 class="inline">{{ post.subject }}</h2>
+	<p class="text-right"><i>{{ post.date }}</i></p>
+	<p> {{ post.body|markdown }}</p><br />
+
+{% endblock %}
