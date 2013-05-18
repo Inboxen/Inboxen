@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+
+	{% if error %}
+		<h4>{{ error }}</h4>
+	{% endif %}
+
+	<form class="form wide-form" action="/blog/add/" method="POST">
+		{% csrf_token %}
+		<input type="text" placeholder="Title" name="title"><br />
+		<textarea rows="20" name="body" placeholder="Body" class="input-xxlarge"></textarea><br />
+		<button class="btn">Post</button>
+	</form>
+
+{% endblock %}

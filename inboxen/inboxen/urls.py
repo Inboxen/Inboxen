@@ -24,6 +24,11 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     url(r'^$', 'inboxen.views.index.index'),
     
+    url(r'^blog/add/', 'inboxen.views.blog.add.add'),
+    url(r'^blog/delete/(?P<postid>\d+)', 'inboxen.views.blog.delete.delete'),
+    url(r'^blog/edit/(?P<postid>\d+)', 'inboxen.views.blog.edit.edit'),
+    url(r'^blog/', 'inboxen.views.blog.view.view'),
+
     url(r'^help/contact/', 'inboxen.views.help.contact.contact'),
 
     url(r'^user/login/', 'django.contrib.auth.views.login', 

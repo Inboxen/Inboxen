@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+{% load markup %}
+
+{% block content %}
+
+	<form class="form wide-form" action="/blog/edit/{{ post.id }}/" method="POST">
+		{% csrf_token %}
+
+		<input type="text" value="{{ post.subject }}" name="subject" class="input-xxlarge"><br />
+		<textarea rows="20" name="body" class="input-xxlarge">{{ post.body }}</textarea><br />
+		<button class="btn">Save</button><br />
+
+	</form>
+
+{% endblock %}
