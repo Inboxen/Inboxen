@@ -6,7 +6,7 @@
 {% block content %}
 
 	{% if user.is_staff %}
-		<p class="text-right"><a href="/blog/add" class="btn">{% trans "New Post" %}</a></p>
+		<p class="text-right"><a href="/blog/add/" class="btn">{% trans "New Post" %}</a></p>
 	{% endif %}
 
 	{% for post in posts %}
