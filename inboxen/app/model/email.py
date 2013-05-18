@@ -28,7 +28,7 @@ def make_email(message, alias, domain):
 
     Will throw an Alias.DoesNotExist exception if alias and domain are not valid"""
 
-    inbox = Alias.objects.get(alias=alias, domain__domain=domain) # will exist
+    inbox = Alias.objects.get(alias=alias, domain__domain=domain, deleted=False) # will exist
     user = inbox.user
     body = message.base.body
     recieved_date = parser.parse(message[recieved_header_name])
