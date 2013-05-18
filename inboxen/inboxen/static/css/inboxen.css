@@ -1,7 +1,7 @@
 /*
-First off, some styling to bootstrap
-These have been adapted from: http://twitter.github.io/bootstrap/examples/carousel.html
-*/
+ * First off, some styling to bootstrap
+ * These have been adapted from: http://twitter.github.io/bootstrap/examples/carousel.html
+ */
 body {
 
 	padding-bottom: 40px;
@@ -82,9 +82,9 @@ body {
 }
 
 /*
-Form stuff
-Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
-*/
+ * Form stuff
+ * Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
+ */
 .error {
 	margin-left:35%;
 }
@@ -119,23 +119,10 @@ Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
 	margin-left:30%;
 }
 
-.btn-danger {
-	color: rgb(200, 0, 0);
-	font-weight: bold;
-	text-shadow: none;
-	background-image: linear-gradient(to bottom, rgb(255, 255, 255), rgb(230, 230, 230));
-	border-color: #BBB;
-}
-
-.btn-danger:hover {
-	color: rgb(200, 0, 0);
-	background-color: rgb(230, 230, 230);
-}
-
 
 /*
-Right now some other stuff
-*/
+ * Right now some melon stuff
+ */
 
 .constant-alias {
 	width:100px;
@@ -170,8 +157,8 @@ Right now some other stuff
 }
 
 /*
-* Labels
-*/
+ * Labels
+ */
 
 .label {
 	color: #555;
