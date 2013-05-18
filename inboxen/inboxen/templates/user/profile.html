@@ -29,13 +29,14 @@
             <th>{% trans "Delete" %}</th>
         </tr>
         </thead>
-        <ttr>
+        <tr class="warning">
             <td>{% trans "Unified" %}</td>
             <td><span title="{{ user.date_joined }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
             <td>&nbsp;</td>
             <td><a href="/inbox/">{% trans "View" %}</a></td>
             <td><span class="muted">{% trans "Edit" %}</span></td>
             <td><span class="muted">{% trans "Deleted" %}</span></td>
+        </tr>
 
 
         {% for alias in aliases.object_list %}
