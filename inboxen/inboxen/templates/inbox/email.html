@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="page-header">
-	<h1>{{ email.subject }}</h2> <small> {{ email.from }} </small>
+    <h1>{{ email.subject }}</h2> <small> {{ email.from }} </small>
 <div class="email">
-	<strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
+    <strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
 
-	<strong>{% trans "Message" %}</strong>:<br />
-	{% if plain_message %}
-	    <pre>
-	{% endif %}
+    <strong>{% trans "Message" %}</strong>:<br />
+    {% if plain_message %}
+        <pre>
+    {% endif %}
 
-	{{ email.body }}
+    {{ email.body }}
 
-	{% if plain_message %}
-	    </pre>
-	{% endif %}
+    {% if plain_message %}
+        </pre>
+    {% endif %}
 
     <br />
     <strong>{% trans "Attachments" %}</strong>:<br />

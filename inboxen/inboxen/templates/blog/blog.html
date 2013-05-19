@@ -4,26 +4,26 @@
 {% load markup %}
 
 {% block feeds %}
-	<link href="http://inboxen.org/blog/feed" rel="alternate" type="application/rss+xml" title="Inboxen Blog" />
+    <link href="http://inboxen.org/blog/feed" rel="alternate" type="application/rss+xml" title="Inboxen Blog" />
 {% endblock %}
 
 {% block content %}
 
-	{% if user.is_staff %}
-		<p class="text-right"><a href="/blog/add/" class="btn">{% trans "New Post" %}</a></p>
-	{% endif %}
+    {% if user.is_staff %}
+        <p class="text-right"><a href="/blog/add/" class="btn">{% trans "New Post" %}</a></p>
+    {% endif %}
 
-	{% for post in posts %}
-		<h2 class="inline">{{ post.subject }}</h2>
-		<p class="text-right"><i>{{ post.date }}</i></p>
-		<p> {{ post.body|markdown }}</p><br />
-		<br />
-		{% if user.is_staff %}
-			<p>	<a href="/blog/edit/{{ post.id }}">{% trans "Edit" %}</a>
-				<a href="/blog/delete/{{ post.id }}">{% trans "Delete" %}</a>
-			</p>
-		{% endif %}
+    {% for post in posts %}
+        <h2 class="inline">{{ post.subject }}</h2>
+        <p class="text-right"><i>{{ post.date }}</i></p>
+        <p> {{ post.body|markdown }}</p><br />
+        <br />
+        {% if user.is_staff %}
+            <p>    <a href="/blog/edit/{{ post.id }}">{% trans "Edit" %}</a>
+                <a href="/blog/delete/{{ post.id }}">{% trans "Delete" %}</a>
+            </p>
+        {% endif %}
 
-	{% endfor %}
+    {% endfor %}
 
 {% endblock %}

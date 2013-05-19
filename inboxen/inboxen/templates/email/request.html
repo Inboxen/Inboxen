@@ -6,51 +6,51 @@
 
 {% if error %}
 
-	<h2> Error </h2>
-	<p> {{ error }}
+    <h2> Error </h2>
+    <p> {{ error }}
 {% endif %}
 
 {% if request %}
-	<h2>{% trans "Request more addresses" %}</h2>
-	<p class="text-left">We'll do our best to get back to you as soon as possible, if you go to this page you can see information about your request(s)</p>
+    <h2>{% trans "Request more addresses" %}</h2>
+    <p class="text-left">We'll do our best to get back to you as soon as possible, if you go to this page you can see information about your request(s)</p>
 
-	<form action="/email/request/" method="POST">
-		{% csrf_token %}
-		<p><button class="btn text-left">Request</button></p>
-	</form>
+    <form action="/email/request/" method="POST">
+        {% csrf_token %}
+        <p><button class="btn text-left">Request</button></p>
+    </form>
 {% endif %}
 
 {% if prior_requests %}
-	<h2> {% trans "Requests" %}</h2>
-	<table class="table table-centre table-bordered">
-		<thead>
-		<tr>
-			<th>{% trans "Alias Amount" %}</th>
-			<th>{% trans "Request Date" %}</th>
-			<th>{% trans "Result" %}</th>
-		</tr>
-		</thead>
-		{% for r in prior_requests %}
-			{% if r.succeeded ==  None %}
-				<tr class="warning">
-			{% elif r.succeeded %}
-				<tr class="success">
-			{% else %}
-				<tr class="error">
-			{% endif %}
-				<td>{{ r.amount }}</td>
-				<td>{{ r.date|timesince }} {% trans "ago" %}</td>
-				{% if r.result %}
-					<td>{{ r.result }}</td>
-				{% else %}
-					<td>&nbsp;</td>
-				{% endif %}
-			</tr>
-		{% endfor %}
+    <h2> {% trans "Requests" %}</h2>
+    <table class="table table-centre table-bordered">
+        <thead>
+        <tr>
+            <th>{% trans "Alias Amount" %}</th>
+            <th>{% trans "Request Date" %}</th>
+            <th>{% trans "Result" %}</th>
+        </tr>
+        </thead>
+        {% for r in prior_requests %}
+            {% if r.succeeded ==  None %}
+                <tr class="warning">
+            {% elif r.succeeded %}
+                <tr class="success">
+            {% else %}
+                <tr class="error">
+            {% endif %}
+                <td>{{ r.amount }}</td>
+                <td>{{ r.date|timesince }} {% trans "ago" %}</td>
+                {% if r.result %}
+                    <td>{{ r.result }}</td>
+                {% else %}
+                    <td>&nbsp;</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
 
-	</table>
+    </table>
 
-	<em><p class="text-info">{% trans "Please note that you may have a pending request, if this has not been answered after a few days please contact support." %}</p></em>
+    <em><p class="text-info">{% trans "Please note that you may have a pending request, if this has not been answered after a few days please contact support." %}</p></em>
 {% endif %}
 
 {% endblock %}

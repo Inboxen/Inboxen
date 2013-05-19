@@ -4,24 +4,24 @@
 
 {% block content %}
 <form class="form" action="/email/edit/{{ email }}" method="POST">
-	{% csrf_token %}
-	<div class="input-prepend input-append">
-		<span class="add-on">
-			{{ alias }}
-		</span>
-		<a class="btn btn-attachment disabled" id="appendedPrependedInput">@</a>
-		<span class="add-on">
-			{{ domain }}
-		</span>
-	</div>
+    {% csrf_token %}
+    <div class="input-prepend input-append">
+        <span class="add-on">
+            {{ alias }}
+        </span>
+        <a class="btn btn-attachment disabled" id="appendedPrependedInput">@</a>
+        <span class="add-on">
+            {{ domain }}
+        </span>
+    </div>
 
-	{% if tags %}
-		<input type="text" value="{{ tags }}" name="tags">
-	{% else %}
-		<input type="text" name="tags" placeholder="{% trans "Tag1, Tag2, etc.." %}">
-	{% endif %}
+    {% if tags %}
+        <input type="text" value="{{ tags }}" name="tags">
+    {% else %}
+        <input type="text" name="tags" placeholder="{% trans "Tag1, Tag2, etc.." %}">
+    {% endif %}
 
-	<button class="btn">{% trans "Save" %}</button>
-	<a class="btn" href="/user/profile">Cancel</a>
+    <button class="btn">{% trans "Save" %}</button>
+    <a class="btn" href="/user/profile">Cancel</a>
 </form>
 {% endblock %}
