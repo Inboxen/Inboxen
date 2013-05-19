@@ -3,18 +3,18 @@
 {% load i18n %}
 
 {% block content %}
-	<h2> {% trans "Current status of Inboxen" %}</h2>
-	<p> Inboxen is currently in heavy development, we're currently <strong>not</strong> feature complete. We expect there to be bugs during this process as the software is developed and it continues. Please be aware of the following things:<br />
-		<ul>
-			<li> The software <strong>may</strong> contain critical bugs (which may result in data loss, non-functioning parts of the code, etc...)</li>
-			<li> The infrastruture is also being tested and developed, this means we may have server problems and even downtime during our development </li>
-		</ul>
+    <h2> {% trans "Current status of Inboxen" %}</h2>
+    <p> Inboxen is currently in heavy development, we're currently <strong>not</strong> feature complete. We expect there to be bugs. Please be aware of the following things:<br />
+        <ul>
+            <li> The software <strong>may</strong> contain critical bugs (which may result in data loss, non-functioning parts of the code, etc...)</li>
+            <li> The infrastruture is also being tested and developed, this means we may have server problems and even downtime </li>
+        </ul>
 
-	<br />
-	Please only continue if you accept these could occur and you're using this software. We're constantly working on Inboxen, in the future the risks will be much lower and we will become a stable, reliable service.
+    <br />
+    Please only continue if you accept these could occur while using this software. We're constantly working on Inboxen, in the future the risks will be much lower and we will have a stable, reliable service.
 
-	<br />
-	<br />
-	<a href="/" class="btn btn-centre">{% trans "I'll return when you're stable" %}</a>
-	<a href="/user/register/" class="btn">{% trans "I accept! Let me join!" %}</a>
+    <br />
+    <br />
+    <a href="/" class="btn btn-centre">{% trans "I'll return when you're stable" %}</a>
+    <a href="/user/register/" class="btn">{% trans "I accept! Let me join!" %}</a>
 {% endblock %}
