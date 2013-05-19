@@ -1,6 +1,8 @@
 inboxen/logs
 inboxen/run
 inboxen/inboxen/settings.py
+inboxen/config/logging.conf
+inboxen/config/test_logging.conf
 
 *.py[cod]
 *.sw?
