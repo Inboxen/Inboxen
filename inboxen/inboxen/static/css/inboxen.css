@@ -3,82 +3,76 @@
  * These have been adapted from: http://twitter.github.io/bootstrap/examples/carousel.html
  */
 body {
-
-	padding-bottom: 40px;
+    padding-bottom: 40px;
     color: #5a5a5a;
 }
 
 .navbar-wrapper {
-	margin-bottom: -90px;
+    margin-bottom: -90px;
 }
 
 .container {
-	margin-left:10%;
-	margin-right:0;
-
-	width:80%;
+    margin-left:10%;
+    margin-right:0;
+    width:80%;
 }
 
 .navbar .navbar-inner {
-	background-image: none;
-	background-color: rgb(238, 238, 238);
-	border-radius: 0px 0px 4px 4px;
-	border: 1px solid rgb(204, 204, 204);;
+    background-image: none;
+    background-color: rgb(238, 238, 238);
+    border-radius: 0px 0px 4px 4px;
+    border: 1px solid rgb(204, 204, 204);;
 }
 
-
-
 .navbar .brand {
-	padding: 14px 20px 16px;
-	font-size: 16px;
-	font-weight: bold;
+    padding: 14px 20px 16px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .navbar .nav > li > a {
-	padding: 15px 20px;
+    padding: 15px 20px;
 }
 
 .navbar .btn-navbar {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .navbar-inverse .brand, .navbar-inverse .nav > li > a {
-	color:#222;
-	text-shadow: none;
+    color:#222;
+    text-shadow: none;
 }
 
 .navbar-inverse .brand:hover, .navbar-inverse .nav > li > a:hover, .navbar-inverse .brand:focus, .navbar-inverse .nav > li > a:focus {
-	color:#555;
+    color:#555;
 }
 
 .navbar-inverse .nav > li > a:focus, .navbar-inverse .nav > li > a:hover {
-	color:#555;
+    color:#555;
 }
 
 @media (max-width: 979px) {
-
-	.container.navbar-wrapper {
-		margin-bottom: 0;
-	}
-	.navbar-inner {
-		border-radius: 0;
-		margin: -20px 0;
-	}
+    .container.navbar-wrapper {
+        margin-bottom: 0;
+    }
+    .navbar-inner {
+        border-radius: 0;
+        margin: -20px 0;
+    }
 }
 
 
 @media (max-width: 767px) {
+    .container {
+        margin-left:0;
+        margin-right:0;
+        width:auto;
+    }
 
-	.container {
-		margin-left:0;
-		margin-right:0;
-		width:auto;
-	}
-
-	.navbar-inner {
-		padding-top:10px;
-		margin: -20px;
-	}
+    .navbar-inner {
+        padding-top:10px;
+        margin: -20px;
+    }
 }
 
 /*
@@ -86,37 +80,37 @@ body {
  * Adjusted from: http://twitter.github.io/bootstrap/examples/signin.html
  */
 .error {
-	margin-left:35%;
+    margin-left:35%;
 }
 
 .form {
-	max-width: 210px;
-	padding: 19px 19px 19px;
-	margin: 0 auto 20px;
-	background-color: #FFF;
-	border: 1px solid #e5e5e5;
+    max-width: 210px;
+    padding: 19px 19px 19px;
+    margin: 0 auto 20px;
+    background-color: #FFF;
+    border: 1px solid #e5e5e5;
 }
 
 .wide-form {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 .form input {
-	height: auto;
-	padding: 4px 3px;
+    height: auto;
+    padding: 4px 3px;
 }
 
 .form select {
-	width: 78%;
+    width: 78%;
 }
 
 .btn {
-	margin-top:5px;
-	border-color: #BBB;
+    margin-top:5px;
+    border-color: #BBB;
 }
 
 .btn-centre {
-	margin-left:30%;
+    margin-left:30%;
 }
 
 
@@ -125,27 +119,24 @@ body {
  */
 
 .constant-alias {
-	width:100px;
+    width:100px;
 }
 
 .content {
-	margin-top:100px;
-
-	margin-left:10%;
-	margin-right:10%;
-
-	padding-left:10px;
-	padding-right:10px;
+    margin-top:100px;
+    margin-left:10%;
+    margin-right:10%;
+    padding-left:10px;
+    padding-right:10px;
 }
 
-
 .big-paragraph {
-	font-size:12pt;
+    font-size:12pt;
 }
 
 .label-right {
-	margin-top:10px;
-	float:right;
+    margin-top:10px;
+    float:right;
 }
 
 .btn-attachment {
@@ -153,7 +144,7 @@ body {
 }
 
 .inline {
-	display:inline;
+    display:inline;
 }
 
 /*
@@ -161,8 +152,8 @@ body {
  */
 
 .label {
-	color: #555;
-	font-weight: normal;
-	text-shadow: none;
-	background-color: rgb(238, 238, 238);
+    color: #555;
+    font-weight: normal;
+    text-shadow: none;
+    background-color: rgb(238, 238, 238);
 }
