@@ -22,10 +22,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from inboxen.models import Attachment
 
 @login_required
-def download(request, attachment_id, method="download"):
+def download(request, attachmentid, method="download"):
     try:
-        attachment = Attachment.objects.get(id=attachment_id)
+        attachment = Attachment.objects.get(id=attachmentid)
     except Attachment.DoesNotExist:
+    	# this should be an error
         return HttpResponseRedirect("/user/profile")
 
     response = HttpResponse(attachment.data, content_type=attachment.content_type)

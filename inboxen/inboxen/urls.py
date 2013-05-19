@@ -64,7 +64,7 @@ urlpatterns = patterns('',
     url(r'^email/edit/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.edit.edit'),
     url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.delete.confirm'),
 
-    url(r'^inbox/attachment/(?P<attachment_id>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.attachment.download'),
+    url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.attachment.download'),
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/delete/(?P<emailid>\d+)', 'inboxen.views.inbox.delete.delete'),
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
 
