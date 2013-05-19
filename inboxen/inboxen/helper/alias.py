@@ -17,9 +17,27 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from random import choice
+from string import ascii_lowercase
+
 from django.core.exceptions import ObjectDoesNotExist
 from inboxen.models import Email, Tag, Alias, Domain
 from inboxen.helper.user import user_profile
+
+def gen_alias(count, alias="", ocount=5):
+
+    if count <= 0:
+        # now we need to check if it's taken.
+        try:
+            Alias.objects.get(alias=alias, deleted=False)
+            return gen_alias(ocount)
+
+        except Alias.DoesNotExist:
+            return alias
+    
+    alias += choice(ascii_lowercase)
+    
+    return gen_alias(count-1, alias, ocount)
 
 def delete_alias(email, user=None):
     """ Deletes the email and all the data """

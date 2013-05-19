@@ -28,10 +28,14 @@ def view(request, email_address, emailid):
 
     alias, domain = email_address.split("@", 1)
     
-    try:
-        alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
-    except Alias.DoesNotExist:
-        return error_out(page="Inbox", message="Alias doesn't exist")
+    # support stuff
+    if request.user.is_staff and alias == "support":
+        alias = Alias.objects.filter(alias=alias)[0]
+    else:
+        try:
+            alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
+        except Alias.DoesNotExist:
+            return error_out(page="Inbox", message="Alias doesn't exist")
 
     try:
         email = get_email(request.user, emailid, read=True)

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+	<p class="text-center text-info">{% trans "To change the alias please reload the page" %}</p>
+{% else %}
+	<p class="text-center text-info">{% trans "If you prefer not to give an email, please login to your Inboxen account. You can send one with an Inboxen alias" %}</p>
+{% endif %}
+
+<form action="/help/contact/" method="POST" class="form wide-form">
+	{% csrf_token %}
+
+	{% if user.is_authenticated %}
+		<input type="hidden" name="alias" value="{{ alias }}">
+        <div class="input-prepend">
+            <span class="add-on constant-alias">{{ alias }}@</span>
+            <select id="prependedInput" name="domain">
+            {% for domain in domains %}
+                <option value="{{ domain }}">{{ domain }}</option>
+            {% endfor %}
+            </select>
+        </div><br />
+	{% else %}
+		<input type="text" name="email" placeholder="Email"><br />
+	{% endif %}
+	<input type="text" name="subject" placeholder="Subject"><br />
+	<textarea rows="10" name="body" class="input-xxlarge"></textarea><br />
+	<button class="btn">Send</button>
+</form>
+
+{% endblock %}

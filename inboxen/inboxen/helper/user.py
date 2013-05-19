@@ -17,7 +17,18 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.contrib.auth.models import User
 from inboxen.models import UserProfile
+
+def null_user():
+	try:
+		user = User.objects.get(username__exact='Melon')
+	except User.DoesNotExist:
+		user = User.objects.create_user('Melon', '', '')
+		user.set_unusable_password()
+		user.save()
+	
+	return user
 
 def user_profile(user):
     """ Gets or creates a user profile """

@@ -18,14 +18,11 @@
 from django.conf import settings
 from django.shortcuts import render
 
-from inboxen.helper.email import send_email 
-
-def contact(request):
-
+def success(request):
 
     context = {
         "page":"Contact",
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
-    return render(request, "help/contact.html", context)
+    return render(request, "help/contact/success.html", context)

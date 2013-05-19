@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url(r'^blog/feed/', BlogFeed()),
     url(r'^blog/', 'inboxen.views.blog.view.view'),
 
+    url(r'^help/contact/success', 'inboxen.views.help.contact.success.success'),
     url(r'^help/contact/', 'inboxen.views.help.contact.contact'),
 
     url(r'^user/login/', 'django.contrib.auth.views.login', 

@@ -38,6 +38,16 @@
             <td><span class="muted">{% trans "Deleted" %}</span></td>
         </tr>
 
+        {% if user.is_staff %}
+            <tr class="warning">
+                <td>{% trans "Support Email" %}</td>
+                <td><span title="{{ support.date }}">{{ support.date|timesince }}</span></td>
+                <td>&nbsp;</td>
+                <td><a href="/inbox/{{ support }}">{% trans "View" %}</a></td>
+                <td><span class="muted">{% trans "Edit" %}</span></td>
+                <td><span class="muted">{% trans "Deleted" %}</span></td>
+            </tr>
+        {% endif %}
 
         {% for alias in aliases.object_list %}
 

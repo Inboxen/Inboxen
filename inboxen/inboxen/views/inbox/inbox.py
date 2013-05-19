@@ -45,7 +45,7 @@ def inbox(request, email_address="", page=1):
                 "email_address":email_address,
             }
             
-            return render(request, "inbox.html", context)
+            return render(request, "inbox/inbox.html", context)
 
     paginator = Paginator(inbox, 100)
 

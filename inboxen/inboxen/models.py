@@ -42,7 +42,6 @@ class Alias(models.Model):
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
-
     deleted = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -50,6 +49,10 @@ class Alias(models.Model):
         if self.deleted:
             deleted = " (deleted)"
         return u"%s@%s%s" % (self.alias, self.domain.domain, deleted)
+
+    class Meta:
+        verbose_name_plural = "Aliases"
+        unique_together = ('alias', 'domain')
 
 
 class Request(models.Model):

@@ -22,12 +22,14 @@ from pytz import utc
 from django.utils.safestring import mark_safe
 
 from inboxen.models import Email, Attachment, Alias, Header
-from inboxen.helper.user import user_profile
+from inboxen.helper.user import user_profile, null_user
 
 def send_email(user, alias, sender, subject=None, body=""):
     """ Sends an email to an internal alias """
+    if not user:
+        user = null_user()
+
     email = Email(
-        read=False,
         user=user,
         inbox=alias,
         recieved_date=datetime.now(utc)
@@ -36,10 +38,14 @@ def send_email(user, alias, sender, subject=None, body=""):
     if body:
         email.body = body
 
+    email.save()
+
     sender = Header(
         name="From",
         data=sender,
     )
+
+    sender.save()
 
     email.headers.add(sender)
 
@@ -49,15 +55,11 @@ def send_email(user, alias, sender, subject=None, body=""):
             data=subject
         )
 
+        subject.save()
+
         email.headers.add(subject)
 
-    email.send()
-
-    
-
-
-
-
+    email.save()
 
 def get_email(user, email_id, preference=None, read=False):
     """ Gets an email based on user preferences and id of the email """
