@@ -23,6 +23,14 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 
+def status(request):
+    context = {
+        "page":"We're not stable!",
+        "registration_enabled":settings.ENABLE_REGISTRATION,
+    }
+
+    return render(request, "user/software-status.html", context)
+
 def register(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect("/user/profile")
