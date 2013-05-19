@@ -22,7 +22,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from inboxen.models import Attachment
 
 @login_required
-def download(request):
+def download(request, attachment_id, method="download"):
     try:
         attachment = Attachment.objects.get(id=attachment_id)
     except Attachment.DoesNotExist:
