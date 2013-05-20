@@ -28,6 +28,8 @@ from inboxen.helper.user import user_profile, null_user
 
 def clean_html(email):
     email = BeautifulSoup(email, "lxml")
+    for elem in email.findAll(['script']):
+        elem.extract()
     email = email.prettify()
     return email
 
