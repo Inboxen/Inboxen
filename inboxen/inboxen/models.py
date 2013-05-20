@@ -38,7 +38,7 @@ class Domain(models.Model):
         return self.domain
 
 class Alias(models.Model):
-    alias = models.CharField(max_length=512)
+    alias = models.CharField(max_length=256)
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
