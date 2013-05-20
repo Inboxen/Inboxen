@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from django.conf import settings
 
 from inboxen.models import BlogPost
 
@@ -29,6 +30,7 @@ def view(request):
 	context = {
 		"page":"Blog",
 		"posts":posts,
+		"registration_enabled":settings.ENABLE_REGISTRATION,
 	}
 
 	return render(request, "blog/blog.html", context)
@@ -42,6 +44,7 @@ def post(request, postid):
 	context = {
 		"page":p.subject,
 		"post":p,
+		"registration_enabled":settings.ENABLE_REGISTRATION,
 	}
 
 	return render(request, "blog/post.html", context)
