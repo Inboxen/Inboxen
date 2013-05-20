@@ -25,11 +25,11 @@ from inboxen.models import BlogPost
 @user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
 def delete(request, postid):
 
-	try:
-		post = BlogPost.objects.get(id=postid)
-	except BlogPost.DoesNotExist:
-		return HttpResponseRedirect("/blog/")
+    try:
+        post = BlogPost.objects.get(id=postid)
+    except BlogPost.DoesNotExist:
+        return HttpResponseRedirect("/blog/")
 
-	post.delete()
+    post.delete()
 
-	return HttpResponseRedirect("/blog/")
+    return HttpResponseRedirect("/blog/")

@@ -29,28 +29,28 @@ from inboxen.models import BlogPost
 @user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
 def edit(request, postid):
 
-	error = ""
+    error = ""
 
-	try:
-		post = BlogPost.objects.get(id=postid)
-	except BlogPost.DoesNotExist:
-		return HttpResponseRedirect("/blog/")
+    try:
+        post = BlogPost.objects.get(id=postid)
+    except BlogPost.DoesNotExist:
+        return HttpResponseRedirect("/blog/")
 
-	if request.method == "POST":
-		if not ("subject" in request.POST or "body" in request.POST):
-			error = "You need to specify the subject and body of the post"
-		else:
-			post.subject = request.POST["subject"]
-			post.body = request.POST["body"]
-			post.modified = datetime.now(utc)
-			post.save()
+    if request.method == "POST":
+        if not ("subject" in request.POST or "body" in request.POST):
+            error = "You need to specify the subject and body of the post"
+        else:
+            post.subject = request.POST["subject"]
+            post.body = request.POST["body"]
+            post.modified = datetime.now(utc)
+            post.save()
 
-			return HttpResponseRedirect("/blog/")
+            return HttpResponseRedirect("/blog/")
 
-	context = {
-		"error":error,
-		"page":post.subject,
-		"post":post,
-	}
+    context = {
+        "error":error,
+        "page":post.subject,
+        "post":post,
+    }
 
-	return render(request, "blog/edit.html", context)
+    return render(request, "blog/edit.html", context)

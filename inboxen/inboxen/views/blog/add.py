@@ -29,28 +29,28 @@ from inboxen.models import BlogPost
 @user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
 def add(request):
 
-	error = ""
+    error = ""
 
-	if request.method == "POST":
-		if not ("title" in request.POST or "body" in request.POST):
-			error = "You need to have a title and the blog's body"
-		else:
-			post = BlogPost(
-				subject=request.POST["title"],
-				body=request.POST["body"],
-				date=datetime.now(utc),
-				author=request.user,
-				modified=datetime.now(utc)
-			)
+    if request.method == "POST":
+        if not ("title" in request.POST or "body" in request.POST):
+            error = "You need to have a title and the blog's body"
+        else:
+            post = BlogPost(
+                subject=request.POST["title"],
+                body=request.POST["body"],
+                date=datetime.now(utc),
+                author=request.user,
+                modified=datetime.now(utc)
+            )
 
-			post.save()
+            post.save()
 
-			return HttpResponseRedirect("/blog/")
+            return HttpResponseRedirect("/blog/")
 
 
-	context = {
-		"error":error,
-		"page":"Add Post",
-	}
+    context = {
+        "error":error,
+        "page":"Add Post",
+    }
 
-	return render(request, "blog/add.html", context)
+    return render(request, "blog/add.html", context)

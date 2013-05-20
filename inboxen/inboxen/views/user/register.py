@@ -31,6 +31,14 @@ def status(request):
 
     return render(request, "user/software-status.html", context)
 
+def success(request):
+
+    context = {
+        "page":"Welcome!"
+    }
+
+    return render(request, "user/register/success.html", context)
+
 def register(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect("/user/profile")
@@ -42,7 +50,7 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             new_user = form.save()
-            return HttpResponseRedirect('/user/profile')
+            return HttpResponseRedirect("/user/register/success")
     else:
         form = UserCreationForm()
     
@@ -52,4 +60,4 @@ def register(request):
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
-    return render(request, "user/register.html", context, context_instance=RequestContext(request))
+    return render(request, "user/register/register.html", context, context_instance=RequestContext(request))

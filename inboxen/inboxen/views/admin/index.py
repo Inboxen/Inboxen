@@ -32,30 +32,30 @@ from inboxen.helper.admin import statistics
 @staff_member_required
 def index(request):
 
-	# Lets get the open requests
-	requests = Request.objects.filter(succeeded=None)
+    # Lets get the open requests
+    requests = Request.objects.filter(succeeded=None)
 
-	# set some flags so coloured tables works.
-	old = datetime.now(utc) - timedelta(hours=12)
-	ancent = datetime.now(utc) - timedelta(days=1)
+    # set some flags so coloured tables works.
+    old = datetime.now(utc) - timedelta(hours=12)
+    ancent = datetime.now(utc) - timedelta(days=1)
 
-	for r in requests:
-		if r.date < ancent:
-			r.acent = True
-			continue
-		else:
-			r.acent = True
+    for r in requests:
+        if r.date < ancent:
+            r.acent = True
+            continue
+        else:
+            r.acent = True
 
-		if r.date  < old:
-			r.old = True
-			continue
-		else:
-			r.old = False	
+        if r.date  < old:
+            r.old = True
+            continue
+        else:
+            r.old = False   
 
-	context = {
-		"page":"Admin",
-		"requests":requests,
-		"statistics":statistics(),
-	}
+    context = {
+        "page":"Admin",
+        "requests":requests,
+        "statistics":statistics(),
+    }
 
-	return render(request, "admin/index.html", context)
+    return render(request, "admin/index.html", context)

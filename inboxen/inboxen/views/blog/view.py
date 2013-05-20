@@ -25,26 +25,26 @@ from django.http import HttpResponseRedirect
 
 
 def view(request):
-	posts = BlogPost.objects.all().order_by("-date")
+    posts = BlogPost.objects.all().order_by("-date")
 
-	context = {
-		"page":"Blog",
-		"posts":posts,
-		"registration_enabled":settings.ENABLE_REGISTRATION,
-	}
+    context = {
+        "page":"Blog",
+        "posts":posts,
+        "registration_enabled":settings.ENABLE_REGISTRATION,
+    }
 
-	return render(request, "blog/blog.html", context)
+    return render(request, "blog/blog.html", context)
 
 def post(request, postid):
-	try:
-		p = BlogPost.objects.get(id=postid)
-	except BlogPost.DoesNotExist:
-		return HttpResponseRedirect("/blog/")
+    try:
+        p = BlogPost.objects.get(id=postid)
+    except BlogPost.DoesNotExist:
+        return HttpResponseRedirect("/blog/")
 
-	context = {
-		"page":p.subject,
-		"post":p,
-		"registration_enabled":settings.ENABLE_REGISTRATION,
-	}
+    context = {
+        "page":p.subject,
+        "post":p,
+        "registration_enabled":settings.ENABLE_REGISTRATION,
+    }
 
-	return render(request, "blog/post.html", context)
+    return render(request, "blog/post.html", context)

@@ -2,17 +2,17 @@
 
 {% block content %}
 
-	<h2> Deleting your account </h2>
-	<p> This will delete your account, this cannot be undone. If you ever want to return to the service you will have to make a new account and you will <strong>not</strong> be able to recieve email on the addresses you have on this account.<br />
-	<br />
-	We ask you to type in the exact username (case sensative) you signed up with. If for whatever you can't you can email support and we can initate this process for you.
-	</p>
+    <h2> Deleting your account </h2>
+    <p> This will delete your account, this cannot be undone. If you ever want to return to the service you will have to make a new account and you will <strong>not</strong> be able to recieve email on the addresses you have on this account.<br />
+    <br />
+    We ask you to type in the exact username (case sensative) you signed up with. If for whatever you can't you can email support and we can initate this process for you.
+    </p>
 
-	<form class="form" action="/user/settings/delete" method="POST">
-		<input type="text" placeholder="Username">
-	</form>
+    <form class="form" action="/user/settings/delete" method="POST">
+        <input type="text" placeholder="Username">
+    </form>
 
-	<a style="margin-left:37%;" href="/user/profile" class="btn btn-centre">Don't delete my account!</a>
-	<button class="btn btn-danger">Delete my account</button>
+    <a style="margin-left:37%;" href="/user/profile" class="btn btn-centre">Don't delete my account!</a>
+    <button class="btn btn-danger">Delete my account</button>
 
 {% endblock %}

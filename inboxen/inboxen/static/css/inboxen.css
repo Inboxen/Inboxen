@@ -152,6 +152,10 @@ body {
  * Right now some melon stuff
  */
 
+.remove-style {
+    list-style-type: none;
+}
+
 .constant-alias {
     width:100px;
 }
