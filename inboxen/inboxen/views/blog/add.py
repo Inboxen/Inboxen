@@ -45,7 +45,7 @@ def add(request):
                 body=request.POST["body"],
                 date=datetime.now(utc),
                 author=request.user,
-                modified=datetime.now(utc)
+                modified=datetime.now(utc),
                 draft=draft
             )
 
