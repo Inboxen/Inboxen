@@ -27,7 +27,7 @@ from inboxen.models import Email, Attachment, Alias, Header
 from inboxen.helper.user import user_profile, null_user
 
 def clean_html(email):
-    email = BeautifulSoup(email)
+    email = BeautifulSoup(email, "lxml")
     email = email.prettify()
     return email
 
