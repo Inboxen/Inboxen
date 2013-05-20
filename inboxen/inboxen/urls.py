@@ -21,6 +21,9 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from inboxen.views.blog.feed import RssFeed as BlogFeed
 
+
+"""If you're debugging regex, test it out on http://www.debuggex.com/ first - M
+"""
 urlpatterns = patterns('',
     url(r'^$', 'inboxen.views.index.index'),
     
