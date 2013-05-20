@@ -45,7 +45,7 @@ def profile(request, page=1):
     # now we need to deduce how many unread emails there are
     total = 0
     for alias in aliases.object_list:
-        alias.email_count = Email.objects.filter(alias=alias, read=False).count()
+        alias.email_count = Email.objects.filter(inbox=alias, read=False).count()
         total += alias.email_count
 
     context = {
