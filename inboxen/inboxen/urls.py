@@ -72,7 +72,7 @@ urlpatterns = patterns('',
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox.inbox'),
 
-    url(r'^inbox/', 'inboxen.views.inbox.inbox.inbox'),
+    url(r'^inbox(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox.inbox'),
 
     url(r'^admin/', "inboxen.views.admin.index.index"),
 )
