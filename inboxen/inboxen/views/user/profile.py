@@ -20,7 +20,7 @@
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inboxen.models import Alias, Tag, Email
 from inboxen.helper.alias import alias_available
@@ -40,7 +40,14 @@ def profile(request, page=1):
     except Tag.DoesNotExist:
         pass
 
-    aliases = Paginator(aliases, 20).page(page)
+    paginator = Paginator(aliases, 20)
+
+    try:
+        aliases = paginator.page(page)
+    except PageNotAnInteger: # sometimes it's None
+        aliases = paginator.page(1)
+    except EmptyPage: # sometimes the user will try different numbers
+        aliases = paginator.page(paginator.num_pages)
 
     # now we need to deduce how many unread emails there are
     total = 0
