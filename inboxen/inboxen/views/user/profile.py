@@ -57,7 +57,7 @@ def profile(request, page=1):
 
     context = {
         "page":"Profile",
-        "aliases":Paginator(aliases, 20).page(page),
+        "aliases":aliases,
         "available":available,
         "total_email_count":total,
     }
