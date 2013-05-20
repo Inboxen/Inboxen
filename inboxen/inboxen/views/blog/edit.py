@@ -40,9 +40,15 @@ def edit(request, postid):
         if not ("subject" in request.POST or "body" in request.POST):
             error = "You need to specify the subject and body of the post"
         else:
+            if "draft" in request.POST and request.POST["draft"] == "melon":
+                draft = True
+            else:
+                draft = False
+
             post.subject = request.POST["subject"]
             post.body = request.POST["body"]
             post.modified = datetime.now(utc)
+            post.draft=draft
             post.save()
 
             return HttpResponseRedirect("/blog/")

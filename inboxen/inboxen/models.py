@@ -28,7 +28,7 @@ class BlogPost(models.Model):
     date = models.DateTimeField('posted')
     modified = models.DateTimeField('modified')
     author = models.ForeignKey(User)
-
+    draft = models.BooleanField(default=True)
 
 class Domain(models.Model):
     # these are the domains available to create aliases from

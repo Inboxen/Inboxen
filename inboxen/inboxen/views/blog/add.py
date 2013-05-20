@@ -35,12 +35,18 @@ def add(request):
         if not ("title" in request.POST or "body" in request.POST):
             error = "You need to have a title and the blog's body"
         else:
+            if "draft" in request.POST and request.POST["draft"] == "melon":
+                draft = True
+            else:
+                draft = False
+
             post = BlogPost(
                 subject=request.POST["title"],
                 body=request.POST["body"],
                 date=datetime.now(utc),
                 author=request.user,
                 modified=datetime.now(utc)
+                draft=draft
             )
 
             post.save()

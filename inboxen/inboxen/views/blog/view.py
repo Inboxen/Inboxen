@@ -25,7 +25,7 @@ from django.http import HttpResponseRedirect
 
 
 def view(request):
-    posts = BlogPost.objects.all().order_by("-date")
+    posts = BlogPost.objects.filter(draft=False).order_by("-date")
 
     context = {
         "page":"Blog",
@@ -37,7 +37,7 @@ def view(request):
 
 def post(request, postid):
     try:
-        p = BlogPost.objects.get(id=postid)
+        p = BlogPost.objects.get(id=postid, draft=False)
     except BlogPost.DoesNotExist:
         return HttpResponseRedirect("/blog/")
 
