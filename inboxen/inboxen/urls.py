@@ -64,13 +64,13 @@ urlpatterns = patterns('',
 
     url(r'^email/add/', 'inboxen.views.email.add.add'),
     url(r'^email/request/', 'inboxen.views.email.request.request'),
-    url(r'^email/edit/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.edit.edit'),
-    url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.delete.confirm'),
+    url(r'^email/edit/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', 'inboxen.views.email.edit.edit'),
+    url(r'^email/delete/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', 'inboxen.views.email.delete.confirm'),
 
     url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', 'inboxen.views.inbox.attachment.download'),
-    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/delete/(?P<emailid>\d+)', 'inboxen.views.inbox.delete.delete'),
-    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
-    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox.inbox'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/delete/(?P<emailid>\d+)', 'inboxen.views.inbox.delete.delete'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox.inbox'),
 
     url(r'^inbox(/(?P<page>\d+))?', 'inboxen.views.inbox.inbox.inbox'),
 
