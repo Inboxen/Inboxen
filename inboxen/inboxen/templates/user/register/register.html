@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+
+<div class="registration">
+
+    <div class="errors">
+        {% if form.errors %}
+            <ul>
+            {% for error in form.errors.values %}
+                {% for e in error %}
+                    <li class="remove-style text-center text-error">{{ e }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        {% endif %}
+    </div>  
+
+    <form action="" class="form form-login" method="post">
+        {% csrf_token %}
+        <input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
+        <input id="id_password1" name="password1" type="password" placeholder="Password" />
+        <input id="id_password2" name="password2" type="password" placeholder="Repeat Password" />
+
+
+        <button class="btn btn-centre">Sign up!</button>
+    </form>
+
+</div>
+{% endblock %}
