@@ -19,10 +19,17 @@
 from datetime import datetime
 from pytz import utc
 
+from bs4 import BeautifulSoup
+
 from django.utils.safestring import mark_safe
 
 from inboxen.models import Email, Attachment, Alias, Header
 from inboxen.helper.user import user_profile, null_user
+
+def clean_html(email):
+    email = BeautifulSoup(email)
+    email = email.prettify()
+    return email
 
 def send_email(user, alias, sender, subject=None, body=""):
     """ Sends an email to an internal alias """
