@@ -30,7 +30,11 @@
         </tr>
         </thead>
         <tr class="warning">
-            <td>{% trans "Unified" %}</td>
+            <td>{% trans "Unified" %}
+            {% if total_email_count %}
+                <span class="badge">{{ total_email_count }}</span>
+            {% endif %}
+            </td>
             <td><span title="{{ user.date_joined }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
             <td>&nbsp;</td>
             <td><a href="/inbox/">{% trans "View" %}</a></td>
@@ -52,7 +56,11 @@
         {% for alias in aliases.object_list %}
 
             <tr>
-                <td>{{ alias.alias }}@{{ alias.domain }}</td>
+                <td>{{ alias.alias }}@{{ alias.domain }}
+                {% if alias.email_count %}
+                    <span class="badge">{{ alias.email_count }}</span>
+                {% endif %}
+                </td>
                 <td><span title="{{ alias.created }}">{{ alias.created|timesince }} {% trans "ago" %}</span></td>
                 {% if alias.tags %}
                     <td>{{ alias.tags }}</td>

@@ -22,7 +22,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 
-from inboxen.models import Alias, Tag
+from inboxen.models import Alias, Tag, Email
 from inboxen.helper.alias import alias_available
     
 @login_required
@@ -40,10 +40,19 @@ def profile(request, page=1):
     except Tag.DoesNotExist:
         pass
 
+    aliases = Paginator(aliases, 20).page(page)
+
+    # now we need to deduce how many unread emails there are
+    total = 0
+    for alias in aliases.object_list:
+        alias.email_count = Email.objects.filter(alias=alias, read=False).count()
+        total += alias.email_count
+
     context = {
         "page":"Profile",
         "aliases":Paginator(aliases, 20).page(page),
         "available":available,
+        "total_email_count":total,
     }
     
     return render(request, "user/profile.html", context)

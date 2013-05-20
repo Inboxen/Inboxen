@@ -157,3 +157,13 @@ body {
     text-shadow: none;
     background-color: rgb(238, 238, 238);
 }
+
+/*
+* Bade
+*/
+.badge {
+    color: #555;
+    font-weight: normal;
+    text-shadow: none;
+    background-color: rgb(238, 238, 238);
+}
