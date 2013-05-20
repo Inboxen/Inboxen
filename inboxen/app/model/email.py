@@ -21,8 +21,10 @@
 
 from inboxen.models import Alias, Attachment, Email, Header
 from config.settings import datetime_format, recieved_header_name
+from django.db import transaction
 from dateutil import parser
 
+@transaction.commit_on_success
 def make_email(message, alias, domain):
     """Push message to the database.
 
