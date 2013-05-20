@@ -1,10 +1,44 @@
 /*
- * First off, some styling to bootstrap
+* Sticky footer:
+* Adapted from http://twitter.github.io/bootstrap/examples/sticky-footer.html
+*/
+
+body, html {
+    height: 100%;
+}
+
+.wrapper {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* The negative end number should be the same as the high in .footer */
+    margin: 0 auto -40px;
+}
+
+.footer {
+    background-color: rgb(238, 238, 238);
+    height: 40px;
+}
+
+.footer p {
+    padding-top: 10px;
+    margin-left: 10%;
+}
+
+.push {
+    height: 72px;
+}
+
+/*
+ * Some styling to bootstrap
  * These have been adapted from: http://twitter.github.io/bootstrap/examples/carousel.html
  */
+
 body {
     padding-bottom: 40px;
     color: #5a5a5a;
+    margin: 0;
+    padding: 0;
 }
 
 .navbar-wrapper {
@@ -14,6 +48,7 @@ body {
 .container {
     margin-left:10%;
     margin-right:0;
+    margin-bottom:20px;
     width:80%;
 }
 
