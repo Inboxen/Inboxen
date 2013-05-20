@@ -61,3 +61,4 @@ def register(request):
     }
 
     return render(request, "user/register/register.html", context, context_instance=RequestContext(request))
+
