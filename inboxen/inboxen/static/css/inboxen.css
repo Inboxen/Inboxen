@@ -15,10 +15,6 @@ body, html {
     margin: 0 auto -40px;
 }
 
-.footer {
-    background-color: rgb(238, 238, 238);
-}
-
 .footer p {
     text-align: center;
     padding-top: 10px;
