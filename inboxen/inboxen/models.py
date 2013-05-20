@@ -38,7 +38,7 @@ class Domain(models.Model):
         return self.domain
 
 class Alias(models.Model):
-    alias = models.CharField(max_length=256)
+    alias = models.CharField(max_length=512)
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
@@ -52,8 +52,6 @@ class Alias(models.Model):
 
     class Meta:
         verbose_name_plural = "Aliases"
-        unique_together = ('alias', 'domain')
-
 
 class Request(models.Model):
     amount = models.IntegerField()
