@@ -65,9 +65,10 @@ urlpatterns = patterns('',
     url(r'^email/edit/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.edit.edit'),
     url(r'^email/delete/(?P<email>[a-zA-Z0-9@\.]+)', 'inboxen.views.email.delete.confirm'),
 
-    url(r'^inbox/(?P<email_address>[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})/delete/(?P<emailid>\d+)', 'inboxen.views.inbox.delete.delete'),
-    url(r'^inbox/(?P<email_address>[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
     url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)/', 'inboxen.views.inbox.attachment.download'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/delete/(?P<emailid>\d+)', 'inboxen.views.inbox.delete.delete'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9@\.]+)/view/(?P<emailid>\d+)', 'inboxen.views.inbox.view.view'),
+
     url(r'^inbox/', 'inboxen.views.inbox.inbox.inbox'),
 
     url(r'^admin/', "inboxen.views.admin.index.index"),
