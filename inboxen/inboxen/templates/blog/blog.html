@@ -20,8 +20,8 @@
         <p> {{ post.body|markdown }}</p><br />
         <br />
         {% if user.is_staff %}
-            <p>    <a href="/blog/edit/{{ post.id }}">{% trans "Edit" %}</a>
-                <a href="/blog/delete/{{ post.id }}">{% trans "Delete" %}</a>
+            <p>    <a href="/blog/edit/{{ post.id }}" class="btn">{% trans "Edit" %}</a>
+                <a href="/blog/delete/{{ post.id }}" class="btn">{% trans "Delete" %}</a>
             </p>
         {% endif %}
         </div>
