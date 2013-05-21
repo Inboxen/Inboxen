@@ -47,7 +47,7 @@ def view(request, page=1):
     return render(request, "blog/blog.html", context)
 
 def post(request, postid):
-    if request.user.is_stuff:
+    if request.user.is_staff:
         kwargs = {"id": postid}
     else:
         kwargs = {"id": postid, "draft":False}
