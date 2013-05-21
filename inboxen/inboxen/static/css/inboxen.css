@@ -181,8 +181,12 @@ body {
     display:inline;
 }
 
-.draft-blog {
+div.draft-blog {
     background-color: HotPink;
+}
+
+a.blog_title {
+    color: inherit;
 }
 
 /*
@@ -197,7 +201,7 @@ body {
 }
 
 /*
- * Bade
+ * Badge
  */
 .badge {
     color: #555;
