@@ -183,6 +183,8 @@ body {
 
 div.draft-blog {
     background-color: HotPink;
+    border-radius: 5px;
+    padding: 10px 20px;
 }
 
 a.blog_title {
