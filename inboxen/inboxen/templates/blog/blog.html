@@ -14,6 +14,7 @@
     {% endif %}
 
     {% for post in posts %}
+        <div {% if post.draft %}class="draft-blog"{% endif %}>
         <h2 class="inline">{{ post.subject }}</h2>
         <p class="text-right"><i>{{ post.date }}</i></p>
         <p> {{ post.body|markdown }}</p><br />
@@ -23,7 +24,7 @@
                 <a href="/blog/delete/{{ post.id }}">{% trans "Delete" %}</a>
             </p>
         {% endif %}
-
+        </div>
     {% endfor %}
 
 {% endblock %}

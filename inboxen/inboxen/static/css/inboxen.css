@@ -181,6 +181,10 @@ body {
     display:inline;
 }
 
+.draft-blog {
+    background-color: HotPink;
+}
+
 /*
  * Labels
  */
@@ -193,8 +197,8 @@ body {
 }
 
 /*
-* Bade
-*/
+ * Bade
+ */
 .badge {
     color: #555;
     font-weight: normal;

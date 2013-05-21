@@ -25,7 +25,12 @@ from django.http import HttpResponseRedirect
 
 
 def view(request):
-    posts = BlogPost.objects.filter(draft=False).order_by("-date")
+    if request.user.is_stuff:
+        posts = BlogPost.objects.all()
+    else:
+        posts = BlogPost.objects.filter(draft=False)
+
+    posts = posts.order_by("-date")
 
     context = {
         "page":"Blog",
@@ -36,8 +41,13 @@ def view(request):
     return render(request, "blog/blog.html", context)
 
 def post(request, postid):
+    if request.user.is_stuff:
+        kwargs = {"id": postid}
+    else:
+        kwargs = {"id": postid, "draft":False}}
+
     try:
-        p = BlogPost.objects.get(id=postid, draft=False)
+        p = BlogPost.objects.get(**kwargs)
     except BlogPost.DoesNotExist:
         return HttpResponseRedirect("/blog/")
 
