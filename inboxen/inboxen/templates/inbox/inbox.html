@@ -51,21 +51,21 @@
         <span class="step-links">
             {% if emails.has_previous %}
                 {% if email_address %}
-                    <a href="/inbox/{{ email_address }}/{{ emails.previous_page_number }}">{% trans "previous" %}</a>
+                    <a href="/inbox/{{ email_address }}/{{ emails.previous_page_number }}">{% trans "Previous" %}</a>
                 {% else %} 
-                    <a href="/inbox/{{ emails.previous_page_number }}">{% trans "previous" %}</a>
+                    <a href="/inbox/{{ emails.previous_page_number }}">{% trans "Previous" %}</a>
                 {% endif %}
             {% endif %}
 
             <span class="current">
-                Page {{ emails.number }} of {{ emails.paginator.num_pages }}.
+               {% trans "Page" %} {{ emails.number }} {% trans "of" %} {{ emails.paginator.num_pages }}
             </span>
 
             {% if emails.has_next %}
                 {% if email_address %}
-                    <a href="/inbox/{{ email_address }}/{{ emails.next_page_number }}">{% trans "next" %}</a>
+                    <a href="/inbox/{{ email_address }}/{{ emails.next_page_number }}">{% trans "Next" %}</a>
                 {% else %}
-                    <a href="/inbox/{{ emails.next_page_number }}">{% trans "next" %}</a>
+                    <a href="/inbox/{{ emails.next_page_number }}">{% trans "Next" %}</a>
                 {% endif %}
             {% endif %}
         </span>

@@ -79,7 +79,7 @@
                 <span class="paginator-prev"><a href="/user/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>
             {% endif %}
             <span class="current">
-                {% trans "Page" %} {{ aliases.number }} {% trans "of" %} {{ aliases.paginator.num_pages }}.
+                {% trans "Page" %} {{ aliases.number }} {% trans "of" %} {{ aliases.paginator.num_pages }}
             </span>
             {% if aliases.has_next %}
                 <span class="paginator-next"><a href="/user/profile/{{ aliases.next_page_number }}">{% trans "Next" %}</a></span>
