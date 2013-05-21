@@ -25,7 +25,7 @@ from django.http import HttpResponseRedirect
 
 
 def view(request):
-    if request.user.is_stuff:
+    if request.user.is_staff:
         posts = BlogPost.objects.all()
     else:
         posts = BlogPost.objects.filter(draft=False)
