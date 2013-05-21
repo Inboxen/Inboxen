@@ -29,16 +29,16 @@
 
     <div class="pagination text-right">
         <span class="step-links">
-            {% if post.has_previous %}
-                <a href="/blog/{{ post.previous_page_number }}">{% trans "previous" %}</a>
+            {% if posts.has_previous %}
+                <a href="/blog/{{ posts.previous_page_number }}">{% trans "previous" %}</a>
             {% endif %}
 
             <span class="current">
-                Page {{ post.number }} of {{ post.paginator.num_pages }}.
+                Page {{ posts.number }} of {{ posts.paginator.num_pages }}.
             </span>
 
-            {% if post.has_next %}
-                <a href="/blog/{{ post.next_page_number }}">{% trans "next" %}</a>
+            {% if posts.has_next %}
+                <a href="/blog/{{ posts.next_page_number }}">{% trans "next" %}</a>
             {% endif %}
         </span>
     </div>
