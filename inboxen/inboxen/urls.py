@@ -20,10 +20,15 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from inboxen.views.blog.feed import RssFeed as BlogFeed
+from django.conf.urls.defaults import *
+
+# error views
+handler500 = "inboxen.views.error.internal_server"
+handler404 = "inboxen.views.error.not_found"
+handler403 = "inboxen.views.error.permission_denied"
 
 
-"""If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-"""
+# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = patterns('',
     url(r'^$', 'inboxen.views.index.index'),
     
