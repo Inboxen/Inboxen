@@ -19,7 +19,7 @@
 
 from django.conf import settings
 from django.conf.urls import patterns, include, url
-from inboxen.views.blog.feed import RssFeed as BlogFeed
+from inboxen.views.blog.feed import RssFeed, AtomFeed
 from django.conf.urls.defaults import *
 
 # error views
@@ -36,7 +36,8 @@ urlpatterns = patterns('',
     url(r'^blog/post/(?P<postid>\d+)', 'inboxen.views.blog.view.post'),
     url(r'^blog/delete/(?P<postid>\d+)', 'inboxen.views.blog.delete.delete'),
     url(r'^blog/edit/(?P<postid>\d+)', 'inboxen.views.blog.edit.edit'),
-    url(r'^blog/feed/', BlogFeed()),
+    url(r'^blog/feed/atom', AtomFeed()),
+    url(r'^blog/feed/(rss)?', RssFeed()),
     url(r'^blog(/(?P<page>\d+))?', 'inboxen.views.blog.view.view'),
 
     url(r'^help/contact/success', 'inboxen.views.help.contact.success.success'),
