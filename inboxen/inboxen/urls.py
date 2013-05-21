@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     url(r'^blog/delete/(?P<postid>\d+)', 'inboxen.views.blog.delete.delete'),
     url(r'^blog/edit/(?P<postid>\d+)', 'inboxen.views.blog.edit.edit'),
     url(r'^blog/feed/', BlogFeed()),
-    url(r'^blog/', 'inboxen.views.blog.view.view'),
+    url(r'^blog(/(?P<page>\d+))?', 'inboxen.views.blog.view.view'),
 
     url(r'^help/contact/success', 'inboxen.views.help.contact.success.success'),
     url(r'^help/contact/', 'inboxen.views.help.contact.contact'),

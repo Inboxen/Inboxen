@@ -17,20 +17,26 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 from django.conf import settings
-
-from inboxen.models import BlogPost
-
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from inboxen.models import BlogPost
 
-
-def view(request):
+def view(request, page=1):
     if request.user.is_staff:
         posts = BlogPost.objects.all()
     else:
         posts = BlogPost.objects.filter(draft=False)
 
     posts = posts.order_by("-date")
+    paginator = Paginator(posts, 5)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger: # sometimes it's None
+        posts = paginator.page(1)
+    except EmptyPage: # somestimes the user will try different numbers
+        posts = paginator.page(paginator.num_pages)
 
     context = {
         "page":"Blog",
