@@ -44,7 +44,7 @@ def post(request, postid):
     if request.user.is_stuff:
         kwargs = {"id": postid}
     else:
-        kwargs = {"id": postid, "draft":False}}
+        kwargs = {"id": postid, "draft":False}
 
     try:
         p = BlogPost.objects.get(**kwargs)
