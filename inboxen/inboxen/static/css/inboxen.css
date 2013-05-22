@@ -139,6 +139,10 @@ body {
     width: 78%;
 }
 
+.table-open-top {
+    border-top: none;
+}
+
 .btn {
     margin-top:5px;
     border-color: #BBB;

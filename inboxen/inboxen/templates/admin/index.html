@@ -4,48 +4,24 @@
 
 {% block content %}
 
-    <h2> Statistics </h2>
-    <dl>
-        <dt>{% trans "Number of users" %}</dt>
-        <dd>{{ statistics.users }}</dd>
-    
-        <dt>{% trans "Number of active users" %}</dt>
-        <dd>{{ statistics.active_users }}</dd>
-
-        <dt>{% trans "Number of new users today" %}</dt>
-        <dd>{{ statistics.new_users }}</dd>
-    </dl>
-
-    <h2> Requests for more aliases </h2>
-    <table class="table table-hover table-centre table-bordered">
-        <thead>
-        <tr>
-            <th>Alias Amount</th>
-            <th>Date</th>
-            <th># of emails </th>
-            <th>Registration</th>
-            <th>Permit</th>
-            <th>Deny</th>
-        </tr>
-
-        {% for request in requests %}
-            {% if request.ancent %}
-                <tr class="error">
-            {% elif request.old %}
-                <tr class="warning">
-            {% else %}
-                <tr>
-            {% endif %}
-                <td>{{ request.amount }}</td>
-                <td>{{ request.date }}</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td><a href="/admin/request/permit/{{ request.id }}">Permit</a></td>
-                <td><a href="/admin/request/deny/{{ request.id }}">Deny</a></td>
-            </tr>
-        {% endfor %}
-    </table>
-
-
-
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="/admin/" data-toggle="tab">{% trans "Statistics" %}</a></li>
+            <li><a href="/admin/requests/" data-toggle="tab">{% trans "Requests" %}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+                <dl>
+                    <dt>{% trans "Number of users" %}</dt>
+                    <dd>{{ statistics.users }}</dd>
+                    
+                    <dt>{% trans "Number of active users" %}</dt>
+                    <dd>{{ statistics.active_users }}</dd>
+                    
+                    <dt>{% trans "Number of new users today" %}</dt>
+                    <dd>{{ statistics.new_users }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
 {% endblock %}
