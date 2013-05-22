@@ -18,7 +18,7 @@
 from django.conf import settings
 from django.shortcuts import render
 
-def error(request, error_message):
+def error(request, error_message, status=500):
 
     if "user" not in dir(request) or request.user.is_authenticated():
         registration_enabled = False
@@ -33,24 +33,24 @@ def error(request, error_message):
         "registration_enabled":registration_enabled,
     }
 
-    return render(request, "error.html", context)
+    return render(request, "error.html", context, status=status)
 
 def not_found(request):
     error_message = """
     The page you have requested has not been found. Please contact support if you believe this page should exist or you're brought to this page due to a link you have clicked while nagivating around the site."""
 
-    return error(request, error_message)
+    return error(request, error_message, status=404)
 
 def internal_server(request):
     error_message = """
     There has been a server problem. We're currently looking into this, please try again soon.
     """
 
-    return error(request, error_message)
+    return error(request, error_message, status=500)
 
 def permission_denied(request):
     error_message = """
     Permission denied, you're not authorized to view this page, sorry.
     """
 
-    return error(request, error_message)
+    return error(request, error_message, status=403)

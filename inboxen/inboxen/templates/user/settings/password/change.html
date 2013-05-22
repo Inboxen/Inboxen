@@ -20,8 +20,8 @@
     {{ form.new_password2.errors }}
     <input id="id_new_password2" name="new_password2" type="password" placeholder="{% trans "New Password (again)" %}" />
 
-    <button class="btn">{% trans "Change" %}</button>
-    <a href="/user/settings/" class="btn">{% trans "Don't change" %}</button>
+    <button style="margin-left:10px;" class="btn">{% trans "Change" %}</button>
+    <a href="/user/settings/" class="btn">{% trans "Don't change" %}</a>
 </form>
 
 {% endblock %}
