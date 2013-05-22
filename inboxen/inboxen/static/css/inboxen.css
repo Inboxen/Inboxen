@@ -86,13 +86,14 @@ body {
         margin-bottom: 0;
     }
     .navbar-inner {
+        padding-top:10px;
         border-radius: 0;
         margin: -20px 0;
     }
 }
 
 
-@media (max-width: 767px) {
+@media (max-width: 840px) {
     .container {
         margin-left:0;
         margin-right:0;
