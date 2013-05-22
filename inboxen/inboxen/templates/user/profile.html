@@ -24,39 +24,36 @@
             <th>{% trans "Alias" %}</th>
             <th>{% trans "Created" %}</th>
             <th>{% trans "Tags" %}</th>
-            <th>{% trans "Inbox" %}</th>
             <th>{% trans "Edit" %}</th>
-            <th>{% trans "Delete" %}</th>
+            <th></th>
         </tr>
         </thead>
         <tr class="warning">
-            <td>{% trans "Unified" %}
+            <td><a href="/inbox/">{% trans "Unified" %}</a>
             {% if total_email_count %}
                 <span class="badge">{{ total_email_count }}</span>
             {% endif %}
             </td>
             <td><span title="{{ user.date_joined }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
             <td>&nbsp;</td>
-            <td><a href="/inbox/">{% trans "View" %}</a></td>
             <td><span class="muted">{% trans "Edit" %}</span></td>
-            <td><span class="muted">{% trans "Deleted" %}</span></td>
+            <td><a class="close muted">&times;</a></td>
         </tr>
 
         {% if user.is_staff %}
             <tr class="warning">
-                <td>{% trans "Support Email" %}</td>
+                <td><a href="/inboxen/{{ support }}">{% trans "Support Email" %}</a></td>
                 <td><span title="{{ support.date }}">{{ support.date|timesince }}</span></td>
                 <td>&nbsp;</td>
-                <td><a href="/inbox/{{ support }}">{% trans "View" %}</a></td>
                 <td><span class="muted">{% trans "Edit" %}</span></td>
-                <td><span class="muted">{% trans "Deleted" %}</span></td>
+                <td><a class="close muted">&times;</a></td>
             </tr>
         {% endif %}
 
         {% for alias in aliases.object_list %}
 
             <tr>
-                <td>{{ alias.alias }}@{{ alias.domain }}
+                <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{{ alias.alias }}@{{ alias.domain }}</a>
                 {% if alias.email_count %}
                     <span class="badge">{{ alias.email_count }}</span>
                 {% endif %}
@@ -67,9 +64,8 @@
                 {% else %}
                     <td>&nbsp;</td>
                 {% endif %}
-                <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{% trans "View" %}</a></td>
                 <td><a href="/email/edit/{{ alias.alias }}@{{ alias.domain }}">{% trans "Edit" %}</a></td>
-                <td><a href="/email/delete/{{ alias.alias }}@{{ alias.domain }}">{% trans "Delete" %}</a></td>
+                <td><a class="close" href="/email/delete/{{ alias.alias }}@{{ alias.domain }}">&times;</a></td>
             </tr>
         {% endfor %}
     </table>
