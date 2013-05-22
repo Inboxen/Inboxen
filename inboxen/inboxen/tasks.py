@@ -1,8 +1,10 @@
 from datetime import datetime
+from django.db import transaction
 from inboxen.models import Tag, Alias, Domain, Email
 from celery import task
 
 @task(default_retry_delay=5 * 60) # 5 minutes
+@transaction.commit_on_success
 def delete_alias(email, user):
     alias, domain = email.split("@", 1)
     
@@ -14,7 +16,11 @@ def delete_alias(email, user):
 
     # delete emails
     emails = Email.objects.filter(inbox=alias, user=user)
-    emails.delete()
+
+    # it seems to cause problems if you do QuerySet.delete()
+    # this seems to be more efficiant when we have a lot of data
+    for email in emails:
+        emails.delete()
 
     # delete tags
     tags = Tag.objects.filter(alias=alias)
