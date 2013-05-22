@@ -2,42 +2,44 @@
 {% load i18n %}
 {% block content %}
 
-    <form action="/user/settings/" class="form wide-form" method="POST">{% csrf_token %}
-
-        <div class="input-append" >
-            <select name="html-preference">
-                {% if htmlpreference == 0 %}
-                    <option value="0" selected="selected">{% trans "Reject HTML" %}</option>
-                {% else %}
-                    <option value="0">{% trans "Reject HTML" %}</option>
-                {% endif %}
-                
-                {% if htmlpreference == 1 %}
-                    <option value="1" selected="selected">{% trans "Prefer Plain-text" %}</option>
-                {% else %}
-                    <option value="1">{% trans "Prefer Plain-text" %}</option>
-                {% endif %}
-                
-                {% if htmlpreference == 2 %}
-                    <option value="2" selected="selected">{% trans "Prefer HTML" %}</option>
-                {% else %}
-                    <option value="2">{% trans "Prefer HTML" %}</option>
-                {% endif %}
-            </select>
-            <span class="add-on">{% trans "for my emails" %}</span>
-            <br /><br />
-        </div><br />
-        
-        {% if error %}
-            <p> {{ error }} </p><br />
-        {% endif %}
-
-        <a class="btn" href="/user/settings/password">{% trans "Change Password" %}</a><br />
-        <br />
-        <a class="btn btn-danger" href="/user/settings/delete">{% trans "Delete Account" %}</a><br />
-        <br />
-        <button class="btn">{% trans "Save" %}</button>
-        <a href="/user/profile" class="btn">{% trans "Cancel" %}</a>
-
-    </form>
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="/user/settings/" data-toggle="tab">{% trans "General" %}</a></li>
+            <li><a href="/user/settings/password/" data-toggle="tab">{% trans "Change Passowrd" %}</a></li>
+            <li><a href="/user/settings/delete/" data-toggle="tab">{% trans "Delete Account" %}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1"> 
+                <form action="/user/settings/" class="form wide-form form-open-top" method="POST">
+                    {% csrf_token %}
+                    <div class="input-append" >
+                        <select name="html-preference">
+                            {% if htmlpreference == 0 %}
+                                <option value="0" selected="selected">{% trans "Reject HTML" %}</option>
+                            {% else %}
+                                <option value="0">{% trans "Reject HTML" %}</option>
+                            {% endif %}
+                            
+                            {% if htmlpreference == 1 %}
+                                <option value="1" selected="selected">{% trans "Prefer Plain-text" %}</option>
+                            {% else %}
+                                <option value="1">{% trans "Prefer Plain-text" %}</option>
+                            {% endif %}
+                            
+                            {% if htmlpreference == 2 %}
+                                <option value="2" selected="selected">{% trans "Prefer HTML" %}</option>
+                            {% else %}
+                                <option value="2">{% trans "Prefer HTML" %}</option>
+                            {% endif %}
+                        </select>
+                        <span class="add-on">{% trans "for my emails" %}</span>
+                        <br /><br />
+                    </div><br />
+                    
+                    <button class="btn">{% trans "Save" %}</button>
+                    <a href="/user/profile" class="btn">{% trans "Cancel" %}</a>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

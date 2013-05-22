@@ -1,18 +1,27 @@
 {% extends 'base.html' %}
 
+{% load i18n %}
+
 {% block content %}
 
-    <h2> Deleting your account </h2>
-    <p> This will delete your account, this cannot be undone. If you ever want to return to the service you will have to make a new account and you will <strong>not</strong> be able to recieve email on the addresses you have on this account.<br />
-    <br />
-    We ask you to type in the exact username (case sensative) you signed up with. If for whatever you can't you can email support and we can initate this process for you.
-    </p>
+  <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li><a href="/user/settings/" data-toggle="tab">{% trans "General" %}</a></li>
+            <li><a href="/user/settings/password/" data-toggle="tab">{% trans "Change Passowrd" %}</a></li>
+            <li class="active"><a href="/user/settings/delete/" data-toggle="tab">{% trans "Delete Account" %}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+                <form class="form wide-form form-open-top">
+                    <p> {% trans "If you delete your account we cannot get it back. Your emails and ability to recieve new emails will be gone for good" %}
+                    <br /><br />
+                    {% trans "Please type your username to confirm" %}
+                    </p>
+                    <input type="text" placeholder="Username"><br />
 
-    <form class="form" action="/user/settings/delete" method="POST">
-        <input type="text" placeholder="Username">
-    </form>
-
-    <a style="margin-left:37%;" href="/user/profile" class="btn btn-centre">Don't delete my account!</a>
-    <button class="btn btn-danger">Delete my account</button>
-
+                    <a href="/user/profile" class="btn">Don't delete my account!</a>
+                    <button class="btn btn-danger">Delete my account</button>
+                </form>
+        </div>
+    </div>
 {% endblock %}

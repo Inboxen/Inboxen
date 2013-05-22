@@ -2,26 +2,39 @@
 {% load i18n %}
 
 {% block content %}
-{% if form.errors %}
-    <span style="padding-left:50px; padding-right:50px;" class="alert error">
-        <strong>Error</strong> {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
-    </span>
-{% endif %}
 
-<form style="margin-top:20px;" class="form" action="/user/settings/password/change/" method="post">{% csrf_token %}
+    {% if form.errors %}
+        <span style="padding-left:50px; padding-right:50px;" class="alert error">
+            <strong>Error</strong> 
+            {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </span>
+    {% endif %}
 
 
-        {{ form.old_password.errors }}
-    <input id="id_old_password" name="old_password" type="password" placeholder="{% trans "Old Password" %}" />
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li><a href="/user/settings/" data-toggle="tab">{% trans "General" %}</a></li>
+            <li class="active"><a href="/user/settings/password/" data-toggle="tab">{% trans "Change Passowrd" %}</a></li>
+            <li><a href="/user/settings/delete/" data-toggle="tab">{% trans "Delete Account" %}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+                <form class="form wide-form form-open-top" action="/user/settings/password/change/" method="post">{% csrf_token %}
 
-        {{ form.new_password1.errors }}
-    <input id="id_new_password1" name="new_password1" type="password" placeholder="{% trans "New Password" %}" />
 
-    {{ form.new_password2.errors }}
-    <input id="id_new_password2" name="new_password2" type="password" placeholder="{% trans "New Password (again)" %}" />
+                        {{ form.old_password.errors }}
+                    <input id="id_old_password" name="old_password" type="password" placeholder="{% trans "Old Password" %}" /><br />
 
-    <button style="margin-left:10px;" class="btn">{% trans "Change" %}</button>
-    <a href="/user/settings/" class="btn">{% trans "Don't change" %}</a>
-</form>
+                        {{ form.new_password1.errors }}
+                    <input id="id_new_password1" name="new_password1" type="password" placeholder="{% trans "New Password" %}" /><br />
 
+                    {{ form.new_password2.errors }}
+                    <input id="id_new_password2" name="new_password2" type="password" placeholder="{% trans "New Password (again)" %}" /><br />
+
+                    <button style="margin-left:10px;" class="btn">{% trans "Change" %}</button>
+                    <a href="/user/settings/" class="btn">{% trans "Don't change" %}</a>
+                </form>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -126,6 +126,10 @@ body {
     max-width: 100%;
 }
 
+.form-open-top {
+    border-top: none;
+}
+
 .form input {
     height: auto;
     padding: 4px 3px;
@@ -212,4 +216,12 @@ a.blog_title {
     font-weight: normal;
     text-shadow: none;
     background-color: rgb(238, 238, 238);
+}
+
+/*
+ * Nav bar
+ */
+
+.nav {
+    margin-bottom: 0;
 }
