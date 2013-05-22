@@ -19,12 +19,11 @@
 #
 ##
 
-from lamson.routing import route, stateless, nolocking
+from lamson.routing import route, stateless
 from config.settings import DEBUG
 from app.model.email import make_email
 
 @route("(alias)@(domain)", alias=".+", domain=".+")
-@nolocking
 @stateless
 def START(message, alias=None, domain=None):
 
