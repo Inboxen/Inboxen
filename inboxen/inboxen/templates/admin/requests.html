@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li><a href="/admin/" data-toggle="tab">{% trans "Statistics" %}</a></li>
+            <li class="active"><a href="/admin/requests/" data-toggle="tab">{% trans "Requests" %}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+                <table class="table table-hover table-centre table-bordered table-open-top">
+                    <thead>
+                    <tr>
+                        <th>{% trans "Alias Amount" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "# of emails" %}</th>
+                        <th>{% trans "Registration" %}</th>
+                        <th>{% trans "Permit" %}</th>
+                        <th>{% trans "Deny" %}</th>
+                    </tr>
+
+                    {% for request in requests %}
+                        {% if request.ancent %}
+                            <tr class="error">
+                        {% elif request.old %}
+                            <tr class="warning">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                            <td>{{ request.amount }}</td>
+                            <td>{{ request.date }}</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td><a href="/admin/request/permit/{{ request.id }}">{% trans "Permit" %}</a></td>
+                            <td><a href="/admin/request/deny/{{ request.id }}">{% trans "Deny" %}</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
