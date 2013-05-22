@@ -21,7 +21,7 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
-from inboxen.helper.alias import delete_alias 
+from inboxen.tasks import delete_alias
 
 @login_required
 def confirm(request, email):
@@ -29,8 +29,8 @@ def confirm(request, email):
         if request.POST["confirm"] != email:
             raise Http404
         else:
-            if not delete_alias(email, request.user):
-                raise Http404
+            if delete_alias.delay(email, request.user):
+                return HttpResponseRedirect("/user/profile/success") 
 
         return HttpResponseRedirect("/user/profile")
     

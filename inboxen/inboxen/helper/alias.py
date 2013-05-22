@@ -39,32 +39,6 @@ def gen_alias(count, alias="", ocount=5):
     
     return gen_alias(count-1, alias, ocount)
 
-def delete_alias(email, user=None):
-    """ Deletes the email and all the data """
-    alias = find_alias(email, user=user)
-
-    if not alias:
-        return False
-    else:
-        alias = alias[0]
-
-    alias.deleted = True
-    alias.save()
-
-    # okay now we need to look up the emails
-    # we don't want to keep emails for that alias
-    emails = Email.objects.filter(inbox=alias)
-    for email in emails:
-        email.delete()
-
-    # Also delete any tags
-    tags = Tag.objects.filter(alias=alias)
-    for tag in tags:
-        tag.delete()
-
-    return True
-
-
 def clean_tags(tags):
     """ Tags some tags from user input """
     if "," in tags:
