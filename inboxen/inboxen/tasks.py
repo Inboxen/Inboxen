@@ -20,7 +20,7 @@ def delete_alias(email, user):
     # it seems to cause problems if you do QuerySet.delete()
     # this seems to be more efficiant when we have a lot of data
     for email in emails:
-        emails.delete()
+        email.delete()
 
     # delete tags
     tags = Tag.objects.filter(alias=alias)
