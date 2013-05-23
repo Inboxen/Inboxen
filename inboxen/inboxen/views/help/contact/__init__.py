@@ -82,6 +82,7 @@ def contact(request):
             subject,
             body,
         )
+        return HttpResponseRedirect("/help/contact/success")
     elif request.method == "POST":
         # they're not logged in.
         try:
