@@ -9,7 +9,9 @@ from inboxen.models import Email, Alias
 @staff_member_required
 def support(request, page=1):
     alias = Alias.objects.filter(alias="support")
-    emails = Email.objects.filter(inbox=alias).order_by('-recieved_date')
+    emails = []
+    for a in alias:
+        emails += list(Email.objects.filter(inbox=a).order_by('-recieved_date'))
     
     paginator = Paginator(emails, 100)
     try:
