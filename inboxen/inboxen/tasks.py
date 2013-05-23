@@ -20,7 +20,7 @@ def delete_alias(email, user):
     # it seems to cause problems if you do QuerySet.delete()
     # this seems to be more efficiant when we have a lot of data
     for email in emails:
-        email.delete()
+        delete_email(email).get()
 
     # delete tags
     tags = Tag.objects.filter(alias=alias)
@@ -32,6 +32,10 @@ def delete_alias(email, user):
     alias.save()
 
     return True
+
+@task(rate_limit=2)
+def delete_email(email):
+    email.delete()
 
 @task(default_retry_delay=10 * 60)
 def delete_account(user):
