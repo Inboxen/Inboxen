@@ -35,6 +35,8 @@ def contact(request):
 
     if request.method == "POST":
         try:
+            send_to = Alias.objects.get(alias="support")
+        except Alias.MultipleObjectsReturned:
             send_to = Alias.objects.filter(alias="support")[0]
         except Alias.DoesNotExist:
             # make it.
