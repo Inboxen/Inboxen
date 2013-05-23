@@ -74,11 +74,9 @@ def delete_account(user):
     user.save()
 
     # first delete all aliases
-    alias = True
-    while alias:
-        alias = Alias.objects.filter(user=user)[:100]
-        for a in alias:
-            chain(delete_alias.s(a), disown_alias.s(a)).delay()
+    alias = Alias.objects.filter(user=user)[:100]
+    for a in alias:
+        chain(delete_alias.s(a), disown_alias.s(a)).delay()
 
     # now scrub some more info we have
     user_profile(user).delete()
