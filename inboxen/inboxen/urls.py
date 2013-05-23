@@ -43,6 +43,7 @@ urlpatterns = patterns('',
     url(r'^help/contact/success', 'inboxen.views.help.contact.success.success'),
     url(r'^help/contact/', 'inboxen.views.help.contact.contact'),
 
+    url(r'^user/deleted/', 'inboxen.views.user.settings.delete.success'),
     url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
             'template_name': 'user/login.html',

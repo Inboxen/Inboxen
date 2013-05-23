@@ -40,5 +40,3 @@ def user_profile(user):
         return user_profile
 
 
-def delete(user):
-	pass

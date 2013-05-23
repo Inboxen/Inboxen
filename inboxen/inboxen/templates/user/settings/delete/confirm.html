@@ -12,15 +12,16 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab1">
-                <form class="form wide-form form-open-top">
+                <form method="POST" action="/user/settings/delete/" class="form wide-form form-open-top">
+                    {% csrf_token %}
                     <p> {% trans "If you delete your account we cannot get it back. Your emails and ability to recieve new emails will be gone for good" %}
                     <br /><br />
                     {% trans "Please type your username to confirm" %}
                     </p>
-                    <input type="text" placeholder="Username"><br />
+                    <input type="text" placeholder="Username" name="username"><br />
 
-                    <a href="/user/profile" class="btn">Don't delete my account!</a>
-                    <button class="btn btn-danger">Delete my account</button>
+                    <a href="/user/profile" class="btn">{% trans "Don't delete my account!" %}</a>
+                    <button class="btn btn-danger">{% trans "Delete my account" %}</button>
                 </form>
         </div>
     </div>

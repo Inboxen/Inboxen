@@ -19,22 +19,32 @@
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-
-from inboxen.helper.user import delete as delete_user
+from django.http import HttpResponseRedirect
+from django.contrib.auth import logout
+from inboxen.tasks import delete_account
 
 @login_required
 def delete(request):
 
-	if request.method == "POST":
-		if "username" in request.POST and request.POST["username"]:
-			if request.user.username == request.POST["username"]:
-				# right!
-				delete_user(request.user)
-			else:
-				return render(request, "user/settings/delete.html")
+    if request.method == "POST":
+        if "username" in request.POST and request.POST["username"]:
+            if request.user.username == request.POST["username"]:
+                # right!
+                delete_account.delay(request.user)
+                logout(request)
+                return HttpResponseRedirect("/user/deleted")
+            else:
+                return render(request, "user/settings/delete.html")
 
-	context = {
-		"page":"Delete Account",
-	}
+    context = {
+        "page":"Delete Account",
+    }
 
-	return render(request, "user/settings/delete/confirm.html", context)
+    return render(request, "user/settings/delete/confirm.html", context)
+
+def success(request):
+    context = {
+        "page":"Goodbye",
+    }
+     
+    return render(request, "user/settings/delete/success.html", context)
