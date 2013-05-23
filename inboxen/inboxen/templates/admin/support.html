@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %} 
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+            <li><a href="/admin/" data-toggle="tab">{% trans "Statistics" %}</a></li>
+            <li><a href="/admin/requests/" data-toggle="tab">{% trans "Requests" %}</a></li>
+            <li class="active"><a href="/admin/support/" data-toggle="tab">{% trans "Support Emails" %}</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab3">
+                <table class="table table-hover table-centre table-honeydew table-open-top">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>{% trans "From" %}</th>
+                        <th>{% trans "Subject" %}</th>
+                        <th>{% trans "Recieved" %}</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    {% for email in emails.object_list %}
+                        {% if email.read %}
+                            <tr>
+                        {% else %}
+                            <tr class="info">
+                        {% endif %}
+                        
+                            <td><input type="checkbox" name="email"></td>
+                            <td> {{ email.sender }} </td>
+                            {% if email.subject %}
+                                <td><a href="/inbox/{{ email.inbox }}/view/{{ email.id }}">{{ email.subject }}</a></td>
+                            {% endif %}
+                            <td><span title="{{ email.recieved_date }}">{{ email.recieved_date|timesince }} {% trans "ago" %}</span></td>
+                            <td><a class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.id }}">&times;</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
