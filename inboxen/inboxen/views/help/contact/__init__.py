@@ -93,7 +93,7 @@ def contact(request):
             return HttpResponseRedirect("/help/contact/")
 
         send_email(
-            None, # null user
+            null_user(), # null user
             send_to,
             email,
             subject,
