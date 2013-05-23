@@ -13,6 +13,6 @@ settings.receiver = SMTPReceiver(settings.receiver_config['host'],
 
 Router.defaults(**settings.router_defaults)
 Router.load(settings.in_handlers)
-Router.RELOAD=True
+Router.RELOAD=False
 Router.LOG_EXCEPTIONS=True
 Router.UNDELIVERABLE_QUEUE=queue.Queue("run/undeliverable")

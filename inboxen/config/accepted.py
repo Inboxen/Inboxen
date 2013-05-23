@@ -12,5 +12,6 @@ settings.receiver = QueueReceiver(settings.accepted_queue_dir,
 
 Router.defaults(**settings.router_defaults)
 Router.load(settings.out_handlers)
-Router.RELOAD=True
+Router.RELOAD=False
+Router.LOG_EXCEPTIONS=True
 Router.UNDELIVERABLE_QUEUE=queue.Queue("run/undeliverable")
