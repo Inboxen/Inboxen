@@ -15,12 +15,12 @@ def delete_alias(email, user):
         return False
 
     # delete emails
-    emails = Email.objects.filter(inbox=alias, user=user)
+    emails = Email.objects.filter(inbox=alias, user=user).iterator()
 
     # it seems to cause problems if you do QuerySet.delete()
     # this seems to be more efficiant when we have a lot of data
     for email in emails:
-        delete_email(email).get()
+        delete_email(email).delay()
 
     # delete tags
     tags = Tag.objects.filter(alias=alias)
@@ -33,7 +33,7 @@ def delete_alias(email, user):
 
     return True
 
-@task(rate_limit=2)
+@task(rate_limit=20)
 def delete_email(email):
     email.delete()
 
