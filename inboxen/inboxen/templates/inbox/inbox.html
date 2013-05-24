@@ -3,7 +3,11 @@
 
 {% block content %}
 
-<h2> {% trans "Emails" %} </h2>
+{% if email_address %}
+    <h2> {{ email_address }} {% trans "Inbox" %}</h2>
+{% else %}
+    <h2> {% trans "Unified Inbox" %} </h2>
+{% endif %}
 
 {% if error %}
     <p> {{ error }} </p>
