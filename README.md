@@ -24,4 +24,13 @@ Settings.py
 You need to ensure that certain settings are in the settings file
 
 - LOGIN_URL
-- ENABLE REGISTRATION 
+- ENABLE REGISTRATION
+
+Add the following block:
+CELERYBEAT_SCHEDULE = {
+    'statistics':{
+        'task':'inboxen.tasks.statistics',
+        'schedule':timedelta(hours=6),
+    }
+}
+

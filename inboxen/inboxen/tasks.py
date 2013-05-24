@@ -1,12 +1,32 @@
 import types
 
-from datetime import datetime
+from pytz import utc
+from datetime import datetime, timedelta
 from django.db import transaction
-from inboxen.models import Tag, Alias, Domain, Email
+from inboxen.models import Tag, Alias, Domain, Email, Statistic
+from django.contrib.auth.models import User
 from celery import task, chain
 from inboxen.helper.user import null_user, user_profile
 
 import logging
+
+@task
+def statistics():
+    # get user statistics
+    user_count = User.objects.all().count()
+    new_count =  User.objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
+    active_count = User.objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=7)).count()
+
+    stat = Statistic(
+        user_count=user_count,
+        new_count=new_count,
+        active_count=active_count,
+        date=datetime.now(utc),
+    )
+
+    stat.save()
+
+    logging.info("Saved statistics (%s)" % stat.date)
 
 @task(default_retry_delay=5 * 60) # 5 minutes
 def delete_alias(email, user=None):

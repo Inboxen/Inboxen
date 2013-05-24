@@ -111,3 +111,11 @@ class Email(models.Model):
     attachments = models.ManyToManyField(Attachment)
     recieved_date = models.DateTimeField('Recieved Date')
 
+class Statistic(models.Model):
+    # statistics about users
+    user_count = models.IntegerField()
+    active_count = models.IntegerField()
+
+    # generic
+    new_count = models.IntegerField()
+    date = models.DateTimeField('date')
