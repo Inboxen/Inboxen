@@ -48,8 +48,12 @@
 
     <div class="pagination text-right">
         <ul>
-            {% if aliases.has_previous %}
-                <li><a href="/user/profile/{{ aliases.previous_page_number }}">&laquo;</a></li>
+            {% if emails.has_previous %}
+                {% if email_address %}
+                    <li><a href="/inbox/{{ email_address }}/{{ aliases.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li><a href="/inbox/{{ aliases.previous_page_number }}">&laquo;</a></li>
+                {% endif %}
             {% else %}
                 <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
@@ -62,8 +66,12 @@
                 <a href="/user/profile/{{ page.page }}">{{ page.page }}</a></li>
             {% endfor %}
             
-            {% if aliases.has_next %}
-                <li><a href="/user/profile/{{ aliases.next_page_number }}">&raquo;</a></li>
+            {% if emails.has_next %}
+                {% if email_address %}
+                    <li><a href="/inbox/{{ email_address }}/{{ aliases.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li><a href="/inbox/{{ aliases.next_page_number }}">&raquo;</a></li>
+                {% endif %}
             {% else %}
                 <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}
