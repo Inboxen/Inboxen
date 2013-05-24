@@ -75,6 +75,7 @@ def inbox(request, email_address="", page=1):
         "error":"",
         "emails":emails,
         "email_address":email_address,
+        "pages":paginator_page(emails),
     }
     
     return render(request, "inbox/inbox.html", context)
