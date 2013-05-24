@@ -24,6 +24,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inboxen.models import Alias, Tag, Email
 from inboxen.helper.alias import alias_available
+from inboxen.helper.paginator import page as page_paginator
     
 @login_required
 def profile(request, page=1):
@@ -60,6 +61,7 @@ def profile(request, page=1):
         "aliases":aliases,
         "available":available,
         "total_email_count":total,
+        "pages":page_paginator(aliases),
     }
     
     return render(request, "user/profile.html", context)

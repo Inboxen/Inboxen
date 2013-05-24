@@ -46,31 +46,29 @@
     {% endfor %}
     </table>
 
-    <!-- lifted from the django docs >.> -->
     <div class="pagination text-right">
-        <span class="step-links">
-            {% if emails.has_previous %}
-                {% if email_address %}
-                    <a href="/inbox/{{ email_address }}/{{ emails.previous_page_number }}">{% trans "Previous" %}</a>
-                {% else %} 
-                    <a href="/inbox/{{ emails.previous_page_number }}">{% trans "Previous" %}</a>
-                {% endif %}
+        <ul>
+            {% if aliases.has_previous %}
+                <li><a href="/user/profile/{{ aliases.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
-
-            <span class="current">
-               {% trans "Page" %} {{ emails.number }} {% trans "of" %} {{ emails.paginator.num_pages }}
-            </span>
-
-            {% if emails.has_next %}
-                {% if email_address %}
-                    <a href="/inbox/{{ email_address }}/{{ emails.next_page_number }}">{% trans "Next" %}</a>
+            {% for page in pages %}
+                {% if page.active %}
+                    <li class="active">
                 {% else %}
-                    <a href="/inbox/{{ emails.next_page_number }}">{% trans "Next" %}</a>
+                    <li>
                 {% endif %}
+                <a href="/user/profile/{{ page.page }}">{{ page.page }}</a></li>
+            {% endfor %}
+            
+            {% if aliases.has_next %}
+                <li><a href="/user/profile/{{ aliases.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}
-        </span>
-    </div>
-
+        </ul>
+   </div>
 {% endif %}
 
 {% endblock %}

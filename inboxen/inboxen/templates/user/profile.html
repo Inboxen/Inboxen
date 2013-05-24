@@ -59,18 +59,28 @@
             </tr>
         {% endfor %}
     </table>
-    <div class="paginator text-right">
-        <span class="step-link">
+    <div class="pagination text-right">
+        <ul>
             {% if aliases.has_previous %}
-                <span class="paginator-prev"><a href="/user/profile/{{ aliases.previous_page_number }}">{% trans "Previous" %}</a></span>
+                <li><a href="/user/profile/{{ aliases.previous_page_number }}">&laquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
-            <span class="current">
-                {% trans "Page" %} {{ aliases.number }} {% trans "of" %} {{ aliases.paginator.num_pages }}
-            </span>
+            {% for page in pages %}
+                {% if page.active %}
+                    <li class="active">
+                {% else %}
+                    <li>
+                {% endif %}
+                <a href="/user/profile/{{ page.page }}">{{ page.page }}</a></li>
+            {% endfor %}
+    
             {% if aliases.has_next %}
-                <span class="paginator-next"><a href="/user/profile/{{ aliases.next_page_number }}">{% trans "Next" %}</a></span>
+                <li><a href="/user/profile/{{ aliases.next_page_number }}">&raquo;</a></li>
+            {% else %}
+                <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}
-        </span>
+        </ul> 
    </div>                
 {% endif %}
 
