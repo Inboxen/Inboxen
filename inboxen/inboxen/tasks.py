@@ -20,7 +20,7 @@ def delete_alias(email, user=None):
         except Alias.DoesNotExist:
             return False
     else:
-        user = email.user
+        user = email.inbox.user
         alias = email
     # delete emails
     emails = Email.objects.filter(inbox=alias, user=user).iterator()
