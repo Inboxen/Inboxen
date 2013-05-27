@@ -81,7 +81,7 @@ def get_email(user, email_id, preference=None, read=False):
     else:
         html_preference = int(preference)
 
-    email = Email.objects.get(id=email_id)
+    email = Email.objects.get(id=email_id, user=user)
     
     message = {
         "date":email.recieved_date
