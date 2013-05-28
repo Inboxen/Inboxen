@@ -48,7 +48,7 @@ def view(request, email_address, emailid):
     else:
         plain_message = ""
         # also because a html email lets parse
-        email.body = clean_html(email.body)
+        email["body"] = clean_html(email.body)
 
     context = {
         "page":email["subject"],
