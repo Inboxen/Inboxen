@@ -41,6 +41,11 @@ def profile(request, page=1):
     except Tag.DoesNotExist:
         pass
 
+    total = 0
+    for alias in aliases:
+        alias.email_count = Email.objects.filter(inbox=alias, read=False).count()
+        total += alias.email_count
+
     paginator = Paginator(aliases, 20)
 
     try:
@@ -50,11 +55,6 @@ def profile(request, page=1):
     except EmptyPage: # sometimes the user will try different numbers
         aliases = paginator.page(paginator.num_pages)
 
-    # now we need to deduce how many unread emails there are
-    total = 0
-    for alias in aliases.object_list:
-        alias.email_count = Email.objects.filter(inbox=alias, read=False).count()
-        total += alias.email_count
 
     context = {
         "page":"Profile",
