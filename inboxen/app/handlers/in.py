@@ -27,6 +27,7 @@ from config.settings import (DEBUG,
                             recieved_header_name)
 
 from lamson.routing import route, stateless, nolocking
+from lamson.server import SMTPError
 from lamson.queue import Queue
 from app.model.alias import alias_exists
 from datetime import datetime
@@ -41,7 +42,10 @@ import logging
 @nolocking
 def START(message, alias=None, domain=None):
     """Does this alias exist? If yes, queue it. If no, drop it."""
-    if alias_exists(alias, domain):
+
+    exists, deleted = alias_exists(alias, domain)
+
+    if exists:
         message[recieved_header_name] = datetime.now(utc).strftime(datetime_format)
 
         # the queue needs to know who the message is for
@@ -54,8 +58,17 @@ def START(message, alias=None, domain=None):
         accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts_in)
         accept_queue.push(message)
         logging.debug("APPROVED alias %s on domain %s" % (alias, domain))
-    elif DEBUG:
-        queue = Queue(reject_dir, **accepted_queue_opts_in)
-        queue.push(message)
-        logging.debug("REJECTED alias %s on domain %s" % (alias, domain))
+    else:
+        if DEBUG:
+            queue = Queue(reject_dir, **accepted_queue_opts_in)
+            queue.push(message)
+            logging.debug("REJECTED alias %s on domain %s" % (alias, domain))
+
+        if deleted:
+            code = 550
+        else:
+            code = 450
+
+        # Raise an error, tell server whether to try again or not
+        raise SMTPError(code, 'Alias %s@%s does not exist')
 

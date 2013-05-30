@@ -23,9 +23,11 @@ from inboxen.models import Alias, Domain
 
 def alias_exists(alias, domain):
     if Alias.objects.filter(alias=alias, domain__domain=domain, deleted=False).exists():
-        return True
+        return (True, False)
+    elif Alias.objects.filter(alias=alias, domain__domain=domain).exists():
+        return (False, True)
     else:
-        return False
+        return (False, False)
 
 def domain_exists(domain):
     if Domain.objects.filter(domain=domain).exists():
