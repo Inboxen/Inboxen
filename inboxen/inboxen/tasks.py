@@ -165,7 +165,7 @@ def liberate_emails(result, user):
     mdir = mailbox.Maildir(fname)
     mdir.lock()
     # right
-    for email in Email.objects.filter(user=user):
+    for email in Email.objects.filter(user=user).iterator():
         msg = make_message(email)
         mdir.add(msg)
     mdir.flush()

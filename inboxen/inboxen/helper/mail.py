@@ -35,6 +35,7 @@ from email.mime.base import MIMEBase
 
 def make_message(email):
     """ makes a python email.message.Message from our Email object """
+    msg = MIMEMultipart("alternative")
     # looks to see if a HTML and plaintext is there
     attachments = []
     for attachment in email.attachments.all():
@@ -43,20 +44,22 @@ def make_message(email):
     
     if len(attachments) >= 2:
         # we have multiples ones, we should use MIMEMultipart
-        msg = MIMEMultipart("alternative")
         for attachment in attachments:
             try:
                 gen_type, specific_type = attachment.content_type.split("/", 1)
             except ValueError:
                 gen_type, specific_type = "application", "octet-stream"
             msg.attach(MIMEText(attachment.data, specific_type))
-    elif attachments[0].content_type == "text/html":
-        msg = MIMEText(attachments[0].data, "html")
-    elif attachments[0].content_type == "text/plain":
-        msg = MIMEText(attachments[0].data, "plain")
+    elif attachments and attachments[0].content_type == "text/html":
+        part = MIMEText(attachments[0].data, "html", "utf-8")
+        msg.attach(part)
+    elif attachments and attachments[0].content_type == "text/plain":
+        part = MIMEText(attachments[0].data, "plain", "utf-8")
+        msg.attach(part)
     else:
         # oh dear, set the body as nothing then
-        msg = MIMEText('', 'plain')
+        part = MIMEText('', 'plain', "utf-8")
+        msg.attach(part)
 
     # okay now deal with other attachments
     for attachment in email.attachments.all():
@@ -77,16 +80,16 @@ def make_message(email):
             attach = MIMEBase(gen_type, specific_type)
             attach.set_payload(attachment.data)
             encoders.encode_base64(attach)
-        
+ 
         attach.add_header("Content-Disposition", "attachment", filename=attachment.content_disposition)
         msg.attach(attach)
 
     # now add the headers
     for header in email.headers.all():
-        msg[header.name] = header.data
+        msg[header.name.decode("utf-8")] = header.data.decode("utf-8")
    
     if email.body:
-        msg["body"] = email.body
+        msg["body"] = email.body.decode("utf-8")
  
     return msg
     
