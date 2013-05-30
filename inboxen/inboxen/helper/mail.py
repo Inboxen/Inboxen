@@ -86,10 +86,10 @@ def make_message(email):
 
     # now add the headers
     for header in email.headers.all():
-        msg[header.name.decode("utf-8")] = header.data.decode("utf-8")
+        msg[header.name] = header.data
    
     if email.body:
-        msg["body"] = email.body.decode("utf-8")
+        msg["body"] = email.body
  
     return msg
     

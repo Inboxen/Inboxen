@@ -167,6 +167,7 @@ def liberate_emails(result, user):
     # right
     for email in Email.objects.filter(user=user).iterator():
         msg = make_message(email)
+        msg = msg.as_string()
         mdir.add(msg)
     mdir.flush()
 
