@@ -165,10 +165,13 @@ def liberate_emails(result, user):
     mdir = mailbox.Maildir(fname)
     mdir.lock()
     # right
-    for email in Email.objects.filter(user=user).iterator():
-        message_result = liberate_make_message(email).get()
-        msg = message_result.result
-        mdir.add(msg)
+    while Email.objects.filter(user=user).exists():
+        for email in Email.objects.filter(user=user)[:liberate_make_message.rate_limit].iterator():
+            message_result = liberate_make_message(email).get()
+            msg = message_result.result
+            mdir.add(msg)
+        time.sleep(0.1)
+    
     mdir.flush()
 
     # now we need to tar this puppy up!
@@ -186,7 +189,7 @@ def liberate_emails(result, user):
         "file":True,
     }
 
-@task(rate=15)
+@task(rate=100)
 def liberate_make_message(message):
     """ Takes a message and makes it """
     msg = make_message(message)
@@ -221,7 +224,7 @@ def statistics():
 ##
 @task(default_retry_delay=5 * 60) # 5 minutes
 def delete_alias(email, user=None):
-    if email in [types.StringType]:
+    if type(email) in [types.StringType]:
         if not user:
             raise Exception("Need to give username")
         alias, domain = email.split("@", 1)
@@ -234,12 +237,14 @@ def delete_alias(email, user=None):
         user = email.inbox.user
         alias = email
     # delete emails
-    emails = Email.objects.filter(inbox=alias, user=user).iterator()
+    while Email.objects.filter(inbox=alias, user=user).exists():
+        emails = Email.objects.filter(inbox=alias, user=user)[:delete_email.rate_limit].iterator()
 
-    # it seems to cause problems if you do QuerySet.delete()
-    # this seems to be more efficiant when we have a lot of data
-    for email in emails:
-        delete_email.delay(email)
+        # it seems to cause problems if you do QuerySet.delete()
+        # this seems to be more efficiant when we have a lot of data
+        for email in emails:
+            delete_email.delay(email)
+        time.sleep(0.1)
 
     # delete tags
     tags = Tag.objects.filter(alias=alias)
