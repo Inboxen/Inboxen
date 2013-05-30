@@ -35,10 +35,6 @@ from email.mime.base import MIMEBase
 
 def make_message(email):
     """ makes a python email.message.Message from our Email object """
-    # right!
-    if email.body:
-        msg = MIMEText(email.body, "plain")
-    
     # looks to see if a HTML and plaintext is there
     attachments = []
     for attachment in email.attachments.all():
@@ -63,23 +59,31 @@ def make_message(email):
         if attachment in attachments:
             continue # we've already handled it
         # right now deal with it
-        gen_type, specific_type = attachment.content_type.split("/", 1)
+        try:
+            gen_type, specific_type = attachment.content_type.split("/", 1)
+        except AttributeError, IndexError:
+            gen_type, specific_type = "application", "octet-stream" # generic
         if gen_type == "audio":
             attach = MIMEAudio(attachment.data, specific_type)
         elif gen_type == "image":
             attach = MIMEImage(attachment.data, specific_type)
         elif gen_type == "text":
-            attach = MIMEText(attachment.data, specific_type)
+            attach = MIMEText(attachment.data, specific_type, "utf-8")
         else:
-            attach = MIMEBase(attachment.data, specific_type)
+            attach = MIMEBase(gen_type, specific_type)
+            attach.set_payload(attachment.data)
             encoders.encode_base64(attach)
+        
         attach.add_header("Content-Disposition", "attachment", filename=attachment.content_disposition)
         msg.attach(attach)
 
     # now add the headers
     for header in email.headers.all():
         msg[header.name] = header.data
-    
+   
+    if email.body:
+        msg["body"] = email.body
+ 
     return msg
     
 

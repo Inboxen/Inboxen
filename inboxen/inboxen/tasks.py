@@ -48,7 +48,7 @@ def liberate(user):
     # right now we need to take the result and make attachments
     attachments = []
     for data in result:
-        if data["path"]:
+        if data["file"]:
             # store as path
             a = Attachment(
                 path=data["data"],

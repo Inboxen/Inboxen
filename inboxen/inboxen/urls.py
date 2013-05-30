@@ -57,6 +57,8 @@ urlpatterns = patterns('',
     url(r'^user/register/success', 'inboxen.views.user.register.success'),
     url(r'^user/register/', 'inboxen.views.user.register.register'),
     url(r'^user/profile(/(?P<page>\d+))?', 'inboxen.views.user.profile.profile'),
+    url(r'^user/settings/liberate/done', 'inboxen.views.user.settings.liberate.done.done'),
+    url(r'^user/settings/liberate', 'inboxen.views.user.settings.liberate.liberate.liberate'),
     url(r'^user/settings/password', 'django.contrib.auth.views.password_change',
         {
             'template_name':'user/settings/password/change.html',
