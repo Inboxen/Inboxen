@@ -1,14 +1,193 @@
 import types
+import random
+import json
+import hashlib
+import time
+import string
+import tarfile
+import os
+import mailbox
+import logging
 
 from pytz import utc
 from datetime import datetime, timedelta
 from django.db import transaction
-from inboxen.models import Tag, Alias, Domain, Email, Statistic
+from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 from django.contrib.auth.models import User
 from celery import task, chain
 from inboxen.helper.user import null_user, user_profile
+from inboxen.helper.alias import gen_alias
+from inboxen.helper.mail import send_email, make_message
 
-import logging
+##
+# Data liberation
+##
+@task
+def liberate(user):
+    result = chain(liberate_user.s(user), liberate_aliases.s(user), liberate_emails.s(user))()
+    result = [result.get(), result.parent.get(), result.parent.parent.get()]
+
+    # todo: reuse previously made alias if one does exist.
+    alias = None
+ 
+    if not alias:
+        # okay first time, lets make an alias
+        alias = Alias(
+            alias=gen_alias(5),
+            domain=random.choice(Domain.objects.all()),
+            user=user,
+            created=datetime.now(utc),
+            deleted=False
+        )
+        alias.save()
+        tags = ["Inboxen", "data", "liberation"]
+        for i, tag in enumerate(tags):
+            tags[i] = Tag(tag=tag, alias=alias)
+            tags[i].save()
+    
+    # right now we need to take the result and make attachments
+    attachments = []
+    for data in result:
+        if data["path"]:
+            # store as path
+            a = Attachment(
+                path=data["data"],
+                content_type=data["type"],
+                content_disposition=data["name"],
+            )
+        else:
+            # store as regular attachment in db
+            a = Attachment(
+                data=data["data"],
+                content_type=data["type"],
+                content_disposition=data["name"]
+            )
+        a.save()
+        attachments.append(a)
+
+    body = """
+    Hello,
+
+    You recently requested your data. All the data you have is here excluding:
+
+    - Your password (this is hashed[1] and salted[2] so is a string of nonsense)
+    - Your salt[2] (this is used help secure the storage of your password)
+
+    We don't disclose them as those do not change due to data liberation, since they don't
+    give any value to you they just reduce the security. All your other data has been given to you though.
+    
+    You should find attached to this email all the data Inboxen has.
+
+    Thanks,
+    The Inboxen Team.
+
+    --
+    [1] - https://en.wikipedia.org/wiki/Hash_function
+    [2] - https://en.wikipedia.org/wiki/Salt_%28cryptography%29
+    """
+
+    send_email(
+        user=user, 
+        alias=alias,
+        sender="support@inboxen.org",
+        subject="Data Liberation",
+        body=body,
+        attachments=attachments,
+    ) 
+
+@task
+def liberate_user(user):
+    data = {
+        "preferences":{}
+    }
+
+    # user's preferences
+    profile = user_profile(user)
+    if profile.html_preference == 0:
+        data["preferences"]["html_preference"] = "Reject HTML"
+    elif profile.html_preference == 1:
+        data["preferences"]["html_preference"] = "Prefer plain-text"
+    else:
+        data["preferences"]["html_preference"] = "Prefer HTML"
+
+    data["preferences"]["pool_amount"] = profile.pool_amount
+
+    # user data
+    data["username"] = user.username
+    data["is_staff"] = user.is_staff
+    data["is_superuser"] = user.is_superuser
+    data["last_login"] = user.last_login.isoformat()
+    data["join_date"] = user.date_joined.isoformat()
+    data["groups"] = [str(group) for group in user.groups.all()]
+
+    data = json.dumps(data)
+
+    return {
+        "data":data,
+        "type":"text/json",
+        "name":"User Data",
+        "file":False,
+    }
+
+@task
+def liberate_aliases(result, user):
+    data = {}
+
+    aliases = Alias.objects.filter(user=user)
+    for alias in aliases:
+        email = "%s@%s" % (alias.alias, alias.domain)
+        tags = [tag.tag for tag in Tag.objects.filter(alias=alias)]
+        data[email] = {
+            "created":alias.created.isoformat(),
+            "deleted":alias.deleted,
+            "tags":tags,
+        }
+
+    data = json.dumps(data)
+
+    return {
+        "data":data,
+        "type":"text/json",
+        "name":"Aliases",
+        "file":False,
+    }
+
+@task
+def liberate_emails(result, user):
+    """ Makes a maildir of all their emails """
+    # first we need to come up with a temp name
+    rstr = ""
+    for i in range(7):
+        rstr += string.ascii_letters[random.randint(0, 50)]
+    fname = "/tmp/mkdir%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
+    
+    # now make the maildir
+    mdir = mailbox.Maildir(fname)
+    mdir.lock()
+    # right
+    for email in Email.objects.filter(user=user):
+        msg = make_message(email)
+        mdir.add(msg)
+    mdir.flush()
+
+    # now we need to tar this puppy up!
+    tar = tarfile.open("%s.tar.gz" % fname, "w:gz")
+    tar.add("%s/" % fname) # directories are added recursively by default
+    tar.close()
+
+    # right now we just wanna throw this into an attachment
+    # at some point (soon) we need to get it so attachments can live on the filesystem
+
+    return {
+        "data":"%s.tar.gz" % fname,
+        "type":"application/x-gzip",
+        "name":"Tarball of emails as Maildir",
+        "file":True,
+    }
+
+##
+# Statistics
+##
 
 @task
 def statistics():
@@ -28,6 +207,10 @@ def statistics():
 
     logging.info("Saved statistics (%s)" % stat.date)
 
+
+##
+# Alias stuff
+##
 @task(default_retry_delay=5 * 60) # 5 minutes
 def delete_alias(email, user=None):
     if email in [types.StringType]:

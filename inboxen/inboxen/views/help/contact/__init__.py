@@ -23,7 +23,7 @@ from django.http import HttpResponseRedirect
 
 from inboxen.helper.alias import gen_alias
 from inboxen.helper.user import null_user
-from inboxen.helper.email import send_email 
+from inboxen.helper.mail import send_email 
 from inboxen.models import Domain, Alias, Tag
 
 def contact(request):

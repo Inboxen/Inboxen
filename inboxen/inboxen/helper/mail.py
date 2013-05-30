@@ -26,6 +26,63 @@ from django.utils.safestring import mark_safe
 from inboxen.models import Email, Attachment, Alias, Header
 from inboxen.helper.user import user_profile, null_user
 
+from email import encoders
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+
+def make_message(email):
+    """ makes a python email.message.Message from our Email object """
+    # right!
+    if email.body:
+        msg = MIMEText(email.body, "plain")
+    
+    # looks to see if a HTML and plaintext is there
+    attachments = []
+    for attachment in email.attachments.all():
+        if attachment.content_type in ["text/plain", "text/html"]:
+            attachments.append(attachments)
+    
+    if len(attachments) <= 2:
+        # we have multiples ones, we should use MIMEMultipart
+        msg = MIMEMultipart("alternative")
+        for attachment in attachments:
+            msg.attach(MIMEText(attachment.data, attachment.content_type.split("/", 1)[1]))
+    elif attachments[0].content_type == "text/html":
+        msg = MIMEText(attachments.data, "html")
+    elif attachments[0].content_type == "text/plain":
+        msg = MIMEText(attachments.data, "plain")
+    else:
+        # oh dear, set the body as nothing then
+        msg = MIMEText('', 'plain')
+
+    # okay now deal with other attachments
+    for attachment in email.attachments.all():
+        if attachment in attachments:
+            continue # we've already handled it
+        # right now deal with it
+        gen_type, specific_type = attachment.content_type.split("/", 1)
+        if gen_type == "audio":
+            attach = MIMEAudio(attachment.data, specific_type)
+        elif gen_type == "image":
+            attach = MIMEImage(attachment.data, specific_type)
+        elif gen_type == "text":
+            attach = MIMEText(attachment.data, specific_type)
+        else:
+            attach = MIMEBase(attachment.data, specific_type)
+            encoders.encode_base64(attach)
+        attach.add_header("Content-Disposition", "attachment", filename=attachment.content_disposition)
+        msg.attach(attach)
+
+    # now add the headers
+    for header in email.headers.all():
+        msg[header.name] = header.data
+    
+    return msg
+    
+
 def clean_html(email):
     email = BeautifulSoup(email, "lxml")
     for elem in email.findAll(['script','link']):
@@ -33,7 +90,7 @@ def clean_html(email):
     email = email.prettify()
     return email
 
-def send_email(user, alias, sender, subject=None, body=""):
+def send_email(user, alias, sender, subject=None, body="", attachments=[]):
     """ Sends an email to an internal alias """
     if not user:
         user = null_user()
@@ -67,6 +124,9 @@ def send_email(user, alias, sender, subject=None, body=""):
         subject.save()
 
         email.headers.add(subject)
+
+    for attachment in attachments:
+        email.attachments.add(attachment)
 
     email.save()
 

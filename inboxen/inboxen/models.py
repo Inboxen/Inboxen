@@ -66,9 +66,12 @@ class Attachment(models.Model):
     content_type = models.CharField(max_length=256, null=True, blank=True)
     content_disposition = models.CharField(max_length=512, null=True, blank=True)
 
+    path = models.FilePathField(default=None, null=True, Blank=True)
     _data = models.TextField(
         db_column='data',
-        blank=True)
+        blank=True,
+        null=True,
+    )
 
     def set_data(self, data):
         try:
@@ -79,7 +82,20 @@ class Attachment(models.Model):
         self._data = base64.encodestring(data)
 
     def get_data(self):
-        return base64.decodestring(self._data)
+        if not self._path:
+            return base64.decodestring(self._data)
+        
+        # look for data in the path
+        _tpath = open(self.path, "rb")
+        try:
+            d = _tpath.read()
+        except:
+            # be good now.
+            _tpath.close()
+            raise
+        _tpath.close()
+        return d
+        
 
     data = property(get_data, set_data)
 
