@@ -224,7 +224,7 @@ def statistics():
 ##
 @task(default_retry_delay=5 * 60) # 5 minutes
 def delete_alias(email, user=None):
-    if type(email) in [types.StringType]:
+    if type(email) in [types.StringType, types.UnicodeType]:
         if not user:
             raise Exception("Need to give username")
         alias, domain = email.split("@", 1)
