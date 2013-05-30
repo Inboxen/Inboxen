@@ -166,8 +166,8 @@ def liberate_emails(result, user):
     mdir.lock()
     # right
     for email in Email.objects.filter(user=user).iterator():
-        msg = make_message(email)
-        msg = msg.as_string()
+        message_result = liberate_make_message(email).get()
+        msg = message_result.result
         mdir.add(msg)
     mdir.flush()
 
@@ -185,6 +185,13 @@ def liberate_emails(result, user):
         "name":"Tarball of emails as Maildir",
         "file":True,
     }
+
+@task(rate=15)
+def liberate_make_message(message):
+    """ Takes a message and makes it """
+    msg = make_message(message)
+    msg = msg.as_string()
+    return msg
 
 ##
 # Statistics
