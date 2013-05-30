@@ -237,7 +237,7 @@ def delete_alias(email, user=None):
         except Alias.DoesNotExist:
             return False
     else:
-        user = email.inbox.user
+        user = email.user
         alias = email
     # delete emails
     while Email.objects.filter(inbox=alias, user=user).exists():
