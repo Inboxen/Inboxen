@@ -45,7 +45,11 @@ def make_message(email):
         # we have multiples ones, we should use MIMEMultipart
         msg = MIMEMultipart("alternative")
         for attachment in attachments:
-            msg.attach(MIMEText(attachment.data, attachment.content_type.split("/", 1)[1]))
+            try:
+                gen_type, specific_type = attachment.content_type.split("/", 1)
+            except ValueError:
+                gen_type, specific_type = "application", "octet-stream"
+            msg.attach(MIMEText(attachment.data, specific_type))
     elif attachments[0].content_type == "text/html":
         msg = MIMEText(attachments[0].data, "html")
     elif attachments[0].content_type == "text/plain":
