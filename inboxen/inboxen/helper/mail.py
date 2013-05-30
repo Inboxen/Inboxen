@@ -39,7 +39,7 @@ def make_message(email):
     attachments = []
     for attachment in email.attachments.all():
         if attachment.content_type in ["text/plain", "text/html"]:
-            attachments.append(attachments)
+            attachments.append(attachment)
     
     if len(attachments) >= 2:
         # we have multiples ones, we should use MIMEMultipart
