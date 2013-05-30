@@ -23,6 +23,7 @@ from inboxen.helper.mail import send_email, make_message
 # Data liberation
 ##
 @task
+@transaction.commit_on_success
 def liberate(user):
     result = chain(liberate_user.s(user), liberate_aliases.s(user), liberate_emails.s(user))()
     result = [result.get(), result.parent.get(), result.parent.parent.get()]
@@ -201,6 +202,7 @@ def liberate_make_message(message):
 ##
 
 @task
+@transaction.commit_on_success
 def statistics():
     # get user statistics
     user_count = User.objects.all().count()
@@ -223,6 +225,7 @@ def statistics():
 # Alias stuff
 ##
 @task(default_retry_delay=5 * 60) # 5 minutes
+@transaction.commit_on_success
 def delete_alias(email, user=None):
     if type(email) in [types.StringType, types.UnicodeType]:
         if not user:
@@ -262,6 +265,7 @@ def delete_email(email):
     email.delete()
 
 @task(ignore_result=True, store_errors_even_if_ignored=True)
+@transaction.commit_on_success
 def disown_alias(result, alias, futr_user=None):
     if not futr_user:
         futr_user = null_user()
@@ -270,6 +274,7 @@ def disown_alias(result, alias, futr_user=None):
     alias.save()
 
 @task(max_retries=None, default_retry_delay=10 * 60, ignore_result=True, store_errors_even_if_ignored=True)
+@transaction.commit_on_success
 def delete_user(user):
     alias = Alias.objects.filter(user=user).exists()
     if alias:
@@ -284,6 +289,7 @@ def delete_user(user):
     return True
 
 @task(default_retry_delay=10 * 60, ignore_result=True, store_errors_even_if_ignored=True)
+@transaction.commit_on_success
 def delete_account(user):
     # first we need to make sure the user can't login
     user.set_unusable_password()
