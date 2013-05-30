@@ -41,15 +41,15 @@ def make_message(email):
         if attachment.content_type in ["text/plain", "text/html"]:
             attachments.append(attachments)
     
-    if len(attachments) <= 2:
+    if len(attachments) >= 2:
         # we have multiples ones, we should use MIMEMultipart
         msg = MIMEMultipart("alternative")
         for attachment in attachments:
             msg.attach(MIMEText(attachment.data, attachment.content_type.split("/", 1)[1]))
     elif attachments[0].content_type == "text/html":
-        msg = MIMEText(attachments.data, "html")
+        msg = MIMEText(attachments[0].data, "html")
     elif attachments[0].content_type == "text/plain":
-        msg = MIMEText(attachments.data, "plain")
+        msg = MIMEText(attachments[0].data, "plain")
     else:
         # oh dear, set the body as nothing then
         msg = MIMEText('', 'plain')
