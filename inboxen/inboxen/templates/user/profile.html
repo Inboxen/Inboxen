@@ -54,7 +54,7 @@
                 {% else %}
                     <td>&nbsp;</td>
                 {% endif %}
-                <td><a href="/email/edit/{{ alias.alias }}@{{ alias.domain }}">{% trans "Edit" %}</a></td>
+                <td><a class="close edit" href="/email/edit/{{ alias.alias }}@{{ alias.domain }}">✍</a></td>
                 <td><a title="{% trans "Delete Alias" %}" class="close" href="/email/delete/{{ alias.alias }}@{{ alias.domain }}">&times;</a></td>
             </tr>
         {% endfor %}
