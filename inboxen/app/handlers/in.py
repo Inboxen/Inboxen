@@ -29,6 +29,7 @@ from config.settings import (DEBUG,
 from lamson.routing import route, stateless, nolocking
 from lamson.server import SMTPError
 from lamson.queue import Queue
+from django.db import DatabaseError
 from app.model.alias import alias_exists
 from datetime import datetime
 from pytz import utc
@@ -43,7 +44,12 @@ import logging
 def START(message, alias=None, domain=None):
     """Does this alias exist? If yes, queue it. If no, drop it."""
 
-    exists, deleted = alias_exists(alias, domain)
+    # catch all the stupid errors mysql might throw
+    try:
+        exists, deleted = alias_exists(alias, domain)
+    except DatabaseError, e:
+        logging.exception(e)
+        raise SMTPError(451, "Oops, melon exploded")
 
     if exists:
         message[recieved_header_name] = datetime.now(utc).strftime(datetime_format)
@@ -64,11 +70,10 @@ def START(message, alias=None, domain=None):
             queue.push(message)
             logging.debug("REJECTED alias %s on domain %s" % (alias, domain))
 
+        # Raise an error, tell server whether to try again or not
         if deleted:
             code = 550
         else:
             code = 450
-
-        # Raise an error, tell server whether to try again or not
         raise SMTPError(code, 'Alias %s@%s does not exist')
 
