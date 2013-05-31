@@ -48,7 +48,7 @@ def START(message, alias=None, domain=None):
     try:
         exists, deleted = alias_exists(alias, domain)
     except DatabaseError, e:
-        logging.exception(e)
+        logging.debug("DB error: %s" % str(e))
         raise SMTPError(451, "Oops, melon exploded")
 
     if exists:

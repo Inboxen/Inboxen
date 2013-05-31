@@ -36,7 +36,7 @@ def START(message, alias=None, domain=None):
     try:
         make_email(message, alias, domain)
     except DatabaseError, e:
-        logging.exception(e)
+        logging.debug("DB error: %s " % str(e))
         if RETRY in message:
             if int(message[RETRY]) > 2:
                 # tried to many times, dump the message
