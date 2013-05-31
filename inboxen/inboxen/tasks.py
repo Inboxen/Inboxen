@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from django.db import transaction
 from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 from django.contrib.auth.models import User
-from celery import task, chain
+from celery import task, chain, group
 from inboxen.helper.user import null_user, user_profile
 from inboxen.helper.alias import gen_alias
 from inboxen.helper.mail import send_email, make_message
@@ -164,16 +164,12 @@ def liberate_emails(result, user):
     
     # now make the maildir
     mdir = mailbox.Maildir(fname)
-    mdir.lock()
     # right
-    while Email.objects.filter(user=user).exists():
-        for email in Email.objects.filter(user=user)[:liberate_make_message.rate_limit].iterator():
-            message_result = liberate_make_message(email).get()
-            msg = message_result.result
-            mdir.add(msg)
-        time.sleep(0.1)
-    
-    mdir.flush()
+    limit = liberate_make_message.rate_limit
+
+    while Email.objects.filter(user=user)[:limit].exists():
+        for email in Email.objects.filter(user=user)[:limit].iterator():
+            msg = liberate_make_message.delay(mdir, email).get()
 
     # now we need to tar this puppy up!
     tar = tarfile.open("%s.tar.gz" % fname, "w:gz")
@@ -190,12 +186,17 @@ def liberate_emails(result, user):
         "file":True,
     }
 
-@task(rate=100)
-def liberate_make_message(message):
+@task(rate=5)
+def liberate_make_message(mdir, message):
     """ Takes a message and makes it """
+    print message.id
+    mdir.lock()
     msg = make_message(message)
     msg = msg.as_string()
-    return msg
+    mdir.add(msg)
+    mdir.flush()
+    mdir.unlock()
+    return True
 
 ##
 # Statistics
@@ -239,15 +240,26 @@ def delete_alias(email, user=None):
     else:
         user = email.user
         alias = email
-    # delete emails
-    while Email.objects.filter(inbox=alias, user=user).exists():
-        emails = Email.objects.filter(inbox=alias, user=user)[:delete_email.rate_limit].iterator()
 
-        # it seems to cause problems if you do QuerySet.delete()
-        # this seems to be more efficiant when we have a lot of data
-        for email in emails:
-            delete_email.delay(email)
-        time.sleep(0.1)
+    # delete emails
+    task_result = None
+    limit = int(delete_email.rate_limit)
+    while Email.objects.filter(inbox=alias, user=user)[:limit].exists():
+        if not task_result:
+            emails = Email.objects.filter(inbox=alias, user=user)[:limit]
+            email_group = []
+            for epost in emails:
+                email_group.append(delete_email.subtask((epost,)))
+        
+            task_result = group(email_group).apply_async()
+
+        else:
+            if task_result.ready():
+                # batch task has completed.
+                task_result = None
+        
+        time.sleep(0.1) # lets not completely hammar the CPU
+
 
     # delete tags
     tags = Tag.objects.filter(alias=alias)
@@ -259,10 +271,11 @@ def delete_alias(email, user=None):
 
     return True
 
-@task(rate_limit=100, ignore_result=True, store_errors_even_if_ignored=True)
+@task(rate_limit=100)
 @transaction.commit_on_success
 def delete_email(email):
     email.delete()
+    return True
 
 @task(ignore_result=True, store_errors_even_if_ignored=True)
 @transaction.commit_on_success
