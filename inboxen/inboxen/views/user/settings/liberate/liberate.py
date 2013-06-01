@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+2#   
 #    This file is part of Inboxen front-end.
 #
 #    Inboxen front-end is free software: you can redistribute it and/or modify
@@ -23,7 +23,13 @@ from inboxen.tasks import liberate as data_liberate
 
 def liberate(request):
     if request.method == "POST":
-        data_liberate.delay(request.user)
+        options = {}
+        if "mailType" in request.POST:
+            options["mailType"] = request.POST["mailType"]
+        if "compressType" in request.POST:
+            option["compressType"] = request.POST["compressType"]
+
+        data_liberate.delay(request.user, options=options)
         return HttpResponseRedirect("/user/settings/liberate/done")    
 
     context = {

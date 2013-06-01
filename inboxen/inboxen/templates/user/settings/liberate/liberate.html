@@ -8,14 +8,29 @@
         <ul class="nav nav-tabs">
             <li><a href="/user/settings/" data-toggle="tab">{% trans "General" %}</a></li>
             <li><a href="/user/settings/password/" data-toggle="tab">{% trans "Change Password" %}</a></li>
-            <li class="active"><a href="/user/setttings/liberate/" data-toggle="tab">{% trans "Data Liberation" %}</a></li>
+            <li class="active"><a href="/user/settings/liberate/" data-toggle="tab">{% trans "Data Liberation" %}</a></li>
             <li><a href="/user/settings/delete/" data-toggle="tab">{% trans "Delete Account" %}</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab1">
                 <form class="form wide-form form-open-top" action="/user/settings/liberate/liberate" method="POST">
                     {% csrf_token %}
-                    <p>{% trans "You can liberate your data, this will take all your data we have an allow you to download it.<br />You will recieve an email shortly after requesting your data on a new alias (this comes out of your allocated aliases).<br /> This will have the data as downloadable attachments." %} </p>
+                    <div class="input-prepend">
+                        <span class="add-on">{% trans "Compression Type:" %}</span>
+                        <select id="prependedInput" name="mailType">
+                            <option value="maildir">Maildir</option>
+                            <option value="mailbox">Mailbox (.mbox)</option>
+                        </select>
+                    </div>
+                    <br />
+                    <div class="input-prepend">
+                        <span class="add-on">{% trans "Mail Storage Type:" %}</span>
+                        <select id="prependedInput" name="compressionType">
+                            <option value="tar.gz">Tarball (gzip)</option>
+                            <option value="tar.bz2">Tarball (bz2)</option>
+                        </select>
+                    </div>
+                    <br />
                     <button class="btn">{% trans "Liberate!" %}</button>
                 </form>
             </div>

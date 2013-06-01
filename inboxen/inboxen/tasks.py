@@ -24,8 +24,12 @@ from inboxen.helper.mail import send_email, make_message
 ##
 @task
 @transaction.commit_on_success
-def liberate(user):
-    result = chain(liberate_user.s(user), liberate_aliases.s(user), liberate_emails.s(user))()
+def liberate(user, options={}):
+    result = chain(
+        liberate_user.s(user),
+        liberate_aliases.s(user),
+        liberate_emails.s(user, options=options)
+    )()
     result = [result.get(), result.parent.get(), result.parent.parent.get()]
 
     # todo: reuse previously made alias if one does exist.
@@ -154,7 +158,7 @@ def liberate_aliases(result, user):
     }
 
 @task
-def liberate_emails(result, user):
+def liberate_emails(result, user, options={}):
     """ Makes a maildir of all their emails """
     # first we need to come up with a temp name
     rstr = ""
@@ -163,16 +167,51 @@ def liberate_emails(result, user):
     fname = "/tmp/mkdir%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
     
     # now make the maildir
-    mdir = mailbox.Maildir(fname)
+    if "mailType" in options:
+        if options["mailType"] == "maildir":
+            mdir = mailbox.Maildir(fname)
+        elif options["mailType"] == "mailbox":
+            fname += ".mbox" # they should have this file extension
+            mdir = mailbox.Mailbox(fname)
+        else:
+            raise Exception("Unknown mailType: %s" % options["mailType"])
+    else:
+        # default is maildir
+        mdir = mailbox.Maildir(fname)
+
     # right
     limit = liberate_make_message.rate_limit
-
+    try:
+        mdir.lock()
+    except NotImplementedError:
+        # we don't care, mailbox raises this
+        pass
     while Email.objects.filter(user=user)[:limit].exists():
-        for email in Email.objects.filter(user=user)[:limit].iterator():
-            msg = liberate_make_message.delay(mdir, email).get()
+        for email in Email.objects.filter(user=user)[:limit]:
+            msg = liberate_make_message.delay(mdir, email)
+            print msg
 
+    mdir.flush()
+    try:
+        mdir.unlock()
+    except NotImplementedError:
+        # same as lock, we don't care, mailbox raises
+        pass
     # now we need to tar this puppy up!
-    tar = tarfile.open("%s.tar.gz" % fname, "w:gz")
+    if "compressType" in options:
+        if options["compressType"] == "tar.gz":
+            fname += ".tar.gz"
+            tar = tarfile.open(fname, "w:gz")
+        elif options["compressType"] == "tar.bz2":
+            fname += "tar.bz2"
+            tar = tarfile.open(fname, "w:bz2")
+        else:
+            raise Exception("Unknown compressType: %s" % options["compressType"])
+    else:
+        # default is tar.gz
+        fname += "tar.gz"
+        tar = tarfile.open(fname, "w:gz")
+
     tar.add("%s/" % fname) # directories are added recursively by default
     tar.close()
 
@@ -180,22 +219,18 @@ def liberate_emails(result, user):
     # at some point (soon) we need to get it so attachments can live on the filesystem
 
     return {
-        "data":"%s.tar.gz" % fname,
+        "data":fname,
         "type":"application/x-gzip",
         "name":"Tarball of emails as Maildir",
         "file":True,
     }
 
-@task(rate=5)
+@task(rate=100)
 def liberate_make_message(mdir, message):
     """ Takes a message and makes it """
-    print message.id
-    mdir.lock()
     msg = make_message(message)
-    msg = msg.as_string()
-    mdir.add(msg)
+    mdir.add(str(msg))
     mdir.flush()
-    mdir.unlock()
     return True
 
 ##
