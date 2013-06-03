@@ -35,7 +35,7 @@ def START(message, alias=None, domain=None):
     # queue
     try:
         make_email(message, alias, domain)
-    except DatabaseError, e:
+    except Exception, e:
         logging.debug("DB error: %s " % str(e))
         if RETRY in message:
             if int(message[RETRY]) > 2:

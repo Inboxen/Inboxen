@@ -47,7 +47,7 @@ def START(message, alias=None, domain=None):
     # catch all the stupid errors mysql might throw
     try:
         exists, deleted = alias_exists(alias, domain)
-    except DatabaseError, e:
+    except Exception, e:
         logging.debug("DB error: %s" % str(e))
         raise SMTPError(451, "Oops, melon exploded")
 
