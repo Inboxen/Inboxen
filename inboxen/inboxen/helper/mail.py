@@ -68,7 +68,7 @@ def make_message(email):
         # right now deal with it
         try:
             gen_type, specific_type = attachment.content_type.split("/", 1)
-        except AttributeError, IndexError:
+        except (AttributeError, IndexError):
             gen_type, specific_type = "application", "octet-stream" # generic
         if gen_type == "audio":
             attach = MIMEAudio(attachment.data, specific_type)
