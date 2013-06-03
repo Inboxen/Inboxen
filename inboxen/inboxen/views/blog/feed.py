@@ -3,6 +3,7 @@ from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.core.urlresolvers import reverse
 from inboxen.models import BlogPost
+from markdown import markdown
 
 class RssFeed(Feed):
     title = "Inboxen News Feed"
@@ -17,7 +18,7 @@ class RssFeed(Feed):
         return item.subject
 
     def item_description(self, item):
-        return item.body
+        return markdown(item.body)
 
     def item_link(self, item):
         return "/blog/post/%s" % item.id
