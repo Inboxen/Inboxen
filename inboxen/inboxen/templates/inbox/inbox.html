@@ -67,7 +67,12 @@
                 {% else %}
                     <li>
                 {% endif %}
-                <a href="/inbox/{{ page.page }}">{{ page.page }}</a></li>
+                {% if email_address %}
+                    <a href="/inbox/{{ email_address }}/{{ page.page }}">{{ page.page }}</a>
+                {% else %}
+                    <a href="/inbox/{{ page.page }}">{{ page.page }}</a>
+                {% endif %}
+                </li>
             {% endfor %}
             
             {% if emails.has_next %}
