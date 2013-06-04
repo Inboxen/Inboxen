@@ -1,7 +1,5 @@
 # inboxen specific
-inboxen/inboxen/settings.py
-inboxen/inboxen/migrations
-inboxen/inboxen/wsgi.py
+/wsgi.py
 
 *.py[cod]
 *.sw?
