@@ -1,0 +1,9 @@
+[submodule "queue"]
+	path = queue
+	url = https://github.com/Inboxen/queue.git
+[submodule "front-end"]
+	path = front-end
+	url = https://github.com/Inboxen/front-end.git
+[submodule "back-end"]
+	path = back-end
+	url = https://github.com/Inboxen/back-end.git
