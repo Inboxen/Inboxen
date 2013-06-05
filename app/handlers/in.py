@@ -26,9 +26,9 @@ from config.settings import (DEBUG,
                             datetime_format,
                             recieved_header_name)
 
-from lamson.routing import route, stateless, nolocking
-from lamson.server import SMTPError
-from lamson.queue import Queue
+from salmon.routing import route, stateless, nolocking
+from salmon.server import SMTPError
+from salmon.queue import Queue
 from django.db import DatabaseError
 from app.model.alias import alias_exists
 from datetime import datetime

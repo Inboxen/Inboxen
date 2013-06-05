@@ -19,8 +19,8 @@
 #
 ##
 
-from lamson.routing import route, stateless
-from lamson.queue import Queue
+from salmon.routing import route, stateless
+from salmon.queue import Queue
 from django.db import DatabaseError
 from config.settings import DEBUG, accepted_queue_dir, accepted_queue_opts_in
 from app.model.email import make_email

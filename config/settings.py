@@ -1,4 +1,4 @@
-# This file contains python variables that configure Lamson for email processing.
+# This file contains python variables that configure Salmon for email processing.
 import logging
 import os
 
@@ -22,6 +22,6 @@ router_defaults = {}
 template_config = {'dir': 'app', 'module': 'templates'}
 
 datetime_format = "%Y-%m-%d %H:%M:%S %z"
-recieved_header_name = 'x-lamson-recieved'
+recieved_header_name = 'x-salmon-recieved'
 
 # the config/boot.py will turn these values into variables set in settings

@@ -1,7 +1,7 @@
 from config import settings
-from lamson.routing import Router
-from lamson.server import QueueReceiver
-from lamson import queue
+from salmon.routing import Router
+from salmon.server import QueueReceiver
+from salmon import queue
 import logging
 import logging.config
 
