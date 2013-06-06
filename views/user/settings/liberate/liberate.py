@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-2#   
+#   
 #    This file is part of Inboxen front-end.
 #
 #    Inboxen front-end is free software: you can redistribute it and/or modify
@@ -19,7 +19,8 @@
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from inboxen.tasks import liberate as data_liberate
+
+from queue.tasks import liberate as data_liberate
 
 def liberate(request):
     if request.method == "POST":

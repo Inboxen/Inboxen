@@ -21,8 +21,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from inboxen.models import Tag
-from inboxen.helper.alias import clean_tags, find_alias
+from website.models import Tag
+from website.helper.alias import clean_tags, find_alias
 
 @login_required
 def edit(request, email):

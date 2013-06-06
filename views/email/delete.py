@@ -20,8 +20,9 @@
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from inboxen.models import Alias
-from inboxen.tasks import delete_alias
+
+from website.models import Alias
+from website.tasks import delete_alias
 
 @login_required
 def confirm(request, email):

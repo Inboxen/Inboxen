@@ -16,22 +16,21 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
-from datetime import datetime
-from pytz import utc
-
-from bs4 import BeautifulSoup
-
-from django.utils.safestring import mark_safe
-
-from inboxen.models import Email, Attachment, Alias, Header
-from inboxen.helper.user import user_profile, null_user
-
 from email import encoders
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
+from datetime import datetime
+
+from pytz import utc
+from bs4 import BeautifulSoup
+
+from django.utils.safestring import mark_safe
+
+from website.models import Email, Attachment, Alias, Header
+from website.helper.user import user_profile, null_user
 
 def make_message(email):
     """ makes a python email.message.Message from our Email object """

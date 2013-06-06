@@ -22,8 +22,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
 
-from inboxen.models import Alias, Email
-from inboxen.helper.paginator import page as paginator_page
+from website.models import Alias, Email
+from website.helper.paginator import page as paginator_page
 
 @login_required
 def inbox(request, email_address="", page=1):

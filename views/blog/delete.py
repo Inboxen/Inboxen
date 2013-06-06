@@ -20,7 +20,7 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect
 
-from inboxen.models import BlogPost
+from website.models import BlogPost
 
 @user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
 def delete(request, postid):

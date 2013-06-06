@@ -21,7 +21,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from inboxen.helper.user import user_profile
+from website.helper.user import user_profile
 
 @login_required
 def settings(request):

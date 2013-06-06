@@ -15,16 +15,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 from datetime import datetime
+
 from pytz import utc
 
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from inboxen.helper.alias import gen_alias
-from inboxen.helper.user import null_user
-from inboxen.helper.mail import send_email 
-from inboxen.models import Domain, Alias, Tag
+from website.helper.alias import gen_alias
+from website.helper.user import null_user
+from website.helper.mail import send_email 
+from website.models import Domain, Alias, Tag
 
 def contact(request):
 

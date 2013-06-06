@@ -19,8 +19,10 @@
 
 from django.conf import settings
 from django.conf.urls import patterns, include, url
-from inboxen.views.blog.feed import RssFeed, AtomFeed
 from django.conf.urls.defaults import *
+
+from website.views.blog.feed import RssFeed, AtomFeed
+
 
 # error views
 handler500 = "inboxen.views.error.internal_server"

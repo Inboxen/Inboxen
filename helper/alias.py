@@ -21,8 +21,9 @@ from random import choice
 from string import ascii_lowercase
 
 from django.core.exceptions import ObjectDoesNotExist
-from inboxen.models import Email, Tag, Alias, Domain
-from inboxen.helper.user import user_profile
+
+from website.models import Email, Tag, Alias, Domain
+from website.helper.user import user_profile
 
 def gen_alias(count, alias="", ocount=5):
 

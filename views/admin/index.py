@@ -21,7 +21,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from inboxen.helper.admin import statistics
+from website.helper.admin import statistics
 
 @login_required
 @staff_member_required

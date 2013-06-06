@@ -21,7 +21,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
-from inboxen.tasks import delete_account
+
+from queue.tasks import delete_account
 
 @login_required
 def delete(request):

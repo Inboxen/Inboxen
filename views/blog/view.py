@@ -16,11 +16,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from inboxen.models import BlogPost
+
+from website.models import BlogPost
 
 def view(request, page=1):
     if request.user.is_staff:
