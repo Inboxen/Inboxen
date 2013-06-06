@@ -19,7 +19,7 @@
 
 from django.core.management.base import BaseCommand, CommandError
 
-from website.models import User, Email, Alias, Tag
+from inboxen.models import User, Email, Alias, Tag
 from website.tasks import delete_alias
 
 class Command(BaseCommand):

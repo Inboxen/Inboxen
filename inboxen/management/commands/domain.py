@@ -19,7 +19,7 @@
 
 from django.core.management.base import BaseCommand, CommandError
 
-from website.models import Domain
+from inboxen.models import Domain
 
 class Command(BaseCommand):
     args = "<add/list/re(move)> <domain>"
