@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from website.helper.user import null_user, user_profile
 from website.helper.alias import gen_alias
 from website.helper.mail import send_email, make_message
-from website.models import Attachment, Tag, Alias, Domain, Email, Statistic
+from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
 ##
 # Data liberation
