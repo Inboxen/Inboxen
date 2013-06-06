@@ -1,5 +1,6 @@
 # inboxen specific
-/inboxen/settings.py
+settings.py
+settings.py[cod]
 /migrations
 
 *.py[cod]

@@ -22,6 +22,8 @@ setup(
         "pytz >= 2013b",
         "Celery >= 3.0.19",
         "django-celery >= 3.0.17",
+        "south >= 0.8.1",
+        "django-extensions >= 1.1.1",
     ],
 
     extras_require = {
