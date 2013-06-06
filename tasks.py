@@ -8,16 +8,18 @@ import tarfile
 import os
 import mailbox
 import logging
+from datetime import datetime, timedelta
 
 from pytz import utc
-from datetime import datetime, timedelta
-from django.db import transaction
-from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
-from django.contrib.auth.models import User
 from celery import task, chain, group
-from inboxen.helper.user import null_user, user_profile
-from inboxen.helper.alias import gen_alias
-from inboxen.helper.mail import send_email, make_message
+
+from django.db import transaction
+from django.contrib.auth.models import User
+
+from website.helper.user import null_user, user_profile
+from website.helper.alias import gen_alias
+from website.helper.mail import send_email, make_message
+from website.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
 ##
 # Data liberation
