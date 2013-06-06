@@ -21,7 +21,7 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
-from website.tasks import delete_alias
+from queue.tasks import delete_alias
 from inboxen.models import Alias
 
 @login_required

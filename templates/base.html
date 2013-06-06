@@ -5,8 +5,8 @@
         <title>Inboxen - {{ page }}</title>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-        <link href="/static/css/inboxen.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/inboxen.min.css" rel="stylesheet">
 
         {% block feeds %}{% endblock %}
     </head>
