@@ -29,8 +29,8 @@ from bs4 import BeautifulSoup
 
 from django.utils.safestring import mark_safe
 
-from website.models import Email, Attachment, Alias, Header
 from website.helper.user import user_profile, null_user
+from inboxen.models import Email, Attachment, Alias, Header
 
 def make_message(email):
     """ makes a python email.message.Message from our Email object """

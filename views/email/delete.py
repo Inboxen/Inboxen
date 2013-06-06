@@ -21,8 +21,8 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
-from website.models import Alias
 from website.tasks import delete_alias
+from inboxen.models import Alias
 
 @login_required
 def confirm(request, email):

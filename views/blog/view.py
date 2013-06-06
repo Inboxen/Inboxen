@@ -22,7 +22,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from website.models import BlogPost
+from inboxen.models import BlogPost
 
 def view(request, page=1):
     if request.user.is_staff:

@@ -25,7 +25,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
 
-from website.models import BlogPost
+from inboxen.models import BlogPost
 
 @user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
 def edit(request, postid):

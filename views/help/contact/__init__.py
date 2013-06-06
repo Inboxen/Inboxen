@@ -25,7 +25,7 @@ from django.http import HttpResponseRedirect
 from website.helper.alias import gen_alias
 from website.helper.user import null_user
 from website.helper.mail import send_email 
-from website.models import Domain, Alias, Tag
+from inboxen.models import Domain, Alias, Tag
 
 def contact(request):
 

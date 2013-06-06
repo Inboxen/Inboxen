@@ -19,7 +19,7 @@
 
 from django.contrib.auth.models import User
 
-from website.models import UserProfile
+from inboxen.models import UserProfile
 
 def null_user():
     try:

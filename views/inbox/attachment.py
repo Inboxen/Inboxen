@@ -19,7 +19,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 
-from website.models import Attachment
+from inboxen.models import Attachment
 
 @login_required
 def download(request, attachmentid, method="download"):

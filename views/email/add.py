@@ -23,8 +23,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from website.models import Domain, Alias, Tag
 from website.helper.alias import alias_available, clean_tags, gen_alias
+from inboxen.models import Domain, Alias, Tag
 
 @login_required
 def add(request):

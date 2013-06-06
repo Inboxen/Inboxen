@@ -22,10 +22,9 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from website.models import Request
 from website.helper.user import user_profile
 from website.helper.alias import alias_available
-
+from inboxen.models import Request
 
 @login_required
 def request(request):

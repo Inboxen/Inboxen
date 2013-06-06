@@ -20,7 +20,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from website.models import Alias
+from inboxen.models import Alias
 from website.helper.mail import get_email, clean_html
 
 @login_required

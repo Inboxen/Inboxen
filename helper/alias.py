@@ -22,8 +22,8 @@ from string import ascii_lowercase
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from website.models import Email, Tag, Alias, Domain
 from website.helper.user import user_profile
+from inboxen.models import Email, Tag, Alias, Domain
 
 def gen_alias(count, alias="", ocount=5):
 

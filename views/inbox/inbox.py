@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
 
-from website.models import Alias, Email
+from inboxen.models import Alias, Email
 from website.helper.paginator import page as paginator_page
 
 @login_required

@@ -21,7 +21,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from website.models import Email
+from inboxen.models import Email
 
 def delete(request, email_address, emailid):
 

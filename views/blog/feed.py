@@ -24,7 +24,7 @@ from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from django.core.urlresolvers import reverse
 
-from website.models import BlogPost
+from inboxen.models import BlogPost
 
 
 class RssFeed(Feed):
