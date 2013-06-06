@@ -3,7 +3,7 @@
 	url = https://github.com/Inboxen/queue.git
 [submodule "router"]
 	path = router
-	url = git@github.com:Inboxen/router.git
+	url = https://github.com/Inboxen/router.git
 [submodule "website"]
 	path = website
-	url = git@github.com:Inboxen/website.git
+	url = https://github.com/Inboxen/website.git
