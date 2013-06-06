@@ -1,3 +1,9 @@
 [submodule "queue"]
 	path = queue
 	url = https://github.com/Inboxen/queue.git
+[submodule "router"]
+	path = router
+	url = git@github.com:Inboxen/router.git
+[submodule "website"]
+	path = website
+	url = git@github.com:Inboxen/website.git
