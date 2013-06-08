@@ -2,9 +2,9 @@
 import logging
 import os
 
-DEBUG = True
+DEBUG = False
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'inboxen.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 accepted_queue_dir = 'run/accepted'
 accepted_queue_opts_in = {}
