@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="page-header">
-    <h1>{{ email.subject }}</h2> <small> {{ email.from }} </small>
+    <small> {{ email.from }} </small>
 <div class="email">
     <strong>{% trans "Recveied" %}</strong>: {{ email.date }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
 
