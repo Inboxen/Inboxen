@@ -2,6 +2,14 @@
 
 {% load i18n %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/user/profile">{% trans "Profile" %}</a> <span class="divider">/</span></li>
+        <li><a href="/inbox/{{ email.inbox }}/">{{ email.inbox }}</a> <span class="divider">/</span></li>
+        <li class="active">{{ email.subject }}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <h1>{{ email.subject }}</h2> <small> {{ email.from }} </small>
@@ -33,6 +41,5 @@
 {% endfor %}
 
 </div>
-
 
 {% endblock %}

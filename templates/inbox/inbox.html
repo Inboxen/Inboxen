@@ -1,13 +1,19 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block content %}
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="/user/profile">{% trans "Profile" %}</a> <span class="divider">/</span></li>
+        
+        {% if email_address %}
+            <li class="active">{{ email_address }}</li>
+        {% else %}
+            <li class="active">{% trans "Unified Inbox" %}</li>
+        {% endif %}
+    </ul>
+{% endblock %}
 
-{% if email_address %}
-    <h2> {{ email_address }} {% trans "Inbox" %}</h2>
-{% else %}
-    <h2> {% trans "Unified Inbox" %} </h2>
-{% endif %}
+{% block content %}
 
 {% if error %}
     <p> {{ error }} </p>
