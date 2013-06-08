@@ -169,7 +169,7 @@ def get_email(user, email_id, preference=None, read=False):
     plain_attachments = email.attachments.filter(content_type="text/plain")
     html_attachments = email.attachments.filter(content_type="text/html")
     
-    email["inbox"] = email.inbox
+    message["inbox"] = email.inbox
 
     if email.body and (html_preference < 2 or not html_attachments.exists()):
         # I think we can give them this?
