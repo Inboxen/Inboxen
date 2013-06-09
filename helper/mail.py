@@ -151,6 +151,9 @@ def get_email(user, email_id, preference=None, read=False):
     else:
         html_preference = int(preference)
 
+    email_id = int(email_id, 16)
+
+
     # quick fix, allows staff to read any message, not just their own
     # not sure if we really want that - M
     if user.is_staff:

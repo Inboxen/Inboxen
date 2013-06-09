@@ -81,7 +81,7 @@ urlpatterns = patterns('',
 
     url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', 'website.views.inbox.attachment.download'),
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/delete/(?P<emailid>\d+)', 'website.views.inbox.delete.delete'),
-    url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/view/(?P<emailid>\d+)', 'website.views.inbox.view.view'),
+    url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/view/(?P<emailid>[a-fA-F0-9]+)', 'website.views.inbox.view.view'),
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),
 
     url(r'^inbox(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),

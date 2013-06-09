@@ -25,6 +25,8 @@ from inboxen.models import Email
 
 def delete(request, email_address, emailid):
 
+    emailid = int(emailid, 16)
+
 	try:
 		email = Email.objects.get(id=emailid, user=request.user)
 		email.delete()
