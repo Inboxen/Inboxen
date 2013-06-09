@@ -32,10 +32,10 @@
                             <td><input type="checkbox" name="email"></td>
                             <td> {{ email.sender }} </td>
                             {% if email.subject %}
-                                <td><a href="/inbox/{{ email.inbox }}/view/{{ email.id }}">{{ email.subject }}</a></td>
+                                <td><a href="/inbox/{{ email.inbox }}/view/{{ email.eid }}">{{ email.subject }}</a></td>
                             {% endif %}
                             <td><span title="{{ email.recieved_date }}">{{ email.recieved_date|timesince }} {% trans "ago" %}</span></td>
-                            <td><a class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.id }}">&times;</a></td>
+                            <td><a class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.eid }}">&times;</a></td>
                         </tr>
                     {% endfor %}
                 </table>
