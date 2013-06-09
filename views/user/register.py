@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.shortcuts import render
 from django.template import RequestContext
@@ -25,7 +26,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 def status(request):
     context = {
-        "page":"We're not stable!",
+        "page":_("We're not stable!"),
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
@@ -34,7 +35,7 @@ def status(request):
 def success(request):
 
     context = {
-        "page":"Welcome!"
+        "page":_("Welcome!")
     }
 
     return render(request, "user/register/success.html", context)
@@ -56,7 +57,7 @@ def register(request):
     
     context = {
         "form":form,
-        "page":"Register",
+        "page":_("Register"),
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 

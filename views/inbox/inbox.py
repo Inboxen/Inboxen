@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -39,8 +40,8 @@ def inbox(request, email_address="", page=1):
             inbox = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date')
         except ObjectDoesNotExist:
             context = {
-                "page":"%s - Inbox" % email_address,
-                "error":"Can't find email address",
+                "page":_("%s - Inbox") % email_address,
+                "error":_("Can't find email address"),
                 "emails":[],
                 "email_address":email_address,
             }
@@ -58,7 +59,7 @@ def inbox(request, email_address="", page=1):
 
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     for email in emails.object_list:
-        email.sender, email.subject = "", "(No Subject)"
+        email.sender, email.subject = "", _("(No Subject)")
         for header in email.headers.all():
             if header.name == "From":
                 email.sender = header.data
@@ -66,9 +67,9 @@ def inbox(request, email_address="", page=1):
                 email.subject = header.data
 
     if email_address:
-        page = "%s - Inbox" % email_address
+        page = _("%s - Inbox") % email_address
     else:
-        page = "Inbox"
+        page = _("Inbox")
 
     context = {
         "page":page,

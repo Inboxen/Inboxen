@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -28,7 +29,7 @@ from website.helper.admin import statistics
 def index(request):
 
     context = {
-        "page":"Admin",
+        "page":_("Admin"),
         "statistics":statistics(),
     }
 

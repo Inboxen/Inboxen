@@ -15,6 +15,7 @@
 #    along with front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.shortcuts import render
 
@@ -28,7 +29,7 @@ def error(request, error_message, status=500):
         registration_enabled = True
 
     context = {
-        "page":"Page not found",
+        "page":_("Page not found"),
         "error":error_message,
         "registration_enabled":registration_enabled,
     }
@@ -36,21 +37,21 @@ def error(request, error_message, status=500):
     return render(request, "error.html", context, status=status)
 
 def not_found(request):
-    error_message = """
-    The page you have requested has not been found. Please contact support if you believe this page should exist or you're brought to this page due to a link you have clicked while nagivating around the site."""
+    error_message = _("""
+    The page you have requested has not been found. Please contact support if you believe this page should exist or you're brought to this page due to a link you have clicked while nagivating around the site.""")
 
     return error(request, error_message, status=404)
 
 def internal_server(request):
-    error_message = """
+    error_message = _("""
     There has been a server problem. We're currently looking into this, please try again soon.
-    """
+    """)
 
     return error(request, error_message, status=500)
 
 def permission_denied(request):
-    error_message = """
+    error_message = _("""
     Permission denied, you're not authorized to view this page, sorry.
-    """
+    """)
 
     return error(request, error_message, status=403)

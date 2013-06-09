@@ -15,13 +15,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.shortcuts import render
 
 def success(request):
 
     context = {
-        "page":"Contact",
+        "page":_("Contact"),
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 

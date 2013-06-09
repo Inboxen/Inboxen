@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
@@ -34,7 +35,7 @@ def liberate(request):
         return HttpResponseRedirect("/user/settings/liberate/done")    
 
     context = {
-        "page":"Liberate your data",
+        "page":_("Liberate your data"),
     }
     
     return render(request, "user/settings/liberate/liberate.html", context)

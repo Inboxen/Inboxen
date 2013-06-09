@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -38,14 +39,14 @@ def delete(request):
                 return render(request, "user/settings/delete.html")
 
     context = {
-        "page":"Delete Account",
+        "page":_("Delete Account"),
     }
 
     return render(request, "user/settings/delete/confirm.html", context)
 
 def success(request):
     context = {
-        "page":"Goodbye",
+        "page":_("Goodbye"),
     }
      
     return render(request, "user/settings/delete/success.html", context)

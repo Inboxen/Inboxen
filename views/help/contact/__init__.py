@@ -18,6 +18,7 @@ from datetime import datetime
 
 from pytz import utc
 
+from django.utils.translation import ugettext as _
 from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -30,7 +31,7 @@ from inboxen.models import Domain, Alias, Tag
 def contact(request):
 
     context = {
-        "page":"Contact",
+        "page":_("Contact"),
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
@@ -73,7 +74,7 @@ def contact(request):
 
         alias.save()
         
-        tag = Tag(alias=alias, tag="Support Request")
+        tag = Tag(alias=alias, tag=_("Support Request"))
         tag.save()
 
         send_email(

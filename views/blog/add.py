@@ -21,6 +21,7 @@ from datetime import datetime
 
 from pytz import utc
 
+from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
@@ -34,7 +35,7 @@ def add(request):
 
     if request.method == "POST":
         if not ("title" in request.POST or "body" in request.POST):
-            error = "You need to have a title and the blog's body"
+            error = _("You need to have a title and the blog's body")
         else:
             if "draft" in request.POST and request.POST["draft"] == "melon":
                 draft = True
@@ -57,7 +58,7 @@ def add(request):
 
     context = {
         "error":error,
-        "page":"Add Post",
+        "page":_("Add Post"),
     }
 
     return render(request, "blog/add.html", context)

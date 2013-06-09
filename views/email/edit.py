@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -58,7 +59,7 @@ def edit(request, email):
 
 
     context = {
-        "page":"Edit %s" % email,
+        "page":_("Edit %s") % email,
         "email":email,
         "alias":alias[0].alias,
         "domain":alias[1],

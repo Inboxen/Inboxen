@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
@@ -35,8 +36,7 @@ def view(request, email_address, emailid):
         try:
             alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
         except Alias.DoesNotExist:
-            return error_out(page="Inbox", message="Alias doesn't exist")
-
+            pass
     try:
         email = get_email(request.user, emailid, read=True)
     except Email.DoesNotExist:

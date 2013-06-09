@@ -19,6 +19,7 @@
 
 from datetime import datetime
 
+from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -62,7 +63,7 @@ def add(request):
     alias = gen_alias(5)
             
     context = {
-        "page":"Add Alias",
+        "page":_("Add Alias"),
         "domains":domains,
         "alias":alias,
     }

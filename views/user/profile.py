@@ -18,6 +18,7 @@
 ##
 
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -57,7 +58,7 @@ def profile(request, page=1):
 
 
     context = {
-        "page":"Profile",
+        "page":_("Profile"),
         "aliases":aliases,
         "available":available,
         "total_email_count":total,

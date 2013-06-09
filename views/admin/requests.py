@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 
 from pytz import utc
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -50,7 +51,7 @@ def requests(request, page=1):
             r.old = False
     
     context = {
-        "page":"Admin",
+        "page":_("Admin"),
         "requests":requests,
     }
 

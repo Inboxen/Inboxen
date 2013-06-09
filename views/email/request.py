@@ -19,6 +19,7 @@
 
 from datetime import datetime
 
+from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -33,8 +34,8 @@ def request(request):
 
     if available > 10:
         context = {
-            "error":"You need to have less than 10 aliases available to request more, you currently have %s available." % available,
-            "page":"Request",
+            "error":_("You need to have less than 10 aliases available to request more, you currently have %s available.") % available,
+            "page":_("Request"),
             "request":None,
             "prior_requests":prior_requests,
         }
@@ -58,7 +59,7 @@ def request(request):
         current_request = True
 
     context = {
-        "page":"Request",
+        "page":_("Request"),
         "request":current_request,
         "prior_requests":prior_requests,
     }

@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
@@ -43,7 +44,7 @@ def confirm(request, email):
         return HttpResponseRedirect("/user/profile")
     
     context = {
-        "page":"Delete Alias",
+        "page":_("Delete Alias"),
         "alias":email
     }
 

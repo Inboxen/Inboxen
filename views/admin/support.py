@@ -17,6 +17,7 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -42,7 +43,7 @@ def support(request, page=1):
         emails = paginator.page(paginator.num_pages)
 
     for email in emails.object_list:
-        email.sender, email.subject = "", "(No Subject)"
+        email.sender, email.subject = "", _("(No Subject)")
         for header in email.headers.all():
             if header.name == "From":
                 email.sender = header.data
@@ -50,7 +51,7 @@ def support(request, page=1):
                 email.subject = header.data
 
     context = {
-        "page":"Support Inbox",
+        "page":_("Support Inbox"),
         "emails":emails,
     }
 
