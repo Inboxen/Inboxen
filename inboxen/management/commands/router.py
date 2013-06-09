@@ -17,30 +17,37 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.management.base import BaseCommand, CommandError
+import sys
+import os
 
+from django.core.management.base import BaseCommand, CommandError
 from inboxen.models import User, Email, Alias, Tag
 from queue.tasks import delete_alias
-
 from salmon.commands import start_command, stop_command, status_command
 
 class Command(BaseCommand):
     args = "<start/stop/status>"
     help = "Start and stop Salmon router"
 
-    # this needs moving somewhere else
-    salmon_dir = './router/'
-    # these need to be ordered from smtp in to database out
-    salmon_options = [
-            {'chdir': salmon_dir, 'pid': salmon_dir + 'run/in.pid', 'boot': 'config.boot'},
-            {'chdir': salmon_dir, 'pid': salmon_dir + 'run/out.pid', 'boot': 'config.accepted'}
-            ]
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+
+        # this needs moving somewhere else
+        salmon_dir = os.getcwd() + '/router/'
+        # these need to be ordered from smtp in to database out
+        self.salmon_options = [
+                {'chdir': salmon_dir, 'pid': salmon_dir + 'run/in.pid', 'boot': 'config.boot'},
+                {'chdir': salmon_dir, 'pid': salmon_dir + 'run/out.pid', 'boot': 'config.accepted'}
+                ]
+
+        if not salmon_dir in sys.path:
+            sys.path.append(salmon_dir)
 
     def handle(self, *args, **options):
         if not args:
             self.stdout.write(self.help)
             return
-        elif not self.can_import_setting:
+        elif not self.can_import_settings:
             raise CommandError("I can't work under these conditions! Where is settings.py?!")
 
         if args[0] == "start":
@@ -53,13 +60,23 @@ class Command(BaseCommand):
             raise CommandError("No such command, %s" % args[0])
 
     def salmon_start(self):
-        for handler in salmon_options:
-            start_command(**handler)
+        name = "Salmon: %s"
+        for handler in self.salmon_options:
+            try:
+                self.stdout.write(name % handler['boot'][7:])
+                start_command(**handler)
+            except SystemExit:
+                # there are times when the first daemon is running, but the second is not
+                pass
 
     def salmon_stop(self):
-        for handler in salmon_options:
-            stop_command(pid=handler['pid'])
+        for handler in self.salmon_options:
+            try:
+                stop_command(pid=handler['pid'])
+            except SystemExit:
+                # if the pid file was removed, salmon will panic
+                pass
 
     def salmon_status(self):
-        for handler in salmon_options:
+        for handler in self.salmon_options:
             status_command(pid=handler['pid'])
