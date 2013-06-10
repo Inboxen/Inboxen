@@ -1,9 +1,11 @@
 # This file contains python variables that configure Salmon for email processing.
 import logging
+import sys
 import os
 
 DEBUG = False
 
+sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 accepted_queue_dir = 'run/accepted'
