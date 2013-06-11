@@ -55,7 +55,10 @@ def add(request):
             tag.save()
             tags[i] = tag
 
- 
+        msg = _("You have successfully created %s!") % new_alias
+
+        request.session["messages"] = [msg]
+
         return HttpResponseRedirect("/user/profile")
 
     domains = Domain.objects.all()

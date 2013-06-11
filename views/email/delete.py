@@ -39,6 +39,9 @@ def confirm(request, email):
             # throw to queue
             delete_alias.delay(email, request.user)
             # send back to profile page
+
+            message = _("The alias %s@%s has now been deleted.") % (alias.alias, alias.domain)
+            request.session["messages"] = [message]
             return HttpResponseRedirect("/user/profile") 
 
         return HttpResponseRedirect("/user/profile")

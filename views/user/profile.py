@@ -56,6 +56,10 @@ def profile(request, page=1):
     except EmptyPage: # sometimes the user will try different numbers
         aliases = paginator.page(paginator.num_pages)
 
+    messages = ""
+    if "messages" in request.session and request.session["messages"]:
+        messages = request.session["messages"].pop()
+        request.session["messages"] = []
 
     context = {
         "page":_("Profile"),
@@ -63,7 +67,9 @@ def profile(request, page=1):
         "available":available,
         "total_email_count":total,
         "pages":page_paginator(aliases),
+        "notify_messages":messages,
     }
+
     
     return render(request, "user/profile.html", context)
     

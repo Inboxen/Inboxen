@@ -32,7 +32,10 @@ def liberate(request):
             option["compressType"] = request.POST["compressType"]
 
         data_liberate.delay(request.user, options=options)
-        return HttpResponseRedirect("/user/settings/liberate/done")    
+        message = _("We're liberating! You should recieve an email shortly with your data in it ^_^")
+        request.session["messages"] = [message]
+        return HttpResponseRedirect("/user/profile")    
+
 
     context = {
         "page":_("Liberate your data"),

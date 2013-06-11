@@ -4,6 +4,13 @@
 
 {% block content %}
 
+{% if notify_messages %}
+    <div class="alert alert-success">
+        {{ notify_messages }}
+    </div>
+{% endif %}
+    
+
 {% if not aliases %}
     <p>{% trans "You have not added any aliases yet, this makes me a sad panda :(" %} </p>
 {% else %}
