@@ -128,7 +128,7 @@ class Email(models.Model):
     recieved_date = models.DateTimeField('Recieved Date')
 
     def get_data(self):
-        return hex(self.id)[2:] # the [2:] is to strip 0x from the start
+        return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
     
     def set_data(self, data):
         pass # should not be used
