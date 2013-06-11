@@ -18,11 +18,15 @@
 ##
 
 import sys
-from subprocess import check_output, CalledProcessError
 
 from django.core.management.base import BaseCommand, CommandError
 from inboxen.models import User, Email, Alias, Tag
 from queue.tasks import delete_alias
+
+try:
+    from subprocess import check_output, CalledProcessError
+except ImportError:
+    from inboxen.helper.subprocess import check_output, CalledProccessError
 
 class Command(BaseCommand):
     args = "<start/stop/status>"
