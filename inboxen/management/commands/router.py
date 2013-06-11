@@ -26,7 +26,7 @@ from queue.tasks import delete_alias
 try:
     from subprocess import check_output, CalledProcessError
 except ImportError:
-    from inboxen.helper.subprocess import check_output, CalledProccessError
+    from inboxen.helper.subprocess import check_output, CalledProcessError
 
 class Command(BaseCommand):
     args = "<start/stop/status>"
