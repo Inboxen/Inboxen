@@ -44,14 +44,17 @@ class Command(BaseCommand):
         elif not self.can_import_settings:
             raise CommandError("I can't work under these conditions! Where is settings.py?!")
 
-        if args[0] == "start":
-            output = self.salmon_start()
-        elif args[0] == "stop":
-            output = self.salmon_stop()
-        elif args[0] == "status":
-            output = self.salmon_status()
-        else:
-            raise CommandError("No such command, %s" % args[0])
+        try:
+            if args[0] == "start":
+                output = self.salmon_start()
+            elif args[0] == "stop":
+                output = self.salmon_stop()
+            elif args[0] == "status":
+                output = self.salmon_status()
+            else:
+                raise CommandError("No such command, %s" % args[0])
+        except OSError:
+            raise Exception("OSError from subprocess, salmon is probably not in your path.")
 
         self.stdout.write("".join(output))
 
