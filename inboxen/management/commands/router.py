@@ -18,12 +18,11 @@
 ##
 
 import sys
-import os
+from subprocess import check_output, CalledProcessError
 
 from django.core.management.base import BaseCommand, CommandError
 from inboxen.models import User, Email, Alias, Tag
 from queue.tasks import delete_alias
-from salmon.commands import start_command, stop_command, status_command
 
 class Command(BaseCommand):
     args = "<start/stop/status>"
@@ -32,16 +31,11 @@ class Command(BaseCommand):
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
 
-        # this needs moving somewhere else
-        salmon_dir = os.getcwd() + '/router/'
         # these need to be ordered from smtp in to database out
         self.salmon_options = [
-                {'chdir': salmon_dir, 'pid': salmon_dir + 'run/in.pid', 'boot': 'config.boot'},
-                {'chdir': salmon_dir, 'pid': salmon_dir + 'run/out.pid', 'boot': 'config.accepted'}
+                {'pid': 'run/in.pid', 'boot': 'config.boot'},
+                {'pid': 'run/out.pid', 'boot': 'config.accepted'}
                 ]
-
-        if not salmon_dir in sys.path:
-            sys.path.append(salmon_dir)
 
     def handle(self, *args, **options):
         if not args:
@@ -51,32 +45,44 @@ class Command(BaseCommand):
             raise CommandError("I can't work under these conditions! Where is settings.py?!")
 
         if args[0] == "start":
-            self.salmon_start()
+            output = self.salmon_start()
         elif args[0] == "stop":
-            self.salmon_stop()
+            output = self.salmon_stop()
         elif args[0] == "status":
-            self.salmon_status()
+            output = self.salmon_status()
         else:
             raise CommandError("No such command, %s" % args[0])
 
+        self.stdout.write("".join(output))
+
     def salmon_start(self):
-        name = "Salmon: %s"
+        name = "Starting Salmon handler: %s\n"
+        output = []
         for handler in self.salmon_options:
             try:
-                self.stdout.write(name % handler['boot'][7:])
-                start_command(**handler)
-            except SystemExit:
-                # there are times when the first daemon is running, but the second is not
-                pass
+                check_output(['salmon', 'start', '-pid', handler['pid'], '-boot', handler['boot']], cwd='router')
+                output.append(name % handler['boot'][7:])
+            except CalledProcessError as error:
+                output.append("Exit code %d: %s" % (error.returncode, error.output))
+
+        return output
 
     def salmon_stop(self):
+        output = []
         for handler in self.salmon_options:
             try:
-                stop_command(pid=handler['pid'])
-            except SystemExit:
-                # if the pid file was removed, salmon will panic
-                pass
+                output.append(check_output(['salmon', 'stop', '-pid', handler['pid']], cwd='router'))
+            except CalledProcessError as error:
+                output.append("Exit code %d: %s" % (error.returncode, error.output))
+
+        return output
 
     def salmon_status(self):
+        output = []
         for handler in self.salmon_options:
-            status_command(pid=handler['pid'])
+            try:
+                output.append(check_output(['salmon', 'status', '-pid', handler['pid']], cwd='router'))
+            except CalledProcessError as error:
+                output.append("Exit code %d: %s" % (error.returncode, error.output))
+
+        return output
