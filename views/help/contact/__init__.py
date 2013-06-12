@@ -37,8 +37,6 @@ def contact(request):
 
     if request.method == "POST":
         try:
-            send_to = Alias.objects.get(alias="support")
-        except Alias.MultipleObjectsReturned:
             send_to = Alias.objects.filter(alias="support")[0]
         except Alias.DoesNotExist:
             # make it.
@@ -53,56 +51,56 @@ def contact(request):
                 send_to.save()
 
 
-    if request.method == "POST" and request.user.is_authenticated():
-        # For users of the site :)
-        try:
-            alias = request.POST["alias"]
-            domain = Domain.objects.get(domain=request.POST["domain"])
-            subject = request.POST["subject"]
-            body = request.POST["body"]
-        except KeyError:
-            # really should produce an error
-            return HttpResponseRedirect("/help/contact/")
+        if request.user.is_authenticated():
+            # For users of the site :)
+            try:
+                alias = request.POST["alias"]
+                domain = Domain.objects.get(domain=request.POST["domain"])
+                subject = request.POST["subject"]
+                body = request.POST["body"]
+            except KeyError:
+                # really should produce an error
+                return HttpResponseRedirect("/help/contact/")
 
 
-        alias = Alias(
-            alias=alias,
-            domain=domain,
-            user=request.user,
-            created=datetime.now(utc)
-        )
+            alias = Alias(
+                alias=alias,
+                domain=domain,
+                user=request.user,
+                created=datetime.now(utc)
+            )
 
-        alias.save()
-        
-        tag = Tag(alias=alias, tag=_("Support Request"))
-        tag.save()
+            alias.save()
 
-        send_email(
-            request.user,
-            send_to,
-            alias,
-            subject,
-            body,
-        )
-        return HttpResponseRedirect("/help/contact/success")
-    elif request.method == "POST":
-        # they're not logged in.
-        try:
-            email = request.POST["email"]
-            subject = request.POST["subject"]
-            body = request.POST["body"]
-        except KeyError:
-            # really should produce an error
-            return HttpResponseRedirect("/help/contact/")
+            tag = Tag(alias=alias, tag=_("Support Request"))
+            tag.save()
 
-        send_email(
-            null_user(), # null user
-            send_to,
-            email,
-            subject,
-            body,
-        )
-        return HttpResponseRedirect("/help/contact/success")
+            send_email(
+                request.user,
+                send_to,
+                alias,
+                subject,
+                body,
+            )
+            return HttpResponseRedirect("/help/contact/success")
+        else:
+            # they're not logged in.
+            try:
+                email = request.POST["email"]
+                subject = request.POST["subject"]
+                body = request.POST["body"]
+            except KeyError:
+                # really should produce an error
+                return HttpResponseRedirect("/help/contact/")
+
+            send_email(
+                null_user(), # null user
+                send_to,
+                email,
+                subject,
+                body,
+            )
+            return HttpResponseRedirect("/help/contact/success")
 
 
     # If the user is authenticated we want to give them the option of
