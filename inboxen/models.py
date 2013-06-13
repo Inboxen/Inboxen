@@ -52,7 +52,6 @@ class Alias(models.Model):
 
     class Meta:
         verbose_name_plural = "Aliases"
-        unique_together = (('alias', 'domain'),)
 
 class Request(models.Model):
     amount = models.IntegerField()
