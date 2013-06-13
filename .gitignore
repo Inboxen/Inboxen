@@ -1,7 +1,7 @@
 # inboxen specific
 settings.py
 settings.py[cod]
-/migrations
+/inboxen/migrations
 
 *.py[cod]
 *.sw?
