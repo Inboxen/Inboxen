@@ -32,7 +32,7 @@ class BlogPost(models.Model):
 
 class Domain(models.Model):
     # these are the domains available to create aliases from
-    domain = models.CharField(max_length=256)
+    domain = models.CharField(max_length=256, unique=True)
 
     def __unicode__(self):
         return self.domain
