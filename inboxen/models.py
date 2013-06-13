@@ -32,13 +32,13 @@ class BlogPost(models.Model):
 
 class Domain(models.Model):
     # these are the domains available to create aliases from
-    domain = models.CharField(max_length=256, unique=True)
+    domain = models.CharField(max_length=253)
 
     def __unicode__(self):
         return self.domain
 
 class Alias(models.Model):
-    alias = models.CharField(max_length=512)
+    alias = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
@@ -52,6 +52,7 @@ class Alias(models.Model):
 
     class Meta:
         verbose_name_plural = "Aliases"
+        #unique_together = (('alias', 'domain'),)
 
 class Request(models.Model):
     amount = models.IntegerField()
