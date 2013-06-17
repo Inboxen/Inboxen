@@ -76,7 +76,6 @@ def contact(request):
             tag.save()
 
             send_email(
-                request.user,
                 send_to,
                 alias,
                 subject,
@@ -94,7 +93,6 @@ def contact(request):
                 return HttpResponseRedirect("/help/contact/")
 
             send_email(
-                null_user(), # null user
                 send_to,
                 email,
                 subject,
