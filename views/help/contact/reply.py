@@ -18,26 +18,57 @@
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.conf import settings
 
-@login_required
-def make_reply(request):
-
-    ## this should set up the reply form just so
-    pass
+from inboxen.models import Alias
 
 @login_required
 @require_POST
-def send_reply(request):
+def reply(request):
 
     context = {
         "page":_("Contact"),
         "registration_enabled":settings.ENABLE_REGISTRATION,
     }
 
-    ## magically get the user address we're replying to/from
-    alias = "bluh@bluh.com"
+    if "inbox" in request.POST and "from" in request.POST:
+        to_address = request.POST["inbox"]
+        from_address = request.POST["from"]
 
-    ## grab info from POST and store in both user alias and support alias
-    ## (because we want to see what we've said)
+        context["reply"] = True
+        context["reply_to"] = to_address
+        context["reply_from"] = from_address
 
+        return render(request, "help/contact/contact.html", context)
+
+    elif "reply-to" in request.POST and "reply-from" in request.POST:
+        reply_to = request.POST["reply-to"].split('@')
+        reply_from = request.POST["reply-from"]i.split('@')
+        try:
+            subject = request.POST["subject"]
+            body = request.POST["body"]
+        except KeyError:
+            return HttpResponseRedirect("/help/contact/reply")
+
+        reply_to = Alias.objects.get(
+                alias = reply_to[0]
+                domain__domain = reply_to[1]
+                )
+        reply_from = Alias.objects.get(
+                alias = reply_from[0]
+                domain__domain = reply_from[1]
+                )
+
+        send_email(
+            reply_from,
+            reply_to,
+            subject,
+            body
+            )
+
+        return HttpResponseRedirect("/help/contact/success")
+
+    else:
+        return HttpResponseRedirect("/")

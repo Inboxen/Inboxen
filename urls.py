@@ -44,6 +44,7 @@ urlpatterns = patterns('',
 
     url(r'^help/contact/success', 'website.views.help.contact.success.success'),
     url(r'^help/contact/', 'website.views.help.contact.contact'),
+    url(r'^help/contact/reply', 'website.views.help.contact.reply.reply'),
 
     url(r'^user/deleted/', 'website.views.user.settings.delete.success'),
     url(r'^user/login/', 'django.contrib.auth.views.login', 
