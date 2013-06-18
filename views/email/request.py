@@ -19,6 +19,8 @@
 
 from datetime import datetime
 
+from pytz import utc
+
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -46,7 +48,7 @@ def request(request):
         # lets first deduce what amount to request
         profile = user_profile(request.user)
         amount = profile.pool_amount + 500
-        current_request = Request(amount=amount, date=datetime.now())
+        current_request = Request(amount=amount, date=datetime.now(utc))
         current_request.requester = request.user
         current_request.save()
 

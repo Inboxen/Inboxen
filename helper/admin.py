@@ -19,6 +19,8 @@
 
 from datetime import datetime, timedelta
 
+from pytz import utc
+
 from django.contrib.auth.models import User
 
 def statistics():
@@ -26,9 +28,9 @@ def statistics():
 	# how many users are there?
 	users = User.objects.all().count()
 
-	new_users = User.objects.filter(date_joined__gte=datetime.now() - timedelta(days=1)).count()
+	new_users = User.objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
 
-	active_users = User.objects.filter(last_login__gte=datetime.now() - timedelta(days=1)).count()
+	active_users = User.objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=1)).count()
 
 	return {
 		"users":users,

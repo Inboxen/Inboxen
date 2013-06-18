@@ -45,7 +45,7 @@ def add(request):
         except Alias.DoesNotExist:
             pass 
 
-        new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now())
+        new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now(utc))
         new_alias.save()
         
         tags = clean_tags(tags)
