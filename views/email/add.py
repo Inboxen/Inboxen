@@ -19,6 +19,8 @@
 
 from datetime import datetime
 
+from pytz import utc
+
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
