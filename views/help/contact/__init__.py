@@ -38,8 +38,8 @@ def contact(request):
     if request.method == "POST":
         try:
             send_to = Alias.objects.filter(alias="support")[0]
-        except Alias.DoesNotExist:
-            # make it.
+        except (Alias.DoesNotExist, IndexError):
+            # "WTF is this shit?" - Picard
             domains = Domain.objects.all()
             for domain in domains:
                 send_to = Alias(

@@ -15,6 +15,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from website.helper.mail import send_email
+
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -34,8 +36,8 @@ def reply(request):
     }
 
     if "inbox" in request.POST and "from" in request.POST:
-        to_address = request.POST["inbox"]
-        from_address = request.POST["from"]
+        to_address = request.POST["from"]
+        from_address = request.POST["inbox"]
 
         context["reply"] = True
         context["reply_to"] = to_address
@@ -44,8 +46,8 @@ def reply(request):
         return render(request, "help/contact/contact.html", context)
 
     elif "reply-to" in request.POST and "reply-from" in request.POST:
-        reply_to = request.POST["reply-to"].split('@')
-        reply_from = request.POST["reply-from"]i.split('@')
+        reply_to = request.POST["reply-to"].split('@', 1)
+        reply_from = request.POST["reply-from"].split('@', 1)
         try:
             subject = request.POST["subject"]
             body = request.POST["body"]
@@ -53,17 +55,17 @@ def reply(request):
             return HttpResponseRedirect("/help/contact/reply")
 
         reply_to = Alias.objects.get(
-                alias = reply_to[0]
+                alias = reply_to[0],
                 domain__domain = reply_to[1]
                 )
         reply_from = Alias.objects.get(
-                alias = reply_from[0]
+                alias = reply_from[0],
                 domain__domain = reply_from[1]
                 )
 
         send_email(
-            reply_from,
             reply_to,
+            reply_from,
             subject,
             body
             )

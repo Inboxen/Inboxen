@@ -5,7 +5,7 @@
 
 {% if user.is_authenticated and not reply %}
     <p class="text-center text-info">{% trans "To change the alias please reload the page" %}</p>
-{% else %}
+{% elif not reply %}
     <p class="text-center text-info">{% trans "If you prefer not to give an email, please login to your Inboxen account. You'll be given an alias for our staff to reply to." %}</p>
 {% endif %}
 
@@ -14,12 +14,11 @@
 
     {% if reply %}
         <div class="input-prepend">
-            <span class="add-on constant-alias">
-                <input type="hidden" name="reply-to" value="{{ reply_to }}">
-                <input type="hidden" name="reply-from" value="{{ reply_from }}">
-                {{ alias }}
-            </span>
-        </div>
+            <span class="add-on constant-alias">{% trans "From" %}: {{ reply_to }}</span>
+            <input type="hidden" name="reply-to" value="{{ reply_to }}"><br />
+            <span class="add-on constant-alias">{% trans "To" %}: {{ reply_from }}</span>
+            <input type="hidden" name="reply-from" value="{{ reply_from }}">
+        </div><br />
     {% elif user.is_authenticated %}
         <input type="hidden" name="alias" value="{{ alias }}">
         <div class="input-prepend">
