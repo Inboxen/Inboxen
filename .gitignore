@@ -1,3 +1,6 @@
+# Docs
+docs/_*
+
 # inboxen specific
 settings.py
 settings.py[cod]
