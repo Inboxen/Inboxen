@@ -4,17 +4,13 @@ Developer Guideliens
 Stylistic Guideline
 -------------------
 
-We mostly conform to PEP-8_, it is important that the code style is kept to the same standard. We mainly use vim on the dev team, by no means you have to but if you do the settings to get 4 space tabs which we use is:
-
-.. code:: vim
+We mostly conform to PEP-8_, it is important that the code style is kept to the same standard. We mainly use vim on the dev team, by no means you have to but if you do the settings to get 4 space tabs which we use is::
 
     set tabstop=4
     set shiftwidth=4
     set expandtab
 
-A few things we should note, blocks of comments should begin with two hashes and end with two hashes e.g:
-
-.. code:: python
+A few things we should note, blocks of comments should begin with two hashes and end with two hashes e.g::
 
     ##
     # This is a block of comments
@@ -25,9 +21,7 @@ A few things we should note, blocks of comments should begin with two hashes and
     # at the end.
     ##
 
-This confroms to PEP-8 but some additional considerations when using imports, if you import multiple items from a module (e.g. django) those go in their own block e.g:
-
-.. code:: python
+This confroms to PEP-8 but some additional considerations when using imports, if you import multiple items from a module (e.g. django) those go in their own block e.g::
 
     import sys
     import os
@@ -59,7 +53,7 @@ Git
 We use git a lot, if you wish to commit code back (which we hope you do). Basic things to consider:
 
 - Work on a branches when developing new features
-- Try to seporate out code into multiple logical commits
+- Try to separate out code into multiple logical commits
 
 
 .. _PEP-8: http://www.python.org/dev/peps/pep-0008/
