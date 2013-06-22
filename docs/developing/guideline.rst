@@ -4,24 +4,25 @@ Developer Guideliens
 Stylistic Guideline
 -------------------
 
-We mostly conform to PEP-8_, it is important that the code style is kept to the same standard. We mainly use vim on the dev team, by no means you have to but if you do the settings to get 4 space tabs which we use is::
+We generally follow PEP-8_, with a few quirks. 
+
+For indentation, we use four (4) spaces. If you use Vim, just stick these in
+your .vimrc::
 
     set tabstop=4
     set shiftwidth=4
     set expandtab
 
-A few things we should note, blocks of comments should begin with two hashes and end with two hashes e.g::
+Blocks of comments should begin with two hashes and end with two hashes e.g::
 
     ##
-    # This is a block of comments
-    # as you can see, at the top
-    # we have two hashes and the rest
-    # of the line is black. We then
-    # have a double hash and blank line
-    # at the end.
+    # This is a block of comments.
+    # 
+    # It's a very good example.
     ##
 
-This confroms to PEP-8 but some additional considerations when using imports, if you import multiple items from a module (e.g. django) those go in their own block e.g::
+Space out imports grouped by package (e.g. Django), standard library first,
+inboxen libraries last e.g::
 
     import sys
     import os
@@ -33,27 +34,36 @@ This confroms to PEP-8 but some additional considerations when using imports, if
 
     from inboxen.models import Email
 
-As you can see the two django imports are in their own block.
 
+Git and Issue Tracking
+----------------------
 
-Issue Usage
------------
+We're very eager for others to get involved. Even if you don't code, bug
+reports and feature requests are always welcome. All our development happens
+on GitHub_, including issue tracking and pull requests.
 
-We use issues quite a lot throughout Inboxen. We like to think of them as documentation throughout the development of the feature or bug fix, they are important since they allow other developers to see what is happening, it allows other developers to see potential problems you might not have thought about or suggest ideas. They also help other developers pick up development if for whatever reason you have to leave it. Follow these guidelines when using tickets:
+Basic things to consider for pull requests:
 
-- Claim the ticket (github offers a "owned by" on the ticket)
-- If you're working on your own fork, link your issue in the issue on the main branch.
-- When commiting use #<issue number>
-- Post on the issue when you have a problem (even if you know the solution), it helps document it.
+- Try and work on one feature per branch
+- Try to separate changes into logical commits
+- If there's not an issue open for what you want to work on, create one and
+  link to your branch.
+- You can reference issues from commit messages, `see GitHub help`_. This will
+  save you from having to update the issue you're working on manually.
 
+Smaller changes can be submitted via generating a patch with with::
 
-Git
----
+    git diff
 
-We use git a lot, if you wish to commit code back (which we hope you do). Basic things to consider:
+Please quote the patch using three backticks ("`") so GitHub's formatting
+doesn't interfere.
 
-- Work on a branches when developing new features
-- Try to separate out code into multiple logical commits
+**Keeping issues up to date**
 
+Please help keep issues up to date. That doesn't just mean keeping your own
+issues up to date (if you get stuck or no longer have time to work on that
+issue), but also asking for a status update on other issues
 
+.. _GitHub: https://github.com/Inboxen
+.. _see GitHub help: https://help.github.com/articles/closing-issues-via-commit-messages
 .. _PEP-8: http://www.python.org/dev/peps/pep-0008/

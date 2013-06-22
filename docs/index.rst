@@ -6,6 +6,11 @@
 Welcome to Inboxen's documentation!
 ===================================
 
+Inboxen is a read-only, privacy centric, anti-data mining, read-only, open
+source, spam box. Our source code can be found here_.
+
+.. _here: https://github.com/Inboxen
+
 Contents:
 
 .. toctree::
