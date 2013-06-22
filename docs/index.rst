@@ -14,12 +14,6 @@ source, spam box. Our source code can be found here_.
 .. toctree::
     :maxdepth: 2
 
+    Inboxen <self>
     developing/guideline
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
