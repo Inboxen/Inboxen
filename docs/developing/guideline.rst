@@ -1,4 +1,4 @@
-Developer Guideliens
+Developer Guidelines
 ====================
 
 Stylistic Guideline
@@ -22,7 +22,7 @@ Blocks of comments should begin with two hashes and end with two hashes e.g::
     ##
 
 Space out imports grouped by package (e.g. Django), standard library first,
-inboxen libraries last e.g::
+Inboxen libraries last e.g::
 
     import sys
     import os
