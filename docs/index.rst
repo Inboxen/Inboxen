@@ -11,14 +11,10 @@ source, spam box. Our source code can be found here_.
 
 .. _here: https://github.com/Inboxen
 
-Contents:
-
 .. toctree::
     :maxdepth: 2
 
     developing/guideline
-
-
 
 Indices and tables
 ==================

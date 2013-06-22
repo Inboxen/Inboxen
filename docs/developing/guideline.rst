@@ -1,3 +1,6 @@
+.. index::
+    single: Developer guidelines 
+
 Developer Guidelines
 ====================
 
