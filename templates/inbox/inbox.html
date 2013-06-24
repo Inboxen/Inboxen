@@ -21,6 +21,11 @@
     <p> {% trans "You don't have any emails :(" %} </p>
 {% else %}
 
+    <form action="/inbox/{{ email_address }}/{{ page.page }}" method="POST">
+    {% csrf_token %}
+    <button class="btn" type="submit" name="read">{% trans "Mark as read" %}</button>
+    <button class="btn" type="submit" name="unread">{% trans "Mark as unread" %}</button>
+    <button class="btn" type="submit" name="delete">{% trans "Delete" %}</button>
     <table class="table table-hover table-centre table-honeydew">
     <thead>
     <tr>
@@ -33,15 +38,13 @@
     </thead>
     
     {% for email in emails.object_list %}
-        <form action="/inbox/{{ email_address }}" method="POST">
             {% if email.read %}
                 <tr>
             {% else %}
                 <tr class="info">
             {% endif %}
 
-
-                <td><input type="checkbox" name="email"></td>
+                <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
                 <td> {{ email.sender }}</td>
                 {% if email.subject %}
                     <td><a href="/inbox/{{ email.inbox }}/view/{{ email.eid }}"> {{ email.subject }} </a></td>
@@ -50,11 +53,10 @@
                 <td><a title="{% trans "Delete Email" %}" class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.eid }}">&times;</a></td>
 
             </tr>
-        </form>
-        
 
     {% endfor %}
     </table>
+    </form>
 
     <div class="pagination text-right">
         <ul>

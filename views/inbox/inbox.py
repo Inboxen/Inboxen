@@ -22,12 +22,18 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
+from django.db.models import Q
 
 from inboxen.models import Alias, Email
 from website.helper.paginator import page as paginator_page
 
 @login_required
 def inbox(request, email_address="", page=1):
+    if request.method == "POST":
+        # deal with tasks, then show the page as normal
+        mass_tasks(request)
+
     if not email_address:
         # assuming global unified inbox
         inbox = Email.objects.filter(user=request.user).order_by('-recieved_date')
@@ -80,3 +86,24 @@ def inbox(request, email_address="", page=1):
     }
     
     return render(request, "inbox/inbox.html", context)
+
+@transaction.commit_on_success
+def mass_tasks(request):
+    emails = Q()
+    for email in request.POST:
+        if request.POST[email] == "email":
+            try:
+                email_id = int(email, 16)
+                emails = emails | Q(id=email_id)
+            except (Email.DoesNotExist, ValueError):
+                # TODO: non-silent failure?
+                return
+
+    emails = Email.objects.filter(emails, user=request.user)
+
+    if "read" in request.POST:
+        emails.update(read=True)
+    elif "unread" in request.POST:
+        emails.update(read=False)
+    elif "delete" in request.POST:
+        emails.delete()
