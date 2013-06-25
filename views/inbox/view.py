@@ -21,17 +21,19 @@ from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from inboxen.models import Alias, Email
+from inboxen.models import Alias, Email, Domain
 from website.helper.mail import get_email, clean_html
 
 @login_required
 def view(request, email_address, emailid):
 
     alias, domain = email_address.split("@", 1)
+    support = False
     
     # support stuff
     if request.user.is_staff and alias == "support":
         alias = Alias.objects.filter(alias=alias)[0]
+        support = True
     else:
         try:
             alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
@@ -42,6 +44,10 @@ def view(request, email_address, emailid):
     except Email.DoesNotExist:
         raise
         return HttpResponseRedirect("")
+
+    from_address = email["from"].split("@", 1)
+    if from_address[0] == "support" and Domain.objects.filter(domain=from_address[1]).exists():
+        support = True
 
     if "plain" in email:
         plain_message = email["plain"]
@@ -57,6 +63,7 @@ def view(request, email_address, emailid):
         "page":email["subject"],
         "email":email,
         "plain_message":plain_message,
+        "support":support,
     }
  
     return render(request, "inbox/email.html", context)

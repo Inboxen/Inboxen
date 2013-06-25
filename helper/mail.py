@@ -100,13 +100,14 @@ def clean_html(email):
     email = email.prettify()
     return email
 
-def send_email(user, alias, sender, subject=None, body="", attachments=[]):
-    """ Sends an email to an internal alias """
-    if not user:
-        user = null_user()
+def send_email(alias, sender, subject=None, body="", attachments=[]):
+    """ Sends an email to an internal alias
+
+    Expects an alias object
+    """
 
     email = Email(
-        user=user,
+        user=alias.user,
         inbox=alias,
         recieved_date=datetime.now(utc)
     )

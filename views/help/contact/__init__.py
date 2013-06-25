@@ -38,8 +38,8 @@ def contact(request):
     if request.method == "POST":
         try:
             send_to = Alias.objects.filter(alias="support")[0]
-        except Alias.DoesNotExist:
-            # make it.
+        except (Alias.DoesNotExist, IndexError):
+            # "WTF is this shit?" - Picard
             domains = Domain.objects.all()
             for domain in domains:
                 send_to = Alias(
@@ -76,7 +76,6 @@ def contact(request):
             tag.save()
 
             send_email(
-                request.user,
                 send_to,
                 alias,
                 subject,
@@ -94,7 +93,6 @@ def contact(request):
                 return HttpResponseRedirect("/help/contact/")
 
             send_email(
-                null_user(), # null user
                 send_to,
                 email,
                 subject,
