@@ -15,13 +15,13 @@
     {% if reply %}
         <div class="input-prepend">
             <span class="add-on constant-alias" style="width:50px; text-align:left;">{% trans "From" %}:</span>
-            <select id="prependedInput" style="width: 250px;">
-                <option>{{ reply_to }}</option>
-            </select><br />
-
-            <span class="add-on constant-alias" style="width:50px; text-align:left;">{% trans "To" %}:</span>
-            <select id="prependedInput" style="width: 250px;">
+            <select id="prependedInput" name="reply-from" style="width: 250px;">
                 <option>{{ reply_from }}</option>
+            </select>
+            <br />
+            <span class="add-on constant-alias" style="width:50px; text-align:left;">{% trans "To" %}:</span>
+            <select id="prependedInput" name="reply-to" style="width: 250px;">
+                <option>{{ reply_to }}</option>
             </select>
         </div><br />
     {% elif user.is_authenticated %}
