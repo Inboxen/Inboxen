@@ -23,9 +23,9 @@
 
     <form action="/inbox/{{ email_address }}/{{ page.page }}" method="POST">
     {% csrf_token %}
-    <button class="btn" type="submit" name="read">{% trans "Mark as read" %}</button>
-    <button class="btn" type="submit" name="unread">{% trans "Mark as unread" %}</button>
-    <button class="btn" type="submit" name="delete">{% trans "Delete" %}</button>
+    <button class="btn btn-ontop" type="submit" name="read">{% trans "Mark as read" %}</button>
+    <button class="btn btn-ontop" type="submit" name="unread">{% trans "Mark as unread" %}</button>
+    <button class="btn btn-ontop" type="submit" name="delete">{% trans "Delete" %}</button>
     <table class="table table-hover table-centre table-honeydew">
     <thead>
     <tr>
