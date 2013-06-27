@@ -39,7 +39,10 @@ def make_email(message, alias, domain):
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
     email.save()
 
+    message.headers['Content-Type'] = message.content_encoding['Content-Type'][0]
+    message.headers['Content-Disposition'] = message.content_encoding['Content-Disposition'][0]
     head_list = []
+
     for name in message.keys():
         header = Header(name=name, data=message[name])
         header.save()
