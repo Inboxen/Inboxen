@@ -39,7 +39,7 @@ def make_email(message, alias, domain):
     body = message.base.body
     try:
         recieved_date = parser.parse(message[recieved_header_name])
-    except AttributeError:
+    except (AttributeError, KeyError):
         logging.warning("No %s header in message, creating new timestamp" % recieved_header_name)
         recieved_date = datetime.now(utc)
 
@@ -47,9 +47,10 @@ def make_email(message, alias, domain):
     email.save()
 
     try:
-        message.headers['Content-Type'] = message.content_encoding['Content-Type'][0]
-        message.headers['Content-Disposition'] = message.content_encoding['Content-Disposition'][0]
-    except KeyError:
+        message['Content-Type'] = message.content_encoding['Content-Type']
+        if 'Content-Disposition' in message.keys():
+            message['Content-Disposition'] = message.content_encoding['Content-Disposition']
+    except (AttributeError, KeyError):
         pass # no headers
 
     head_list = []
