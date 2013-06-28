@@ -19,6 +19,10 @@
 #
 ##
 
+from datetime import datetime
+from pytz import utc
+import logging
+
 from inboxen.models import Alias, Attachment, Email, Header
 from config.settings import datetime_format, recieved_header_name
 from django.db import transaction
@@ -33,14 +37,21 @@ def make_email(message, alias, domain):
     inbox = Alias.objects.get(alias=alias, domain__domain=domain, deleted=False) # will exist
     user = inbox.user
     body = message.base.body
-    recieved_date = parser.parse(message[recieved_header_name])
-    del message[recieved_header_name]
+    try:
+        recieved_date = parser.parse(message[recieved_header_name])
+    except AttributeError:
+        logging.warning("No %s header in message, creating new timestamp" % recieved_header_name)
+        recieved_date = datetime.now(utc)
 
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
     email.save()
 
-    message.headers['Content-Type'] = message.content_encoding['Content-Type'][0]
-    message.headers['Content-Disposition'] = message.content_encoding['Content-Disposition'][0]
+    try:
+        message.headers['Content-Type'] = message.content_encoding['Content-Type'][0]
+        message.headers['Content-Disposition'] = message.content_encoding['Content-Disposition'][0]
+    except KeyError:
+        pass # no headers
+
     head_list = []
 
     for name in message.keys():

@@ -40,7 +40,8 @@ def START(message, alias=None, domain=None):
         if RETRY in message:
             if int(message[RETRY]) > 2:
                 # tried to many times, dump the message
-                raise Exception("Retried too many times")
+                logging.error("Retried too many times")
+                raise
             message[RETRY] = str(int(message[RETRY]) + 1)
         else:
             message[RETRY] = "0"
