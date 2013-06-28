@@ -46,12 +46,8 @@ def make_email(message, alias, domain):
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
     email.save()
 
-    try:
-        message['Content-Type'] = message.content_encoding['Content-Type']
-        if 'Content-Disposition' in message.keys():
-            message['Content-Disposition'] = message.content_encoding['Content-Disposition']
-    except (AttributeError, KeyError):
-        pass # no headers
+    message['Content-Type'] = message.base.content_encoding['Content-Type'][0] or 'text/plain'
+    message['Content-Disposition'] = message.base.content_encoding['Content-Disposition'][0] or ''
 
     head_list = []
 
