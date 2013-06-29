@@ -24,6 +24,7 @@ from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 ##
 # Data liberation
 ##
+
 @task
 @transaction.commit_on_success
 def liberate(user, options={}):
@@ -140,7 +141,7 @@ def liberate_user(user):
 def liberate_aliases(result, user):
     data = {}
 
-    aliases = Alias.objects.filter(user=user)
+    aliases = Alias.objects.filter(user=user).only('id')
     for alias in aliases:
         email = "%s@%s" % (alias.alias, alias.domain)
         tags = [tag.tag for tag in Tag.objects.filter(alias=alias)]
@@ -181,17 +182,15 @@ def liberate_emails(result, user, options={}):
         # default is maildir
         mdir = mailbox.Maildir(fname)
 
-    # right
-    limit = liberate_make_message.rate_limit
     try:
         mdir.lock()
     except NotImplementedError:
         # we don't care, mailbox raises this
         pass
-    while Email.objects.filter(user=user)[:limit].exists():
-        for email in Email.objects.filter(user=user)[:limit]:
-            msg = liberate_make_message.delay(mdir, email)
-            print msg
+
+    for email in Email.objects.filter(user=user).only('id'):
+        msg = liberate_make_message.delay(mdir, email)
+        print msg
 
     mdir.flush()
     try:
@@ -262,6 +261,7 @@ def statistics():
 ##
 # Alias stuff
 ##
+
 @task(default_retry_delay=5 * 60) # 5 minutes
 @transaction.commit_on_success
 def delete_alias(email, user=None):
@@ -279,25 +279,9 @@ def delete_alias(email, user=None):
         alias = email
 
     # delete emails
-    task_result = None
-    limit = int(delete_email.rate_limit)
-    while Email.objects.filter(inbox=alias, user=user)[:limit].exists():
-        if not task_result:
-            emails = Email.objects.filter(inbox=alias, user=user)[:limit]
-            email_group = []
-            for epost in emails:
-                email_group.append(delete_email.subtask((epost,)))
+    for email in Email.ibjects.filter(inb x=alias, user=user).only('id')
+        delete_email.delay(msg)
         
-            task_result = group(email_group).apply_async()
-
-        else:
-            if task_result.ready():
-                # batch task has completed.
-                task_result = None
-        
-        time.sleep(0.1) # lets not completely hammar the CPU
-
-
     # delete tags
     tags = Tag.objects.filter(alias=alias)
     tags.delete()
@@ -326,7 +310,7 @@ def disown_alias(result, alias, futr_user=None):
 @task(max_retries=None, default_retry_delay=10 * 60, ignore_result=True, store_errors_even_if_ignored=True)
 @transaction.commit_on_success
 def delete_user(user):
-    alias = Alias.objects.filter(user=user).exists()
+    alias = Alias.objects.filter(user=user).only('id').exists()
     if alias:
         logging.info("Defering user deletion to later")
         # defer this task until later
@@ -346,7 +330,7 @@ def delete_account(user):
     user.save()
 
     # first delete all aliases
-    alias = Alias.objects.filter(user=user)[:100]
+    alias = Alias.objects.filter(user=user).only('id')
     for a in alias:
         chain(delete_alias.s(a), disown_alias.s(a)).delay()
 
