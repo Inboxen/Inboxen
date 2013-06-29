@@ -95,7 +95,6 @@ def liberate(user, options={}):
     """
 
     send_email(
-        user=user, 
         alias=alias,
         sender="support@inboxen.org",
         subject="Data Liberation",
@@ -279,8 +278,8 @@ def delete_alias(email, user=None):
         alias = email
 
     # delete emails
-    for email in Email.ibjects.filter(inb x=alias, user=user).only('id')
-        delete_email.delay(msg)
+    for email in Email.objects.filter(inbox=alias, user=user).only('id'):
+        delete_email.delay(email)
         
     # delete tags
     tags = Tag.objects.filter(alias=alias)
