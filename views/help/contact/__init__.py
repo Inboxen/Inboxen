@@ -24,7 +24,6 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
 from website.helper.alias import gen_alias
-from website.helper.user import null_user
 from website.helper.mail import send_email 
 from inboxen.models import Domain, Alias, Tag
 
@@ -36,21 +35,8 @@ def contact(request):
     }
 
     if request.method == "POST":
-        try:
-            send_to = Alias.objects.filter(alias="support")[0]
-        except (Alias.DoesNotExist, IndexError):
-            # "WTF is this shit?" - Picard
-            domains = Domain.objects.all()
-            for domain in domains:
-                send_to = Alias(
-                    alias="support",
-                    domain=domain,
-                    user=null_user(),
-                    created=datetime.now(utc),
-                )
-                send_to.save()
-
-
+        send_to = Alias.objects.filter(alias="support")[0]
+        
         if request.user.is_authenticated():
             # For users of the site :)
             try:
