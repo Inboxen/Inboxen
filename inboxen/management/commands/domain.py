@@ -17,9 +17,14 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime
+
+from pytz import utc
+
 from django.core.management.base import BaseCommand, CommandError
 
-from inboxen.models import Domain
+from website.helper.user import null_user
+from inboxen.models import Alias, Domain
 
 class Command(BaseCommand):
     args = "<add/list/re(move)> <domain>"
@@ -40,6 +45,14 @@ class Command(BaseCommand):
                 domain=args[1]
             )
             d.save()
+            # we also should add a support alias - ticket #24
+            support_alias = Alias(
+                    alias="support",
+                    domain=d,
+                    user=null_user(),
+                    created=datetime.now(utc))
+            support_alias.save()            
+
             self.stdout.write("%s has been added" % d)
         elif "list" == args[0]:
             domains = Domain.objects.all().iterator()
