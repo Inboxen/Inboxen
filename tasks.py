@@ -308,7 +308,7 @@ def delete_alias(email, user=None):
 
     return True
 
-@task(rate_limit=100)
+@task(rate_limit=1000)
 @transaction.commit_on_success
 def delete_email(email):
     email.delete()
