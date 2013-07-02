@@ -34,8 +34,9 @@ def download(request, attachmentid, method="download"):
         return HttpResponseRedirect("/user/profile")
 
     response = HttpResponse(attachment.data, content_type=attachment.content_type)
-    response["Content-Disposition"] = "filename=attachment-%s" % attachmentid
+
+    response["Content-Disposition"] = "filename=%s" % attachment.content_disposition
     if method == "download":
-        response["Content-Disposition"] = "attachment; %s" % response["Content-Disposition"]
+        response["Content-Disposition"] = "attachment; filename=%s" % attachment.content_disposition
 
     return response
