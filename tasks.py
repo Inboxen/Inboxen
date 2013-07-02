@@ -9,6 +9,7 @@ import os
 import mailbox
 import logging
 from datetime import datetime, timedelta
+from shutil import rmtree
 
 from pytz import utc
 from celery import task, chain, group
@@ -63,6 +64,7 @@ def liberate(user, options={}):
                 content_type=data["type"],
                 content_disposition=data["name"],
             )
+
         else:
             # store as regular attachment in db
             a = Attachment(
@@ -73,8 +75,7 @@ def liberate(user, options={}):
         a.save()
         attachments.append(a)
 
-    body = """
-    Hello,
+    body = """Hello,
 
     You recently requested your data. All the data you have is here excluding:
 
@@ -100,7 +101,7 @@ def liberate(user, options={}):
         subject="Data Liberation",
         body=body,
         attachments=attachments,
-    ) 
+    )
 
 @task
 def liberate_user(user):
@@ -132,7 +133,7 @@ def liberate_user(user):
     return {
         "data":data,
         "type":"text/json",
-        "name":"User Data",
+        "name":"user.json",
         "file":False,
     }
 
@@ -155,7 +156,7 @@ def liberate_aliases(result, user):
     return {
         "data":data,
         "type":"text/json",
-        "name":"Aliases",
+        "name":"aliases.json",
         "file":False,
     }
 
@@ -181,56 +182,72 @@ def liberate_emails(result, user, options={}):
         # default is maildir
         mdir = mailbox.Maildir(fname)
 
+    # group tasks
+    tasks = group(liberate_make_message.s(mdir, email.id) for email in Email.objects.filter(user=user).only('id'))
+    tasks = tasks.apply_async()
+    tasks.join()
+
+    # TODO: below should be a separate task chain()'d to the task group
+
+    mdir.close()
+
+    # now we need to tar this puppy up!
+    if "compressType" in options:
+        if options["compressType"] == "tar.gz":
+            tar_name = "%s.tar.gz" % fname
+            tar = tarfile.open(fname, "w:gz")
+        elif options["compressType"] == "tar.bz2":
+            tar_name = "%s.tar.bz2" % fname
+            tar = tarfile.open(fname, "w:bz2")
+        else:
+            raise Exception("Unknown compressType: %s" % options["compressType"])
+    else:
+        # default is tar.gz
+        tar_name = "%s.tar.gz" % fname
+        tar = tarfile.open(tar_name, "w:gz")
+
+    tar.add("%s/" % fname) # directories are added recursively by default
+    tar.close()
+
+    try:
+        rmtree(fname)
+    except EnvironmentError:
+        print "%s is missing" % fname
+
+    # right now we just wanna throw this into an attachment
+    # at some point (soon) we need to get it so attachments can live on the filesystem
+
+    return {
+        "data":tar_name,
+        "type":"application/x-gzip",
+        "name":tar_name.split('/')[-1],
+        "file":tar_name,
+    }
+
+@task(rate=100)
+def liberate_make_message(mdir, msg_id):
+    """ Takes a message and makes it """
+    msg = Email.objects.get(id=msg_id)
+    msg = make_message(msg)
+
     try:
         mdir.lock()
     except NotImplementedError:
         # we don't care, mailbox raises this
         pass
 
-    for email in Email.objects.filter(user=user).only('id'):
-        msg = liberate_make_message.delay(mdir, email)
-        print msg
-
+    try:
+        mdir.add(str(msg))
+    except EnvironmentError:
+        return False
     mdir.flush()
+
     try:
         mdir.unlock()
     except NotImplementedError:
         # same as lock, we don't care, mailbox raises
         pass
-    # now we need to tar this puppy up!
-    if "compressType" in options:
-        if options["compressType"] == "tar.gz":
-            fname += ".tar.gz"
-            tar = tarfile.open(fname, "w:gz")
-        elif options["compressType"] == "tar.bz2":
-            fname += "tar.bz2"
-            tar = tarfile.open(fname, "w:bz2")
-        else:
-            raise Exception("Unknown compressType: %s" % options["compressType"])
-    else:
-        # default is tar.gz
-        fname += "tar.gz"
-        tar = tarfile.open(fname, "w:gz")
 
-    tar.add("%s/" % fname) # directories are added recursively by default
-    tar.close()
-
-    # right now we just wanna throw this into an attachment
-    # at some point (soon) we need to get it so attachments can live on the filesystem
-
-    return {
-        "data":fname,
-        "type":"application/x-gzip",
-        "name":"Tarball of emails as Maildir",
-        "file":True,
-    }
-
-@task(rate=100)
-def liberate_make_message(mdir, message):
-    """ Takes a message and makes it """
-    msg = make_message(message)
-    mdir.add(str(msg))
-    mdir.flush()
     return True
 
 ##
