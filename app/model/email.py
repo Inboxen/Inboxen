@@ -34,13 +34,18 @@ def make_email(message, alias, domain):
 
     Will throw an Alias.DoesNotExist exception if alias and domain are not valid"""
 
-    inbox = Alias.objects.get(alias=alias, domain__domain=domain, deleted=False) # will exist
+    try:
+        inbox = Alias.objects.get(alias=alias, domain__domain=domain, deleted=False)
+    except Alias.DoesNotExist, e:
+        logging.debug("No alias: %s" % e)
+        return # alias deleted while msg was in queue
+
     user = inbox.user
     body = message.base.body
     try:
         recieved_date = parser.parse(message[recieved_header_name])
     except (AttributeError, KeyError):
-        logging.warning("No %s header in message, creating new timestamp" % recieved_header_name)
+        logging.debug("No %s header in message, creating new timestamp" % recieved_header_name)
         recieved_date = datetime.now(utc)
 
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
