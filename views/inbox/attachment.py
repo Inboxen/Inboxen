@@ -25,6 +25,9 @@ from inboxen.models import Attachment, Email
 def download(request, attachmentid, method="download"):
     try:
         attachment = Attachment.objects.get(id=attachmentid)
+
+        # use reverse relationship to check that request.user is the owner
+        # no need for staff to download attachments
         attachment.email_set.get(user=request.user)
     except (Attachment.DoesNotExist, Email.DoesNotExist):
     	# this should be an error
