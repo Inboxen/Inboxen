@@ -19,13 +19,14 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 
-from inboxen.models import Attachment
+from inboxen.models import Attachment, Email
 
 @login_required
 def download(request, attachmentid, method="download"):
     try:
         attachment = Attachment.objects.get(id=attachmentid)
-    except Attachment.DoesNotExist:
+        attachment.email_set.get(user=request.user)
+    except (Attachment.DoesNotExist, Email.DoesNotExist):
     	# this should be an error
         return HttpResponseRedirect("/user/profile")
 
