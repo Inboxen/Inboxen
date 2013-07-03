@@ -35,15 +35,13 @@ def profile(request, page=1):
     used = aliases.count()
     aliases = aliases.filter(deleted=False)
 
-    try:
-        for alias in aliases:
-            tag = Tag.objects.filter(alias=alias)
-            alias.tags = ", ".join([t.tag for t in tag])
-    except Tag.DoesNotExist:
-        pass
-
     total = 0
     for alias in aliases:
+        try:
+            tag = Tag.objects.filter(alias=alias)
+            alias.tags = ", ".join([t.tag for t in tag])
+        except Tag.DoesNotExist:
+            alias.tags = ''
         alias.email_count = Email.objects.filter(inbox=alias, read=False).count()
         total += alias.email_count
 

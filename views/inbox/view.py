@@ -20,6 +20,7 @@
 from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 
 from inboxen.models import Alias, Email, Domain
 from website.helper.mail import get_email, clean_html
@@ -38,12 +39,11 @@ def view(request, email_address, emailid):
         try:
             alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
         except Alias.DoesNotExist:
-            pass
+            raise Http404
     try:
         email = get_email(request.user, emailid, read=True)
     except Email.DoesNotExist:
-        raise
-        return HttpResponseRedirect("")
+        raise Http404
 
     from_address = email["from"].split("@", 1)
     if from_address[0] == "support" and Domain.objects.filter(domain=from_address[1]).exists():

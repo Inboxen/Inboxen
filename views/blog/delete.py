@@ -19,14 +19,15 @@
 
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect
+from django.contrib.admin.views.decorators import staff_member_required
 
 from inboxen.models import BlogPost
 
-@user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
+@staff_member_required
 def delete(request, postid):
 
     try:
-        post = BlogPost.objects.get(id=postid)
+        post = BlogPost.objects.filter(id=postid).only('id')
     except BlogPost.DoesNotExist:
         return HttpResponseRedirect("/blog/")
 

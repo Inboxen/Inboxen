@@ -99,7 +99,8 @@ def mass_tasks(request):
                 # TODO: non-silent failure?
                 return
 
-    emails = Email.objects.filter(emails, user=request.user)
+    # update() & delete() like to do a select first for some reason :s
+    emails = Email.objects.filter(emails, user=request.user).only('id','read')
 
     if "read" in request.POST:
         emails.update(read=True)

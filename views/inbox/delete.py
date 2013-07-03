@@ -19,7 +19,7 @@
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 
 from inboxen.models import Email
 
@@ -28,10 +28,10 @@ def delete(request, email_address, emailid):
     emailid = int(emailid, 16)
     
     try:
-        email = Email.objects.get(id=emailid, user=request.user)
+        email = Email.objects.get(id=emailid, user=request.user).only('id')
         email.delete()
     except Email.DoesNotExist:
-        pass
+        raise Http404
 
     return HttpResponseRedirect("/inbox/%s/" % email_address)
 

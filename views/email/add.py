@@ -41,11 +41,8 @@ def add(request):
         domain = Domain.objects.get(domain=request.POST["domain"])
         tags = request.POST["tag"]
         
-        try:
-            alias_test = Alias.objects.get(alias=alias, domain=domain)
+        if Alias.objects.filter(alias=alias, domain=domain).exists()
             return HttpResponseRedirect("/user/profile")
-        except Alias.DoesNotExist:
-            pass 
 
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now(utc))
         new_alias.save()

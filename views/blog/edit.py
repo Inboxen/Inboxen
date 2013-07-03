@@ -24,11 +24,11 @@ from pytz import utc
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.admin.views.decorators import staff_member_required
 
 from inboxen.models import BlogPost
 
-@user_passes_test(lambda user:user.is_staff, login_url='/user/login/')
+@staff_member_required
 def edit(request, postid):
 
     error = ""

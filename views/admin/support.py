@@ -30,9 +30,11 @@ from inboxen.models import Email, Alias
 @staff_member_required
 def support(request, page=1):
     alias = Alias.objects.filter(alias="support")
-    emails = []
+    q_alias = Q()
     for a in alias:
-        emails += list(Email.objects.filter(inbox=a).order_by('-recieved_date'))
+        q_alias = q_alias | Q(inbox=a)
+
+    emails = Email.objects.filter(q_alias).defer('body').order_by('-recieved_date')
     
     paginator = Paginator(emails, 100)
     try:
@@ -44,11 +46,12 @@ def support(request, page=1):
 
     for email in emails.object_list:
         email.sender, email.subject = "", _("(No Subject)")
-        for header in email.headers.all():
-            if header.name == "From":
-                email.sender = header.data
-            elif header.name == "Subject":
-                email.subject = header.data
+
+        if email.headers.filter(name="From").exists():
+            email.sender = email.headers.filter(name="From")[0]
+
+        if email.headers.filter(name="Subject").exists():
+            email.sender = email.headers.filter(name="Subject")[0]
 
     context = {
         "page":_("Support Inbox"),
