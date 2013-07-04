@@ -22,7 +22,7 @@
 from salmon.routing import route, stateless
 from salmon.queue import Queue
 
-from django.db import DatabaseError, close_connection
+from django.db import DatabaseError
 
 from config.settings import DEBUG, accepted_queue_dir, accepted_queue_opts_in
 from app.model.email import make_email
@@ -32,9 +32,6 @@ import logging
 @route("(alias)@(domain)", alias=".+", domain=".+")
 @stateless
 def START(message, alias=None, domain=None):
-
-    close_connection() # reset db connection
-
     RETRY = "x-queue-retry"
     # alias should have already have been checked before the email entered the
     # queue

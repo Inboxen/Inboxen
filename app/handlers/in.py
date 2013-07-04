@@ -29,7 +29,7 @@ from config.settings import (DEBUG,
 from salmon.routing import route, stateless, nolocking
 from salmon.server import SMTPError
 from salmon.queue import Queue
-from django.db import DatabaseError, close_connection
+from django.db import DatabaseError
 from app.model.alias import alias_exists
 from datetime import datetime
 from pytz import utc
@@ -43,8 +43,6 @@ import logging
 @nolocking
 def START(message, alias=None, domain=None):
     """Does this alias exist? If yes, queue it. If no, drop it."""
-
-    close_connection() # reset db connection
 
     # catch all the stupid errors mysql might throw
     try:
