@@ -15,8 +15,7 @@ mkdir -p $TMP_DIR
 for file in $IN_QUEUE/*
 do
     name=`basename $file`
-    grep -v X-Queue-Retry $file > $TMP_DIR/$name
-    $? && rm $file
+    grep -v X-Queue-Retry $file > $TMP_DIR/$name && rm $file
 done
 
 for file in $TMP_DIR/*
