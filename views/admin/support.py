@@ -24,7 +24,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
-from inboxen.models import Email, Alias
+from inboxen.models import Email, Alias, Header
 
 
 @login_required
@@ -46,13 +46,11 @@ def support(request, page=1):
         emails = paginator.page(paginator.num_pages)
 
     for email in emails.object_list:
-        email.sender, email.subject = "", _("(No Subject)")
-
-        if email.headers.filter(name="From").exists():
-            email.sender = email.headers.filter(name="From")[0]
-
-        if email.headers.filter(name="Subject").exists():
-            email.sender = email.headers.filter(name="Subject")[0]
+        email.sender = email.headers.get(name="From").data
+        try:
+            email.subject = email.headers.get(name="Subject").data
+        except Header.DoesNotExist:
+            email.subject = _("(No Subject)")
 
     context = {
         "page":_("Support Inbox"),
