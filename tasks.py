@@ -26,7 +26,7 @@ from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 # Data liberation
 ##
 
-@task
+@task(rate="1/h")
 @transaction.commit_on_success
 def liberate(user, options={}):
     result = chain(
@@ -224,7 +224,7 @@ def liberate_emails(result, user, options={}):
         "file":tar_name,
     }
 
-@task(rate=100)
+@task(rate="1000/m")
 def liberate_make_message(mdir, msg_id):
     """ Takes a message and makes it """
     msg = Email.objects.get(id=msg_id)
@@ -278,7 +278,7 @@ def statistics():
 # Alias stuff
 ##
 
-@task(default_retry_delay=5 * 60) # 5 minutes
+@task(rate="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.commit_on_success
 def delete_alias(email, user=None):
     if type(email) in [types.StringType, types.UnicodeType]:
