@@ -23,6 +23,7 @@ from email.mime.image import MIMEImage
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from datetime import datetime
+from sys import version_info
 
 from pytz import utc
 from bs4 import BeautifulSoup
@@ -32,6 +33,12 @@ from django.utils.safestring import mark_safe
 
 from website.helper.user import user_profile, null_user
 from inboxen.models import Email, Attachment, Alias, Header
+
+# lxml doesn't seem to like WSGI, but premailer seems ok :s
+if version_info[:2] == (2, 7):
+    PARSER = "html.parser"
+else:
+    PARSER = "html5lib"
 
 def make_message(email):
     """ makes a python email.message.Message from our Email object """
@@ -102,7 +109,7 @@ def clean_html(email):
     # premailer uses lxml too, assuming it will accept any old crap too
     # and no pretty printing! (we do that later)
     email = Premailer(email).transform(False)
-    email = BeautifulSoup(email, "lxml")
+    email = BeautifulSoup(email, PARSER)
 
     # this doesn't filter out everything
     # TODO: whitelist tags and attributes
