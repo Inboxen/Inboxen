@@ -26,6 +26,7 @@ from datetime import datetime
 
 from pytz import utc
 from bs4 import BeautifulSoup
+from premailer import Premailer
 
 from django.utils.safestring import mark_safe
 
@@ -94,11 +95,32 @@ def make_message(email):
     
 
 def clean_html(email):
+    """Condense style sheets into style attributes so it doesn't mess with
+    Inboxen styles. Also, remove bad tags like <script>
+    """
+
+    # premailer uses lxml too, assuming it will accept any old crap too
+    # and no pretty printing! (we do that later)
+    email = Premailer(email).transform(False)
     email = BeautifulSoup(email, "lxml")
-    for elem in email.findAll(['script','link']):
-        elem.extract()
+
+    # this doesn't filter out everything
+    # TODO: whitelist tags and attributes
+    elements = []
+    blacklist = ['script','link','head']
+    rename_to_div = ['html','body']
+    elements.extend(blacklist)
+    elements.extend(rename_to_div)
+
+    for elem in email.findAll(elements):
+        if elem.name in blacklist:
+            elem.extract()
+        elif elem.name in rename_to_div:
+            elem.name = "div"
+
     email = email.prettify()
-    return email
+
+    return mark_safe(email)
 
 def send_email(alias, sender, subject=None, body="", attachments=[]):
     """ Sends an email to an internal alias
@@ -196,7 +218,7 @@ def get_email(user, email_id, preference=None, read=False):
         message["plain"] = True
 
     if html_attachments.exists():
-        message["body"] = mark_safe(html_attachments[0].data)
+        message["body"] = html_attachments[0].data
         message["attachments"] = email.attachments.all()
         message["plain"] = False
 

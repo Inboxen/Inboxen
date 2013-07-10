@@ -49,7 +49,7 @@ def view(request, email_address, emailid):
     if from_address[0] == "support" and Domain.objects.filter(domain=from_address[1]).exists():
         support = True
 
-    if "plain" in email:
+    if email["plain"]:
         plain_message = email["plain"]
     else:
         plain_message = ""
