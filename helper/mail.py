@@ -24,6 +24,7 @@ from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from datetime import datetime
 from sys import version_info
+from types import UnicodeType
 
 from pytz import utc
 from bs4 import BeautifulSoup
@@ -106,7 +107,10 @@ def clean_html(email):
     Inboxen styles. Also, remove bad tags like <script>
     """
 
-    # premailer uses lxml too, assuming it will accept any old crap too
+    if type(email) != UnicodeType:
+        email = unicode(email, "utf-8")
+
+    # premailer uses lxml, assuming it will accept any old crap
     # and no pretty printing! (we do that later)
     email = Premailer(email).transform(False)
     email = BeautifulSoup(email, PARSER)
