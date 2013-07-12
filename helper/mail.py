@@ -112,7 +112,10 @@ def clean_html(email):
 
     # premailer uses lxml, assuming it will accept any old crap
     # and no pretty printing! (we do that later)
-    email = Premailer(email).transform(False)
+    try:
+        email = Premailer(email).transform(False)
+    except Exception:
+        pass
     email = BeautifulSoup(email, PARSER)
 
     # this doesn't filter out everything
