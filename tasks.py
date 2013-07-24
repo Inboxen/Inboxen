@@ -27,9 +27,50 @@ from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 ##
 
 @task(rate="1/h")
-@transaction.commit_on_success
 def liberate(user, options={}):
     pass
+    # make maildir
+    # chord([liberate_alias.s(maildir, alias_id)],liberate_collect_emails.s(maildir))
+
+@task(rate="10/h")
+def liberate_alias(maildir, alias_id):
+    pass
+
+    # create subfolder if we're using Maildir
+    # return {"folder": str(alias), "ids":[email_ids]}
+
+@task()
+def liberate_collect_emails(maildir):
+    pass
+
+    # for result in resultset
+    # group(liberate_message.s(maildir, result["folder"], email_id) for email_id in result["email_ids]")
+    # chain(groups, liberate_tarball.s(maildir))
+    # chord((chain),liberate_finish.s(maildir))
+
+@task(rate="100/m")
+def liberate_message(maildir, alias, email_id):
+    pass
+
+    # pull message, stick in maildir
+
+@task()
+def liberate_tarball(maildir):
+    pass
+
+    # tarball maildir or mbox
+    # remove maildir/mbox
+    # retry on exception
+
+@task()
+@transaction.commit_manually
+def liberation_finish(maildir):
+    pass
+
+    # create attachments with user data
+    # grab ids of email tasks that failed, attach them to user data
+    # work out tarball name and attach
+    # "send" email
 
 ##
 # Statistics
