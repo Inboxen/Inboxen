@@ -7,12 +7,12 @@ import tarfile
 import os
 import mailbox
 import logging
+import hashlib
 from datetime import datetime, timedelta
 from shutil import rmtree
-from hashlib import sha256
 
 from pytz import utc
-from celery import task, chain, group. chord
+from celery import task, chain, group, chord
 
 from django.db import transaction
 from django.contrib.auth.models import User
@@ -32,7 +32,7 @@ def liberate(user, options={}):
     rstr = ""
     for i in range(7):
         rstr += string.ascii_letters[random.randint(0, 50)]
-    mail_path = "/tmp/%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, sha256(user.username + rstr).hexdigest()[:50]
+    mail_path = "/tmp/%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
 
     # make maildir
     mailbox.Maildir(mail_path)
@@ -56,8 +56,8 @@ def liberate_collect_emails(results, mail_path, options):
     for result in results:
         alias = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.append(alias)
-    msg_tasks = chain(group(msg_tasks).s(), liberate_taball.s(mail_path))
-    chord(msg_tasks.s(),liberate_finish.s(maildir)).apply_async()
+    msg_tasks = chain(group(msg_tasks).s(), liberate_tarball.s(mail_path))
+    chord(msg_tasks.s(),liberation_finish.s(mail_path)).apply_async()
 
 @task(rate="100/m")
 def liberate_message(mail_path, alias, email_id):
