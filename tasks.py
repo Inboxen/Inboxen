@@ -1,7 +1,6 @@
 import types
 import random
 import json
-import hashlib
 import time
 import string
 import tarfile
@@ -10,9 +9,10 @@ import mailbox
 import logging
 from datetime import datetime, timedelta
 from shutil import rmtree
+from hashlib import sha256
 
 from pytz import utc
-from celery import task, chain, group
+from celery import task, chain, group. chord
 
 from django.db import transaction
 from django.contrib.auth.models import User
@@ -28,34 +28,48 @@ from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
 @task(rate="1/h")
 def liberate(user, options={}):
-    pass
+    """ Get set for liberation, expects User object """
+    rstr = ""
+    for i in range(7):
+        rstr += string.ascii_letters[random.randint(0, 50)]
+    mail_path = "/tmp/%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, sha256(user.username + rstr).hexdigest()[:50]
+
     # make maildir
-    # chord([liberate_alias.s(maildir, alias_id)],liberate_collect_emails.s(maildir))
+    mailbox.Maildir(mail_path)
+
+    chord([liberate_alias.s(mail_path, alias.id) for alias in Alias.objects.filter(user=user, deleted=False).only('id')], liberate_collect_emails.s(mail_path, options)).apply_async()
 
 @task(rate="10/h")
-def liberate_alias(maildir, alias_id):
-    pass
+def liberate_alias(mail_path, alias_id):
+    """ Gather email IDs """
 
-    # create subfolder if we're using Maildir
-    # return {"folder": str(alias), "ids":[email_ids]}
+    alias = Alias.objects.get(id=alias_id, deleted=False)
+    maildir = mailbox.Maildir(mail_path)
+    maildir.add_folder(str(alias))
+    return {'folder': str(alias), 'ids': [email.id for email in Email.objects.filter(alias=alias).only('id')]}
 
 @task()
-def liberate_collect_emails(maildir):
-    pass
+def liberate_collect_emails(results, mail_path, options):
+    """ Send off data mining tasks """
 
-    # for result in resultset
-    # group(liberate_message.s(maildir, result["folder"], email_id) for email_id in result["email_ids]")
-    # chain(groups, liberate_tarball.s(maildir))
-    # chord((chain),liberate_finish.s(maildir))
+    msg_tasks = []
+    for result in results:
+        alias = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
+        msg_tasks.append(alias)
+    msg_tasks = chain(group(msg_tasks).s(), liberate_taball.s(mail_path))
+    chord(msg_tasks.s(),liberate_finish.s(maildir)).apply_async()
 
 @task(rate="100/m")
-def liberate_message(maildir, alias, email_id):
-    pass
+def liberate_message(mail_path, alias, email_id):
+    """ Take email from database and put on filesystem """
 
-    # pull message, stick in maildir
+    maildir = mailbox.Maildir(mail_path).get_folder(alias)
+    msg = Email.objects.get(id=email_id)
+    msg = make_message(msg)
+    maildir.add(str(msg))
 
 @task()
-def liberate_tarball(maildir):
+def liberate_tarball(result, mail_path):
     pass
 
     # tarball maildir or mbox
@@ -64,7 +78,7 @@ def liberate_tarball(maildir):
 
 @task()
 @transaction.commit_manually
-def liberation_finish(maildir):
+def liberation_finish(result, maildir):
     pass
 
     # create attachments with user data
