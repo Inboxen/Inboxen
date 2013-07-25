@@ -46,7 +46,7 @@ def liberate_alias(mail_path, alias_id):
     alias = Alias.objects.get(id=alias_id, deleted=False)
     maildir = mailbox.Maildir(mail_path)
     maildir.add_folder(str(alias))
-    return {'folder': str(alias), 'ids': [email.id for email in Email.objects.filter(alias=alias).only('id')]}
+    return {'folder': str(alias), 'ids': [email.id for email in Email.objects.filter(inbox=alias).only('id')]}
 
 @task()
 def liberate_collect_emails(results, mail_path, options):
@@ -55,9 +55,10 @@ def liberate_collect_emails(results, mail_path, options):
     msg_tasks = []
     for result in results:
         alias = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
-        msg_tasks.append(alias)
-    msg_tasks = chain(group(msg_tasks).s(), liberate_tarball.s(mail_path))
-    chord(msg_tasks.s(),liberation_finish.s(mail_path)).apply_async()
+        msg_tasks.extend(alias)
+
+    msg_tasks = chain(group(msg_tasks), liberate_tarball.s(mail_path), liberation_finish.s(mail_path, options))
+    msg_tasks.apply_async()
 
 @task(rate="100/m")
 def liberate_message(mail_path, alias, email_id):
@@ -78,7 +79,7 @@ def liberate_tarball(result, mail_path):
 
 @task()
 @transaction.commit_manually
-def liberation_finish(result, maildir):
+def liberation_finish(result, mail_path, options):
     pass
 
     # create attachments with user data
