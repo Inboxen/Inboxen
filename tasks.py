@@ -22,7 +22,7 @@ from website.helper.alias import gen_alias
 from website.helper.mail import send_email, make_message
 from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
-TAR_TYPE = {
+TAR_TYPES = {
     'tar.gz': {'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
     'tar.bz2': {'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
     'tar': {'writer': 'w:', 'mime-type': 'application/x-tar'}
@@ -165,6 +165,7 @@ def liberation_finish(result, mail_path, options):
     except Alias.MultipleObjectsReturned:
         alias = alias.filter(user__id=options['user'])[0]
     except Alias.DoesNotExist:
+        user = User.objects.get(id=options['user'])
         alias = Alias(
                 alias=gen_alias(5),
                 domain=random.choice(Domain.objects.all()),
@@ -172,19 +173,20 @@ def liberation_finish(result, mail_path, options):
                 created=datetime.now(utc),
                 deleted=False
             )
-            alias.save()
-            tags = ["Inboxen", "data", "liberation"]
-            for i, tag in enumerate(tags):
-                tags[i] = Tag(tag=tag, alias=alias)
-                tags[i].save()
+        alias.save()
+        tags = ["Inboxen", "data", "liberation"]
+        for i, tag in enumerate(tags):
+            tags[i] = Tag(tag=tag, alias=alias)
+            tags[i].save()
 
 
-   send_email(
+    send_email(
         alias=alias,
         sender="support@inboxen.org",
         subject="Data Liberation",
-        body=LIBERATION_BODY
-        attachments=[archive, profile, alias_tags, errors]
+        body=LIBERATION_BODY,
+        attachments=[archive, profile, alias_tags]
+        )
 
 def liberate_user_profile(user_id, email_results):
     data = {
