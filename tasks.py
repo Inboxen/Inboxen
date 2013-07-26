@@ -22,13 +22,46 @@ from website.helper.alias import gen_alias
 from website.helper.mail import send_email, make_message
 from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
+TAR_TYPE = {
+    'tar.gz': {'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
+    'tar.bz2': {'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
+    'tar': {'writer': 'w:', 'mime-type': 'application/x-tar'}
+    }
+
 ##
 # Data liberation
 ##
 
-@task(rate="1/h")
+# limit each line to 79 chars
+LIBERATION_BODY = """Hello,
+
+You recently requested we liberate your data. Please find attached all data we
+have of yours, excluding:
+
+- Your password (this is hashed[1] and salted[2] so is a string of nonsense)
+- The salt[2] (this is used help secure the storage of your password)
+
+Both these data could be used to compromise your account if not kept secure
+and are completely useless to you as you already know your password.
+
+Please don't hesitate to contact support if there are any issues with the
+attached files.
+
+Thank you,,
+The Inboxen Team.
+
+--
+[1] - https://en.wikipedia.org/wiki/Hash_function
+[2] - https://en.wikipedia.org/wiki/Salt_%28cryptography%29
+"""
+
+
+@task(rate='2/h')
 def liberate(user, options={}):
     """ Get set for liberation, expects User object """
+
+    options['user'] = user.id
+
     rstr = ""
     for i in range(7):
         rstr += string.ascii_letters[random.randint(0, 50)]
@@ -39,14 +72,18 @@ def liberate(user, options={}):
 
     chord([liberate_alias.s(mail_path, alias.id) for alias in Alias.objects.filter(user=user, deleted=False).only('id')], liberate_collect_emails.s(mail_path, options)).apply_async()
 
-@task(rate="10/h")
+@task(rate='100/h')
 def liberate_alias(mail_path, alias_id):
     """ Gather email IDs """
 
     alias = Alias.objects.get(id=alias_id, deleted=False)
     maildir = mailbox.Maildir(mail_path)
     maildir.add_folder(str(alias))
-    return {'folder': str(alias), 'ids': [email.id for email in Email.objects.filter(inbox=alias).only('id')]}
+
+    return {
+            'folder': str(alias),
+            'ids': [email.id for email in Email.objects.filter(inbox=alias).only('id')]
+            }
 
 @task()
 def liberate_collect_emails(results, mail_path, options):
@@ -57,10 +94,10 @@ def liberate_collect_emails(results, mail_path, options):
         alias = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.extend(alias)
 
-    msg_tasks = chain(group(msg_tasks), liberate_tarball.s(mail_path), liberation_finish.s(mail_path, options))
+    msg_tasks = chain(group(msg_tasks), liberate_tarball.s(mail_path, options), liberation_finish.s(mail_path, options))
     msg_tasks.apply_async()
 
-@task(rate="100/m")
+@task(rate='1000/m')
 def liberate_message(mail_path, alias, email_id):
     """ Take email from database and put on filesystem """
 
@@ -69,23 +106,145 @@ def liberate_message(mail_path, alias, email_id):
     msg = make_message(msg)
     maildir.add(str(msg))
 
-@task()
-def liberate_tarball(result, mail_path):
-    pass
+@task(default_retry_delay=600)
+def liberate_tarball(result, mail_path, options):
+    """ Tar up and delete the maildir """
 
-    # tarball maildir or mbox
-    # remove maildir/mbox
-    # retry on exception
+    # TODO: Move tar to somewhere that's not /tmp
+
+    try:
+        tar_type = TAR_TYPES[options['compressType']]
+        tar_name = "%s.%s" % (mail_path, options['compressType'])
+        tar = tarfile.open(tar_name, tar_type['writer'])
+    except (IOError, OSError), error:
+        raise liberate_tarball.retry(exc=error)
+
+    try:
+        tar.add("%s/" % mail_path) # directories are added recursively by default
+    finally:
+        tar.close()
+
+    rmtree(mail_path)
+
+    return {'path': tar_name, 'mime-type': tar_type['mime-type']}
 
 @task()
-@transaction.commit_manually
+@transaction.commit_on_success
 def liberation_finish(result, mail_path, options):
-    pass
+    """ Create email to send to user """
 
-    # create attachments with user data
-    # grab ids of email tasks that failed, attach them to user data
-    # work out tarball name and attach
-    # "send" email
+    archive = result.get()
+    archive = Attachment(
+                path=archive['path'],
+                content_type=archive['mime-type'],
+                content_disposition=archive['path'].split('/')[-1]
+                )
+    archive.save()
+
+    profile = liberate_user_profile(options['user'], result.parent)
+    profile = Attachment(
+                data=profile['data'],
+                content_type=profile['type'],
+                content_disposition=profile['name']
+                )
+
+    alias_tags = liberate_alias_tags(options['user'])
+    alias_tags = Attachment(
+                data=alias_tags['data'],
+                content_type=profile['type'],
+                content_disposition=profile['name']
+                )
+    alias_tags.save()
+
+    alias = Alias.objects.filter(tag="Inboxen")
+    alias = alias.filter(tag="data")
+    alias = alias.filter(tag="liberation")
+
+    try:
+        alias = alias.get(user__id=options['user'])
+    except Alias.MultipleObjectsReturned:
+        alias = alias.filter(user__id=options['user'])[0]
+    except Alias.DoesNotExist:
+        alias = Alias(
+                alias=gen_alias(5),
+                domain=random.choice(Domain.objects.all()),
+                user=user,
+                created=datetime.now(utc),
+                deleted=False
+            )
+            alias.save()
+            tags = ["Inboxen", "data", "liberation"]
+            for i, tag in enumerate(tags):
+                tags[i] = Tag(tag=tag, alias=alias)
+                tags[i].save()
+
+
+   send_email(
+        alias=alias,
+        sender="support@inboxen.org",
+        subject="Data Liberation",
+        body=LIBERATION_BODY
+        attachments=[archive, profile, alias_tags, errors]
+
+def liberate_user_profile(user_id, email_results):
+    data = {
+        'preferences':{}
+    }
+    user = User.objects.get(id=user_id)
+
+
+    # user's preferences
+    profile = user_profile(user)
+    if profile.html_preference == 0:
+        data['preferences']['html_preference'] = 'Reject HTML'
+    elif profile.html_preference == 1:
+        data['preferences']['html_preference'] = 'Prefer plain-text'
+    else:
+        data['preferences']['html_preference'] = 'Prefer HTML'
+
+    data['preferences']['pool_amount'] = profile.pool_amount
+
+    # user data
+    data['username'] = user.username
+    data['is_staff'] = user.is_staff
+    data['is_superuser'] = user.is_superuser
+    data['last_login'] = user.last_login.isoformat()
+    data['join_date'] = user.date_joined.isoformat()
+    data['groups'] = [str(group) for group in user.groups.all()]
+
+    if email_results.failed():
+        data['errors'] = []
+        for result in email_results:
+            data['errors'].append(str(result))
+
+    data = json.dumps(data)
+
+    return {
+        'data':data,
+        'type':'text/json',
+        'name':'user.json'
+    }
+
+def liberate_alias_tags(user_id):
+    data = {}
+
+    aliases = Alias.objects.filter(user__id=user_id)
+    for alias in aliases:
+        email = "%s@%s" % (alias.alias, alias.domain)
+        tags = [tag.tag for tag in Tag.objects.filter(alias=alias)]
+        data[email] = {
+            "created":alias.created.isoformat(),
+            "deleted":alias.deleted,
+            "tags":tags,
+        }
+
+    data = json.dumps(data)
+
+    return {
+        "data":data,
+        "type":"text/json",
+        "name":"aliases.json"
+    }
 
 ##
 # Statistics
