@@ -210,13 +210,13 @@ def get_email(user, email_id, preference=None, read=False):
     try:
         plain_attachment = email.attachments.filter(content_type="text/plain")
         plain_attachemt = plain_attachment[0].data
-    except (KeyError, Attachment.DoesNotExist):
+    except (IndexError, Attachment.DoesNotExist):
         plain_attachemt = None
 
     try:
         html_attachment = email.attachments.filter(content_type="text/html")
         html_attachment =html_attachment[0].data
-    except (KeyError, Attachment.DoesNotExist):
+    except (IndexError, Attachment.DoesNotExist):
         html_attachment = None
 
     # grab body content-type, if it has one
