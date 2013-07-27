@@ -206,35 +206,68 @@ def get_email(user, email_id, preference=None, read=False):
         email.read = True
         email.save()
 
-    plain_attachments = email.attachments.filter(content_type="text/plain")
-    html_attachments = email.attachments.filter(content_type="text/html")
-    
+    # grab first plaintext and html attachments, if they exist
+    try:
+        plain_attachment = email.attachments.filter(content_type="text/plain")
+        plain_attachemt = plain_attachment[0].data
+    except (KeyError, Attachment.DoesNotExist):
+        plain_attachemt = None
+
+    try:
+        html_attachment = email.attachments.filter(content_type="text/html")
+        html_attachment =html_attachment[0].data
+    except (KeyError, Attachment.DoesNotExist):
+        html_attachment = None
+
+    # grab body content-type, if it has one
+    try:
+        body_content_type = email.headers.get(name="content-type")
+    except Header.DoesNotExist:
+        body_content_type = None
+
     message["inbox"] = email.inbox
+    message["attachments"] = email.attachments.all()
 
-    if email.body and (html_preference < 2 or not html_attachments.exists()):
-        # I think we can give them this?
-        # I hope noone sets HTML in the email.body
-        message["body"] = email.body
-        message["attachments"] = email.attachments.all()
+    # 0 - never give html
+    if html_preference == 0:
         message["plain"] = True
-     
-    if preference < 2 and plain_attachments.exists():
-        body = plain_attachments[0]
-        message["body"] = body
-        message["attachments"] = email.attachments.all()
-        message["plain"] = True
-    
-    if preference == 0 and html_attachments.exists():
-        # we have an html but we don't wanna see
-        # we'll strip the tags out...
-        message["body"] = ""
-        message["attachments"] = email.attachments.all()
-        message["plain"] = True
+        if not email.body and plain_attachemt:
+            message["body"] = plain_attachment
+        else:
+            message["body"] = email.body
 
-    if html_attachments.exists():
-        message["body"] = html_attachments[0].data
-        message["attachments"] = email.attachments.all()
-        message["plain"] = False
+    # 1 - prefer plain
+    elif html_preference == 1:
+        # prefer whatever is in the body
+        if email.body:
+            message["body"] = email.body
+            message["plain"] = (body_content_type == "text/plain")
+        # first plain mime-part
+        elif plain_attachment:
+            message["body"] = plain_attachment
+            message["plain"] = True
+        # first html mime-part
+        elif html_attachment:
+            message["body"] = html_attachment
+            message["plain"] = False
+
+    # 2 - prefer HTML
+    elif html_preference == 2:
+        # prefer html in the body
+        if body_content_type == "text/html":
+            message["body"] = email.body
+            message["plain"] = False
+        # first html mime-part
+        elif html_attachment:
+            message["body"] = html_attachment
+            message["plain"] = False
+        # fallback to plaintext, prefering body over mime-part
+        elif not email.body:
+            message["body"] = plain_attachment
+            message["plain"] = True
+        else:
+            message["body"] = email.body
+            message["plain"] = True
 
     # handle headers
     for header in email.headers.all():
