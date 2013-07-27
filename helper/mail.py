@@ -221,7 +221,7 @@ def get_email(user, email_id, preference=None, read=False):
 
     # grab body content-type, if it has one
     try:
-        body_content_type = email.headers.get(name="content-type")
+        body_content_type = email.headers.get(name="content-type").data
     except Header.DoesNotExist:
         body_content_type = None
 

@@ -50,7 +50,7 @@ def view(request, email_address, emailid):
         support = True
 
     if email["plain"]:
-        plain_message = email["plain"]
+        plain_message = email["body"]
     else:
         plain_message = ""
         # also because a html email lets parse
