@@ -29,7 +29,7 @@ def liberate(request):
         if "mailType" in request.POST:
             options["mailType"] = request.POST["mailType"]
         if "compressType" in request.POST:
-            option["compressType"] = request.POST["compressType"]
+            options["compressType"] = request.POST["compressType"]
 
         data_liberate.delay(request.user, options=options)
         message = _("We're liberating! You should recieve an email shortly with your data in it ^_^")
