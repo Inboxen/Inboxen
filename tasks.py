@@ -143,7 +143,7 @@ def liberation_finish(result, mail_path, options):
     archive = Attachment(
                 path=result['path'],
                 content_type=result['mime-type'],
-                content_disposition=result['path'].split('/')[-1]
+                content_disposition="emails.%s" % options.get('compressType', 'tar.gz')
                 )
     archive.save()
 
