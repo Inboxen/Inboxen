@@ -98,12 +98,19 @@ def liberate_collect_emails(results, mail_path, options):
     msg_tasks.apply_async()
 
 @task(rate='1000/m')
-def liberate_message(mail_path, alias, email_id):
+def liberate_message(mail_path, alias, email_id, debug=False):
     """ Take email from database and put on filesystem """
-
     maildir = mailbox.Maildir(mail_path).get_folder(alias)
-    msg = Email.objects.get(id=email_id)
-    msg = make_message(msg)
+
+    try:
+        msg = Email.objects.get(id=email_id)
+        msg = make_message(msg)
+    except Exception, exc:
+        if debug:
+            raise
+        else:
+            raise Exception(hex(int(email_id))[2:])
+
     maildir.add(str(msg))
 
 @task(default_retry_delay=600)
@@ -189,6 +196,7 @@ def liberation_finish(result, mail_path, options):
         )
 
 def liberate_user_profile(user_id, email_results):
+    """ User profile data """
     data = {
         'preferences':{}
     }
@@ -228,6 +236,7 @@ def liberate_user_profile(user_id, email_results):
     }
 
 def liberate_alias_tags(user_id):
+    """ Grab tags from aliases """
     data = {}
 
     aliases = Alias.objects.filter(user__id=user_id)
