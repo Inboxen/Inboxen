@@ -74,7 +74,7 @@ def liberate(user, options={}):
                 [liberate_alias.s(mail_path, alias.id) for alias in Alias.objects.filter(user=user, deleted=False).only('id')],
                 liberate_collect_emails.s(mail_path, options)
                 )
-    tasks..apply_async()
+    tasks.apply_async()
 
 @task(rate='100/h')
 def liberate_alias(mail_path, alias_id):
@@ -134,13 +134,13 @@ def liberate_convert_box(result, mail_path, options):
         mbox = mailbox.Mailbox(mail_path + '.mbox')
         mbox.lock()
 
-        for alias in mailbox.list_folders():
+        for alias in maildir.list_folders():
             folder = maildir.get_folder(alias)
 
             for key in folder.iterkeys():
                 msg = folder.pop(key)
                 mbox.add(msg)
-            mailbox.remove_folder(alias)
+            maildir.remove_folder(alias)
 
         rmtree(mail_path)
         mbox.close()
@@ -169,10 +169,10 @@ def liberate_tarball(result, mail_path, options):
 
     elif options['mailType'] == 'mailbox':
         try:
-            tar.add("%s.mbox" % math_path)
+            tar.add("%s.mbox" % mail_path)
         finally:
             tar.close()
-        rmtree("%s.mbox" % math_path)
+        rmtree("%s.mbox" % mail_path)
 
     return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'results': result}
 
