@@ -24,14 +24,23 @@ from django.http import HttpResponseRedirect, Http404
 from inboxen.models import Email
 
 def delete(request, email_address, emailid):
-    
-    emailid = int(emailid, 16)
-    
+
+    emailid = int(emailid, 16)    
+    alias, domain = email_address.split("@", 1)
+
     try:
-        email = Email.objects.get(id=emailid, user=request.user).only('id')
+        if request.user.is_staff and alias == "support":
+            email = Email.objects.filter(id=emailid).only("id")
+        else:
+            email = Email.objects.filter(id=emailid, user=request.user).only("id")
         email.delete()
     except Email.DoesNotExist:
         raise Http404
+
+    # check if they were on the admin support page, if so return them there
+    # todo: could this be done better?
+    if request.META["HTTP_REFERER"].endswith("/admin/support/") and request.user.is_staff:
+        return HttpResponseRedirect("/admin/support")
 
     return HttpResponseRedirect("/inbox/%s/" % email_address)
 
