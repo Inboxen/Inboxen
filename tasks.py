@@ -70,7 +70,11 @@ def liberate(user, options={}):
     # make maildir
     mailbox.Maildir(mail_path)
 
-    chord([liberate_alias.s(mail_path, alias.id) for alias in Alias.objects.filter(user=user, deleted=False).only('id')], liberate_collect_emails.s(mail_path, options)).apply_async()
+    tasks = chord(
+                [liberate_alias.s(mail_path, alias.id) for alias in Alias.objects.filter(user=user, deleted=False).only('id')],
+                liberate_collect_emails.s(mail_path, options)
+                )
+    tasks..apply_async()
 
 @task(rate='100/h')
 def liberate_alias(mail_path, alias_id):
@@ -94,7 +98,12 @@ def liberate_collect_emails(results, mail_path, options):
         alias = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.extend(alias)
 
-    msg_tasks = chain(group(msg_tasks), liberate_tarball.s(mail_path, options), liberation_finish.s(mail_path, options))
+    msg_tasks = chain(
+                    group(msg_tasks),
+                    liberate_convert_box.s(mail_path, options),
+                    liberate_tarball.s(mail_path, options),
+                    liberation_finish.s(mail_path, options)
+                    )
     msg_tasks.apply_async()
 
 @task(rate='1000/m')
@@ -113,6 +122,31 @@ def liberate_message(mail_path, alias, email_id, debug=False):
 
     maildir.add(str(msg))
 
+@task()
+def liberate_convert_box(result, mail_path, options):
+    """ Convert maildir to mbox if needed """
+    if options['mailType'] == 'maildir':
+        pass
+
+    elif options['mailType'] == 'mailbox':
+
+        maildir = mailbox.Maildir(mail_path)
+        mbox = mailbox.Mailbox(mail_path + '.mbox')
+        mbox.lock()
+
+        for alias in mailbox.list_folders():
+            folder = maildir.get_folder(alias)
+
+            for key in folder.iterkeys():
+                msg = folder.pop(key)
+                mbox.add(msg)
+            mailbox.remove_folder(alias)
+
+        rmtree(mail_path)
+        mbox.close()
+
+    return result
+
 @task(default_retry_delay=600)
 def liberate_tarball(result, mail_path, options):
     """ Tar up and delete the maildir """
@@ -126,12 +160,19 @@ def liberate_tarball(result, mail_path, options):
     except (IOError, OSError), error:
         raise liberate_tarball.retry(exc=error)
 
-    try:
-        tar.add("%s/" % mail_path) # directories are added recursively by default
-    finally:
-        tar.close()
+    if options['mailType'] == 'maildir':
+        try:
+            tar.add("%s/" % mail_path) # directories are added recursively by default
+        finally:
+            tar.close()
+        rmtree(mail_path)
 
-    rmtree(mail_path)
+    elif options['mailType'] == 'mailbox':
+        try:
+            tar.add("%s.mbox" % math_path)
+        finally:
+            tar.close()
+        rmtree("%s.mbox" % math_path)
 
     return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'results': result}
 
