@@ -113,8 +113,8 @@ def liberate_tarball(result, mail_path, options):
     # TODO: Move tar to somewhere that's not /tmp
 
     try:
-        tar_type = TAR_TYPES[options['compressType']]
-        tar_name = "%s.%s" % (mail_path, options['compressType'])
+        tar_type = TAR_TYPES[options.get('compressType', 'tar.gz')]
+        tar_name = "%s.%s" % (mail_path, options.get('compressType', 'tar.gz'))
         tar = tarfile.open(tar_name, tar_type['writer'])
     except (IOError, OSError), error:
         raise liberate_tarball.retry(exc=error)
@@ -126,39 +126,39 @@ def liberate_tarball(result, mail_path, options):
 
     rmtree(mail_path)
 
-    return {'path': tar_name, 'mime-type': tar_type['mime-type']}
+    return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'results': result}
 
 @task()
 @transaction.commit_on_success
 def liberation_finish(result, mail_path, options):
     """ Create email to send to user """
 
-    archive = result.get()
     archive = Attachment(
-                path=archive['path'],
-                content_type=archive['mime-type'],
-                content_disposition=archive['path'].split('/')[-1]
+                path=result['path'],
+                content_type=result['mime-type'],
+                content_disposition=result['path'].split('/')[-1]
                 )
     archive.save()
 
-    profile = liberate_user_profile(options['user'], result.parent)
+    profile = liberate_user_profile(options['user'], result['results'])
     profile = Attachment(
                 data=profile['data'],
                 content_type=profile['type'],
                 content_disposition=profile['name']
                 )
+    profile.save()
 
     alias_tags = liberate_alias_tags(options['user'])
     alias_tags = Attachment(
                 data=alias_tags['data'],
-                content_type=profile['type'],
-                content_disposition=profile['name']
+                content_type=alias_tags['type'],
+                content_disposition=alias_tags['name']
                 )
     alias_tags.save()
 
-    alias = Alias.objects.filter(tag="Inboxen")
-    alias = alias.filter(tag="data")
-    alias = alias.filter(tag="liberation")
+    alias = Alias.objects.filter(tag__tag="Inboxen")
+    alias = alias.filter(tag__tag="data")
+    alias = alias.filter(tag__tag="liberation")
 
     try:
         alias = alias.get(user__id=options['user'])
@@ -214,9 +214,9 @@ def liberate_user_profile(user_id, email_results):
     data['join_date'] = user.date_joined.isoformat()
     data['groups'] = [str(group) for group in user.groups.all()]
 
-    if email_results.failed():
-        data['errors'] = []
-        for result in email_results:
+    data['errors'] = []
+    for result in email_results:
+        if result != None:
             data['errors'].append(str(result))
 
     data = json.dumps(data)
