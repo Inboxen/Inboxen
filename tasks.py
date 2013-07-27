@@ -47,7 +47,7 @@ and are completely useless to you as you already know your password.
 Please don't hesitate to contact support if there are any issues with the
 attached files.
 
-Thank you,,
+Thank you,
 The Inboxen Team.
 
 --
