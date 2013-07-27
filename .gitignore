@@ -2,8 +2,9 @@
 docs/_*
 
 # inboxen specific
-settings.py
-settings.py[cod]
+/celerybeat-schedule
+/celerybeat.pid
+/settings.py
 /inboxen/migrations
 
 *.py[cod]
