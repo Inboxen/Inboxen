@@ -131,14 +131,14 @@ def liberate_convert_box(result, mail_path, options):
     elif options['mailType'] == 'mailbox':
 
         maildir = mailbox.Maildir(mail_path)
-        mbox = mailbox.Mailbox(mail_path + '.mbox')
+        mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
 
         for alias in maildir.list_folders():
             folder = maildir.get_folder(alias)
 
             for key in folder.iterkeys():
-                msg = folder.pop(key)
+                msg = str(folder.pop(key))
                 mbox.add(msg)
             maildir.remove_folder(alias)
 
@@ -172,7 +172,7 @@ def liberate_tarball(result, mail_path, options):
             tar.add("%s.mbox" % mail_path)
         finally:
             tar.close()
-        rmtree("%s.mbox" % mail_path)
+        os.remove("%s.mbox" % mail_path)
 
     return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'results': result}
 
