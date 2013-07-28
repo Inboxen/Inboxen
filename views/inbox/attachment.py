@@ -33,8 +33,10 @@ def download(request, attachmentid, method="download"):
     	# this should be an error
         return HttpResponseRedirect("/user/profile")
 
-    response = HttpResponse(attachment.data, content_type=attachment.content_type)
+    data = attachment.data
+    response = HttpResponse(data, content_type=attachment.content_type)
 
+    response["Content-Length"] = len(data)
     response["Content-Disposition"] = "filename=%s" % attachment.content_disposition
     if method == "download":
         response["Content-Disposition"] = "attachment; filename=%s" % attachment.content_disposition
