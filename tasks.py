@@ -342,9 +342,10 @@ def delete_alias(email, user=None):
         user = email.user
         alias = email
 
-    # delete emails in another task(s)
-    for email in Email.objects.filter(inbox=alias, user=user).only('id'):
-        delete_email.delay(email)
+    # delete emails in another task(s)i
+    emails = Email.objects.filter(inbox=alias, user=user).only('id')
+    emails = group([delete_email.s(email.id) for email in emails])
+    emails.apply_async()
         
     # delete tags
     tags = Tag.objects.filter(alias=alias).only('id')
@@ -358,7 +359,8 @@ def delete_alias(email, user=None):
 
 @task(rate_limit=200)
 @transaction.commit_on_success
-def delete_email(email):
+def delete_email(email_id):
+    email = Email.objects.filter(id=email_id).only('id')[0]
     email.delete()
 
 @task()
@@ -392,11 +394,11 @@ def delete_account(user):
     user.set_unusable_password()
     user.save()
 
-    # first delete all aliases
+    # get ready to delete all aliases
     alias = Alias.objects.filter(user=user).only('id')
     delete = chord([chain(delete_alias.s(a), disown_alias.s(a)) for a in alias], delete_user.s(user))
 
-    # now scrub some more info we have
+    # now scrub info we have
     user_profile(user).delete()
 
     # now send off delete tasks
