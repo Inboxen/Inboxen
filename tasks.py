@@ -342,8 +342,12 @@ def delete_alias(email, user=None):
         user = email.user
         alias = email
 
-    # delete emails in another task(s)i
+    # delete emails in another task(s)
     emails = Email.objects.filter(inbox=alias, user=user).only('id')
+
+    # sending an ID over the wire and refetching the Django model on the side
+    # is cheaper than serialising the Django model - this appears to be the
+    # cause of our previous memory issues! - M
     emails = group([delete_email.s(email.id) for email in emails])
     emails.apply_async()
         
