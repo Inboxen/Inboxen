@@ -342,12 +342,12 @@ def delete_alias(email, user=None):
         user = email.user
         alias = email
 
-    # delete emails
+    # delete emails in another task(s)
     for email in Email.objects.filter(inbox=alias, user=user).only('id'):
         delete_email.delay(email)
         
     # delete tags
-    tags = Tag.objects.filter(alias=alias)
+    tags = Tag.objects.filter(alias=alias).only('id')
     tags.delete()
 
     # okay now mark the alias as deleted
@@ -356,12 +356,12 @@ def delete_alias(email, user=None):
 
     return True
 
-@task(ignore_result=True, store_errors_even_if_ignored=True, rate_limit=200)
+@task(rate_limit=200)
 @transaction.commit_on_success
 def delete_email(email):
     email.delete()
 
-@task(ignore_result=True, store_errors_even_if_ignored=True)
+@task()
 @transaction.commit_on_success
 def disown_alias(result, alias, futr_user=None):
     if not futr_user:
@@ -370,12 +370,12 @@ def disown_alias(result, alias, futr_user=None):
     alias.user = futr_user
     alias.save()
 
-@task(max_retries=None, default_retry_delay=10 * 60, ignore_result=True, store_errors_even_if_ignored=True)
+@task()
 @transaction.commit_on_success
 def delete_user(user):
     alias = Alias.objects.filter(user=user).only('id').exists()
     if alias:
-        logging.info("Defering user deletion to later")
+        logging.warning("Defering user deletion to later")
         # defer this task until later
         raise delete_user.retry(
             exc=Exception("User still has aliases"),
@@ -385,7 +385,7 @@ def delete_user(user):
         user.delete()
     return True
 
-@task(default_retry_delay=10 * 60, ignore_result=True, store_errors_even_if_ignored=True)
+@task()
 @transaction.commit_on_success
 def delete_account(user):
     # first we need to make sure the user can't login
@@ -394,12 +394,10 @@ def delete_account(user):
 
     # first delete all aliases
     alias = Alias.objects.filter(user=user).only('id')
-    for a in alias:
-        chain(delete_alias.s(a), disown_alias.s(a)).delay()
+    delete = chord([chain(delete_alias.s(a), disown_alias.s(a)) for a in alias], delete_user.s(user))
 
     # now scrub some more info we have
     user_profile(user).delete()
-    
-    # finally delete the user object only when 
-    # all the alias/email tasks have finished
-    delete_user.delay(user) 
+
+    # now send off delete tasks
+    delete.apply_async()
