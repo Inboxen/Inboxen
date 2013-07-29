@@ -127,6 +127,7 @@ class Email(models.Model):
     body = models.TextField(null=True)
     attachments = models.ManyToManyField(Attachment)
     recieved_date = models.DateTimeField('Recieved Date')
+    deleted = models.BooleanField(default=False)
 
     def get_data(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
