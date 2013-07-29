@@ -86,7 +86,7 @@ def liberate_alias(mail_path, alias_id):
 
     return {
             'folder': str(alias),
-            'ids': [email.id for email in Email.objects.filter(inbox=alias).only('id')]
+            'ids': [email.id for email in Email.objects.filter(inbox=alias, deleted=False).only('id')]
             }
 
 @task()
@@ -112,7 +112,7 @@ def liberate_message(mail_path, alias, email_id, debug=False):
     maildir = mailbox.Maildir(mail_path).get_folder(alias)
 
     try:
-        msg = Email.objects.get(id=email_id)
+        msg = Email.objects.get(id=email_id, deleted=False)
         msg = make_message(msg)
     except Exception, exc:
         if debug:
