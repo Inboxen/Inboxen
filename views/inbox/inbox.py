@@ -26,6 +26,7 @@ from django.db import transaction
 from django.db.models import Q
 
 from inboxen.models import Alias, Email
+from queue.tasks import delete_email
 from website.helper.paginator import page as paginator_page
 
 @login_required
@@ -107,4 +108,6 @@ def mass_tasks(request):
     elif "unread" in request.POST:
         emails.update(read=False)
     elif "delete" in request.POST:
-        emails.delete()
+        emails.update(deleted=True)
+        for email in emails:
+            delete_email.delay(email.id)
