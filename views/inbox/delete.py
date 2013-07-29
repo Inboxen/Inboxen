@@ -27,9 +27,10 @@ def delete(request, email_address, emailid):
 
     emailid = int(emailid, 16)    
     alias, domain = email_address.split("@", 1)
+    daes = alias == "support" #daes = does alias equal support :P
 
     try:
-        if request.user.is_staff and alias == "support":
+        if request.user.is_staff and daes:
             email = Email.objects.filter(id=emailid).only("id")
         else:
             email = Email.objects.filter(id=emailid, user=request.user).only("id")
@@ -38,9 +39,8 @@ def delete(request, email_address, emailid):
         raise Http404
 
     # check if they were on the admin support page, if so return them there
-    # todo: could this be done better?
-    if request.META["HTTP_REFERER"].endswith("/admin/support/") and request.user.is_staff:
+    if daes and request.user.is_staff:
         return HttpResponseRedirect("/admin/support")
-
-    return HttpResponseRedirect("/inbox/%s/" % email_address)
+    else:
+        return HttpResponseRedirect("/inbox/%s/" % email_address)
 
