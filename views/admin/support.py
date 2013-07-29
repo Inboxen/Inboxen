@@ -35,7 +35,7 @@ def support(request, page=1):
     for a in alias:
         q_alias = q_alias | Q(inbox=a)
 
-    emails = Email.objects.filter(q_alias).defer('body').order_by('-recieved_date')
+    emails = Email.objects.filter(q_alias, deleted=False).defer('body').order_by('-recieved_date')
     
     paginator = Paginator(emails, 100)
     try:

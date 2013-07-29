@@ -42,7 +42,7 @@ def profile(request, page=1):
             alias.tags = ", ".join([t.tag for t in tag])
         except Tag.DoesNotExist:
             alias.tags = ''
-        alias.email_count = Email.objects.filter(inbox=alias, read=False).count()
+        alias.email_count = Email.objects.filter(inbox=alias, read=False, deleted=False).count()
         total += alias.email_count
 
     paginator = Paginator(aliases, 20)

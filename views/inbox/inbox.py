@@ -37,14 +37,14 @@ def inbox(request, email_address="", page=1):
 
     if not email_address:
         # assuming global unified inbox
-        inbox = Email.objects.filter(user=request.user).order_by('-recieved_date')
+        inbox = Email.objects.filter(user=request.user, deleted=False).defer('body').order_by('-recieved_date')
 
     else:
         # a specific alias
         alias, domain = email_address.split("@", 1)
         try:
             alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
-            inbox = Email.objects.filter(user=request.user, inbox=alias).order_by('-recieved_date')
+            inbox = Email.objects.filter(user=request.user, inbox=alias, deleted=False).defer('body').order_by('-recieved_date')
         except ObjectDoesNotExist:
             context = {
                 "page":_("%s - Inbox") % email_address,

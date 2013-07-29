@@ -194,9 +194,9 @@ def get_email(user, email_id, preference=None, read=False):
     # quick fix, allows staff to read any message, not just their own
     # not sure if we really want that - M
     if user.is_staff:
-        email = Email.objects.get(id=email_id)
+        email = Email.objects.get(id=email_id, deleted=False)
     else:
-        email = Email.objects.get(id=email_id, user=user)
+        email = Email.objects.get(id=email_id, user=user, deleted=False)
     
     message = {
         "date":email.recieved_date
