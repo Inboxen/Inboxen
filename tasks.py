@@ -23,6 +23,9 @@ from website.helper.alias import gen_alias
 from website.helper.mail import send_email, make_message
 from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
+for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH')
+    assert hasattr(settings, setting_name), "%s has not been set" % setting_name
+
 TAR_TYPES = {
     'tar.gz': {'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
     'tar.bz2': {'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
