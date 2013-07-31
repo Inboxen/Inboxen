@@ -65,7 +65,7 @@ def liberate(user, options={}):
     rstr = ""
     for i in range(7):
         rstr += string.ascii_letters[random.randint(0, 50)]
-    mail_path = "/tmp/%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
+    mail_path = "%s/%s_%s_%s_%s" % (settings.LIBERATION_PATH, time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
 
     # make maildir
     mailbox.Maildir(mail_path)
@@ -151,8 +151,6 @@ def liberate_convert_box(result, mail_path, options):
 def liberate_tarball(result, mail_path, options):
     """ Tar up and delete the maildir """
 
-    # TODO: Move tar to somewhere that's not /tmp
-
     try:
         tar_type = TAR_TYPES[options.get('compressType', 'tar.gz')]
         tar_name = "%s.%s" % (mail_path, options.get('compressType', 'tar.gz'))
@@ -160,16 +158,18 @@ def liberate_tarball(result, mail_path, options):
     except (IOError, OSError), error:
         raise liberate_tarball.retry(exc=error)
 
+    dir_name = "inboxen-%s" % datetime.now(utc).date()
+
     if options['mailType'] == 'maildir':
         try:
-            tar.add("%s/" % mail_path) # directories are added recursively by default
+            tar.add("%s/" % mail_path, dir_name) # directories are added recursively by default
         finally:
             tar.close()
         rmtree(mail_path)
 
     elif options['mailType'] == 'mailbox':
         try:
-            tar.add("%s.mbox" % mail_path)
+            tar.add("%s.mbox" % mail_path, dir_name)
         finally:
             tar.close()
         os.remove("%s.mbox" % mail_path)
