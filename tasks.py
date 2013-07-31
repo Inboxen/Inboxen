@@ -23,7 +23,7 @@ from website.helper.alias import gen_alias
 from website.helper.mail import send_email, make_message
 from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
 
-for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH')
+for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH'):
     assert hasattr(settings, setting_name), "%s has not been set" % setting_name
 
 TAR_TYPES = {
