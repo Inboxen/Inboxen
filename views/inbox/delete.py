@@ -31,9 +31,9 @@ def delete(request, email_address, emailid):
 
     try:
         if request.user.is_staff and daes:
-            email = Email.objects.filter(id=emailid).only("id")
+            email = Email.objects.filter(id=emailid).only("id").get()
         else:
-            email = Email.objects.filter(id=emailid, user=request.user).only("id")
+            email = Email.objects.filter(id=emailid, user=request.user).only("id").get()
         email.delete()
     except Email.DoesNotExist:
         raise Http404
