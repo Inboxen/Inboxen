@@ -16,6 +16,7 @@ from celery import task, chain, group, chord
 
 from django.db import transaction
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from website.helper.user import null_user, user_profile
 from website.helper.alias import gen_alias
@@ -31,30 +32,6 @@ TAR_TYPES = {
 ##
 # Data liberation
 ##
-
-# limit each line to 79 chars
-LIBERATION_BODY = """Hello,
-
-You recently requested we liberate your data. Please find attached all data we
-have of yours, excluding:
-
-- Your password (this is hashed[1] and salted[2] so is a string of nonsense)
-- The salt[2] (this is used help secure the storage of your password)
-
-Both these data could be used to compromise your account if not kept secure
-and are completely useless to you as you already know your password.
-
-Please don't hesitate to contact support if there are any issues with the
-attached files.
-
-Thank you,
-The Inboxen Team.
-
---
-[1] - https://en.wikipedia.org/wiki/Hash_function
-[2] - https://en.wikipedia.org/wiki/Salt_%28cryptography%29
-"""
-
 
 @task(rate='2/h')
 def liberate(user, options={}):
@@ -232,7 +209,7 @@ def liberation_finish(result, mail_path, options):
         alias=alias,
         sender="support@inboxen.org",
         subject="Data Liberation",
-        body=LIBERATION_BODY,
+        body=settings.LIBERATION_BODY,
         attachments=[archive, profile, alias_tags]
         )
 
