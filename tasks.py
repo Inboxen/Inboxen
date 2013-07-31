@@ -208,7 +208,7 @@ def liberation_finish(result, mail_path, options):
     send_email(
         alias=alias,
         sender="support@inboxen.org",
-        subject="Data Liberation",
+        subject=settings.LIBERATION_SUBJECT,
         body=settings.LIBERATION_BODY,
         attachments=[archive, profile, alias_tags]
         )
