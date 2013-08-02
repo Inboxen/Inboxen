@@ -12,7 +12,7 @@
     {% if user.is_staff %}
         <p class="text-right">
             <a href="/blog/edit/{{ post.id }}" class="btn">{% trans "Edit" %}</a>
-            <a href="/blog/delete/{{ post.id }}" class="btn">{% trans "Delete" %}</a>
+            <a href="/blog/delete/{{ post.id }}" class="btn btn-danger">{% trans "Delete" %}</a>
         </p>
     {% endif %}
 
