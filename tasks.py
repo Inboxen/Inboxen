@@ -252,7 +252,7 @@ def liberate_user_profile(user_id, email_results):
 
     return {
         'data':data,
-        'type':'text/json',
+        'type':'application/json',
         'name':'user.json'
     }
 
@@ -274,7 +274,7 @@ def liberate_alias_tags(user_id):
 
     return {
         "data":data,
-        "type":"text/json",
+        "type":"application/json",
         "name":"aliases.json"
     }
 
