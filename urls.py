@@ -59,7 +59,7 @@ urlpatterns = patterns('',
     url(r'^user/register/status', 'website.views.user.register.status'),
     url(r'^user/register/success', 'website.views.user.register.success'),
     url(r'^user/register/', 'website.views.user.register.register'),
-    url(r'^user/profile(/(?P<page>\d+))?', 'website.views.user.profile.profile'),
+    url(r'^user/home(/(?P<page>\d+))?', 'website.views.user.home.home'),
     url(r'^user/settings/liberate', 'website.views.user.settings.liberate.liberate.liberate'),
     url(r'^user/settings/password', 'django.contrib.auth.views.password_change',
         {

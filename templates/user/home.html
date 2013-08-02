@@ -70,7 +70,7 @@
     <div class="pagination text-right">
         <ul>
             {% if aliases.has_previous %}
-                <li><a href="/user/profile/{{ aliases.previous_page_number }}">&laquo;</a></li>
+                <li><a href="/user/home/{{ aliases.previous_page_number }}">&laquo;</a></li>
             {% else %}
                 <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
@@ -80,11 +80,11 @@
                 {% else %}
                     <li>
                 {% endif %}
-                <a href="/user/profile/{{ page.page }}">{{ page.page }}</a></li>
+                <a href="/user/home/{{ page.page }}">{{ page.page }}</a></li>
             {% endfor %}
     
             {% if aliases.has_next %}
-                <li><a href="/user/profile/{{ aliases.next_page_number }}">&raquo;</a></li>
+                <li><a href="/user/home/{{ aliases.next_page_number }}">&raquo;</a></li>
             {% else %}
                 <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}

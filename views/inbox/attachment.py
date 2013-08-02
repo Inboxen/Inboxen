@@ -31,7 +31,7 @@ def download(request, attachmentid, method="download"):
         attachment.email_set.get(user=request.user)
     except (Attachment.DoesNotExist, Email.DoesNotExist):
     	# this should be an error
-        return HttpResponseRedirect("/user/profile")
+        return HttpResponseRedirect("/user/home")
 
     data = attachment.data
     response = HttpResponse(data, content_type=attachment.content_type)

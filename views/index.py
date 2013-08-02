@@ -22,7 +22,7 @@ from django.http import HttpResponseRedirect
 
 def index(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect("/user/profile")
+        return HttpResponseRedirect("/user/home")
 
     context = {
         "page":_("Home"),

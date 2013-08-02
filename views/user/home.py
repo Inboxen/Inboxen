@@ -28,7 +28,7 @@ from website.helper.paginator import page as page_paginator
 from inboxen.models import Alias, Tag, Email
 
 @login_required
-def profile(request, page=1):
+def home(request, page=1):
 
     aliases = Alias.objects.filter(user=request.user).order_by('-created')
     available = alias_available(request.user, aliases=aliases)
@@ -60,7 +60,7 @@ def profile(request, page=1):
         request.session["messages"] = []
 
     context = {
-        "page":_("Profile"),
+        "page":_("Home"),
         "aliases":aliases,
         "available":available,
         "total_email_count":total,
@@ -69,6 +69,6 @@ def profile(request, page=1):
     }
 
     
-    return render(request, "user/profile.html", context)
+    return render(request, "user/home.html", context)
     
 

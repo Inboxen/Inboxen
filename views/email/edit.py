@@ -32,7 +32,7 @@ def edit(request, email):
 
     if not alias:
         # display a proper error here?
-        return HttpResponseRedirect("/user/profile")
+        return HttpResponseRedirect("/user/home")
     else:
         alias = alias
 
@@ -50,7 +50,7 @@ def edit(request, email):
                 tags[i].save()
 
 
-        return HttpResponseRedirect("/user/profile")
+        return HttpResponseRedirect("/user/home")
 
     tags = Tag.objects.filter(alias=alias[0])
     display_tags = ""

@@ -42,7 +42,7 @@ def success(request):
 
 def register(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect("/user/profile")
+        return HttpResponseRedirect("/user/home")
 
     if not settings.ENABLE_REGISTRATION:
         return HttpResponseRedirect("/")

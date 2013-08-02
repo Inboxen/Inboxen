@@ -34,7 +34,7 @@ def liberate(request):
         data_liberate.delay(request.user, options=options)
         message = _("We're liberating! You should recieve an email shortly with your data in it ^_^")
         request.session["messages"] = [message]
-        return HttpResponseRedirect("/user/profile")    
+        return HttpResponseRedirect("/user/home")    
 
 
     context = {

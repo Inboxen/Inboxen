@@ -42,7 +42,7 @@ def add(request):
         tags = request.POST["tag"]
         
         if Alias.objects.filter(alias=alias, domain=domain).exists():
-            return HttpResponseRedirect("/user/profile")
+            return HttpResponseRedirect("/user/home")
 
         new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now(utc))
         new_alias.save()
@@ -58,7 +58,7 @@ def add(request):
 
         request.session["messages"] = [msg]
 
-        return HttpResponseRedirect("/user/profile")
+        return HttpResponseRedirect("/user/home")
 
     domains = Domain.objects.all()
     
