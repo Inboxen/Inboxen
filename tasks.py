@@ -138,7 +138,8 @@ def liberate_tarball(result, mail_path, options):
     except (IOError, OSError), error:
         raise liberate_tarball.retry(exc=error)
 
-    dir_name = "inboxen-%s" % datetime.now(utc).date()
+    date = str(datetime.now(utc).date())
+    dir_name = "inboxen-%s" % date
 
     if options['mailType'] == 'maildir':
         try:
@@ -154,7 +155,7 @@ def liberate_tarball(result, mail_path, options):
             tar.close()
         os.remove("%s.mbox" % mail_path)
 
-    return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'results': result}
+    return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'date': date, 'results': result}
 
 @task()
 @transaction.commit_on_success
@@ -164,11 +165,11 @@ def liberation_finish(result, mail_path, options):
     archive = Attachment(
                 path=result['path'],
                 content_type=result['mime-type'],
-                content_disposition="emails.%s" % options.get('compressType', 'tar.gz')
+                content_disposition="emails-%s.%s" % (result['date'], options.get('compressType', 'tar.gz'))
                 )
     archive.save()
 
-    profile = liberate_user_profile(options['user'], result['results'])
+    profile = liberate_user_profile(options['user'], result['results'], result['date'])
     profile = Attachment(
                 data=profile['data'],
                 content_type=profile['type'],
@@ -176,7 +177,7 @@ def liberation_finish(result, mail_path, options):
                 )
     profile.save()
 
-    alias_tags = liberate_alias_tags(options['user'])
+    alias_tags = liberate_alias_tags(options['user'], result['date'])
     alias_tags = Attachment(
                 data=alias_tags['data'],
                 content_type=alias_tags['type'],
@@ -216,7 +217,7 @@ def liberation_finish(result, mail_path, options):
         attachments=[archive, profile, alias_tags]
         )
 
-def liberate_user_profile(user_id, email_results):
+def liberate_user_profile(user_id, email_results, date):
     """ User profile data """
     data = {
         'preferences':{}
@@ -253,10 +254,10 @@ def liberate_user_profile(user_id, email_results):
     return {
         'data':data,
         'type':'application/json',
-        'name':'user.json'
+        'name':"user-%s.json" % date
     }
 
-def liberate_alias_tags(user_id):
+def liberate_alias_tags(user_id, date):
     """ Grab tags from aliases """
     data = {}
 
@@ -275,7 +276,7 @@ def liberate_alias_tags(user_id):
     return {
         "data":data,
         "type":"application/json",
-        "name":"aliases.json"
+        "name":"aliases-%s.json" % date
     }
 
 ##
