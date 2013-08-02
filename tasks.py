@@ -237,9 +237,11 @@ def liberate_user_profile(user_id, email_results, date):
     data['preferences']['pool_amount'] = profile.pool_amount
 
     # user data
+    data["id"] = user.id
     data['username'] = user.username
     data['is_staff'] = user.is_staff
     data['is_superuser'] = user.is_superuser
+    data["is_active"] = user.is_active
     data['last_login'] = user.last_login.isoformat()
     data['join_date'] = user.date_joined.isoformat()
     data['groups'] = [str(group) for group in user.groups.all()]
