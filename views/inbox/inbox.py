@@ -70,7 +70,7 @@ def inbox(request, email_address="", page=1):
         for header in email.headers.all():
             if header.name == "From":
                 email.sender = header.data
-            elif header.name == "Subject":
+            elif header.name == "Subject" and header.data:
                 email.subject = header.data
 
     if email_address:
