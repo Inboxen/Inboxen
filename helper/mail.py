@@ -32,8 +32,8 @@ from premailer import Premailer
 
 from django.utils.safestring import mark_safe
 
-from website.helper.user import user_profile, null_user
-from inboxen.models import Email, Attachment, Inbox, Header
+from website.helper.user import user_profile
+from inboxen.models import Email, Attachment, Header
 
 # lxml doesn't seem to like WSGI, but premailer seems ok :s
 if version_info[:2] == (2, 7):
@@ -106,6 +106,7 @@ def clean_html(email):
     try:
         email = Premailer(email).transform(False)
     except Exception:
+        # we're doing this at request-time, so it's better to break css than a message not load
         pass
     email = BeautifulSoup(email, PARSER)
 
@@ -127,12 +128,11 @@ def clean_html(email):
 
     return mark_safe(email)
 
-def send_email(inbox, sender, subject=None, body="", attachments=[]):
+def send_email(inbox, sender, subject=None, body="", attachments=None):
     """ Sends an email to an internal inbox
 
-    Expects an inbox object
+    Expects an Inbox object
     """
-
     email = Email(
         user=inbox.user,
         inbox=inbox,
@@ -163,8 +163,9 @@ def send_email(inbox, sender, subject=None, body="", attachments=[]):
 
         email.headers.add(subject)
 
-    for attachment in attachments:
-        email.attachments.add(attachment)
+    if attachments != None:
+        for attachment in attachments:
+            email.attachments.add(attachment)
 
     email.save()
 
@@ -188,7 +189,7 @@ def get_email(user, email_id, preference=None, read=False):
         email = Email.objects.get(id=email_id, deleted=False)
     else:
         email = Email.objects.get(id=email_id, user=user, deleted=False)
-    
+
     message = {
         "date":email.recieved_date
     }
@@ -206,7 +207,7 @@ def get_email(user, email_id, preference=None, read=False):
 
     try:
         html_attachment = email.attachments.filter(content_type="text/html")
-        html_attachment =html_attachment[0].data
+        html_attachment = html_attachment[0].data
     except (IndexError, Attachment.DoesNotExist):
         html_attachment = None
 
@@ -271,4 +272,4 @@ def get_email(user, email_id, preference=None, read=False):
     if "subject" not in message:
         message["subject"] = "(No Subject)"
 
-    return message 
+    return message
