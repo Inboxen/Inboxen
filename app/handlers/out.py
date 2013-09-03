@@ -29,14 +29,14 @@ from app.model.email import make_email
 
 import logging
 
-@route("(alias)@(domain)", alias=".+", domain=".+")
+@route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless
-def START(message, alias=None, domain=None):
+def START(message, inbox=None, domain=None):
     RETRY = "x-queue-retry"
-    # alias should have already have been checked before the email entered the
+    # inbox should have already have been checked before the email entered the
     # queue
     try:
-        make_email(message, alias, domain)
+        make_email(message, inbox, domain)
     except Exception, e:
         logging.debug("DB error: %s " % str(e))
         if RETRY in message:

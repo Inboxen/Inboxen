@@ -23,22 +23,22 @@ from datetime import datetime
 from pytz import utc
 import logging
 
-from inboxen.models import Alias, Attachment, Email, Header
+from inboxen.models import Inbox, Attachment, Email, Header
 from config.settings import datetime_format, recieved_header_name
 from django.db import transaction
 from dateutil import parser
 
 @transaction.commit_on_success
-def make_email(message, alias, domain):
+def make_email(message, inbox, domain):
     """Push message to the database.
 
-    Will throw an Alias.DoesNotExist exception if alias and domain are not valid"""
+    Will throw an Inbox.DoesNotExist exception if inbox and domain are not valid"""
 
     try:
-        inbox = Alias.objects.get(alias=alias, domain__domain=domain, deleted=False)
-    except Alias.DoesNotExist, e:
-        logging.debug("No alias: %s" % e)
-        return # alias deleted while msg was in queue
+        inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, deleted=False)
+    except Inbox.DoesNotExist, e:
+        logging.debug("No inbox: %s" % e)
+        return # inbox deleted while msg was in queue
 
     user = inbox.user
     body = message.base.body

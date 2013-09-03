@@ -3,7 +3,7 @@ Router
 
 The basic idea here is to use [salmon](https://github.com/moggers87/salmon) in two parts:
 
-* recieve email, check this is an alias exists, push message to queue
+* recieve email, check this is an inbox exists, push message to queue
 * watch the queue for new messages, push them into the DB
 
 Requires Salmon and Django

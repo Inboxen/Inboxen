@@ -19,12 +19,12 @@
 #
 ##
 
-from inboxen.models import Alias, Domain
+from inboxen.models import Inbox, Domain
 
-def alias_exists(alias, domain):
-    if Alias.objects.filter(alias=alias, domain__domain=domain, deleted=False).exists():
+def inbox_exists(inbox, domain):
+    if Inbox.objects.filter(inbox=inbox, domain__domain=domain, deleted=False).exists():
         return (True, False)
-    elif Alias.objects.filter(alias=alias, domain__domain=domain).exists():
+    elif Inbox.objects.filter(inbox=inbox, domain__domain=domain).exists():
         return (False, True)
     else:
         return (False, False)

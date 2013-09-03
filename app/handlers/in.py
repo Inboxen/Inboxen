@@ -30,7 +30,7 @@ from salmon.routing import route, stateless, nolocking
 from salmon.server import SMTPError
 from salmon.queue import Queue
 from django.db import DatabaseError
-from app.model.alias import alias_exists
+from app.model.inbox import inbox_exists
 from datetime import datetime
 from pytz import utc
 import logging
@@ -38,15 +38,15 @@ import logging
 # We don't change state based on who the sender is, so we're stateless and
 # don't return any other state. Locking is done by the queue (on the filesystem
 # at the time of writing)
-@route("(alias)@(domain)", alias=".+", domain=".+")
+@route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless
 @nolocking
-def START(message, alias=None, domain=None):
-    """Does this alias exist? If yes, queue it. If no, drop it."""
+def START(message, inbox=None, domain=None):
+    """Does this inbox exist? If yes, queue it. If no, drop it."""
 
     # catch all the stupid errors mysql might throw
     try:
-        exists, deleted = alias_exists(alias, domain)
+        exists, deleted = inbox_exists(inbox, domain)
     except Exception, e:
         logging.debug("DB error: %s" % str(e))
         raise SMTPError(451, "Oops, melon exploded")
@@ -56,24 +56,24 @@ def START(message, alias=None, domain=None):
 
         # the queue needs to know who the message is for
         message['x-original-to'] = message['to']
-        message['to'] = "%s@%s" % (alias, domain)
+        message['to'] = "%s@%s" % (inbox, domain)
 
         #if spam filtering is enabled, do so
 
         #if not spam, or not filter:
         accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts_in)
         accept_queue.push(message)
-        logging.debug("APPROVED alias %s on domain %s" % (alias, domain))
+        logging.debug("APPROVED inbox %s on domain %s" % (inbox, domain))
     else:
         if DEBUG:
             queue = Queue(reject_dir, **accepted_queue_opts_in)
             queue.push(message)
-            logging.debug("REJECTED alias %s on domain %s" % (alias, domain))
+            logging.debug("REJECTED inbox %s on domain %s" % (inbox, domain))
 
         # Raise an error, tell server whether to try again or not
         if deleted:
             code = 550
         else:
             code = 450
-        raise SMTPError(code, 'Alias %s@%s does not exist')
+        raise SMTPError(code, 'Inbox %s@%s does not exist')
 
