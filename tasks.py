@@ -19,9 +19,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from website.helper.user import null_user, user_profile
-from website.helper.alias import gen_alias
+from website.helper.inbox import gen_inbox
 from website.helper.mail import send_email, make_message
-from inboxen.models import Attachment, Tag, Alias, Domain, Email, Statistic
+from inboxen.models import Attachment, Tag, Inbox, Domain, Email, Statistic
 
 for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH'):
     assert hasattr(settings, setting_name), "%s has not been set" % setting_name
@@ -51,22 +51,22 @@ def liberate(user, options={}):
     mailbox.Maildir(mail_path)
 
     tasks = chord(
-                [liberate_alias.s(mail_path, alias.id) for alias in Alias.objects.filter(user=user, deleted=False).only('id')],
+                [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, deleted=False).only('id')],
                 liberate_collect_emails.s(mail_path, options)
                 )
     tasks.apply_async()
 
 @task(rate='100/h')
-def liberate_alias(mail_path, alias_id):
+def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
 
-    alias = Alias.objects.get(id=alias_id, deleted=False)
+    inbox = Inbox.objects.get(id=inbox_id, deleted=False)
     maildir = mailbox.Maildir(mail_path)
-    maildir.add_folder(str(alias))
+    maildir.add_folder(str(inbox))
 
     return {
-            'folder': str(alias),
-            'ids': [email.id for email in Email.objects.filter(inbox=alias, deleted=False).only('id')]
+            'folder': str(inbox),
+            'ids': [email.id for email in Email.objects.filter(inbox=inbox, deleted=False).only('id')]
             }
 
 @task()
@@ -75,8 +75,8 @@ def liberate_collect_emails(results, mail_path, options):
 
     msg_tasks = []
     for result in results:
-        alias = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
-        msg_tasks.extend(alias)
+        inbox = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
+        msg_tasks.extend(inbox)
 
     msg_tasks = chain(
                     group(msg_tasks),
@@ -87,9 +87,9 @@ def liberate_collect_emails(results, mail_path, options):
     msg_tasks.apply_async()
 
 @task(rate='1000/m')
-def liberate_message(mail_path, alias, email_id, debug=False):
+def liberate_message(mail_path, inbox, email_id, debug=False):
     """ Take email from database and put on filesystem """
-    maildir = mailbox.Maildir(mail_path).get_folder(alias)
+    maildir = mailbox.Maildir(mail_path).get_folder(inbox)
 
     try:
         msg = Email.objects.get(id=email_id, deleted=False)
@@ -114,13 +114,13 @@ def liberate_convert_box(result, mail_path, options):
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
 
-        for alias in maildir.list_folders():
-            folder = maildir.get_folder(alias)
+        for inbox in maildir.list_folders():
+            folder = maildir.get_folder(inbox)
 
             for key in folder.iterkeys():
                 msg = str(folder.pop(key))
                 mbox.add(msg)
-            maildir.remove_folder(alias)
+            maildir.remove_folder(inbox)
 
         rmtree(mail_path)
         mbox.close()
@@ -177,44 +177,44 @@ def liberation_finish(result, mail_path, options):
                 )
     profile.save()
 
-    alias_tags = liberate_alias_tags(options['user'], result['date'])
-    alias_tags = Attachment(
-                data=alias_tags['data'],
-                content_type=alias_tags['type'],
-                content_disposition=alias_tags['name']
+    inbox_tags = liberate_inbox_tags(options['user'], result['date'])
+    inbox_tags = Attachment(
+                data=inbox_tags['data'],
+                content_type=inbox_tags['type'],
+                content_disposition=inbox_tags['name']
                 )
-    alias_tags.save()
+    inbox_tags.save()
 
-    alias = Alias.objects.filter(tag__tag="Inboxen")
-    alias = alias.filter(tag__tag="data")
-    alias = alias.filter(tag__tag="liberation")
+    inbox = Inbox.objects.filter(tag__tag="Inboxen")
+    inbox = inbox.filter(tag__tag="data")
+    inbox = inbox.filter(tag__tag="liberation")
 
     try:
-        alias = alias.get(user__id=options['user'])
-    except Alias.MultipleObjectsReturned:
-        alias = alias.filter(user__id=options['user'])[0]
-    except Alias.DoesNotExist:
+        inbox = inbox.get(user__id=options['user'])
+    except Inbox.MultipleObjectsReturned:
+        inbox = inbox.filter(user__id=options['user'])[0]
+    except Inbox.DoesNotExist:
         user = User.objects.get(id=options['user'])
-        alias = Alias(
-                alias=gen_alias(5),
+        inbox = Inbox(
+                inbox=gen_inbox(5),
                 domain=random.choice(Domain.objects.all()),
                 user=user,
                 created=datetime.now(utc),
                 deleted=False
             )
-        alias.save()
+        inbox.save()
         tags = ["Inboxen", "data", "liberation"]
         for i, tag in enumerate(tags):
-            tags[i] = Tag(tag=tag, alias=alias)
+            tags[i] = Tag(tag=tag, inbox=inbox)
             tags[i].save()
 
 
     send_email(
-        alias=alias,
+        inbox=inbox,
         sender="support@inboxen.org",
         subject=settings.LIBERATION_SUBJECT,
         body=settings.LIBERATION_BODY,
-        attachments=[archive, profile, alias_tags]
+        attachments=[archive, profile, inbox_tags]
         )
 
 def liberate_user_profile(user_id, email_results, date):
@@ -259,17 +259,17 @@ def liberate_user_profile(user_id, email_results, date):
         'name':"user-%s.json" % date
     }
 
-def liberate_alias_tags(user_id, date):
-    """ Grab tags from aliases """
+def liberate_inbox_tags(user_id, date):
+    """ Grab tags from inboxes """
     data = {}
 
-    aliases = Alias.objects.filter(user__id=user_id)
-    for alias in aliases:
-        email = "%s@%s" % (alias.alias, alias.domain)
-        tags = [tag.tag for tag in Tag.objects.filter(alias=alias)]
+    inboxes = Inbox.objects.filter(user__id=user_id)
+    for inbox in inboxes:
+        email = "%s@%s" % (inbox.inbox, inbox.domain)
+        tags = [tag.tag for tag in Tag.objects.filter(inbox=inbox)]
         data[email] = {
-            "created":alias.created.isoformat(),
-            "deleted":alias.deleted,
+            "created":inbox.created.isoformat(),
+            "deleted":inbox.deleted,
             "tags":tags,
         }
 
@@ -278,7 +278,7 @@ def liberate_alias_tags(user_id, date):
     return {
         "data":data,
         "type":"application/json",
-        "name":"aliases-%s.json" % date
+        "name":"inboxes-%s.json" % date
     }
 
 ##
@@ -306,27 +306,27 @@ def statistics():
 
 
 ##
-# Alias stuff
+# Inbox stuff
 ##
 
 @task(rate="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.commit_on_success
-def delete_alias(email, user=None):
+def delete_inbox(email, user=None):
     if type(email) in [types.StringType, types.UnicodeType]:
         if not user:
             raise Exception("Need to give username")
-        alias, domain = email.split("@", 1)
+        inbox, domain = email.split("@", 1)
         try:
             domain = Domain.objects.get(domain=domain)
-            alias = Alias.objects.get(alias=alias, domain=domain, user=user)
-        except Alias.DoesNotExist:
+            inbox = Inbox.objects.get(inbox=inbox, domain=domain, user=user)
+        except Inbox.DoesNotExist:
             return False
     else:
         user = email.user
-        alias = email
+        inbox = email
 
     # delete emails in another task(s)
-    emails = Email.objects.filter(inbox=alias, user=user).only('id')
+    emails = Email.objects.filter(inbox=inbox, user=user).only('id')
 
     # sending an ID over the wire and refetching the Django model on the side
     # is cheaper than serialising the Django model - this appears to be the
@@ -335,12 +335,12 @@ def delete_alias(email, user=None):
     emails.apply_async()
         
     # delete tags
-    tags = Tag.objects.filter(alias=alias).only('id')
+    tags = Tag.objects.filter(inbox=inbox).only('id')
     tags.delete()
 
-    # okay now mark the alias as deleted
-    alias.created = datetime.fromtimestamp(0)
-    alias.save()
+    # okay now mark the inbox as deleted
+    inbox.created = datetime.fromtimestamp(0)
+    inbox.save()
 
     return True
 
@@ -352,22 +352,22 @@ def delete_email(email_id):
 
 @task()
 @transaction.commit_on_success
-def disown_alias(result, alias, futr_user=None):
+def disown_inbox(result, inbox, futr_user=None):
     if not futr_user:
         futr_user = null_user()
 
-    alias.user = futr_user
-    alias.save()
+    inbox.user = futr_user
+    inbox.save()
 
 @task()
 @transaction.commit_on_success
 def delete_user(user):
-    alias = Alias.objects.filter(user=user).only('id').exists()
-    if alias:
+    inbox = Inbox.objects.filter(user=user).only('id').exists()
+    if inbox:
         logging.warning("Defering user deletion to later")
         # defer this task until later
         raise delete_user.retry(
-            exc=Exception("User still has aliases"),
+            exc=Exception("User still has inboxes"),
             countdown=60)
     else:
         logging.info("Deleting user %s" % user.username)
@@ -381,9 +381,9 @@ def delete_account(user):
     user.set_unusable_password()
     user.save()
 
-    # get ready to delete all aliases
-    alias = Alias.objects.filter(user=user).only('id')
-    delete = chord([chain(delete_alias.s(a), disown_alias.s(a)) for a in alias], delete_user.s(user))
+    # get ready to delete all inboxes
+    inbox = Inbox.objects.filter(user=user).only('id')
+    delete = chord([chain(delete_inbox.s(a), disown_inbox.s(a)) for a in inbox], delete_user.s(user))
 
     # now scrub info we have
     user_profile(user).delete()
