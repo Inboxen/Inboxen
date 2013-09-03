@@ -22,37 +22,35 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from website.helper.alias import clean_tags, find_alias
+from website.helper.inbox import clean_tags, find_inbox
 from inboxen.models import Tag
 
 @login_required
 def edit(request, email):
 
-    alias = find_alias(email, user=request.user, deleted=False)
+    inbox = find_inbox(email, user=request.user, deleted=False)
 
-    if not alias:
+    if not inbox:
         # display a proper error here?
         return HttpResponseRedirect("/user/home")
-    else:
-        alias = alias
 
     if request.method == "POST":
         if "tags" in request.POST and request.POST["tags"]:
             tags = clean_tags(request.POST["tags"])
 
             # remove old tags
-            for old_tag in Tag.objects.filter(alias=alias[0]):
+            for old_tag in Tag.objects.filter(inbox=inbox[0]):
                 old_tag.delete()
 
             for i, tag in enumerate(tags):
                 tags[i] = Tag(tag=tag)
-                tags[i].alias = alias[0]
+                tags[i].inbox = inbox[0]
                 tags[i].save()
 
 
         return HttpResponseRedirect("/user/home")
 
-    tags = Tag.objects.filter(alias=alias[0])
+    tags = Tag.objects.filter(inbox=inbox[0])
     display_tags = ""
     for tag in tags:
         display_tags += ", %s" % str(tag)
@@ -61,8 +59,8 @@ def edit(request, email):
     context = {
         "page":_("Edit %s") % email,
         "email":email,
-        "alias":alias[0].alias,
-        "domain":alias[1],
+        "inbox":inbox[0].inbox,
+        "domain":inbox[1],
         "tags":display_tags[2:],
     }
 

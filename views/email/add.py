@@ -26,35 +26,35 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from website.helper.alias import alias_available, clean_tags, gen_alias
-from inboxen.models import Domain, Alias, Tag
+from website.helper.inbox import inbox_available, clean_tags, gen_inbox
+from inboxen.models import Domain, Inbox, Tag
 
 @login_required
 def add(request):
 
-    available = alias_available(request.user)
+    available = inbox_available(request.user)
     if not available:
         return HttpResponseRedirect("/email/request")
 
     if request.method == "POST":
-        alias = request.POST["alias"]
+        inbox = request.POST["inbox"]
         domain = Domain.objects.get(domain=request.POST["domain"])
         tags = request.POST["tag"]
         
-        if Alias.objects.filter(alias=alias, domain=domain).exists():
+        if Inbox.objects.filter(inbox=inbox, domain=domain).exists():
             return HttpResponseRedirect("/user/home")
 
-        new_alias = Alias(alias=alias, domain=domain, user=request.user, created=datetime.now(utc))
-        new_alias.save()
+        new_inbox = Inbox(inbox=inbox, domain=domain, user=request.user, created=datetime.now(utc))
+        new_inbox.save()
         
         tags = clean_tags(tags)
         for i, tag in enumerate(tags):
             tag = Tag(tag=tag)
-            tag.alias = new_alias
+            tag.inbox = new_inbox
             tag.save()
             tags[i] = tag
 
-        msg = _("You have successfully created %s!") % new_alias
+        msg = _("You have successfully created %s!") % new_inbox
 
         request.session["messages"] = [msg]
 
@@ -62,12 +62,12 @@ def add(request):
 
     domains = Domain.objects.all()
     
-    alias = gen_alias(5)
+    inbox = gen_inbox(5)
             
     context = {
-        "page":_("Add Alias"),
+        "page":_("Add Inbox"),
         "domains":domains,
-        "alias":alias,
+        "inbox":inbox,
     }
     
     return render(request, "email/add.html", context)

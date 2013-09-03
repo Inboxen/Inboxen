@@ -25,7 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 
-from inboxen.models import Alias, Email
+from inboxen.models import Inbox, Email
 from queue.tasks import delete_email
 from website.helper.paginator import page as paginator_page
 
@@ -40,11 +40,11 @@ def inbox(request, email_address="", page=1):
         inbox = Email.objects.filter(user=request.user, deleted=False).defer('body').order_by('-recieved_date')
 
     else:
-        # a specific alias
-        alias, domain = email_address.split("@", 1)
+        # a specific inbox
+        inbox, domain = email_address.split("@", 1)
         try:
-            alias = Alias.objects.get(user=request.user, alias=alias, domain__domain=domain)
-            inbox = Email.objects.filter(user=request.user, inbox=alias, deleted=False).defer('body').order_by('-recieved_date')
+            inbox = Inbox.objects.get(user=request.user, inbox=inbox, domain__domain=domain)
+            inbox = Email.objects.filter(user=request.user, inbox=inbox, deleted=False).defer('body').order_by('-recieved_date')
         except ObjectDoesNotExist:
             context = {
                 "page":_("%s - Inbox") % email_address,

@@ -24,18 +24,18 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
-from inboxen.models import Email, Alias, Header
+from inboxen.models import Email, Inbox, Header
 
 
 @login_required
 @staff_member_required
 def support(request, page=1):
-    alias = Alias.objects.filter(alias="support")
-    q_alias = Q()
-    for a in alias:
-        q_alias = q_alias | Q(inbox=a)
+    inbox = Inbox.objects.filter(inbox="support")
+    q_inbox = Q()
+    for a in inbox:
+        q_inbox = q_inbox | Q(inbox=a)
 
-    emails = Email.objects.filter(q_alias, deleted=False).defer('body').order_by('-recieved_date')
+    emails = Email.objects.filter(q_inbox, deleted=False).defer('body').order_by('-recieved_date')
     
     paginator = Paginator(emails, 100)
     try:

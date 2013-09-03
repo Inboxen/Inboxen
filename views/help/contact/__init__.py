@@ -23,9 +23,9 @@ from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from website.helper.alias import gen_alias
+from website.helper.inbox import gen_inbox
 from website.helper.mail import send_email 
-from inboxen.models import Domain, Alias, Tag
+from inboxen.models import Domain, Inbox, Tag
 
 def contact(request):
 
@@ -35,12 +35,12 @@ def contact(request):
     }
 
     if request.method == "POST":
-        send_to = Alias.objects.filter(alias="support")[0]
+        send_to = Inbox.objects.filter(inbox="support")[0]
         
         if request.user.is_authenticated():
             # For users of the site :)
             try:
-                alias = request.POST["alias"]
+                inbox = request.POST["inbox"]
                 domain = Domain.objects.get(domain=request.POST["domain"])
                 subject = request.POST["subject"]
                 body = request.POST["body"]
@@ -49,21 +49,21 @@ def contact(request):
                 return HttpResponseRedirect("/help/contact/")
 
 
-            alias = Alias(
-                alias=alias,
+            inbox = Inbox(
+                inbox=inbox,
                 domain=domain,
                 user=request.user,
                 created=datetime.now(utc)
             )
 
-            alias.save()
+            inbox.save()
 
-            tag = Tag(alias=alias, tag=_("Support Request"))
+            tag = Tag(inbox=inbox, tag=_("Support Request"))
             tag.save()
 
             send_email(
                 send_to,
-                alias,
+                inbox,
                 subject,
                 body,
             )
@@ -88,12 +88,12 @@ def contact(request):
 
 
     # If the user is authenticated we want to give them the option of
-    # generating a auto-tagged new alias
+    # generating a auto-tagged new inbox
     if request.user.is_authenticated:
-        # lets generate a new alias for them
-        new_alias = gen_alias(5)
+        # lets generate a new inbox for them
+        new_inbox = gen_inbox(5)
         domains = Domain.objects.all()
-        context["alias"] = new_alias
+        context["inbox"] = new_inbox
         context["domains"] = domains
 
     return render(request, "help/contact/contact.html", context)

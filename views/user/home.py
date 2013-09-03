@@ -23,36 +23,36 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from website.helper.alias import alias_available
+from website.helper.inbox import inbox_available
 from website.helper.paginator import page as page_paginator
-from inboxen.models import Alias, Tag, Email
+from inboxen.models import Inbox, Tag, Email
 
 @login_required
 def home(request, page=1):
 
-    aliases = Alias.objects.filter(user=request.user).order_by('-created')
-    available = alias_available(request.user, aliases=aliases)
-    used = aliases.count()
-    aliases = aliases.filter(deleted=False)
+    inboxes = Inbox.objects.filter(user=request.user).order_by('-created')
+    available = inbox_available(request.user, inboxes=inboxes)
+    used = inboxes.count()
+    inboxes = inboxes.filter(deleted=False)
 
     total = 0
-    for alias in aliases:
+    for inbox in inboxes:
         try:
-            tag = Tag.objects.filter(alias=alias)
-            alias.tags = ", ".join([t.tag for t in tag])
+            tag = Tag.objects.filter(inbox=inbox)
+            inbox.tags = ", ".join([t.tag for t in tag])
         except Tag.DoesNotExist:
-            alias.tags = ''
-        alias.email_count = Email.objects.filter(inbox=alias, read=False, deleted=False).count()
-        total += alias.email_count
+            inbox.tags = ''
+        inbox.email_count = Email.objects.filter(inbox=inbox, read=False, deleted=False).count()
+        total += inbox.email_count
 
-    paginator = Paginator(aliases, 20)
+    paginator = Paginator(inboxes, 20)
 
     try:
-        aliases = paginator.page(page)
+        inboxes = paginator.page(page)
     except PageNotAnInteger: # sometimes it's None
-        aliases = paginator.page(1)
+        inboxes = paginator.page(1)
     except EmptyPage: # sometimes the user will try different numbers
-        aliases = paginator.page(paginator.num_pages)
+        inboxes = paginator.page(paginator.num_pages)
 
     messages = ""
     if "messages" in request.session and request.session["messages"]:
@@ -61,10 +61,10 @@ def home(request, page=1):
 
     context = {
         "page":_("Home"),
-        "aliases":aliases,
+        "inboxes":inboxes,
         "available":available,
         "total_email_count":total,
-        "pages":page_paginator(aliases),
+        "pages":page_paginator(inboxes),
         "notify_messages":messages,
     }
 

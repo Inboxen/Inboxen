@@ -26,17 +26,17 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from website.helper.user import user_profile
-from website.helper.alias import alias_available
+from website.helper.inbox import inbox_available
 from inboxen.models import Request
 
 @login_required
 def request(request):
-    available = alias_available(request.user)
+    available = inbox_available(request.user)
     prior_requests = Request.objects.filter(requester=request.user).order_by('-date')
 
     if available > 10:
         context = {
-            "error":_("You need to have less than 10 aliases available to request more, you currently have %s available.") % available,
+            "error":_("You need to have less than 10 inboxes available to request more, you currently have %s available.") % available,
             "page":_("Request"),
             "request":None,
             "prior_requests":prior_requests,

@@ -24,7 +24,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 
-from inboxen.models import Alias
+from inboxen.models import Inbox
 
 @login_required
 @require_POST
@@ -54,12 +54,12 @@ def reply(request):
         except KeyError:
             return HttpResponseRedirect("/help/contact/reply")
 
-        reply_to = Alias.objects.get(
-                alias = reply_to[0],
+        reply_to = Inbox.objects.get(
+                inbox = reply_to[0],
                 domain__domain = reply_to[1]
                 )
-        reply_from = Alias.objects.get(
-                alias = reply_from[0],
+        reply_from = Inbox.objects.get(
+                inbox = reply_from[0],
                 domain__domain = reply_from[1]
                 )
 

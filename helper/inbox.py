@@ -23,22 +23,22 @@ from string import ascii_lowercase
 from django.core.exceptions import ObjectDoesNotExist
 
 from website.helper.user import user_profile
-from inboxen.models import Email, Tag, Alias, Domain
+from inboxen.models import Email, Tag, Inbox, Domain
 
-def gen_alias(count, alias="", ocount=5):
+def gen_inbox(count, inbox="", ocount=5):
 
     if count <= 0:
         # now we need to check if it's taken.
         try:
-            Alias.objects.get(alias=alias, deleted=False)
-            return gen_alias(ocount)
+            Inbox.objects.get(inbox=inbox, deleted=False)
+            return gen_inbox(ocount)
 
-        except Alias.DoesNotExist:
-            return alias
+        except Inbox.DoesNotExist:
+            return inbox
     
-    alias += choice(ascii_lowercase)
+    inbox += choice(ascii_lowercase)
     
-    return gen_alias(count-1, alias, ocount)
+    return gen_inbox(count-1, inbox, ocount)
 
 def clean_tags(tags):
     """ Tags some tags from user input """
@@ -53,32 +53,32 @@ def clean_tags(tags):
 
     return tags
 
-def find_alias(email, user=None, deleted=False):
-    """ Returns a alias object from an email """
-    alias, domain = email.split("@", 1)
+def find_inbox(email, user=None, deleted=False):
+    """ Returns a inbox object from an email """
+    inbox, domain = email.split("@", 1)
 
     try:
         domain = Domain.objects.get(domain=domain)
         if user:
-            alias = Alias.objects.get(alias=alias, domain=domain, deleted=deleted, user=user)
+            inbox = Inbox.objects.get(inbox=inbox, domain=domain, deleted=deleted, user=user)
         else:
-            alias = Alias.objects.get(alias=alias, domain=domain, deleted=deleted)
+            inbox = Inbox.objects.get(inbox=inbox, domain=domain, deleted=deleted)
     except ObjectDoesNotExist:
         return None
 
-    return (alias, domain)
+    return (inbox, domain)
 
-def alias_available(user, aliases=None):
-    """ Returns the amount of aliases available """
+def inbox_available(user, inboxes=None):
+    """ Returns the amount of inboxes available """
 
     profile = user_profile(user)
     pool = profile.pool_amount
 
-    if aliases:
-        used = aliases.count()
+    if inboxes:
+        used = inboxes.count()
     else:
-        aliases = Alias.objects.filter(user=user)
-        used = aliases.count()
+        inboxes = Inbox.objects.filter(user=user)
+        used = inboxes.count()
 
     return pool - used
 

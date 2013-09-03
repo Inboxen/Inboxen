@@ -5,13 +5,13 @@
 {% block content %}
 
     <h2> {% trans "Really?" %} </h2>
-    <p> {% trans "Are you sure you want to delete" %} {{ alias }}, {% trans "all your emails sent to this email will be deleted and future emails sent to this email will be ignored." %}</p><br />
-    <form action="/email/delete/{{ alias }}" method="POST">
+    <p> {% trans "Are you sure you want to delete" %} {{ inbox }}? {% trans "All emails in this inbox will be deleted and future emails sent to it will be rejected." %}</p><br />
+    <form action="/email/delete/{{ inbox }}" method="POST">
         {% csrf_token %} 
-        <input type="hidden" name="confirm" value="{{ alias }}">
+        <input type="hidden" name="confirm" value="{{ inbox }}">
         <p>
             <button class="btn btn-danger text-left">{% trans "Delete" %}</button>
-            <a class="btn text-left" href="/user/home">{% trans "Keep it!" %}</a>
+            <a class="btn text-left" href="/user/home">{% trans "Keep it" %}</a>
         </p>
     </form>
 

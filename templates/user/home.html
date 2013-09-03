@@ -11,8 +11,8 @@
 {% endif %}
     
 
-{% if not aliases %}
-    <p>{% trans "You have not added any aliases yet, this makes me a sad panda :(" %} </p>
+{% if not inboxes %}
+    <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
 {% else %}
 <a class="label-right" href="/email/request">
     {% if not available %}
@@ -29,7 +29,7 @@
 <table class="table table-hover table-centre table-honeydew">
         <thead>
         <tr>
-            <th>{% trans "Alias" %}</th>
+            <th>{% trans "Inbox" %}</th>
             <th>{% trans "Created" %}</th>
             <th>{% trans "Tags" %}</th>
             <th>&nbsp;</th>
@@ -48,29 +48,29 @@
             <td>&nbsp;</td>
         </tr>
 
-        {% for alias in aliases.object_list %}
+        {% for inbox in inboxes.object_list %}
 
             <tr>
-                <td><a href="/inbox/{{ alias.alias }}@{{ alias.domain }}">{{ alias.alias }}@{{ alias.domain }}</a>
-                {% if alias.email_count %}
-                    <span class="badge">{{ alias.email_count }}</span>
+                <td><a href="/inbox/{{ inbox.inbox }}@{{ inbox.domain }}">{{ inbox.inbox }}@{{ inbox.domain }}</a>
+                {% if inbox.email_count %}
+                    <span class="badge">{{ inbox.email_count }}</span>
                 {% endif %}
                 </td>
-                <td><span title="{{ alias.created }}">{{ alias.created|timesince }} {% trans "ago" %}</span></td>
-                {% if alias.tags %}
-                    <td>{{ alias.tags }}</td>
+                <td><span title="{{ inbox.created }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
+                {% if inbox.tags %}
+                    <td>{{ inbox.tags }}</td>
                 {% else %}
                     <td>&nbsp;</td>
                 {% endif %}
-                <td><a class="close edit" href="/email/edit/{{ alias.alias }}@{{ alias.domain }}">✍</a></td>
-                <td><a title="{% trans "Delete Alias" %}" class="close" href="/email/delete/{{ alias.alias }}@{{ alias.domain }}">&times;</a></td>
+                <td><a class="close edit" href="/email/edit/{{ inbox.inbox }}@{{ inbox.domain }}">✍</a></td>
+                <td><a title="{% trans "Delete Inbox" %}" class="close" href="/email/delete/{{ inbox.inbox }}@{{ inbox.domain }}">&times;</a></td>
             </tr>
         {% endfor %}
     </table>
     <div class="pagination text-right">
         <ul>
-            {% if aliases.has_previous %}
-                <li><a href="/user/home/{{ aliases.previous_page_number }}">&laquo;</a></li>
+            {% if inboxes.has_previous %}
+                <li><a href="/user/home/{{ inboxes.previous_page_number }}">&laquo;</a></li>
             {% else %}
                 <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
@@ -83,8 +83,8 @@
                 <a href="/user/home/{{ page.page }}">{{ page.page }}</a></li>
             {% endfor %}
     
-            {% if aliases.has_next %}
-                <li><a href="/user/home/{{ aliases.next_page_number }}">&raquo;</a></li>
+            {% if inboxes.has_next %}
+                <li><a href="/user/home/{{ inboxes.next_page_number }}">&raquo;</a></li>
             {% else %}
                 <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}

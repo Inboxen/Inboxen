@@ -33,7 +33,7 @@ from premailer import Premailer
 from django.utils.safestring import mark_safe
 
 from website.helper.user import user_profile, null_user
-from inboxen.models import Email, Attachment, Alias, Header
+from inboxen.models import Email, Attachment, Inbox, Header
 
 # lxml doesn't seem to like WSGI, but premailer seems ok :s
 if version_info[:2] == (2, 7):
@@ -136,15 +136,15 @@ def clean_html(email):
 
     return mark_safe(email)
 
-def send_email(alias, sender, subject=None, body="", attachments=[]):
-    """ Sends an email to an internal alias
+def send_email(inbox, sender, subject=None, body="", attachments=[]):
+    """ Sends an email to an internal inbox
 
-    Expects an alias object
+    Expects an inbox object
     """
 
     email = Email(
-        user=alias.user,
-        inbox=alias,
+        user=inbox.user,
+        inbox=inbox,
         recieved_date=datetime.now(utc)
     )
 

@@ -22,8 +22,8 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
-from queue.tasks import delete_alias
-from inboxen.models import Alias
+from queue.tasks import delete_inbox
+from inboxen.models import Inbox
 
 @login_required
 def confirm(request, email):
@@ -32,23 +32,23 @@ def confirm(request, email):
             raise Http404
         else:
             # set it to deleted first
-            alias, domain = email.split("@", 1)
-            alias = Alias.objects.get(alias=alias, domain__domain=domain)
-            alias.deleted = True
-            alias.save()
+            inbox, domain = email.split("@", 1)
+            inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain)
+            inbox.deleted = True
+            inbox.save()
             # throw to queue
-            delete_alias.delay(email, request.user)
+            delete_inbox.delay(email, request.user)
             # send back to home page
 
-            message = _("The alias %s@%s has now been deleted.") % (alias.alias, alias.domain)
+            message = _("The inbox %s@%s has now been deleted.") % (inbox.inbox, inbox.domain)
             request.session["messages"] = [message]
             return HttpResponseRedirect("/user/home") 
 
         return HttpResponseRedirect("/user/home")
     
     context = {
-        "page":_("Delete Alias"),
-        "alias":email
+        "page":_("Delete Inbox"),
+        "inbox":email
     }
 
     return render(request, "email/delete/confirm.html", context)

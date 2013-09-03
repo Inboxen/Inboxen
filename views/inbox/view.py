@@ -22,23 +22,23 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 
-from inboxen.models import Alias, Email, Domain
+from inboxen.models import Inbox, Email, Domain
 from website.helper.mail import get_email, clean_html
 
 @login_required
 def view(request, email_address, emailid):
 
-    alias, domain = email_address.split("@", 1)
+    inbox, domain = email_address.split("@", 1)
     support = False
     
     # support stuff
-    if request.user.is_staff and alias == "support":
-        alias = Alias.objects.filter(alias=alias)[0]
+    if request.user.is_staff and inbox == "support":
+        inbox = Inbox.objects.filter(inbox=inbox)[0]
         support = True
     else:
         try:
-            alias = Alias.objects.get(alias=alias, domain__domain=domain, user=request.user)
-        except Alias.DoesNotExist:
+            inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, user=request.user)
+        except Inbox.DoesNotExist:
             raise Http404
     try:
         email = get_email(request.user, emailid, read=True)
