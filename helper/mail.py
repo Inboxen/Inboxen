@@ -37,70 +37,61 @@ from inboxen.models import Email, Attachment, Inbox, Header
 
 # lxml doesn't seem to like WSGI, but premailer seems ok :s
 if version_info[:2] == (2, 7):
-    PARSER = "html.parser"
+    PARSER = 'html.parser'
 else:
-    PARSER = "html5lib"
+    PARSER = 'html5lib'
 
 def make_message(email):
     """ makes a python email.message.Message from our Email object """
-    msg = MIMEMultipart("alternative")
-    # looks to see if a HTML and plaintext is there
-    attachments = []
-    for attachment in email.attachments.all():
-        if attachment.content_type in ["text/plain", "text/html"]:
-            attachments.append(attachment)
-    
-    if len(attachments) >= 2:
-        # we have multiples ones, we should use MIMEMultipart
+
+    if email.body:
+        # yes, yes, it's very ugly. It plays nice with content types such as: generic_type/specific_type; other_data
+        specific_type = email.headers.get('Content-Type').split('/',1)[1].split(';',1)[0]
+        msg = MIMEText(email.body, specific_type, 'utf-8')
+    else:
+    # this needs to go into a separate function
+        msg = MIMEMultipart('alternative')
+        # looks to see if a HTML and plaintext is there
+        attachments = []
+        for attachment in email.attachments.all():
+            if attachment.content_type in ['text/plain', 'text/html']:
+                attachments.append(attachment)
+
         for attachment in attachments:
             try:
-                gen_type, specific_type = attachment.content_type.split("/", 1)
+                gen_type, specific_type = attachment.content_type.split('/', 1)
             except ValueError:
-                gen_type, specific_type = "application", "octet-stream"
+                gen_type, specific_type = 'application', 'octet-stream'
             msg.attach(MIMEText(attachment.data, specific_type))
-    elif attachments and attachments[0].content_type == "text/html":
-        part = MIMEText(attachments[0].data, "html", "utf-8")
-        msg.attach(part)
-    elif attachments and attachments[0].content_type == "text/plain":
-        part = MIMEText(attachments[0].data, "plain", "utf-8")
-        msg.attach(part)
-    else:
-        # oh dear, set the body as nothing then
-        part = MIMEText('', 'plain', "utf-8")
-        msg.attach(part)
 
-    # okay now deal with other attachments
-    for attachment in email.attachments.all():
-        if attachment in attachments:
-            continue # we've already handled it
-        # right now deal with it
-        try:
-            gen_type, specific_type = attachment.content_type.split("/", 1)
-        except (AttributeError, IndexError):
-            gen_type, specific_type = "application", "octet-stream" # generic
-        if gen_type == "audio":
-            attach = MIMEAudio(attachment.data, specific_type)
-        elif gen_type == "image":
-            attach = MIMEImage(attachment.data, specific_type)
-        elif gen_type == "text":
-            attach = MIMEText(attachment.data, specific_type, "utf-8")
-        else:
-            attach = MIMEBase(gen_type, specific_type)
-            attach.set_payload(attachment.data)
-            encoders.encode_base64(attach)
- 
-        attach.add_header("Content-Disposition", "attachment", filename=attachment.content_disposition)
-        msg.attach(attach)
+        # okay now deal with other attachments
+        for attachment in email.attachments.all():
+            if attachment in attachments:
+                continue # we've already handled it
+            # right now deal with it
+            try:
+                gen_type, specific_type = attachment.content_type.split('/', 1)
+            except (AttributeError, IndexError):
+                gen_type, specific_type = 'application', 'octet-stream' # generic
+            if gen_type == 'audio':
+                attach = MIMEAudio(attachment.data, specific_type)
+            elif gen_type == 'image':
+                attach = MIMEImage(attachment.data, specific_type)
+            elif gen_type == 'text':
+                attach = MIMEText(attachment.data, specific_type, 'utf-8')
+            else:
+                attach = MIMEBase(gen_type, specific_type)
+                attach.set_payload(attachment.data)
+                encoders.encode_base64(attach)
+
+            attach.add_header('Content-Disposition', 'attachment', filename=attachment.content_disposition)
+            msg.attach(attach)
 
     # now add the headers
     for header in email.headers.all():
         msg[header.name] = header.data
-   
-    if email.body:
-        msg["body"] = email.body
- 
+
     return msg
-    
 
 def clean_html(email):
     """Condense style sheets into style attributes so it doesn't mess with
