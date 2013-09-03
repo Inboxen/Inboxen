@@ -23,7 +23,7 @@ msgid "Admin"
 msgstr ""
 
 #: website/templates/base.html:25 website/views/email/add.py:66
-msgid "Add Alias"
+msgid "Add Inbox"
 msgstr "Sung lì'uti ikranit"
 
 #: website/templates/base.html:26 website/templates/base.html.py:35
@@ -111,7 +111,7 @@ msgstr "Suteri amip hìmtxan"
 
 #: website/templates/admin/requests.html:18
 #: website/templates/email/request.html:28
-msgid "Alias Amount"
+msgid "Inbox Amount"
 msgstr "Lì'uri Ikran hìmtxan"
 
 #: website/templates/admin/requests.html:19
@@ -237,13 +237,13 @@ msgid ""
 msgstr ""
 
 #: website/templates/help/contact/contact.html:7
-msgid "To change the alias please reload the page"
+msgid "To change the inbox please reload the page"
 msgstr "Latem lì'uti ikranit, rutxe za'u tsengeru nìmun"
 
 #: website/templates/help/contact/contact.html:9
 msgid ""
 "If you prefer not to give an email, please login to your Inboxen account. "
-"You'll be given an alias for our staff to reply to."
+"You'll be given an inbox for our staff to reply to."
 msgstr "Txo nga new ke tìng lì'uti ikranur fwa rutxe fpxäkìm ngeyä inboxenhu. Nga tayìng lì'uti ikranit furia ayoe 'eyng"
 
 #: website/templates/help/contact/success.html:7
@@ -307,7 +307,7 @@ msgid "Password"
 msgstr "Lì'u fte fpxäkìm"
 
 #: website/templates/user/profile.html:8
-msgid "You have not added any aliases yet, this makes me a sad panda :("
+msgid "You have not added any inboxes yet, this makes me a sad panda :("
 msgstr "'efängu keftxo oe taluna lì'u ikran ke lu ngaru mi :("
 
 #: website/templates/user/profile.html:18
@@ -315,7 +315,7 @@ msgid "Available:"
 msgstr ""
 
 #: website/templates/user/profile.html:25
-msgid "Alias"
+msgid "Inbox"
 msgstr "Lì'u ikran"
 
 #: website/templates/user/profile.html:26
@@ -331,7 +331,7 @@ msgid "Unified"
 msgstr "Tseng nìwotx"
 
 #: website/templates/user/profile.html:59 website/views/email/delete.py:47
-msgid "Delete Alias"
+msgid "Delete Inbox"
 msgstr "'aku lì'uti ikranit"
 
 #: website/templates/user/settings.html:7
@@ -414,8 +414,8 @@ msgid ""
 "    You can login and begin using the service. Some tips on how to use this "
 "service effectively:\n"
 "    <ul>\n"
-"        <li>Don't give an alias to more than one site or person</li>\n"
-"        <li>Remember an alias or keep one on your phone so you can give it "
+"        <li>Don't give an inbox to more than one site or person</li>\n"
+"        <li>Remember an inbox or keep one on your phone so you can give it "
 "to people when you're away from your computer </li>\n"
 "    </ul>\n"
 "\n"
@@ -557,7 +557,7 @@ msgstr ""
 #: website/views/email/request.py:37
 #, python-format
 msgid ""
-"You need to have less than 10 aliases available to request more, you "
+"You need to have less than 10 inboxes available to request more, you "
 "currently have %s available."
 msgstr ""
 

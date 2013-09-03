@@ -20,8 +20,8 @@
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
-from inboxen.models import User, Email, Alias, Tag
-from queue.tasks import delete_alias
+from inboxen.models import User, Email, Inbox, Tag
+from queue.tasks import delete_inbox
 
 try:
     from subprocess import check_output, CalledProcessError

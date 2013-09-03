@@ -31,14 +31,14 @@ class BlogPost(models.Model):
     draft = models.BooleanField(default=True)
 
 class Domain(models.Model):
-    # these are the domains available to create aliases from
+    # these are the domains available to create inboxes from
     domain = models.CharField(max_length=253)
 
     def __unicode__(self):
         return self.domain
 
-class Alias(models.Model):
-    alias = models.CharField(max_length=64)
+class Inbox(models.Model):
+    inbox = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain)
     user = models.ForeignKey(User) 
     created = models.DateTimeField('Created')
@@ -48,11 +48,11 @@ class Alias(models.Model):
         deleted = ""
         if self.deleted:
             deleted = " (deleted)"
-        return u"%s@%s%s" % (self.alias, self.domain.domain, deleted)
+        return u"%s@%s%s" % (self.inbox, self.domain.domain, deleted)
 
     class Meta:
-        verbose_name_plural = "Aliases"
-        #unique_together = (('alias', 'domain'),)
+        verbose_name_plural = "Inboxes"
+        #unique_together = (('inbox', 'domain'),)
 
 class Request(models.Model):
     amount = models.IntegerField()
@@ -104,7 +104,7 @@ class Attachment(models.Model):
         return self.data
 
 class Tag(models.Model):
-    alias = models.ForeignKey(Alias)
+    inbox = models.ForeignKey(Inbox)
     tag = models.CharField(max_length=256)
 
     def __unicode__(self):
@@ -123,7 +123,7 @@ class Email(models.Model):
     read = models.BooleanField(default=False)
     headers = models.ManyToManyField(Header)
     user = models.ForeignKey(User, related_name='user')
-    inbox = models.ForeignKey(Alias)
+    inbox = models.ForeignKey(Inbox)
     body = models.TextField(null=True)
     attachments = models.ManyToManyField(Attachment)
     recieved_date = models.DateTimeField('Recieved Date')

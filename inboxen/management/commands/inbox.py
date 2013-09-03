@@ -19,31 +19,31 @@
 
 from django.core.management.base import BaseCommand, CommandError
 
-from inboxen.models import User, Email, Alias, Tag
-from queue.tasks import delete_alias
+from inboxen.models import User, Email, Inbox, Tag
+from queue.tasks import delete_inbox
 
 class Command(BaseCommand):
-    args = "<info/tags/delete/resurrect> <alias> [<tag1>, <tag2>, etc...]"
-    help = "Management of everything relating to aliases and their data"
+    args = "<info/tags/delete/resurrect> <inbox> [<tag1>, <tag2>, etc...]"
+    help = "Management of everything relating to inboxes and their data"
 
     def handle(self, *args, **options):
         if not args:
             self.stdout.write(self.help)
         
         if len(args) >= 2 and args[0] != "list":
-            alias, domain = args[1].split("@", 1)
+            inbox, domain = args[1].split("@", 1)
             try:
-                alias = Alias.objects.get(alias=alias, domain__domain=domain)
-            except Alias.DoesNotExist:
-                raise CommandError("Can't find alias %s" % args[1])
+                inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain)
+            except Inbox.DoesNotExist:
+                raise CommandError("Can't find inbox %s" % args[1])
         else:
             if args[0] == "list" and len(args) <= 1:
                 written = False
-                for alias in Alias.objects.all():
+                for inbox in Inbox.objects.all():
                     written = True
-                    self.stdout.write(str(alias))
+                    self.stdout.write(str(inbox))
                 if not written:
-                    self.stdout.write("Can't find any aliases")
+                    self.stdout.write("Can't find any inboxes")
             elif args[0] == "list":
                 written = False
                 self.stdout.write("Searching for %s (could take a while):" % args[1])
@@ -51,65 +51,65 @@ class Command(BaseCommand):
                 # args[1] is a search term
                 for user in User.objects.all():
                     if term in user.username.lower():
-                        for alias in Alias.objects.filter(user=user):
+                        for inbox in Inbox.objects.filter(user=user):
                             written = True
-                            self.stdout.write(str(alias))
-                for alias in Alias.objects.all():
-                    if term in alias.alias.lower():
+                            self.stdout.write(str(inbox))
+                for inbox in Inbox.objects.all():
+                    if term in inbox.inbox.lower():
                         written = True
-                        self.stdout.write(str(alias))
-                    elif term in alias.domain.domain.lower():
+                        self.stdout.write(str(inbox))
+                    elif term in inbox.domain.domain.lower():
                         written = True
-                        self.stdout.write(str(alias))
+                        self.stdout.write(str(inbox))
                 if not written:
-                    self.stdout.write("No aliases found")
+                    self.stdout.write("No inboxes found")
             else:
-                raise CommandError("You need to enter an alias")
+                raise CommandError("You need to enter an inbox")
             return
         # look for commands
         if "tags" == args[0] and len(args) <= 2:
             # wants a list of tags
             tags = []
-            for tag in Tag.objects.filter(alias=alias):
+            for tag in Tag.objects.filter(inbox=inbox):
                 tags.append(str(tag))
-            self.stdout.write("%s: %s" % (alias, ", ".join(tags)))
+            self.stdout.write("%s: %s" % (inbox, ", ".join(tags)))
         
         elif "tags" == args[0]:
             if "--delete-current" in args:
-                Tags.objects.filter(alias=alias).delete()
+                Tags.objects.filter(inbox=inbox).delete()
 
             # wants to set them.
             tags = [tag for tag in args[2:]]
 
             for i, tag in enumerate(tags):
-                tags[i] = Tag(tag=tag, alias=alias)
+                tags[i] = Tag(tag=tag, inbox=inbox)
                 tags[i].save()
 
-            self.stdout.write("Tags have been saved for %s" % alias)
+            self.stdout.write("Tags have been saved for %s" % inbox)
 
         elif "delete" == args[0]:
-            alias.deleted = True
-            alias.save()
-            delete_alias.delay(alias)
-            self.stdout.write("%s has been queued for deletion" % alias)
+            inbox.deleted = True
+            inbox.save()
+            delete_inbox.delay(inbox)
+            self.stdout.write("%s has been queued for deletion" % inbox)
         elif "resurrect" == args[0]:
-            if alias.deleted:
-                alias.deleted = False
-                alias.save()
-                self.stdout.write("%s has been resurrected" % alias)
+            if inbox.deleted:
+                inbox.deleted = False
+                inbox.save()
+                self.stdout.write("%s has been resurrected" % inbox)
             else:
-                raise CommandError("%s has not been deleted" % alias)
+                raise CommandError("%s has not been deleted" % inbox)
         elif "info" == args[0]:
             self.stdout.write("This information could be potentially sensative, please do not share it with anyone.")
-            self.stdout.write("[%s] -" % alias)
-            self.stdout.write("User: %s" % alias.user.username)
-            self.stdout.write("Created: %s" % alias.created)
-            tags = Tag.objects.filter(alias=alias)
+            self.stdout.write("[%s] -" % inbox)
+            self.stdout.write("User: %s" % inbox.user.username)
+            self.stdout.write("Created: %s" % inbox.created)
+            tags = Tag.objects.filter(inbox=inbox)
             if tags:
                 self.stdout.write("Tags: %s" % ", ".join(tags))
             else:
                 self.stdout.write("Tags: No tags")
-            email_count = Email.objects.filter(inbox=alias).count()
+            email_count = Email.objects.filter(inbox=inbox).count()
             self.stdout.write("Emails: %s" % email_count)
         else:
             raise CommandError("%s not found" % args[0])

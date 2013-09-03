@@ -24,7 +24,7 @@ from pytz import utc
 from django.core.management.base import BaseCommand, CommandError
 
 from website.helper.user import null_user
-from inboxen.models import Alias, Domain
+from inboxen.models import Inbox, Domain
 
 class Command(BaseCommand):
     args = "<add/list/re(move)> <domain>"
@@ -45,13 +45,13 @@ class Command(BaseCommand):
                 domain=args[1]
             )
             d.save()
-            # we also should add a support alias - ticket #24
-            support_alias = Alias(
-                    alias="support",
+            # we also should add a support inbox - ticket #24
+            support_inbox = Inbox(
+                    inbox="support",
                     domain=d,
                     user=null_user(),
                     created=datetime.now(utc))
-            support_alias.save()            
+            support_inbox.save()            
 
             self.stdout.write("%s has been added" % d)
         elif "list" == args[0]:
