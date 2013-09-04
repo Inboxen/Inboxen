@@ -18,12 +18,14 @@ setup(
     install_requires = [
         "Markdown >= 2.3.1",
         "django >= 1.5.1",
-        "lamson >= 1.3.4",
+        "salmon-mail >= 1",
         "pytz >= 2013b",
         "Celery >= 3.0.19",
         "django-celery >= 3.0.17",
         "south >= 0.8.1",
         "django-extensions >= 1.1.1",
+        "beautifulsoup4",
+        "premailer",
     ],
 
     extras_require = {
