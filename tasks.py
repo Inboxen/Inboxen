@@ -333,10 +333,6 @@ def delete_inbox(email, user=None):
     # cause of our previous memory issues! - M
     emails = group([delete_email.s(email.id) for email in emails])
     emails.apply_async()
-        
-    # delete tags
-    tags = Tag.objects.filter(inbox=inbox).only('id')
-    tags.delete()
 
     # okay now mark the inbox as deleted
     inbox.created = datetime.fromtimestamp(0)
@@ -356,12 +352,16 @@ def disown_inbox(result, inbox, futr_user=None):
     if not futr_user:
         futr_user = null_user()
 
+    # delete tags
+    tags = Tag.objects.filter(inbox=inbox).only('id')
+    tags.delete()
+
     inbox.user = futr_user
     inbox.save()
 
 @task()
 @transaction.commit_on_success
-def delete_user(user):
+def delete_user(result, user):
     inbox = Inbox.objects.filter(user=user).only('id').exists()
     if inbox:
         logging.warning("Defering user deletion to later")
