@@ -383,10 +383,9 @@ def delete_account(user):
 
     # get ready to delete all inboxes
     inbox = Inbox.objects.filter(user=user).only('id')
-    delete = chord([chain(delete_inbox.s(a), disown_inbox.s(a)) for a in inbox], delete_user.s(user))
+    if len(inbox): # we're going to use all the results anyway, so this saves us calling the ORM twice
+        delete = chord([chain(delete_inbox.s(a), disown_inbox.s(a)) for a in inbox], delete_user.s(user))
+        delete.apply_async()
 
-    # now scrub info we have
+    # scrub user info completley
     user_profile(user).delete()
-
-    # now send off delete tasks
-    delete.apply_async()
