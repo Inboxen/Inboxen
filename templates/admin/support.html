@@ -34,7 +34,7 @@
                             {% if email.subject %}
                                 <td><a href="/inbox/{{ email.inbox }}/view/{{ email.eid }}">{{ email.subject }}</a></td>
                             {% endif %}
-                            <td><span title="{{ email.recieved_date }}">{{ email.recieved_date|timesince }} {% trans "ago" %}</span></td>
+                            <td><span title="{{ email.recieved_date|date:"r" }}">{{ email.recieved_date|timesince }} {% trans "ago" %}</span></td>
                             <td><a class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.eid }}">&times;</a></td>
                         </tr>
                     {% endfor %}

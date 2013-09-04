@@ -39,7 +39,7 @@
                 <tr class="error">
             {% endif %}
                 <td>{{ r.amount }}</td>
-                <td>{{ r.date|timesince }} {% trans "ago" %}</td>
+                <td><span title="{{ r.date|date:"r" }}">{{ r.date|timesince }} {% trans "ago" %}</span></td>
                 {% if r.result %}
                     <td>{{ r.result }}</td>
                 {% else %}

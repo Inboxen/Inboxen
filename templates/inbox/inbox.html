@@ -51,7 +51,7 @@
                 {% else %}
                     <td></td>
                 {% endif %}
-                    <td title="{{email.recieved_date }}"><div>{{ email.recieved_date|timesince }} {% trans "ago" %}</div></td>
+                    <td title="{{ email.recieved_date|date:"r" }}"><div>{{ email.recieved_date|timesince }} {% trans "ago" %}</div></td>
                 <td><a title="{% trans "Delete Email" %}" class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.eid }}">&times;</a></td>
 
             </tr>

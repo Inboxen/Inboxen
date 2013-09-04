@@ -17,7 +17,7 @@
     {% for post in posts %}
         <div {% if post.draft %}class="draft-blog"{% endif %}>
         <h2 class="inline"><a class="blog_title" href="/blog/post/{{post.id}}">{{ post.subject }}</a></h2>
-        <p class="text-right"><i>{{ post.date }}</i></p>
+        <p class="text-right"><i>{{ post.date|date:"r" }}</i></p>
         <p> {{ post.body|markdown }}</p><br />
         <br />
         {% if user.is_staff %}
