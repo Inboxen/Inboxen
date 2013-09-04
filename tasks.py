@@ -379,6 +379,7 @@ def delete_user(result, user):
 def delete_account(user):
     # first we need to make sure the user can't login
     user.set_unusable_password()
+    user.is_active = False
     user.save()
 
     # get ready to delete all inboxes
