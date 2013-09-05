@@ -31,7 +31,7 @@ def liberate(request):
         if "compressType" in request.POST:
             options["compressType"] = request.POST["compressType"]
 
-        data_liberate.delay(request.user, options=options)
+        data_liberate.apply_async(request.user, options=options)
         message = _("We're liberating! You should recieve an email shortly with your data in it ^_^")
         request.session["messages"] = [message]
         return HttpResponseRedirect("/user/home")    

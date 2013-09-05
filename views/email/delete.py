@@ -37,7 +37,7 @@ def confirm(request, email):
             inbox.deleted = True
             inbox.save()
             # throw to queue
-            delete_inbox.delay(email, request.user)
+            delete_inbox.apply_async(email, request.user)
             # send back to home page
 
             message = _("The inbox %s@%s has now been deleted.") % (inbox.inbox, inbox.domain)

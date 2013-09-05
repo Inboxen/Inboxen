@@ -110,4 +110,4 @@ def mass_tasks(request):
     elif "delete" in request.POST:
         emails.update(deleted=True)
         for email in emails:
-            delete_email.delay(email.id)
+            delete_email.apply_async(email.id)
