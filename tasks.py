@@ -390,3 +390,4 @@ def delete_account(user):
 
     # scrub user info completley
     user_profile(user).delete()
+    user.delete()
