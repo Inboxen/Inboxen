@@ -23,7 +23,7 @@
 
 <small> {{ email.from }} </small>
 <div class="email">
-    <strong>{% trans "Recveied" %}</strong>: {{ email.date|date:"r" }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
+    <strong>{% trans "Received" %}</strong>: {{ email.date|date:"r" }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />
 
     <strong>{% trans "Message" %}</strong>:<br />
     {% if plain_message %}
