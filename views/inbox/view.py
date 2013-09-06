@@ -64,6 +64,7 @@ def view(request, email_address, emailid):
         "email":email,
         "plain_message":plain_message,
         "support":support,
+        "user":request.user,
     }
  
     return render(request, "inbox/email.html", context)

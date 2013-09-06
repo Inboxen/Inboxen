@@ -2,6 +2,12 @@
 
 {% load i18n %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li class="active">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 
 {% if notify_messages %}

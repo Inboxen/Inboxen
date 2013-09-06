@@ -4,7 +4,7 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="/user/home">{% trans "Home" %}</a> <span class="divider">/</span></li>
+        <li><a href="/user/home">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
         <li><a href="/inbox/{{ email.inbox }}/">{{ email.inbox }}</a> <span class="divider">/</span></li>
         <li class="active">{{ email.subject }}</li>
     </ul>

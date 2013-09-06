@@ -51,6 +51,7 @@ def inbox(request, email_address="", page=1):
                 "error":_("Can't find email address"),
                 "emails":[],
                 "email_address":email_address,
+                "user":request.user,
             }
             
             return render(request, "inbox/inbox.html", context)
@@ -84,6 +85,7 @@ def inbox(request, email_address="", page=1):
         "emails":emails,
         "email_address":email_address,
         "pages":paginator_page(emails),
+        "user":request.user,
     }
     
     return render(request, "inbox/inbox.html", context)

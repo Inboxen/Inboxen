@@ -66,6 +66,7 @@ def home(request, page=1):
         "total_email_count":total,
         "pages":page_paginator(inboxes),
         "notify_messages":messages,
+        "user":request.user,
     }
 
     
