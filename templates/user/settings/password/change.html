@@ -5,7 +5,7 @@
 
     {% if form.errors %}
         <span class="alert error">
-            <strong>Error</strong> 
+            <strong>{% trans "Error" %}:</strong>
             {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
         </span>
     {% endif %}
