@@ -2,6 +2,14 @@
 {% load i18n %}
 {% block content %}
 
+    {% if error %}
+        <span class="alert error">
+            <strong>{% trans "Error" %}:</strong>
+            {{ error }}
+        </span>
+    {% endif %}
+
+
     <div class="tabbable">
         <ul class="nav nav-tabs">
             <li class="active"><a href="/user/settings/" data-toggle="tab">{% trans "General" %}</a></li>
@@ -20,13 +28,13 @@
                             {% else %}
                                 <option value="0">{% trans "Reject HTML" %}</option>
                             {% endif %}
-                            
+ 
                             {% if htmlpreference == 1 %}
                                 <option value="1" selected="selected">{% trans "Prefer Plain-text" %}</option>
                             {% else %}
                                 <option value="1">{% trans "Prefer Plain-text" %}</option>
                             {% endif %}
-                            
+ 
                             {% if htmlpreference == 2 %}
                                 <option value="2" selected="selected">{% trans "Prefer HTML" %}</option>
                             {% else %}
@@ -36,7 +44,12 @@
                         <span class="add-on">{% trans "for my emails" %}</span>
                         <br /><br />
                     </div><br />
-                    
+
+                    {% trans "Your current username is" %} <b>{{ user }}</b><br />
+                    <input id="username0" name="username0" type="text" placeholder="{% trans "New Username" %}" /><br />
+                    <input id="username1" name="username1" type="text" placeholder="{% trans "Confirm Username" %}" /><br />
+                    <br />
+
                     <button class="btn">{% trans "Save" %}</button>
                     <a href="/user/home" class="btn">{% trans "Cancel" %}</a>
                 </form>

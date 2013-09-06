@@ -27,23 +27,26 @@ from website.helper.user import user_profile
 @login_required
 def settings(request):
     error = ""
-    
+
     # check their html preferences
     profile = user_profile(request.user)
     
     # they submitting it?
     if request.method == "POST":
-        
-        profile.html_preference = int(request.POST["html-preference"])
-        profile.save()        
-        
-        if not error:
-            # now redirect back to their profile
-            return HttpResponseRedirect("/user/settings")
 
+        profile.html_preference = int(request.POST["html-preference"])
+        profile.save()
+
+        if len(request.POST["username0"]):
+            if request.POST["username0"] == request.POST["username1"]:
+                request.user.username = request.POST["username0"]
+                request.user.save()
+            else:
+                error= _("Please enter your new username twice.")
 
     context = {
         "page":_("Settings"),
+        "user":request.user.username,
         "error":error,
         "htmlpreference":int(profile.html_preference),
     }
