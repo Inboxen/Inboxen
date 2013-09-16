@@ -32,7 +32,7 @@ def delete(request):
         if "username" in request.POST and request.POST["username"]:
             if request.user.username == request.POST["username"]:
                 # right!
-                delete_account.apply_async(request.user)
+                delete_account.delay(request.user)
                 logout(request)
                 return HttpResponseRedirect("/user/deleted")
             else:
