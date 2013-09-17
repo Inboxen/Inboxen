@@ -114,11 +114,6 @@ class Header(models.Model):
     name = models.CharField(max_length=1024)
     data = models.CharField(max_length=1024)    
 
-class UserProfile(models.Model):
-    user = models.ForeignKey(User, unique=True)
-    html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
-    pool_amount = models.IntegerField(default=500)
-
 class Email(models.Model):
     read = models.BooleanField(default=False)
     headers = models.ManyToManyField(Header)
@@ -136,6 +131,11 @@ class Email(models.Model):
         pass # should not be used
 
     eid = property(get_data, set_data)
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
+    pool_amount = models.IntegerField(default=500)
 
 class Statistic(models.Model):
     # statistics about users
