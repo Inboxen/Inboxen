@@ -137,6 +137,12 @@ class UserProfile(models.Model):
     html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
     pool_amount = models.IntegerField(default=500)
 
+class TOTPAuth(models.Model):
+    user = models.OneToOneField(User)
+    # base32 encoded and do you really want to type 128 characters into your phone?
+    # (might raise this later, need to test how bad this is perf. wise)
+    secret = models.CharField(max_length=128)
+
 class Statistic(models.Model):
     # statistics about users
     user_count = models.IntegerField()
