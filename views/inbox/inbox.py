@@ -25,9 +25,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 
+from inboxen.helper.paginator import page as paginator_page
 from inboxen.models import Inbox, Email
 from queue.tasks import delete_email
-from website.helper.paginator import page as paginator_page
 
 @login_required
 def inbox(request, email_address="", page=1):

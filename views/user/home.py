@@ -23,8 +23,8 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from website.helper.inbox import inbox_available
-from website.helper.paginator import page as page_paginator
+from inboxen.helper.inbox import inbox_available
+from inboxen.helper.paginator import page as page_paginator
 from inboxen.models import Inbox, Tag, Email
 
 @login_required

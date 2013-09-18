@@ -26,7 +26,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from website.helper.inbox import inbox_available, clean_tags, gen_inbox
+from inboxen.helper.inbox import inbox_available, clean_tags, gen_inbox
 from inboxen.models import Domain, Inbox, Tag
 
 @login_required

@@ -25,8 +25,8 @@ from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from website.helper.user import user_profile
-from website.helper.inbox import inbox_available
+from inboxen.helper.inbox import inbox_available
+from inboxen.helper.user import user_profile
 from inboxen.models import Request
 
 @login_required

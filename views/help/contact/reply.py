@@ -15,8 +15,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from website.helper.mail import send_email
-
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -24,6 +22,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 
+from inboxen.helper.mail import send_email
 from inboxen.models import Inbox
 
 @login_required

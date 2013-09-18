@@ -23,8 +23,8 @@ from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from website.helper.inbox import gen_inbox
-from website.helper.mail import send_email 
+from inboxen.helper.inbox import gen_inbox
+from inboxen.helper.mail import send_email 
 from inboxen.models import Domain, Inbox, Tag
 
 def contact(request):

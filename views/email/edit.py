@@ -22,7 +22,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from website.helper.inbox import clean_tags, find_inbox
+from inboxen.helper.inbox import clean_tags, find_inbox
 from inboxen.models import Tag
 
 @login_required
