@@ -16,3 +16,28 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+from django.contrib.auth.models import User
+
+from inboxen.models import UserProfile
+
+def null_user():
+    try:
+        user = User.objects.get(username__exact='Melon')
+    except User.DoesNotExist:
+        user = User.objects.create_user('Melon', '', '')
+        user.set_unusable_password()
+        user.save()
+    
+    return user
+
+def user_profile(user):
+    """ Gets or creates a user profile """
+    try:
+        return UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        # doesn't exist
+        user_profile = UserProfile.objects.get_or_create(user=user)[0]
+        return user_profile
+
+

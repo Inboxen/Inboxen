@@ -23,7 +23,7 @@ from pytz import utc
 
 from django.core.management.base import BaseCommand, CommandError
 
-from website.helper.user import null_user
+from inboxen.helper.user import null_user
 from inboxen.models import Inbox, Domain
 
 class Command(BaseCommand):

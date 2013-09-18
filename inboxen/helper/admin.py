@@ -16,3 +16,25 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+from datetime import datetime, timedelta
+
+from pytz import utc
+
+from django.contrib.auth.models import User
+
+def statistics():
+
+	# how many users are there?
+	users = User.objects.all().count()
+
+	new_users = User.objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
+
+	active_users = User.objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=1)).count()
+
+	return {
+		"users":users,
+		"new_users":new_users,
+		"active_users":active_users
+	}
+
