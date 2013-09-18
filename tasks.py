@@ -18,9 +18,9 @@ from django.db import transaction
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from website.helper.user import null_user, user_profile
-from website.helper.inbox import gen_inbox
-from website.helper.mail import send_email, make_message
+from inboxen.helper.inbox import gen_inbox
+from inboxen.helper.mail import send_email, make_message
+from inboxen.helper.user import null_user, user_profile
 from inboxen.models import Attachment, Tag, Inbox, Domain, Email, Statistic
 
 for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH'):
