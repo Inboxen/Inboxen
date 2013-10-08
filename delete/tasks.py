@@ -10,9 +10,7 @@ from django.db import transaction
 from inboxen.helper.user import null_user, user_profile
 from inboxen.models import Domain, Email, Inbox, Tag
 
-##
-# Delete stuff
-##
+log = logging.getLogger(__name__)
 
 @task(rate="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.commit_on_success
@@ -69,13 +67,13 @@ def disown_inbox(result, inbox, futr_user=None):
 def delete_user(result, user):
     inbox = Inbox.objects.filter(user=user).only('id').exists()
     if inbox:
-        logging.warning("Defering user deletion to later")
+        log.warning("Defering user deletion to later")
         # defer this task until later
         raise delete_user.retry(
             exc=Exception("User still has inboxes"),
             countdown=60)
     else:
-        logging.info("Deleting user %s" % user.username)
+        log.debug("Deleting user %s" % user.username)
         user.delete()
     return True
 
@@ -96,3 +94,5 @@ def delete_account(user):
     # scrub user info completley
     user_profile(user).delete()
     user.delete()
+
+    log.debug("Deletion tasks for %s sent off", user.username)

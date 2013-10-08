@@ -1,5 +1,6 @@
 import json
 import hashlib
+import logging
 import mailbox
 import os
 import random
@@ -20,6 +21,8 @@ from inboxen.helper.mail import send_email, make_message
 from inboxen.helper.user import user_profile
 from inboxen.models import Attachment, Domain, Email, Inbox, Tag, User
 
+log = logging.getLogger(__name__)
+
 for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH'):
     assert hasattr(settings, setting_name), "%s has not been set" % setting_name
 
@@ -28,10 +31,6 @@ TAR_TYPES = {
     'tar.bz2': {'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
     'tar': {'writer': 'w:', 'mime-type': 'application/x-tar'}
     }
-
-##
-# Data liberation
-##
 
 @task(rate='2/h')
 def liberate(user, options=None):
@@ -82,12 +81,12 @@ def liberate_collect_emails(results, mail_path, options):
                     group(msg_tasks),
                     liberate_convert_box.s(mail_path, options),
                     liberate_tarball.s(mail_path, options),
-                    liberation_finish.s(mail_path, options)
+                    liberation_finish.s(options)
                     )
     msg_tasks.apply_async()
 
 @task(rate='1000/m')
-def liberate_message(mail_path, inbox, email_id, debug=False):
+def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
     maildir = mailbox.Maildir(mail_path).get_folder(inbox)
 
@@ -95,7 +94,9 @@ def liberate_message(mail_path, inbox, email_id, debug=False):
         msg = Email.objects.get(id=email_id, deleted=False)
         msg = make_message(msg)
     except Exception, exc:
-        raise Exception(hex(int(email_id))[2:])
+        msg_id = hex(int(email_id))[2:]
+        log.debug("Exception processing %s", msg_id, exc_info=exc)
+        raise Exception(msg_id)
 
     maildir.add(str(msg))
 
@@ -128,11 +129,13 @@ def liberate_convert_box(result, mail_path, options):
 def liberate_tarball(result, mail_path, options):
     """ Tar up and delete the maildir """
 
+    tar_type = TAR_TYPES[options.get('compressType', 'tar.gz')]
+    tar_name = "%s.%s" % (mail_path, options.get('compressType', 'tar.gz'))
+
     try:
-        tar_type = TAR_TYPES[options.get('compressType', 'tar.gz')]
-        tar_name = "%s.%s" % (mail_path, options.get('compressType', 'tar.gz'))
         tar = tarfile.open(tar_name, tar_type['writer'])
     except (IOError, OSError), error:
+        log.debug("Couldn't open tarfile at %s", tar_name)
         raise liberate_tarball.retry(exc=error)
 
     date = str(datetime.now(utc).date())
@@ -156,7 +159,7 @@ def liberate_tarball(result, mail_path, options):
 
 @task()
 @transaction.commit_on_success
-def liberation_finish(result, mail_path, options):
+def liberation_finish(result, options):
     """ Create email to send to user """
 
     archive = Attachment(
@@ -186,12 +189,12 @@ def liberation_finish(result, mail_path, options):
     inbox = inbox.filter(tag__tag="data")
     inbox = inbox.filter(tag__tag="liberation")
 
+    user = User.objects.get(id=options['user'])
     try:
-        inbox = inbox.get(user__id=options['user'])
+        inbox = inbox.get(user=user)
     except Inbox.MultipleObjectsReturned:
-        inbox = inbox.filter(user__id=options['user'])[0]
+        inbox = inbox.filter(user=user)[0]
     except Inbox.DoesNotExist:
-        user = User.objects.get(id=options['user'])
         inbox = Inbox(
                 inbox=gen_inbox(5),
                 domain=random.choice(Domain.objects.all()),
@@ -213,6 +216,7 @@ def liberation_finish(result, mail_path, options):
         body=settings.LIBERATION_BODY,
         attachments=[archive, profile, inbox_tags]
         )
+    log.debug("Finished liberation for %s", user.username)
 
 def liberate_user_profile(user_id, email_results, date):
     """ User profile data """

@@ -8,9 +8,7 @@ from django.db import transaction
 
 from inboxen.models import User, Statistic
 
-##
-# Statistics
-##
+log = logging.getLogger(__name__)
 
 @task
 @transaction.commit_on_success
@@ -29,5 +27,5 @@ def statistics():
 
     stat.save()
 
-    logging.info("Saved statistics (%s)", stat.date)
+    log.info("Saved statistics (%s)", stat.date)
 
