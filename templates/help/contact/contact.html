@@ -6,7 +6,7 @@
 {% if user.is_authenticated and not reply %}
     <p class="text-center text-info">{% trans "To change the inbox please reload the page" %}</p>
 {% elif not reply %}
-    <p class="text-center text-info">{% trans "If you prefer not to give an email, please login to your Inboxen account. You'll be given an inbox for our staff to reply to." %}</p>
+    <p class="text-center text-info"> {% blocktrans %} If you prefer not to give an email, please login to your {{ SITE_NAME }} account. You'll be given an inbox for our staff to reply to. {% blocktrans %}</p>
 {% endif %}
 
 <form action="/help/contact/{% if reply %}reply{% endif %}" method="POST" class="form wide-form">
@@ -39,7 +39,7 @@
     {% endif %}
     <input style="width: 303px;" type="text" name="subject" placeholder="Subject"><br />
     <textarea rows="10" name="body" class="input-xxlarge"></textarea><br />
-    <button class="btn">Send</button>
+    <button class="btn">{% trans "Send" %}</button>
 </form>
 
 {% endblock %}

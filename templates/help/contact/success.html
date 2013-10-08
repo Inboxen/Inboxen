@@ -5,6 +5,6 @@
 {% block content %}
 
     <h2> {% trans "Success!" %}</h2>
-    <p> {% trans "Your email has been sent to the staff of Inboxen. Please wait at minimum 48 hours before contacting again about the same problem (usually it doesn't take as long as 48 hours). Thanks!" %}</p>
+    <p> {% blocktrans %} Your email has been sent to the staff of {{ SITE_NAME }}. Please wait at minimum 48 hours before contacting again about the same problem (usually it doesn't take as long as 48 hours). Thanks! {% endblocktrans %}</p>
 
 {% endblock %}
