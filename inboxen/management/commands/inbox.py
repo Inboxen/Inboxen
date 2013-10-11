@@ -20,7 +20,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from inboxen.models import User, Email, Inbox, Tag
-from queue.tasks import delete_inbox
+from queue.delete.tasks import delete_inbox
 
 class Command(BaseCommand):
     args = "<info/tags/delete/resurrect> <inbox> [<tag1>, <tag2>, etc...]"
