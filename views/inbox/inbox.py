@@ -27,7 +27,7 @@ from django.db.models import Q
 
 from inboxen.helper.paginator import page as paginator_page
 from inboxen.models import Inbox, Email
-from queue.tasks import delete_email
+from queue.delete.tasks import delete_email
 
 @login_required
 def inbox(request, email_address="", page=1):

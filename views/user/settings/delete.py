@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.contrib.auth import logout
 
-from queue.tasks import delete_account
+from queue.delete.tasks import delete_account
 
 @login_required
 def delete(request):

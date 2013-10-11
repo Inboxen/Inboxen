@@ -21,7 +21,7 @@ from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from queue.tasks import liberate as data_liberate
+from queue.liberate.tasks import liberate as data_liberate
 
 def liberate(request):
     if request.method == "POST":

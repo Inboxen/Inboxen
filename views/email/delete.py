@@ -22,7 +22,7 @@ from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 
-from queue.tasks import delete_inbox
+from queue.delete.tasks import delete_inbox
 from inboxen.models import Inbox
 
 @login_required
