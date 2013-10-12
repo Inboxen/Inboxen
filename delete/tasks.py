@@ -8,9 +8,14 @@ from pytz import utc
 from django.db import transaction
 
 from inboxen.helper.user import null_user, user_profile
-from inboxen.models import Domain, Email, Inbox, Tag
+from inboxen.models import Attachment, Domain, Header, Email, Inbox, Tag
 
 log = logging.getLogger(__name__)
+
+MODELS = {
+    "header": Header,
+    "attachment": Attachment
+}
 
 @task(rate="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.commit_on_success
@@ -46,8 +51,33 @@ def delete_inbox(email, user=None):
 @task(rate_limit=200)
 @transaction.commit_on_success
 def delete_email(email_id):
-    email = Email.objects.filter(id=email_id).only('id')[0]
+    email = Email.objects.only('id').get(id=email_id)
+
+    # delete attachments
+    attachments = group([delete_email_item.s('attachment', attachment.id) for attachment in email.attachments.only('id')])
+
+    # delete headers
+    headers = group([delete_email_item.s('header', header.id) for header in email.headers.only('id')])
+
     email.delete()
+
+    # sometimes an email will have no headers or attachments
+    try:
+        headers.apply_async()
+    except IndexError:
+        pass
+    try:
+        attachments.apply_async()
+    except IndexError:
+        pass
+
+@task(rate=200)
+@transaction.commit_on_success
+def delete_email_item(model, item_id):
+    model = MODELS[model]
+
+    item = model.objects.only('id').get(id=item_id)
+    item.delete()
 
 @task()
 @transaction.commit_on_success
