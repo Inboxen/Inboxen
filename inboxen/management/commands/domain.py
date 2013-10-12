@@ -64,9 +64,9 @@ class Command(BaseCommand):
                 raise CommandError("You need to give a domain to remove")
             
             try:
-                d = Domain.objects.get(domain=args[1])
+                d = Domain.objects.filter(domain=args[1])
                 d.delete()
-                self.stdout.write("%s has been removed" % d)
+                self.stdout.write("%s has been removed" % args[1])
             except Domain.DoesNotExist:
                 raise CommandError("Can't find domain '%s'" % args[1])
         else:
