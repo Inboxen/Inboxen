@@ -76,13 +76,17 @@ def liberate_collect_emails(results, mail_path, options):
     for result in results:
         inbox = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.extend(inbox)
+    if len(msg_tasks) > 0:
+        msg_tasks = chain(
+                        group(msg_tasks),
+                        liberate_convert_box.s(mail_path, options),
+                        liberate_tarball.s(mail_path, options),
+                        liberation_finish.s(options)
+                        )
+    else:
+        options["noEmails"] = True
+        msg_tasks = liberation_finish.s(options)
 
-    msg_tasks = chain(
-                    group(msg_tasks),
-                    liberate_convert_box.s(mail_path, options),
-                    liberate_tarball.s(mail_path, options),
-                    liberation_finish.s(options)
-                    )
     msg_tasks.apply_async()
 
 @task(rate='1000/m')
@@ -162,12 +166,13 @@ def liberate_tarball(result, mail_path, options):
 def liberation_finish(result, options):
     """ Create email to send to user """
 
-    archive = Attachment(
-                path=result['path'],
-                content_type=result['mime-type'],
-                content_disposition="emails-%s.%s" % (result['date'], options.get('compressType', 'tar.gz'))
-                )
-    archive.save()
+    if not options.get("noEmail", False):
+        archive = Attachment(
+                    path=result['path'],
+                    content_type=result['mime-type'],
+                    content_disposition="emails-%s.%s" % (result['date'], options.get('compressType', 'tar.gz'))
+                    )
+        archive.save()
 
     profile = liberate_user_profile(options['user'], result['results'], result['date'])
     profile = Attachment(

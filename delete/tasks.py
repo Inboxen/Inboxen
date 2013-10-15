@@ -40,7 +40,11 @@ def delete_inbox(email, user=None):
     # is cheaper than serialising the Django model - this appears to be the
     # cause of our previous memory issues! - M
     emails = group([delete_email.s(email.id) for email in emails])
-    emails.apply_async()
+    try:
+        emails.apply_async()
+    except IndexError:
+        # no emails in this inbox
+        pass
 
     # okay now mark the inbox as deleted
     inbox.created = datetime.fromtimestamp(0, utc)
