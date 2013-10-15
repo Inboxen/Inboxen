@@ -19,8 +19,12 @@
 
 import base64
 
-from django.db import models
+from celery import group
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_delete
+from django.db import models
+from django.dispatch import receiver
+
 
 class BlogPost(models.Model):
     subject = models.CharField(max_length=512)
@@ -151,3 +155,27 @@ class Statistic(models.Model):
     # generic
     new_count = models.IntegerField()
     date = models.DateTimeField('date')
+
+@receiver(pre_delete, dispatch_uid="I'm unique :3")
+def cascade_delete(sender, instance, **kwargs):
+    """Fake cascading deletes over ManyToMany relationships for the Email model"""
+    if not (sender == Email or sender._meta.proxy_for_model == Email):
+        return
+    # import here, we need the models to be initialised first :P
+    from queue.delete.tasks import delete_email_item
+
+    # delete attachments
+    attachments = group([delete_email_item.s('attachment', attachment.id) for attachment in instance.attachments.only('id')])
+
+    # delete headers
+    headers = group([delete_email_item.s('header', header.id) for header in instance.headers.only('id')])
+
+    # sometimes an email will have no headers or attachments
+    try:
+        headers.apply_async()
+    except IndexError:
+        pass
+    try:
+        attachments.apply_async()
+    except IndexError:
+        pass
