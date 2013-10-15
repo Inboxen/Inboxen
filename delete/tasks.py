@@ -52,24 +52,7 @@ def delete_inbox(email, user=None):
 @transaction.commit_on_success
 def delete_email(email_id):
     email = Email.objects.only('id').get(id=email_id)
-
-    # delete attachments
-    attachments = group([delete_email_item.s('attachment', attachment.id) for attachment in email.attachments.only('id')])
-
-    # delete headers
-    headers = group([delete_email_item.s('header', header.id) for header in email.headers.only('id')])
-
     email.delete()
-
-    # sometimes an email will have no headers or attachments
-    try:
-        headers.apply_async()
-    except IndexError:
-        pass
-    try:
-        attachments.apply_async()
-    except IndexError:
-        pass
 
 @task(rate=200)
 @transaction.commit_on_success
