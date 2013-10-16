@@ -113,3 +113,31 @@ def delete_account(user):
     user.delete()
 
     log.debug("Deletion tasks for %s sent off", user.username)
+
+@task()
+@transaction.commit_on_success
+def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=10000):
+    """If something goes wrong and you've got a lot of orphaned entries in the
+    database, then this is the task you want.
+
+    * model is a key in MODELS
+    * filter_args and filter_kwargs should be obvious
+    * batch_number is the number of delete tasks that get sent off in one go
+    """
+    _model = MODELS[model]
+
+    if filter_args and filter_kwargs:
+        items = _model.objects.only('id').filter(*filter_args, **filter_kwargs)
+    elif filter_args:
+        items = _model.objects.only('id').filter(*filter_args)
+    elif filter_kwargs:
+        items = _model.objects.only('id').filter(**filter_kwargs)
+    else:
+        raise Exception("You need to specify some filter options!")
+
+    tasks = [delete_email_item.s(model, item.id) for item in items[:batch_number]]
+
+    if len(tasks):
+        tasks = chord(tasks, major_cleanup_items.si(model, filter_args, filter_kwargs, batch_number))
+        tasks.apply_async()
+        log.warning("Sending off another deletion batch!")
