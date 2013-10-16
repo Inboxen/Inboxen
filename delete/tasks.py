@@ -116,7 +116,7 @@ def delete_account(user):
 
 @task()
 @transaction.commit_on_success
-def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000):
+def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000, count=0):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
@@ -138,6 +138,8 @@ def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_numbe
     tasks = [delete_email_item.s(model, item.id) for item in items[:batch_number]]
 
     if len(tasks):
-        tasks = chord(tasks, major_cleanup_items.si(model, filter_args, filter_kwargs, batch_number))
+        tasks = chord(tasks, major_cleanup_items.si(model, filter_args, filter_kwargs, batch_number, count+1))
         tasks.apply_async()
-        log.warning("Sending off another deletion batch!")
+        log.warning("%s deletes sent (overestimate), %s completed", batch_number, count*batch_number)
+    else:
+        log.warning("Batch deletes finished")
