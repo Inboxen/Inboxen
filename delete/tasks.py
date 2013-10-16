@@ -116,7 +116,7 @@ def delete_account(user):
 
 @task()
 @transaction.commit_on_success
-def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=10000):
+def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
