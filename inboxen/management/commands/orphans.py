@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if "clean" in args:
             headers = Header.objects.only('id').filter(email=None).exists()
-            attachments = Attachment.objects.only('id').filter(email=None.exists())
+            attachments = Attachment.objects.only('id').filter(email=None).exists()
 
             self.stdout.write("Sending off cleanup tasks...")
 
