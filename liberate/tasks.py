@@ -32,7 +32,7 @@ TAR_TYPES = {
     'tar': {'writer': 'w:', 'mime-type': 'application/x-tar'}
     }
 
-@task(rate='2/h')
+@task(rate_limit='2/h')
 def liberate(user, options=None):
     """ Get set for liberation, expects User object """
 
@@ -55,7 +55,7 @@ def liberate(user, options=None):
                 )
     tasks.apply_async()
 
-@task(rate='100/h')
+@task(rate_limit='100/h')
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
 
@@ -89,7 +89,7 @@ def liberate_collect_emails(results, mail_path, options):
 
     msg_tasks.apply_async()
 
-@task(rate='1000/m')
+@task(rate_limit='1000/m')
 def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
     maildir = mailbox.Maildir(mail_path).get_folder(inbox)

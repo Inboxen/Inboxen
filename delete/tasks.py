@@ -17,7 +17,7 @@ MODELS = {
     "attachment": Attachment
 }
 
-@task(rate="10/m", default_retry_delay=5 * 60) # 5 minutes
+@task(rate_limit="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.commit_on_success
 def delete_inbox(email, user=None):
     if type(email) in [types.StringType, types.UnicodeType]:
@@ -58,7 +58,7 @@ def delete_email(email_id):
     email = Email.objects.only('id').get(id=email_id)
     email.delete()
 
-@task(rate=200)
+@task(rate_limit=200)
 @transaction.commit_on_success
 def delete_email_item(model, item_id):
     model = MODELS[model]
@@ -114,7 +114,7 @@ def delete_account(user):
 
     log.debug("Deletion tasks for %s sent off", user.username)
 
-@task()
+@task(rate_limit="0.5/m")
 @transaction.commit_on_success
 def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000, count=0):
     """If something goes wrong and you've got a lot of orphaned entries in the
