@@ -39,18 +39,24 @@ def edit(request, postid):
         return HttpResponseRedirect("/blog/")
 
     if request.method == "POST":
+        if "draft" in request.POST and request.POST["draft"] == "melon":
+            draft = True
+        else:
+            draft = False
+
         if not ("subject" in request.POST or "body" in request.POST):
             error = _("You need to specify the subject and body of the post")
+        elif draft and not post.draft:
+            error = _("You may not unpublish a post - please delete it instead.")
         else:
-            if "draft" in request.POST and request.POST["draft"] == "melon":
-                draft = True
-            else:
-                draft = False
-
             post.subject = request.POST["subject"]
             post.body = request.POST["body"]
             post.modified = datetime.now(utc)
-            post.draft=draft
+
+            if post.draft and not draft:
+                post.date = post.modified
+                post.draft=draft
+
             post.save()
 
             return HttpResponseRedirect("/blog/")
