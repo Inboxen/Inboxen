@@ -46,7 +46,6 @@ def settings(request):
 
     context = {
         "page":_("Settings"),
-        "user":request.user.username,
         "error":error,
         "htmlpreference":int(profile.html_preference),
     }
