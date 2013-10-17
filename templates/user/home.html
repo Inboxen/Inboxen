@@ -20,18 +20,6 @@
 {% if not inboxes %}
     <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
 {% else %}
-<a class="label-right" href="/email/request">
-    {% if not available %}
-        <span class="label label-important text-rigth">
-    {% elif available < 10 %}
-        <span class="label label-warning text-right">
-    {% else %}
-        <span class="label text-right">
-    {% endif %}
-    {% trans "Available:" %} {{ available }}</span>
-</a>
-<br />
-<br />   
 <table class="table table-hover table-centre table-honeydew">
         <thead>
         <tr>

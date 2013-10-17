@@ -75,7 +75,6 @@ urlpatterns = patterns('',
     url(r'^user/logout/', 'website.views.user.logout.logout'),
 
     url(r'^email/add/', 'website.views.email.add.add'),
-    url(r'^email/request/', 'website.views.email.request.request'),
     url(r'^email/edit/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', 'website.views.email.edit.edit'),
     url(r'^email/delete/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', 'website.views.email.delete.confirm'),
 

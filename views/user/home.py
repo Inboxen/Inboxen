@@ -23,7 +23,6 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from inboxen.helper.inbox import inbox_available
 from inboxen.helper.paginator import page as page_paginator
 from inboxen.models import Inbox, Tag, Email
 
@@ -31,7 +30,6 @@ from inboxen.models import Inbox, Tag, Email
 def home(request, page=1):
 
     inboxes = Inbox.objects.filter(user=request.user).order_by('-created')
-    available = inbox_available(request.user, inboxes=inboxes)
     used = inboxes.count()
     inboxes = inboxes.filter(deleted=False)
 
@@ -62,14 +60,10 @@ def home(request, page=1):
     context = {
         "page":_("Home"),
         "inboxes":inboxes,
-        "available":available,
         "total_email_count":total,
         "pages":page_paginator(inboxes),
         "notify_messages":messages,
         "user":request.user,
     }
 
-    
     return render(request, "user/home.html", context)
-    
-
