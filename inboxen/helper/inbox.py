@@ -23,7 +23,7 @@ from string import ascii_lowercase
 from django.core.exceptions import ObjectDoesNotExist
 
 from inboxen.helper.user import user_profile
-from inboxen.models import Email, Tag, Inbox, Domain
+from inboxen.models import Email, Tag, Inbox, Domain, Request
 
 def gen_inbox(count, inbox="", ocount=5):
 
@@ -80,5 +80,20 @@ def inbox_available(user, inboxes=None):
         inboxes = Inbox.objects.filter(user=user)
         used = inboxes.count()
 
-    return pool - used
+    left = pool - used
+
+    if left < 10:
+        try:
+            last_request = Request.objects.filter(user=user).orderby('-date').only('succeeded')[0].succeeded
+        except IndexError:
+            last_request = True
+
+        if last_request:
+            profile = user_profile(request.user)
+            amount = profile.pool_amount + 500
+            current_request = Request(amount=amount, date=datetime.now(utc))
+            current_request.requester = user
+            current_request.save()
+
+    return left
 
