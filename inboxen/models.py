@@ -43,8 +43,8 @@ class Domain(models.Model):
 
 class Inbox(models.Model):
     inbox = models.CharField(max_length=64)
-    domain = models.ForeignKey(Domain)
-    user = models.ForeignKey(User) 
+    domain = models.ForeignKey(Domain, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     created = models.DateTimeField('Created')
     deleted = models.BooleanField(default=False)
 
@@ -62,7 +62,7 @@ class Request(models.Model):
     amount = models.IntegerField()
     succeeded = models.NullBooleanField(default=None)
     date = models.DateTimeField('requested')
-    authorizer = models.ForeignKey(User, blank=True, null=True)
+    authorizer = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     requester = models.ForeignKey(User, related_name="requester")
     result = models.CharField(max_length=1024, blank=True, null=True)
 
