@@ -68,6 +68,7 @@ class Request(models.Model):
 
 
 class Attachment(models.Model):
+    children = models.ManyToManyField(Attachment, symmetrical=False)
     content_type = models.CharField(max_length=256, null=True, blank=True)
     content_disposition = models.CharField(max_length=512, null=True, blank=True)
 
