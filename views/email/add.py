@@ -48,11 +48,10 @@ def add(request):
         new_inbox.save()
         
         tags = clean_tags(tags)
-        for i, tag in enumerate(tags):
+        for tag in tags:
             tag = Tag(tag=tag)
             tag.inbox = new_inbox
             tag.save()
-            tags[i] = tag
 
         msg = _("You have successfully created %s!") % new_inbox
 
