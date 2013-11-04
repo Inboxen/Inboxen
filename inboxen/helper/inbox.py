@@ -29,11 +29,10 @@ def gen_inbox(count, inbox="", ocount=5):
 
     if count <= 0:
         # now we need to check if it's taken.
-        try:
-            Inbox.objects.get(inbox=inbox, deleted=False)
+        if Inbox.objects.filter(inbox=inbox).exists():
+            # start all over again
             return gen_inbox(ocount)
-
-        except Inbox.DoesNotExist:
+        else:
             return inbox
     
     inbox += choice(ascii_lowercase)
