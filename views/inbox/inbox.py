@@ -29,22 +29,34 @@ from inboxen.helper.paginator import page as paginator_page
 from inboxen.models import Inbox, Email
 from queue.delete.tasks import delete_email
 
+INBOX_ORDER = {
+                '+date':    'recieved_date',
+                '-date':    '-recieved_date',
+                '+subject': 'subject',
+                '-subject': '-subject',
+                '+sender':  'sender',
+                '-sender':  '-sender',
+}
+
 @login_required
 def inbox(request, email_address="", page=1):
     if request.method == "POST":
         # deal with tasks, then show the page as normal
         mass_tasks(request)
 
+    order = request.GET.get(sort,'-date')
+    emails = Email.objects.defer('body').order_by(INBOX_ORDER[order])
+
     if not email_address:
         # assuming global unified inbox
-        inbox = Email.objects.filter(user=request.user, deleted=False).defer('body').order_by('-recieved_date')
+        emails = emails.filter(user=request.user, deleted=False).defer('body')
 
     else:
         # a specific inbox
         inbox, domain = email_address.split("@", 1)
         try:
             inbox = Inbox.objects.get(user=request.user, inbox=inbox, domain__domain=domain)
-            inbox = Email.objects.filter(user=request.user, inbox=inbox, deleted=False).defer('body').order_by('-recieved_date')
+            emails = emails.filter(user=request.user, inbox=inbox, deleted=False)
         except ObjectDoesNotExist:
             context = {
                 "page":_("%s - Inbox") % email_address,
@@ -56,7 +68,7 @@ def inbox(request, email_address="", page=1):
             
             return render(request, "inbox/inbox.html", context)
 
-    paginator = Paginator(inbox, 100)
+    paginator = Paginator(emails, 100)
 
     try:
         emails = paginator.page(page)
