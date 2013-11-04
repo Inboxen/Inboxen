@@ -39,7 +39,7 @@ def add(request):
     if request.method == "POST":
         inbox = request.POST["inbox"]
         domain = Domain.objects.get(domain=request.POST["domain"])
-        tags = request.POST["tag"]
+        tags = request.POST["tags"]
         
         if Inbox.objects.filter(inbox=inbox, domain=domain).exists():
             return HttpResponseRedirect("/user/home")
