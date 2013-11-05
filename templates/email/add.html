@@ -6,7 +6,6 @@
 
         <form action="/email/add/" class="form" method="POST">
             {% csrf_token %}
-            <input type="hidden" name="inbox" value="{{ inbox }}">
             <div class="input-prepend">
                 <span class="add-on constant-inbox">{{ inbox }}@</span>
                 <select id="prependedInput" name="domain">

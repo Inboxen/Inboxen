@@ -37,16 +37,16 @@ def add(request):
         return HttpResponseRedirect("/email/request")
 
     if request.method == "POST":
-        inbox = request.POST["inbox"]
+        inbox = request.session["generated_inbox"]
         domain = Domain.objects.get(domain=request.POST["domain"])
         tags = request.POST["tags"]
-        
+
         if Inbox.objects.filter(inbox=inbox, domain=domain).exists():
             return HttpResponseRedirect("/user/home")
 
         new_inbox = Inbox(inbox=inbox, domain=domain, user=request.user, created=datetime.now(utc))
         new_inbox.save()
-        
+
         tags = clean_tags(tags)
         for tag in tags:
             tag = Tag(tag=tag)
@@ -60,13 +60,14 @@ def add(request):
         return HttpResponseRedirect("/user/home")
 
     domains = Domain.objects.all()
-    
+
     inbox = gen_inbox(5)
-            
+    request.session["generated_inbox"] = inbox
+
     context = {
         "page":_("Add Inbox"),
         "domains":domains,
         "inbox":inbox,
     }
-    
+
     return render(request, "email/add.html", context)
