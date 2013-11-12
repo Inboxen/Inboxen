@@ -80,11 +80,6 @@ class Attachment(models.Model):
     )
 
     def set_data(self, data):
-        try:
-            data = data.encode("utf-8")
-        except UnicodeError:
-            data = u''
-
         self._data = base64.encodestring(data)
 
     def get_data(self):
@@ -95,11 +90,8 @@ class Attachment(models.Model):
         _tpath = open(self.path, "rb")
         try:
             d = _tpath.read()
-        except:
-            # be good now.
+        finally:
             _tpath.close()
-            raise
-        _tpath.close()
         return d
         
 
