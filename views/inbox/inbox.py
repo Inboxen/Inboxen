@@ -44,7 +44,7 @@ def inbox(request, email_address="", page=1):
         # deal with tasks, then show the page as normal
         mass_tasks(request)
 
-    order = request.GET.get(sort,'-date')
+    order = request.GET.get('sort','-date')
     emails = Email.objects.defer('body').order_by(INBOX_ORDER[order])
 
     if not email_address:
