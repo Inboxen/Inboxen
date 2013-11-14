@@ -79,7 +79,11 @@ class Attachment(models.Model):
     )
 
     def set_data(self, data):
-        self._data = base64.encodestring(data)
+        try:
+            self._data = base64.encodestring(data)
+        except UnicodeEncodeError:
+            data = data.encode('utf-8')
+            self._data = base64.encodestring(data)
 
     def get_data(self):
         if not self.path:
