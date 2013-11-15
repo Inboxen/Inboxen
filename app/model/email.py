@@ -28,6 +28,8 @@ from config.settings import datetime_format, recieved_header_name
 from django.db import transaction
 from dateutil import parser
 
+log = logging.getLogger(__name__)
+
 @transaction.atomic()
 def make_email(message, inbox, domain):
     """Push message to the database.
@@ -37,7 +39,7 @@ def make_email(message, inbox, domain):
     try:
         inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, deleted=False)
     except Inbox.DoesNotExist, e:
-        logging.debug("No inbox: %s" % e)
+        log.debug("No inbox: %s", e)
         return # inbox deleted while msg was in queue
 
     user = inbox.user
@@ -45,7 +47,7 @@ def make_email(message, inbox, domain):
     try:
         recieved_date = parser.parse(message[recieved_header_name])
     except (AttributeError, KeyError):
-        logging.debug("No %s header in message, creating new timestamp" % recieved_header_name)
+        log.debug("No %s header in message, creating new timestamp", recieved_header_name)
         recieved_date = datetime.now(utc)
 
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
