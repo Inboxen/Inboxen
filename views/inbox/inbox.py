@@ -102,7 +102,7 @@ def inbox(request, email_address="", page=1):
     
     return render(request, "inbox/inbox.html", context)
 
-@transaction.commit_on_success
+@transaction.atomic()
 def mass_tasks(request):
     emails = Q()
     for email in request.POST:
