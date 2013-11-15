@@ -11,7 +11,7 @@ from inboxen.models import User, Statistic
 log = logging.getLogger(__name__)
 
 @task
-@transaction.commit_on_success
+@transaction.atomic()
 def statistics():
     # get user statistics
     user_count = User.objects.all().count()

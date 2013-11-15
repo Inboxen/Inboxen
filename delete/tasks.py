@@ -18,7 +18,7 @@ MODELS = {
 }
 
 @task(rate_limit="10/m", default_retry_delay=5 * 60) # 5 minutes
-@transaction.commit_on_success
+@transaction.atomic()
 def delete_inbox(email, user=None):
     if type(email) in [types.StringType, types.UnicodeType]:
         if not user:
@@ -53,13 +53,13 @@ def delete_inbox(email, user=None):
     return True
 
 @task(rate_limit=200)
-@transaction.commit_on_success
+@transaction.atomic()
 def delete_email(email_id):
     email = Email.objects.only('id').get(id=email_id)
     email.delete()
 
 @task(rate_limit=200)
-@transaction.commit_on_success
+@transaction.atomic()
 def delete_email_item(model, item_id):
     model = MODELS[model]
 
@@ -67,7 +67,7 @@ def delete_email_item(model, item_id):
     item.delete()
 
 @task()
-@transaction.commit_on_success
+@transaction.atomic()
 def disown_inbox(result, inbox, futr_user=None):
     if not futr_user:
         futr_user = null_user()
@@ -80,7 +80,7 @@ def disown_inbox(result, inbox, futr_user=None):
     inbox.save()
 
 @task()
-@transaction.commit_on_success
+@transaction.atomic()
 def delete_user(result, user):
     inbox = Inbox.objects.filter(user=user).only('id').exists()
     if inbox:
@@ -95,7 +95,7 @@ def delete_user(result, user):
     return True
 
 @task()
-@transaction.commit_on_success
+@transaction.atomic()
 def delete_account(user):
     # first we need to make sure the user can't login
     user.set_unusable_password()
@@ -115,7 +115,7 @@ def delete_account(user):
     log.debug("Deletion tasks for %s sent off", user.username)
 
 @task(rate_limit="0.5/m")
-@transaction.commit_on_success
+@transaction.atomic()
 def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000, count=0):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.

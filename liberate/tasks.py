@@ -162,7 +162,7 @@ def liberate_tarball(result, mail_path, options):
     return {'path': tar_name, 'mime-type': tar_type['mime-type'], 'date': date, 'results': result}
 
 @task()
-@transaction.commit_on_success
+@transaction.atomic()
 def liberation_finish(result, options):
     """ Create email to send to user """
 
