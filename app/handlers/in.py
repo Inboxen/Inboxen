@@ -43,12 +43,10 @@ import logging
 @nolocking
 def START(message, inbox=None, domain=None):
     """Does this inbox exist? If yes, queue it. If no, drop it."""
-
-    # catch all the stupid errors mysql might throw
     try:
         exists, deleted = inbox_exists(inbox, domain)
-    except Exception, e:
-        logging.debug("DB error: %s" % str(e))
+    except DatabaseError, e:
+        logging.debug("DB error: %s", e)
         raise SMTPError(451, "Oops, melon exploded")
 
     if exists:
@@ -63,12 +61,12 @@ def START(message, inbox=None, domain=None):
         #if not spam, or not filter:
         accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts_in)
         accept_queue.push(message)
-        logging.debug("APPROVED inbox %s on domain %s" % (inbox, domain))
+        logging.debug("APPROVED inbox %s on domain %s", inbox, domain)
     else:
         if DEBUG:
             queue = Queue(reject_dir, **accepted_queue_opts_in)
             queue.push(message)
-            logging.debug("REJECTED inbox %s on domain %s" % (inbox, domain))
+            logging.debug("REJECTED inbox %s on domain %s", inbox, domain)
 
         # Raise an error, tell server whether to try again or not
         if deleted:

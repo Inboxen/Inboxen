@@ -28,7 +28,7 @@ from config.settings import datetime_format, recieved_header_name
 from django.db import transaction
 from dateutil import parser
 
-@transaction.commit_on_success
+@transaction.atomic()
 def make_email(message, inbox, domain):
     """Push message to the database.
 

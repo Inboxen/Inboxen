@@ -37,8 +37,8 @@ def START(message, inbox=None, domain=None):
     # queue
     try:
         make_email(message, inbox, domain)
-    except Exception, e:
-        logging.debug("DB error: %s " % str(e))
+    except DatabaseError, e:
+        logging.debug("DB error: %s", e)
         if RETRY in message:
             if int(message[RETRY]) > 2:
                 # tried to many times, dump the message
