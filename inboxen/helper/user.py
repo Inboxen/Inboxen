@@ -33,11 +33,7 @@ def null_user():
 
 def user_profile(user):
     """ Gets or creates a user profile """
-    try:
-        return UserProfile.objects.get(user=user)
-    except UserProfile.DoesNotExist:
-        # doesn't exist
-        user_profile = UserProfile.objects.get_or_create(user=user)[0]
-        return user_profile
+    user_profile = UserProfile.objects.get_or_create(user=user)[0]
+    return user_profile
 
 

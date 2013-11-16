@@ -18,6 +18,7 @@
 ##
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
 from inboxen.models import User, Email, Inbox, Tag
 from queue.delete.tasks import delete_inbox
@@ -81,9 +82,10 @@ class Command(BaseCommand):
             # wants to set them.
             tags = [tag for tag in args[2:]]
 
-            for i, tag in enumerate(tags):
-                tags[i] = Tag(tag=tag, inbox=inbox)
-                tags[i].save()
+            with transaction.atomic():
+                for i, tag in enumerate(tags):
+                    tags[i] = Tag(tag=tag, inbox=inbox)
+                    tags[i].save()
 
             self.stdout.write("Tags have been saved for %s" % inbox)
 

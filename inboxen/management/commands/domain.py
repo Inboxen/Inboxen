@@ -22,6 +22,7 @@ from datetime import datetime
 from pytz import utc
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 
 from inboxen.helper.user import null_user
 from inboxen.models import Inbox, Domain
@@ -38,20 +39,21 @@ class Command(BaseCommand):
 
         # look for commands
         if "add" == args[0]:
-            # adding?
-            if len(args) <= 1:
-                raise CommandError("You need to give a domain")
-            d = Domain(
-                domain=args[1]
-            )
-            d.save()
-            # we also should add a support inbox - ticket #24
-            support_inbox = Inbox(
-                    inbox="support",
-                    domain=d,
-                    user=null_user(),
-                    created=datetime.now(utc))
-            support_inbox.save()            
+            with transaction.atomic():
+                # adding?
+                if len(args) <= 1:
+                    raise CommandError("You need to give a domain")
+                d = Domain(
+                    domain=args[1]
+                )
+                d.save()
+                # we also should add a support inbox - ticket #24
+                support_inbox = Inbox(
+                        inbox="support",
+                        domain=d,
+                        user=null_user(),
+                        created=datetime.now(utc))
+                support_inbox.save()
 
             self.stdout.write("%s has been added" % d)
         elif "list" == args[0]:
@@ -62,12 +64,14 @@ class Command(BaseCommand):
         elif args[0] in ["rm", "remove"]:
             if len(args) <= 1:
                 raise CommandError("You need to give a domain to remove")
-            
-            try:
-                d = Domain.objects.filter(domain=args[1])
-                d.delete()
-                self.stdout.write("%s has been removed" % args[1])
-            except Domain.DoesNotExist:
-                raise CommandError("Can't find domain '%s'" % args[1])
+
+            with transaction.atomic():
+                try:
+                    d = Domain.objects.filter(domain=args[1])
+                    d.delete()
+                    self.stdout.write("%s has been removed" % args[1])
+                except Domain.DoesNotExist:
+                    raise CommandError("Can't find domain '%s'" % args[1])
+
         else:
             raise CommandError("Can't find command %s" % args[0])

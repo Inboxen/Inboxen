@@ -17,8 +17,6 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import base64
-
 from celery import group
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_delete
@@ -73,7 +71,7 @@ class Attachment(models.Model):
     content_disposition = models.CharField(max_length=512, null=True, blank=True)
 
     path = models.FilePathField(default=None, null=True, blank=True)
-    _data = models.TextField(
+    _data = models.BinaryField(
         db_column='data',
         blank=True,
         null=True,
@@ -81,14 +79,13 @@ class Attachment(models.Model):
 
     def set_data(self, data):
         try:
-            self._data = base64.encodestring(data)
-        except UnicodeEncodeError:
             data = data.encode('utf-8')
-            self._data = base64.encodestring(data)
+        except (UnicodeEncodeError, UnicodeEncodeError):
+            self._data = data
 
     def get_data(self):
         if not self.path:
-            return base64.decodestring(self._data)
+            return self._data
         
         # look for data in the path
         _tpath = open(self.path, "rb")

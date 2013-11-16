@@ -30,6 +30,7 @@ from pytz import utc
 from bs4 import BeautifulSoup
 from premailer import Premailer
 
+from django.db import transaction
 from django.utils.safestring import mark_safe
 
 from inboxen.helper.user import user_profile
@@ -41,6 +42,7 @@ if version_info[:2] == (2, 7):
 else:
     PARSER = 'html5lib'
 
+@transaction.atomic()
 def make_message(email):
     """ makes a python email.message.Message from our Email object """
 
@@ -128,6 +130,7 @@ def clean_html(email):
 
     return mark_safe(email)
 
+@transaction.atomic()
 def send_email(inbox, sender, subject=None, body="", attachments=None):
     """ Sends an email to an internal inbox
 
@@ -169,6 +172,7 @@ def send_email(inbox, sender, subject=None, body="", attachments=None):
 
     email.save()
 
+@transaction.atomic()
 def get_email(user, email_id, preference=None, read=False):
     """ Gets an email based on user preferences and id of the email """
     # does the user want HTML emails?
