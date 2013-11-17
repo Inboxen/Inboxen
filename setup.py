@@ -26,7 +26,7 @@ setup(
         "django-extensions >= 1.1.1",
         "beautifulsoup4",
         "premailer",
-        "onetimepass" >= 0.2.1,
+        "onetimepass >= 0.2.1",
     ],
 
     extras_require = {
