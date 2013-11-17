@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% load i18n %}
-{% load markup %}
 
 {% block feeds %}
     <link href="/blog/feed/rss" rel="alternate" type="application/rss+xml" title="{% blocktrans %} {{ SITE_NAME }}  Blog {% endblocktrans %}" />
@@ -19,6 +18,6 @@
 
     <h2 class="inline">{{ post.subject }}</h2>
     <p class="text-right"><i>{{ post.date|date:"r" }}</i></p>
-    <p> {{ post.body|markdown }}</p><br />
+    <p> {{ post.rendered_body }}</p><br />
 
 {% endblock %}
