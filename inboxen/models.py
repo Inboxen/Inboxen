@@ -17,6 +17,8 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import markdown
+
 from celery import group
 from django.contrib.auth.models import User
 from django.db.models.signals import pre_delete
@@ -31,6 +33,10 @@ class BlogPost(models.Model):
     modified = models.DateTimeField('modified')
     author = models.ForeignKey(User)
     draft = models.BooleanField(default=True)
+
+    @property
+    def rendered_body(self):
+        return markdown.markdown(self.body)
 
 class Domain(models.Model):
     # these are the domains available to create inboxes from
