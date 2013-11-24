@@ -29,25 +29,18 @@ from inboxen.models import Inbox, Email, Domain
 def view(request, email_address, emailid):
 
     inbox, domain = email_address.split("@", 1)
-    support = False
     
-    # support stuff
-    if request.user.is_staff and inbox == "support":
-        inbox = Inbox.objects.filter(inbox=inbox)[0]
-        support = True
-    else:
-        try:
-            inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, user=request.user)
-        except Inbox.DoesNotExist:
-            raise Http404
+    try:
+        inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, user=request.user)
+    except Inbox.DoesNotExist:
+        raise Http404
+
     try:
         email = get_email(request.user, emailid, read=True)
     except Email.DoesNotExist:
         raise Http404
 
     from_address = email["from"].split("@", 1)
-    if from_address[0] == "support" and Domain.objects.filter(domain=from_address[1]).exists():
-        support = True
 
     if email["plain"]:
         plain_message = email["body"]
@@ -63,7 +56,6 @@ def view(request, email_address, emailid):
         "page":email["subject"],
         "email":email,
         "plain_message":plain_message,
-        "support":support,
         "user":request.user,
     }
  

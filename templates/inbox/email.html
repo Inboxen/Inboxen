@@ -12,15 +12,6 @@
 
 {% block content %}
 
-{% if support %}
-    <form method="post" action="/help/contact/reply">
-        {% csrf_token %}
-        <input type="hidden" name="inbox" value="{{ email.inbox }}">
-        <input type="hidden" name="from" value="{{ email.from }}">
-        <button type="submit" class="btn label-right">{% trans "Reply" %}</button>
-    </form>
-{% endif %}
-
 <small> {{ email.from }} </small>
 <div class="email">
     <strong>{% trans "Received" %}</strong>: {{ email.date|date:"r" }} ({{ email.date|timesince }} {% trans "ago" %})<br /><br />

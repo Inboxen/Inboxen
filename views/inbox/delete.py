@@ -27,20 +27,13 @@ def delete(request, email_address, emailid):
 
     emailid = int(emailid, 16)    
     inbox, domain = email_address.split("@", 1)
-    dies = inbox == "support" #dies = does inbox equal support :P
 
     try:
-        if request.user.is_staff and dies:
-            email = Email.objects.filter(id=emailid).only("id").get()
-        else:
-            email = Email.objects.filter(id=emailid, user=request.user).only("id").get()
-        email.delete()
+        email = Email.objects.filter(id=emailid, user=request.user).only("id").get()
     except Email.DoesNotExist:
         raise Http404
 
-    # check if they were on the admin support page, if so return them there
-    if dies and request.user.is_staff:
-        return HttpResponseRedirect("/admin/support")
-    else:
-        return HttpResponseRedirect("/inbox/%s/" % email_address)
+    email.delete()
+
+    return HttpResponseRedirect("/inbox/%s/" % email_address)
 
