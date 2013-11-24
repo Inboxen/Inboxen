@@ -84,8 +84,4 @@ urlpatterns = patterns('',
     url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),
 
     url(r'^inbox(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),
-
-    url(r'^admin/support(/(?P<page>\d+))?', 'website.views.admin.support.support'),
-    url(r'^admin/requests', 'website.views.admin.requests.requests'),
-    url(r'^admin/', "website.views.admin.index.index"),
 )

@@ -20,9 +20,6 @@
                             <a class="brand" href="/">{{ SITE_NAME }}</a>
                             <ul class="nav">
                                 {% if user.is_authenticated %}
-                                    {% if user.is_staff %}
-                                        <li><a href="/admin">{% trans "Admin" %}</a></li>
-                                    {% endif %}
                                     <li><a href="/email/add">{% trans "Add Inbox" %}</a></li>
                                     <li><a href="/blog/">{% trans "Blog" %}</a></li>
                                     <li><a href="/help/contact">{% trans "Contact" %}</a></li>
