@@ -38,9 +38,33 @@ class BlogPost(models.Model):
     def rendered_body(self):
         return markdown.markdown(self.body)
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
+    pool_amount = models.IntegerField(default=500)
+
+class TOTPAuth(models.Model):
+    user = models.OneToOneField(User)
+    # base32 encoded and do you really want to type 128 characters into your phone?
+    # (might raise this later, need to test how bad this is perf. wise)
+    secret = models.CharField(max_length=128)
+
+class Statistic(models.Model):
+    # statistics about users
+    user_count = models.IntegerField()
+    active_count = models.IntegerField()
+
+    # generic
+    new_count = models.IntegerField()
+    date = models.DateTimeField('date')
+
+##
+# Inbox models
+##
+
 class Domain(models.Model):
     # these are the domains available to create inboxes from
-    domain = models.CharField(max_length=253)
+    domain = models.CharField(max_length=253, unique=True)
 
     def __unicode__(self):
         return self.domain
@@ -60,7 +84,14 @@ class Inbox(models.Model):
 
     class Meta:
         verbose_name_plural = "Inboxes"
-        #unique_together = (('inbox', 'domain'),)
+        unique_together = (('inbox', 'domain'),)
+
+class Tag(models.Model):
+    inbox = models.ForeignKey(Inbox)
+    tag = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.tag
 
 class Request(models.Model):
     amount = models.IntegerField()
@@ -70,6 +101,9 @@ class Request(models.Model):
     requester = models.ForeignKey(User, related_name="requester")
     result = models.CharField(max_length=1024, blank=True, null=True)
 
+##
+# Email models
+##
 
 class Attachment(models.Model):
     children = models.ManyToManyField(Attachment, symmetrical=False)
@@ -107,13 +141,6 @@ class Attachment(models.Model):
     def __unicode__(self):
         return self.data
 
-class Tag(models.Model):
-    inbox = models.ForeignKey(Inbox)
-    tag = models.CharField(max_length=256)
-
-    def __unicode__(self):
-        return self.tag
-
 class Header(models.Model):
     name = models.CharField(max_length=1024)
     data = models.CharField(max_length=1024)    
@@ -136,25 +163,9 @@ class Email(models.Model):
 
     eid = property(get_data, set_data)
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
-    pool_amount = models.IntegerField(default=500)
-
-class TOTPAuth(models.Model):
-    user = models.OneToOneField(User)
-    # base32 encoded and do you really want to type 128 characters into your phone?
-    # (might raise this later, need to test how bad this is perf. wise)
-    secret = models.CharField(max_length=128)
-
-class Statistic(models.Model):
-    # statistics about users
-    user_count = models.IntegerField()
-    active_count = models.IntegerField()
-
-    # generic
-    new_count = models.IntegerField()
-    date = models.DateTimeField('date')
+##
+# Signals
+##
 
 @receiver(pre_delete, dispatch_uid="I'm unique :3")
 def cascade_delete(sender, instance, **kwargs):
