@@ -105,12 +105,9 @@ class Request(models.Model):
 # Email models
 ##
 
-class Attachment(models.Model):
-    children = models.ManyToManyField(Attachment, symmetrical=False)
-    content_type = models.CharField(max_length=256, null=True, blank=True)
-    content_disposition = models.CharField(max_length=512, null=True, blank=True)
-
+class Body(models.Model):
     path = models.FilePathField(default=None, null=True, blank=True)
+    hashed = models.CharFields(max_length=80, unique=True) # <algo>:<hash>
     _data = models.BinaryField(
         db_column='data',
         blank=True,
@@ -134,26 +131,36 @@ class Attachment(models.Model):
         finally:
             _tpath.close()
         return d
-        
 
     data = property(get_data, set_data)
 
     def __unicode__(self):
-        return self.data
+        return self.hashed
+
+class PartList(models.Model):
+    next_part = models.ForeignKey('self')
+    body = models.ForeignKey(Body)
+
+class HeaderName(models.Model):
+    name = models.CharField(max_length=1024, unique=True)
+
+class HeaderData(models.Model):
+    data = models.CharField(max_length=1024, unique=True)
 
 class Header(models.Model):
-    name = models.CharField(max_length=1024)
-    data = models.CharField(max_length=1024)    
+    name = models.ForeignKey(HeaderName)
+    data = models.ForeignKey(HeaderData)
+    part = models.ForeignKey(PartList) # could possibly be a ManyToMany relationship?
+
+    def __unicode__():
+        return u"{0}".format(self.name.name)
 
 class Email(models.Model):
-    read = models.BooleanField(default=False)
-    headers = models.ManyToManyField(Header)
-    user = models.ForeignKey(User, related_name='user')
+    user = models.ForeignKey(User)
     inbox = models.ForeignKey(Inbox)
-    body = models.TextField(null=True)
-    attachments = models.ManyToManyField(Attachment)
-    recieved_date = models.DateTimeField('Recieved Date')
-    deleted = models.BooleanField(default=False)
+    flags = PositiveSmallIntegerField(default=0) # maybe a custom field that can convert to flag names? :D
+    recieved_date = DateTimeField()
+    first_part = OneToOneField(MimePart)
 
     def get_data(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
