@@ -142,10 +142,12 @@ class PartList(models.Model):
     body = models.ForeignKey(Body)
 
 class HeaderName(models.Model):
-    name = models.CharField(max_length=1024, unique=True)
+    # if you're header name is longer than 78, fuck you.
+    name = models.CharField(max_length=78, unique=True)
 
 class HeaderData(models.Model):
-    data = models.CharField(max_length=1024, unique=True)
+    hashed = models.CharFields(max_length=80, unique=True) # <algo>:<hash>
+    data = models.TextField()
 
 class Header(models.Model):
     name = models.ForeignKey(HeaderName)
