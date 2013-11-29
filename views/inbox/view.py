@@ -23,16 +23,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 
 from inboxen.helper.mail import get_email, clean_html
-from inboxen.models import Inbox, Email, Domain
+from inboxen.models import Email
 
 @login_required
 def view(request, email_address, emailid):
 
     inbox, domain = email_address.split("@", 1)
     
-    try:
-        inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, user=request.user)
-    except Inbox.DoesNotExist:
+    if not request.user.inbox_set.get(inbox=inbox, domain__domain=domain).exists()
         raise Http404
 
     try:

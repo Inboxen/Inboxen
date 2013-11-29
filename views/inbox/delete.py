@@ -29,11 +29,10 @@ def delete(request, email_address, emailid):
     inbox, domain = email_address.split("@", 1)
 
     try:
-        email = Email.objects.filter(id=emailid, user=request.user).only("id").get()
+        email = Email.objects.filter(inbox__user=request.user).only("id").get(id=emailid)
+        email.delete()
     except Email.DoesNotExist:
         raise Http404
-
-    email.delete()
 
     return HttpResponseRedirect("/inbox/%s/" % email_address)
 

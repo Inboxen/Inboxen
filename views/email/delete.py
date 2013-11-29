@@ -33,15 +33,18 @@ def confirm(request, email):
         else:
             # set it to deleted first
             inbox, domain = email.split("@", 1)
-            inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain)
+            try:
+                inbox = request.user.inbox_set.get(inbox=inbox, domain__domain=domain)
+            except Inbox.DoesNotExist;
+                raise Http404
+
             inbox.deleted = True
             inbox.save()
-            # throw to queue
-            delete_inbox.delay(email, request.user)
-            # send back to home page
 
+            delete_inbox.delay(email, request.user)
             message = _("The inbox %s@%s has now been deleted.") % (inbox.inbox, inbox.domain)
             request.session["messages"] = [message]
+
             return HttpResponseRedirect("/user/home") 
 
         return HttpResponseRedirect("/user/home")

@@ -28,7 +28,6 @@ from inboxen.models import Inbox
 @login_required
 @require_POST
 def reply(request):
-
     context = {
         "page":_("Contact"),
         "registration_enabled":settings.ENABLE_REGISTRATION,

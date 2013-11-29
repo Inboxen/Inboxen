@@ -21,7 +21,6 @@ from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.db.models import Q
 
@@ -30,8 +29,8 @@ from inboxen.models import Inbox, Email
 from queue.delete.tasks import delete_email
 
 INBOX_ORDER = {
-                '+date':    'recieved_date',
-                '-date':    '-recieved_date',
+                '+date':    'received_date',
+                '-date':    '-received_date',
                 '+subject': 'subject',
                 '-subject': '-subject',
                 '+sender':  'sender',
@@ -45,28 +44,14 @@ def inbox(request, email_address="", page=1):
         mass_tasks(request)
 
     order = request.GET.get('sort','-date')
-    emails = Email.objects.defer('body').order_by(INBOX_ORDER[order])
+    emails = Email.objects.filter(inbox__user=request.user, deleted=False)
 
-    if not email_address:
-        # assuming global unified inbox
-        emails = emails.filter(user=request.user, deleted=False).defer('body')
-
-    else:
+    if len(email_address):
         # a specific inbox
         inbox, domain = email_address.split("@", 1)
-        try:
-            inbox = Inbox.objects.get(user=request.user, inbox=inbox, domain__domain=domain)
-            emails = emails.filter(user=request.user, inbox=inbox, deleted=False)
-        except ObjectDoesNotExist:
-            context = {
-                "page":_("%s - Inbox") % email_address,
-                "error":_("Can't find email address"),
-                "emails":[],
-                "email_address":email_address,
-                "user":request.user,
-            }
-            
-            return render(request, "inbox/inbox.html", context)
+        emails = emails.filter(inbox__inbox=inbox, inbox__domain__domain=domain)
+
+    emails.order_by(INBOX_ORDER[order])
 
     paginator = Paginator(emails, 100)
 
@@ -79,12 +64,11 @@ def inbox(request, email_address="", page=1):
 
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     for email in emails.object_list:
-        email.sender, email.subject = "", _("(No Subject)")
-        for header in email.headers.all():
-            if header.name == "From":
-                email.sender = header.data
-            elif header.name == "Subject" and header.data:
-                email.subject = header.data
+        subject = email.first_part.header_set.select_related('data').get(name__name='Subject')
+        email.subject = subject.data.data
+
+        sender = email.first_part.header_set.select_related('data').get(name__name='From')
+        email.sender = sender.data.data
 
     if email_address:
         page = _("%s - Inbox") % email_address
@@ -99,7 +83,7 @@ def inbox(request, email_address="", page=1):
         "pages":paginator_page(emails),
         "user":request.user,
     }
-    
+
     return render(request, "inbox/inbox.html", context)
 
 @transaction.atomic()

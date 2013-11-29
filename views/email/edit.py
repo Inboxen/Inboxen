@@ -23,44 +23,44 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
 from inboxen.helper.inbox import clean_tags, find_inbox
-from inboxen.models import Tag
+from inboxen.models import Inbox
 
 @login_required
 def edit(request, email):
+    inbox, domain = email.split("@")
 
-    inbox = find_inbox(email, user=request.user, deleted=False)
-
-    if not inbox:
-        # display a proper error here?
+    try:
+        inbox = request.user.inbox_set.filter(deleted=False).select_related(domain).get(inbox=inbox, domain__domain=domain)
+    except Inbox.DoesNotExist;
         return HttpResponseRedirect("/user/home")
+
+    domain = inbox.domain
 
     if request.method == "POST":
         if "tags" in request.POST and request.POST["tags"]:
             tags = clean_tags(request.POST["tags"])
 
             # remove old tags
-            for old_tag in Tag.objects.filter(inbox=inbox[0]):
+            for old_tag in inbox.tag_set.all():
                 old_tag.delete()
 
             for i, tag in enumerate(tags):
                 tags[i] = Tag(tag=tag)
-                tags[i].inbox = inbox[0]
+                tags[i].inbox = inbox
                 tags[i].save()
-
 
         return HttpResponseRedirect("/user/home")
 
-    tags = Tag.objects.filter(inbox=inbox[0])
+    tags = Tag.objects.filter(inbox=inbox)
     display_tags = ""
     for tag in tags:
         display_tags += ", %s" % str(tag)
 
-
     context = {
         "page":_("Edit %s") % email,
         "email":email,
-        "inbox":inbox[0].inbox,
-        "domain":inbox[1],
+        "inbox":inbox.inbox,
+        "domain":domain.domain,
         "tags":display_tags[2:],
     }
 

@@ -24,23 +24,22 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inboxen.helper.paginator import page as page_paginator
-from inboxen.models import Inbox, Tag, Email
+from inboxen.models import Inbox, Tag
 
 @login_required
 def home(request, page=1):
-
-    inboxes = Inbox.objects.filter(user=request.user).order_by('-created')
+    inboxes = request.user.inbox_set.order_by('-created')
     used = inboxes.count()
     inboxes = inboxes.filter(deleted=False)
 
     total = 0
     for inbox in inboxes:
         try:
-            tag = Tag.objects.filter(inbox=inbox)
-            inbox.tags = ", ".join([t.tag for t in tag])
+            tags = inbox.tag_set.all()
+            inbox.tags = ", ".join([tag.tag for tag in tags])
         except Tag.DoesNotExist:
             inbox.tags = ''
-        inbox.email_count = Email.objects.filter(inbox=inbox, read=False, deleted=False).count()
+        inbox.email_count = inbox.email_set.filter(read=False, deleted=False).count()
         total += inbox.email_count
 
     paginator = Paginator(inboxes, 20)
