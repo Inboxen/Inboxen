@@ -5,17 +5,13 @@ from datetime import datetime
 from celery import chain, chord, group, task
 from pytz import utc
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 
 from inboxen.helper.user import null_user, user_profile
 from inboxen.models import Attachment, Domain, Header, Email, Inbox, Tag
 
 log = logging.getLogger(__name__)
-
-MODELS = {
-    "header": Header,
-    "attachment": Attachment
-}
 
 @task(rate_limit="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.atomic()
@@ -114,7 +110,7 @@ def delete_account(user):
 
     log.debug("Deletion tasks for %s sent off", user.username)
 
-@task(rate_limit="0.5/m")
+@task(rate_limit="1/m")
 @transaction.atomic()
 def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000, count=0):
     """If something goes wrong and you've got a lot of orphaned entries in the
@@ -124,7 +120,7 @@ def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_numbe
     * filter_args and filter_kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
-    _model = MODELS[model]
+    _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
 
     if filter_args and filter_kwargs:
         items = _model.objects.only('id').filter(*filter_args, **filter_kwargs)
