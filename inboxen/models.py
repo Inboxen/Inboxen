@@ -68,7 +68,7 @@ class Domain(models.Model):
 class Inbox(models.Model):
     inbox = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     deleted = models.BooleanField(default=False)
 
@@ -134,7 +134,7 @@ class Body(models.Model):
         return self.hashed
 
 class PartList(models.Model):
-    next_part = models.ForeignKey('self')
+    next_part = models.ForeignKey('self', null=True) # TODO: change so delete CASCADE
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
 
 class HeaderName(models.Model):
