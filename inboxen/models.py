@@ -27,7 +27,7 @@ class BlogPost(models.Model):
     body = models.TextField()
     date = models.DateTimeField('posted')
     modified = models.DateTimeField('modified')
-    author = models.ForeignKey(User)
+    author = models.ForeignKey(User, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)
 
     @property
@@ -67,8 +67,8 @@ class Domain(models.Model):
 
 class Inbox(models.Model):
     inbox = models.CharField(max_length=64)
-    domain = models.ForeignKey(Domain, on_delete=models.DO_NOTHING)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     created = models.DateTimeField('Created')
     deleted = models.BooleanField(default=False)
 
@@ -135,7 +135,7 @@ class Body(models.Model):
 
 class PartList(models.Model):
     next_part = models.ForeignKey('self')
-    body = models.ForeignKey(Body)
+    body = models.ForeignKey(Body, on_delete=models.PROTECT)
 
 class HeaderName(models.Model):
     # if you're header name is longer than 78, fuck you.
@@ -146,8 +146,8 @@ class HeaderData(models.Model):
     data = models.TextField()
 
 class Header(models.Model):
-    name = models.ForeignKey(HeaderName)
-    data = models.ForeignKey(HeaderData)
+    name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
+    data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
     part = models.ForeignKey(PartList) # could possibly be a ManyToMany relationship?
 
     def __unicode__():
@@ -157,7 +157,7 @@ class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
     flags = PositiveSmallIntegerField(default=0) # maybe a custom field that can convert to flag names? :D
     received_date = DateTimeField()
-    first_part = OneToOneField(MimePart)
+    first_part = OneToOneField(MimePart, on_delete=models.PROTECT)
 
     def get_data(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
