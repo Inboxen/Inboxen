@@ -21,8 +21,7 @@ def delete_inbox(email, user=None):
             raise Exception("Need to give username")
         inbox, domain = email.split("@", 1)
         try:
-            domain = Domain.objects.get(domain=domain)
-            inbox = Inbox.objects.get(inbox=inbox, domain=domain, user=user)
+            inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, user=user)
         except Inbox.DoesNotExist:
             return False
     else:
@@ -56,10 +55,10 @@ def delete_email(email_id):
 
 @task(rate_limit=200)
 @transaction.atomic()
-def delete_email_item(model, item_id):
-    model = MODELS[model]
+def delete_inboxen_item(model, item_id):
+    _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
 
-    item = model.objects.only('id').get(id=item_id)
+    item = _model.objects.only('id').get(id=item_id)
     item.delete()
 
 @task()
@@ -80,11 +79,7 @@ def disown_inbox(result, inbox, futr_user=None):
 def delete_user(result, user):
     inbox = Inbox.objects.filter(user=user).only('id').exists()
     if inbox:
-        log.warning("Defering user deletion to later")
-        # defer this task until later
-        raise delete_user.retry(
-            exc=Exception("User still has inboxes"),
-            countdown=60)
+        raise Exception("User {0}  still has inboxes!".format(user))
     else:
         log.debug("Deleting user %s" % user.username)
         user.delete()
@@ -100,13 +95,9 @@ def delete_account(user):
 
     # get ready to delete all inboxes
     inbox = Inbox.objects.filter(user=user).only('id')
-    if len(inbox): # we're going to use all the results anyway, so this saves us calling the ORM twice
+    if len(inbox): # pull in all the data
         delete = chord([chain(delete_inbox.s(a), disown_inbox.s(a)) for a in inbox], delete_user.s(user))
         delete.apply_async()
-
-    # scrub user info completley
-    user_profile(user).delete()
-    user.delete()
 
     log.debug("Deletion tasks for %s sent off", user.username)
 
@@ -116,7 +107,7 @@ def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_numbe
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
-    * model is a key in MODELS
+    * model is a string
     * filter_args and filter_kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
