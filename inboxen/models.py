@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen front-end.
 #
 #    Inboxen front-end is free software: you can redistribute it and/or modify
@@ -21,6 +21,8 @@ import markdown
 
 from django.contrib.auth.models import User
 from django.db import models
+
+from inboxen.managers import BodyManager, HeaderManager
 
 class BlogPost(models.Model):
     subject = models.CharField(max_length=512)
@@ -110,6 +112,8 @@ class Body(models.Model):
         null=True,
     )
 
+    objects = BodyManager()
+
     def set_data(self, data):
         try:
             data = data.encode('utf-8')
@@ -134,7 +138,7 @@ class Body(models.Model):
         return self.hashed
 
 class PartList(models.Model):
-    next_part = models.ForeignKey('self', null=True) # TODO: change so delete CASCADE
+    prev_part = models.OneToOneField('self', null=True)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
 
 class HeaderName(models.Model):
@@ -148,14 +152,17 @@ class HeaderData(models.Model):
 class Header(models.Model):
     name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
     data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
-    part = models.ForeignKey(PartList) # could possibly be a ManyToMany relationship?
+    part = models.ForeignKey(PartList)
+    prev_header = models.OneToOneField('self', null=True)
+
+    objects = HeaderManager()
 
     def __unicode__():
         return u"{0}".format(self.name.name)
 
 class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
-    flags = PositiveSmallIntegerField(default=0) # maybe a custom field that can convert to flag names? :D
+    flags = PositiveSmallIntegerField(default=0) # maybe a custom field + manager that can convert to flag names? :D
     received_date = DateTimeField()
     first_part = OneToOneField(MimePart, on_delete=models.PROTECT)
 
