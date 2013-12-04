@@ -165,30 +165,8 @@ def liberate_tarball(result, mail_path, options):
 @transaction.atomic()
 def liberation_finish(result, options):
     """ Create email to send to user """
-
-    if not options.get("noEmail", False):
-        archive = Attachment(
-                    path=result['path'],
-                    content_type=result['mime-type'],
-                    content_disposition="emails-%s.%s" % (result['date'], options.get('compressType', 'tar.gz'))
-                    )
-        archive.save()
-
+    tags = liberate_inbox_tags(options['user'], result['date'])
     profile = liberate_user_profile(options['user'], result['results'], result['date'])
-    profile = Attachment(
-                data=profile['data'],
-                content_type=profile['type'],
-                content_disposition=profile['name']
-                )
-    profile.save()
-
-    inbox_tags = liberate_inbox_tags(options['user'], result['date'])
-    inbox_tags = Attachment(
-                data=inbox_tags['data'],
-                content_type=inbox_tags['type'],
-                content_disposition=inbox_tags['name']
-                )
-    inbox_tags.save()
 
     inbox = Inbox.objects.filter(tag__tag="Inboxen")
     inbox = inbox.filter(tag__tag="data")
@@ -213,13 +191,40 @@ def liberation_finish(result, options):
             tags[i] = Tag(tag=tag, inbox=inbox)
             tags[i].save()
 
+    parts = []
+
+    if not options.get("noEmail", False):
+        archive_body = Body.objects.get_or_create(path=result["path"])[0]
+        archive_part = PartList(body=archive_body)
+        archive_headers = archive.header_set
+        cont_dispos = "attachment; filename=\"emails-{0}.{1}\"".format(result['date'], options.get('compressType', 'tar.gz'))
+        archive_headers.get_or_create(name="Content-Type", data=result['mime-type'], ordinal=0)
+        archive_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
+
+        parts.append(archive_part)
+
+    profile_body = Body.objects.get_or_create(data=profile['data'])[0]
+    profile_part = PartList(body=profile_body)
+    profile_headers = profile_part.header_set
+    cont_dispos = "attachment; filename=\"{0}\"".format(profile['name'])
+    profile_headers.get_or_create(name="Content-Type", data=profile['type'], ordinal=0)
+    profile_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
+
+    parts.append(profile_part)
+
+    tags_body = Body.objects.get_or_create(data=tags['data'])[0]
+    tags_part = PartList(body=tags_body)
+    tags_headers = tags_part.header_set
+    cont_dispos = "attachment; filename=\"{0}\"".format(tags['name'])
+    tags_headers.get_or_create(name="Content-Type", data=tags['type'], ordinal=0)
+    tags_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
 
     send_email(
         inbox=inbox,
         sender="support@inboxen.org",
         subject=settings.LIBERATION_SUBJECT,
         body=settings.LIBERATION_BODY,
-        attachments=[archive, profile, inbox_tags]
+        attachments=parts
         )
     log.debug("Finished liberation for %s", user.username)
 
@@ -232,7 +237,7 @@ def liberate_user_profile(user_id, email_results, date):
 
 
     # user's preferences
-    profile = user_profile(user)
+    profile = user.userprofile
     if profile.html_preference == 0:
         data['preferences']['html_preference'] = 'Reject HTML'
     elif profile.html_preference == 1:
