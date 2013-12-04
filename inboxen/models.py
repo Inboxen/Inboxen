@@ -139,7 +139,7 @@ class Body(models.Model):
 
 class PartList(models.Model):
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
-    ordinal = models.IntegerField()
+    ordinal = models.IntegerField(null=True)
 
 class HeaderName(models.Model):
     # if you're header name is longer than 78, fuck you.
@@ -153,7 +153,7 @@ class Header(models.Model):
     name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
     data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
     part = models.ForeignKey(PartList)
-    ordinal = models.IntegerField()
+    ordinal = models.IntegerField(null=True)
 
     objects = HeaderManager()
 
