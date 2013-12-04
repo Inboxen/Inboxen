@@ -35,14 +35,14 @@ class HashedManager(models.Manager):
 
 class HeaderManager(HashedManager):
     use_for_related_fields = True
-    def get_or_create(self, name, data, hashed=None):
+    def create(self, name, data, ordinal, hashed=None):
         if hashed is not None:
             hashed = self.hash_it(data)
 
         name = HeaderName.objects.only('id').get_or_create(name=name)[0]
         data, created = HeaderData.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
 
-        return (super(HeaderManager, self).create(name=name, data=data), created)
+        return (super(HeaderManager, self).create(name=name, data=data, ordinal=ordinal), created)
 
 class BodyManager(HashedManager):
     use_for_related_fields = True
