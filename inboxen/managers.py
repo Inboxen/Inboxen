@@ -34,8 +34,6 @@ class HashedManager(models.Manager):
         return hashed
 
 class HeaderManager(HashedManager):
-    #TODO: provide method to get ordered dict of headers or similar
-
     use_for_related_fields = True
     def get_or_create(self, name, data, hashed=None):
         if hashed is not None:
@@ -44,7 +42,7 @@ class HeaderManager(HashedManager):
         name = HeaderName.objects.only('id').get_or_create(name=name)[0]
         data, created = HeaderData.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
 
-        return (super(HeaderManager, self).get_or_create(name=name, data=data)[0], created)
+        return (super(HeaderManager, self).create(name=name, data=data), created)
 
 class BodyManager(HashedManager):
     use_for_related_fields = True

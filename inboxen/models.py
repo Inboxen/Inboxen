@@ -138,8 +138,8 @@ class Body(models.Model):
         return self.hashed
 
 class PartList(models.Model):
-    prev_part = models.OneToOneField('self', null=True)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
+    ordinal = models.IntegerField(null=True)
 
 class HeaderName(models.Model):
     # if you're header name is longer than 78, fuck you.
@@ -153,7 +153,7 @@ class Header(models.Model):
     name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
     data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
     part = models.ForeignKey(PartList)
-    prev_header = models.OneToOneField('self', null=True)
+    ordinal = models.IntegerField(null=True)
 
     objects = HeaderManager()
 
@@ -164,7 +164,6 @@ class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
     flags = PositiveSmallIntegerField(default=0) # maybe a custom field + manager that can convert to flag names? :D
     received_date = DateTimeField()
-    first_part = OneToOneField(MimePart, on_delete=models.PROTECT)
 
     def get_data(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
