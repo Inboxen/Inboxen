@@ -138,8 +138,9 @@ class Body(models.Model):
         return self.hashed
 
 class PartList(models.Model):
+    email = models.ForeignKey(Email)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
-    ordinal = models.IntegerField(null=True)
+    ordinal = models.IntegerField()
 
 class HeaderName(models.Model):
     # if you're header name is longer than 78, fuck you.
@@ -153,7 +154,7 @@ class Header(models.Model):
     name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
     data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
     part = models.ForeignKey(PartList)
-    ordinal = models.IntegerField(null=True)
+    ordinal = models.IntegerField()
 
     objects = HeaderManager()
 
