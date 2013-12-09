@@ -31,9 +31,9 @@ def download(request, attachmentid, method="download"):
         return HttpResponseRedirect("/user/home")
 
     data = attachment.body.data
-    headers = attachment.header_set.select_related('name', 'data')
-    headers = headers.filter(Q(name__name="Content-Type") | Q(name__name="Content-Disposition"))
-    headers = dict((header.name, header.data) for header in headers)
+    headers = attachment.header_set
+    headers = headers.filter(Q(header_name_name="Subject")|Q(header__name__name="From"))
+    headers = dict(headers.values_list("name__name", "data__data"))
 
     try:
         response = HttpResponse(data, content_type=headers["Content-Type"].split(";",1)[0])
