@@ -22,6 +22,8 @@ import markdown
 from django.contrib.auth.models import User
 from django.db import models
 
+from bitfield import BitField
+
 from inboxen.managers import BodyManager, HeaderManager
 
 class BlogPost(models.Model):
@@ -163,13 +165,13 @@ class Header(models.Model):
 
 class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
-    flags = PositiveSmallIntegerField(default=0) # maybe a custom field + manager that can convert to flag names? :D
+    flags = BitField(flags=("deleted","read"), default=0)
     received_date = DateTimeField()
 
-    def get_data(self):
+    def get_eid(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
     
-    def set_data(self, data):
+    def set_eid(self, data):
         pass # should not be used
 
-    eid = property(get_data, set_data)
+    eid = property(get_eid, set_eid)
