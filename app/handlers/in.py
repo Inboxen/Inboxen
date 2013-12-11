@@ -19,61 +19,35 @@
 #
 ##
 
-from config.settings import (DEBUG,
-                            reject_dir,
-                            accepted_queue_dir,
-                            accepted_queue_opts_in,
-                            datetime_format,
-                            recieved_header_name)
-
-from salmon.routing import route, stateless, nolocking
-from salmon.server import SMTPError
+from salmon.routing import route, stateless
 from salmon.queue import Queue
-from django.db import DatabaseError
-from app.model.inbox import inbox_exists
-from datetime import datetime
-from pytz import utc
+from salmon.server import SMTPError
+
+from django.db import DatabaseError, transaction
+
+from config.settings import DEBUG
+from app.model.email import make_email
+
+from inboxen.models import Inbox
+
 import logging
 
 log = logging.getLogger(__name__)
 
-# We don't change state based on who the sender is, so we're stateless and
-# don't return any other state. Locking is done by the queue (on the filesystem
-# at the time of writing)
 @route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless
 @nolocking
+@transaction.atomic()
 def START(message, inbox=None, domain=None):
-    """Does this inbox exist? If yes, queue it. If no, drop it."""
     try:
-        exists, deleted = inbox_exists(inbox, domain)
+        inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain)
+
+        if inbox.deleted:
+            raise SMTPError(550, "No such address")
+
+        make_email(message, inbox)
     except DatabaseError, e:
         log.debug("DB error: %s", e)
-        raise SMTPError(451, "Oops, melon exploded")
-
-    if exists:
-        message[recieved_header_name] = datetime.now(utc).strftime(datetime_format)
-
-        # the queue needs to know who the message is for
-        message['x-original-to'] = message['to']
-        message['to'] = "%s@%s" % (inbox, domain)
-
-        #if spam filtering is enabled, do so
-
-        #if not spam, or not filter:
-        accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts_in)
-        accept_queue.push(message)
-        log.debug("APPROVED inbox %s on domain %s", inbox, domain)
-    else:
-        if DEBUG:
-            queue = Queue(reject_dir, **accepted_queue_opts_in)
-            queue.push(message)
-            log.debug("REJECTED inbox %s on domain %s", inbox, domain)
-
-        # Raise an error, tell server whether to try again or not
-        if deleted:
-            code = 550
-        else:
-            code = 450
-        raise SMTPError(code, 'Inbox %s@%s does not exist')
-
+        raise SMTPError(451, "Error processing message, try again later.")
+    except Inbox.DoesNotExist:
+        raise SMTPError(450, "No such address")

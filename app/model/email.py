@@ -23,58 +23,36 @@ from datetime import datetime
 from pytz import utc
 import logging
 
-from inboxen.models import Inbox, Attachment, Email, Header
+from inboxen.models import Body, Email
 from config.settings import datetime_format, recieved_header_name
-from django.db import transaction
 from dateutil import parser
 
 log = logging.getLogger(__name__)
 
-@transaction.atomic()
-def make_email(message, inbox, domain):
+def make_email(message, inbox):
     """Push message to the database.
-
-    Will throw an Inbox.DoesNotExist exception if inbox and domain are not valid"""
-
-    try:
-        inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, deleted=False)
-    except Inbox.DoesNotExist, e:
-        log.debug("No inbox: %s", e)
-        return # inbox deleted while msg was in queue
-
+    """
     user = inbox.user
     body = message.base.body
-    try:
-        recieved_date = parser.parse(message[recieved_header_name])
-    except (AttributeError, KeyError):
-        log.debug("No %s header in message, creating new timestamp", recieved_header_name)
-        recieved_date = datetime.now(utc)
+    recieved_date = datetime.now(utc)
 
-    email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
+    email = Email(inbox=inbox, user=user, recieved_date=recieved_date)
     email.save()
 
-    message['Content-Type'] = message.base.content_encoding['Content-Type'][0] or 'text/plain'
-    message['Content-Disposition'] = message.base.content_encoding['Content-Disposition'][0] or ''
+    ordinal = 0
+    make_part(message.base, ordinal, email)
 
-    head_list = []
-
-    for name in message.keys():
-        header = Header(name=name, data=message[name])
-        header.save()
-        head_list.append(header)
-    # add all the headers at once should save us some queries
-    email.headers.add(*head_list)
-
-    attach_list = []
     for part in message.walk():
-        if not part.body:
-            part.body = u''
-        attachment = Attachment(
-                        content_type=part.content_encoding['Content-Type'][0],
-                        content_disposition=part.content_encoding['Content-Disposition'][0],
-                        data=part.body
-                        )
-        attachment.save()
-        attach_list.append(attachment)
-    # as with headers above
-    email.attachments.add(*attach_list)
+        ordinal = ordinal + 1
+        make_part(part, ordinal, email)
+
+def make_part(mime_part, part_ordinal, email)
+    """Make a PartList object and add a body and headers
+    """
+    body = Body.objects.only("id").get_or_create(data=mime_part.body)[0]
+    part = email.partlist_set.create(body=body, ordinal=ordinal)
+
+    ordinal = 0
+    for header in mime_part.keys():
+        part.header_set.create(ordinal=ordinal, name=header, data=mime_part[header])
+        ordinal = ordinal + 1

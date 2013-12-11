@@ -8,10 +8,6 @@ DEBUG = False
 sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-accepted_queue_dir = 'run/accepted'
-accepted_queue_opts_in = {}
-accepted_queue_opts_out = {}
-
 reject_dir = "run/rejected"
 
 receiver_config = {'host': 'localhost', 'port': 8823}
