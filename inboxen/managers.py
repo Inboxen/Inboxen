@@ -18,12 +18,15 @@
 ##
 
 import hashlib
+from random import choice
+from string import ascii_lowercase
+from types import StringTypes
 
 from django.conf import settings
-from django.db import models
+from django.db import IntegrityError, models
 from django.utils.encoding import smart_bytes
 
-from inboxen.models import Body, HeaderName, HeaderData
+from inboxen.models import Body, Domain, HeaderName, HeaderData, Inbox, User
 
 class HashedManager(models.Manager):
     def hash_it(self, data):
@@ -33,20 +36,62 @@ class HashedManager(models.Manager):
 
         return hashed
 
+class InboxManager(models.Manager):
+    def create(self, domain, length=0, **kwargs):
+        """length is ignored currently"""
+        #TODO: define default for length with issue #57
+        length = 5
+
+        if type(domain) in StringTypes:
+            domain = Domain.objects.only('id').get(domain=domain)
+
+        doing = True
+        while doing:
+            # loop around until we create a unique address
+            local_part = ""
+            for i in range(length):
+                local_part += choice(ascii_lowercase)
+
+            inbox = self.model(inbox=inbox, domain=domain, **kwargs)
+            try:
+                inbox.save(force_insert=True)
+                doing = False
+            except IntegrityError:
+                doing = True
+
+        return inbox
+
+    def from_string(self, email, user=None, deleted=False):
+        """Returns an Inbox object or raises DoesNotExist"""
+        inbox, domain = email.split("@", 1)
+
+        inbox = self.filter(inbox=inbox, domain__domain=domain, deleted)
+
+        if type(user) is User:
+            inbox = inbox.filter(user=user)
+
+        inbox = inbox.get()
+
+        return inbox
+                
+##
+# Email managers
+##
+
 class HeaderManager(HashedManager):
     use_for_related_fields = True
-    def create(self, name, data, ordinal, hashed=None):
+    def create(self, name, data, ordinal, hashed=None, **kwargs):
         if hashed is not None:
             hashed = self.hash_it(data)
 
         name = HeaderName.objects.only('id').get_or_create(name=name)[0]
         data, created = HeaderData.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
 
-        return (super(HeaderManager, self).create(name=name, data=data, ordinal=ordinal), created)
+        return (super(HeaderManager, self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
 class BodyManager(HashedManager):
     use_for_related_fields = True
-    def get_or_create(self, data=None, path=None, hashed=None):
+    def get_or_create(self, data=None, path=None, hashed=None, **kwargs):
         if hashed is not None:
             if path is not None:
                 # look for data in the path
@@ -57,4 +102,4 @@ class BodyManager(HashedManager):
                     tpath.close()
             hashed = self.hash_it(data)
 
-        return super(BodyManager, self).get_or_create(hashed=hashed, defaults={'path':path, 'data':data})
+        return super(BodyManager, self).get_or_create(hashed=hashed, defaults={'path':path, 'data':data}, **kwargs)

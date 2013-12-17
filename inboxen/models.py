@@ -24,7 +24,7 @@ from django.db import models
 
 from bitfield import BitField
 
-from inboxen.managers import BodyManager, HeaderManager
+from inboxen.managers import BodyManager, HeaderManager, InboxManager
 
 class BlogPost(models.Model):
     subject = models.CharField(max_length=512)
@@ -75,6 +75,8 @@ class Inbox(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     deleted = models.BooleanField(default=False)
+
+    objects = InboxManager()
 
     def __unicode__(self):
         deleted = ""

@@ -26,20 +26,6 @@ from django.db import transaction
 from inboxen.helper.user import user_profile
 from inboxen.models import Email, Tag, Inbox, Domain, Request
 
-def gen_inbox(count, inbox="", ocount=5):
-
-    if count <= 0:
-        # now we need to check if it's taken.
-        if Inbox.objects.filter(inbox=inbox).exists():
-            # start all over again
-            return gen_inbox(ocount)
-        else:
-            return inbox
-    
-    inbox += choice(ascii_lowercase)
-    
-    return gen_inbox(count-1, inbox, ocount)
-
 def clean_tags(tags):
     """ Tags some tags from user input """
     if "," in tags:
@@ -52,21 +38,6 @@ def clean_tags(tags):
         tags[i] = tag
 
     return tags
-
-def find_inbox(email, user=None, deleted=False):
-    """ Returns a inbox object from an email """
-    inbox, domain = email.split("@", 1)
-
-    try:
-        domain = Domain.objects.get(domain=domain)
-        if user:
-            inbox = Inbox.objects.get(inbox=inbox, domain=domain, deleted=deleted, user=user)
-        else:
-            inbox = Inbox.objects.get(inbox=inbox, domain=domain, deleted=deleted)
-    except ObjectDoesNotExist:
-        return None
-
-    return (inbox, domain)
 
 def inbox_available(user, inboxes=None):
     """ Returns the amount of inboxes available """
