@@ -26,7 +26,7 @@ from django.db import models, transaction
 from bitfield import BitField
 from pytz import utc
 
-from inboxen.managers import BodyManager, HeaderManager, InboxManager
+from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
 
 class BlogPost(models.Model):
     subject = models.CharField(max_length=512)
@@ -110,6 +110,8 @@ class Inbox(models.Model):
 class Tag(models.Model):
     inbox = models.ForeignKey(Inbox)
     tag = models.CharField(max_length=256)
+
+    objects = TagManager()
 
     def __unicode__(self):
         return self.tag
