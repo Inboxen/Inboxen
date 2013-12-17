@@ -1,7 +1,7 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
 #
-#    This file is part of Inboxen front-end.
+#    This file is part of Inboxen.
 #
 #    Inboxen front-end is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published by
@@ -17,12 +17,14 @@
 #    along with Inboxen front-end.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime
 import markdown
 
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 
 from bitfield import BitField
+from pytz import utc
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager
 
@@ -42,6 +44,23 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
     pool_amount = models.IntegerField(default=500)
+
+    def available_inboxes(self):
+        used = self.user.inbox_set.count()
+        left = self.pool_amount - used
+
+        if left < 10: #TODO: issue #57
+            with transaction.atomic():
+                try:
+                    last_request = self.user.request_set.orderby('-date').only('succeeded')[0].succeeded
+                except IndexError:
+                    last_request = True
+
+                if last_request:
+                    amount = self.pool_amont + 500 #TODO: issue #57
+                    request = Request(amount=amount, date=datetime.now(utc))
+
+        return left
 
 class TOTPAuth(models.Model):
     user = models.OneToOneField(User)
@@ -100,7 +119,7 @@ class Request(models.Model):
     succeeded = models.NullBooleanField(default=None)
     date = models.DateTimeField('requested')
     authorizer = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-    requester = models.ForeignKey(User, related_name="requester")
+    requester = models.ForeignKey(User)
     result = models.CharField(max_length=1024, blank=True, null=True)
 
 ##

@@ -38,34 +38,3 @@ def clean_tags(tags):
         tags[i] = tag
 
     return tags
-
-def inbox_available(user, inboxes=None):
-    """ Returns the amount of inboxes available """
-
-    profile = user_profile(user)
-    pool = profile.pool_amount
-
-    if inboxes:
-        used = inboxes.count()
-    else:
-        inboxes = Inbox.objects.filter(user=user)
-        used = inboxes.count()
-
-    left = pool - used
-
-    if left < 10:
-        with transaction.atomic():
-            try:
-                last_request = Request.objects.filter(user=user).orderby('-date').only('succeeded')[0].succeeded
-            except IndexError:
-                last_request = True
-
-            if last_request:
-                profile = user_profile(request.user)
-                amount = profile.pool_amount + 500
-                current_request = Request(amount=amount, date=datetime.now(utc))
-                current_request.requester = user
-                current_request.save()
-
-    return left
-
