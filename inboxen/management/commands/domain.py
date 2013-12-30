@@ -24,7 +24,6 @@ from pytz import utc
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from inboxen.helper.user import null_user
 from inboxen.models import Inbox, Domain
 
 class Command(BaseCommand):
@@ -51,7 +50,6 @@ class Command(BaseCommand):
                 support_inbox = Inbox(
                         inbox="support",
                         domain=d,
-                        user=null_user(),
                         created=datetime.now(utc))
                 support_inbox.save()
 
