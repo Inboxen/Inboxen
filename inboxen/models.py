@@ -82,13 +82,19 @@ class Statistic(models.Model):
 ##
 
 class Domain(models.Model):
-    # these are the domains available to create inboxes from
+    """Domain model"""
     domain = models.CharField(max_length=253, unique=True)
 
     def __unicode__(self):
         return self.domain
 
 class Inbox(models.Model):
+    """Inbox model
+
+    Object manager has a custom create() method to generate a random local part
+    and a from_string() method to grab an Inbox object from the database given
+    a string "inbox@domain"
+    """
     inbox = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
@@ -108,6 +114,11 @@ class Inbox(models.Model):
         unique_together = (('inbox', 'domain'),)
 
 class Tag(models.Model):
+    """Tag model
+
+    Object manager has a from_string() method that returns Tag objects from a
+    string.
+    """
     inbox = models.ForeignKey(Inbox)
     tag = models.CharField(max_length=256)
 
@@ -117,6 +128,7 @@ class Tag(models.Model):
         return self.tag
 
 class Request(models.Model):
+    """Inbox allocation request model"""
     amount = models.IntegerField()
     succeeded = models.NullBooleanField(default=None)
     date = models.DateTimeField('requested')
@@ -129,6 +141,11 @@ class Request(models.Model):
 ##
 
 class Body(models.Model):
+    """Body model
+
+    Object manager has a get_or_create() method that deals with duplicated
+    bodies.
+    """
     path = models.FilePathField(default=None, null=True, blank=True)
     hashed = models.CharFields(max_length=80, unique=True) # <algo>:<hash>
     _data = models.BinaryField(
@@ -163,19 +180,41 @@ class Body(models.Model):
         return self.hashed
 
 class PartList(models.Model):
+    """Part model
+
+    non-MIME part or MIME part(s)
+
+    ordinal preserves the order of parts
+    cardinal preserves the tree structure of parts
+    """
     email = models.ForeignKey(Email)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
     ordinal = models.IntegerField()
+    cardinal = models.IntegerField()
 
 class HeaderName(models.Model):
-    # if you're header name is longer than 78, fuck you.
+    """Header name model
+
+    Limited to 78 characters
+    """
     name = models.CharField(max_length=78, unique=True)
 
 class HeaderData(models.Model):
+    """Header data model
+
+    RFC 2822 implies that header data may be infinite, may as well support it!
+    """
     hashed = models.CharFields(max_length=80, unique=True) # <algo>:<hash>
     data = models.TextField()
 
 class Header(models.Model):
+    """Header model
+
+    ordinal preserves the order of headers as in the original message
+
+    Object manager has a create() method that accepts name and data, it deals
+    with duplicated header names/data behind the scenes
+    """
     name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
     data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
     part = models.ForeignKey(PartList)
@@ -187,9 +226,17 @@ class Header(models.Model):
         return u"{0}".format(self.name.name)
 
 class Email(models.Model):
+    """Email model
+
+    eid is a convience property that outputs a hexidec ID
+    flags is a BitField for flags such as deleted, read, etc.
+
+    The body and headers can be found in the first PartList (cardinal 0,
+    ordinal 0), MIME parts follow on from here.
+    """
     inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=("deleted","read"), default=0)
-    received_date = DateTimeField()
+    flags = BitField(flags=("deleted","read","seen"), default=0)
+    received_date = models.DateTimeField()
 
     def get_eid(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
