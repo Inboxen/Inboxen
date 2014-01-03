@@ -24,6 +24,7 @@ from django.contrib.auth.models import User
 from django.db import models, transaction
 
 from bitfield import BitField
+from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
@@ -179,18 +180,21 @@ class Body(models.Model):
     def __unicode__(self):
         return self.hashed
 
-class PartList(models.Model):
+class PartList(MPTTModel):
     """Part model
 
     non-MIME part or MIME part(s)
 
-    ordinal preserves the order of parts
-    cardinal preserves the tree structure of parts
+    See MPTT docs on how to use this model
+
+    email is passed to Email as a workaround for https://github.com/django-mptt/django-mptt/issues/189
     """
-    email = models.ForeignKey(Email)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
-    ordinal = models.IntegerField()
-    cardinal = models.IntegerField()
+    email = models.PositiveIntegerField()
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+
+    class MPTTMeta:
+        tree_id_attr = 'email'
 
 class HeaderName(models.Model):
     """Header name model
@@ -234,6 +238,7 @@ class Email(models.Model):
     The body and headers can be found in the first PartList (cardinal 0,
     ordinal 0), MIME parts follow on from here.
     """
+    id = models.PositiveIntegerField(primary_key=True)
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted","read","seen"), default=0)
     received_date = models.DateTimeField()
