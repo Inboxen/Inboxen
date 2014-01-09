@@ -24,7 +24,7 @@ from django.contrib.auth.models import User
 from django.db import models, transaction
 
 from bitfield import BitField
-from mptt.models import MPTTModel, TreeForeignKey
+from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
@@ -238,7 +238,7 @@ class Email(models.Model):
     The body and headers can be found in the root of the PartList tree with
     a tree-id the same as Email.id.
     """
-    id = models.PositiveIntegerField(primary_key=True)
+    id = TreeOneToOneField(PartList, primary_key=True)
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted","read","seen"), default=0)
     received_date = models.DateTimeField()
