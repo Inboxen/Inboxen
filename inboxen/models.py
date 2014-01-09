@@ -235,8 +235,8 @@ class Email(models.Model):
     eid is a convience property that outputs a hexidec ID
     flags is a BitField for flags such as deleted, read, etc.
 
-    The body and headers can be found in the first PartList (cardinal 0,
-    ordinal 0), MIME parts follow on from here.
+    The body and headers can be found in the root of the PartList tree with
+    a tree-id the same as Email.id.
     """
     id = models.PositiveIntegerField(primary_key=True)
     inbox = models.ForeignKey(Inbox)
