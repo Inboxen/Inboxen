@@ -29,6 +29,8 @@ from app.model.email import make_email
 
 import logging
 
+log = logging.getLogger(__name__)
+
 @route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless
 def START(message, inbox=None, domain=None):
@@ -37,12 +39,12 @@ def START(message, inbox=None, domain=None):
     # queue
     try:
         make_email(message, inbox, domain)
-    except Exception, e:
-        logging.debug("DB error: %s " % str(e))
+    except DatabaseError, e:
+        log.debug("DB error: %s", e)
         if RETRY in message:
             if int(message[RETRY]) > 2:
                 # tried to many times, dump the message
-                logging.error("Retried too many times")
+                log.error("Retried too many times")
                 raise
             message[RETRY] = str(int(message[RETRY]) + 1)
         else:
