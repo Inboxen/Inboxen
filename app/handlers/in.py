@@ -21,8 +21,7 @@
 
 from config.settings import (DEBUG,
                             reject_dir,
-                            accepted_queue_dir,
-                            accepted_queue_opts_in,
+                            queue_opts,
                             datetime_format,
                             recieved_header_name)
 
@@ -31,15 +30,11 @@ from salmon.server import SMTPError
 from salmon.queue import Queue
 from django.db import DatabaseError
 from app.model.inbox import inbox_exists
-from datetime import datetime
-from pytz import utc
+from app.model.email import make_email
 import logging
 
 log = logging.getLogger(__name__)
 
-# We don't change state based on who the sender is, so we're stateless and
-# don't return any other state. Locking is done by the queue (on the filesystem
-# at the time of writing)
 @route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless
 @nolocking
@@ -52,18 +47,15 @@ def START(message, inbox=None, domain=None):
         raise SMTPError(451, "Oops, melon exploded")
 
     if exists:
-        message[recieved_header_name] = datetime.now(utc).strftime(datetime_format)
-
-        # the queue needs to know who the message is for
+        log.debug("APPROVED inbox %s on domain %s", inbox, domain)
         message['x-original-to'] = message['to']
         message['to'] = "%s@%s" % (inbox, domain)
 
-        #if spam filtering is enabled, do so
-
-        #if not spam, or not filter:
-        accept_queue = Queue(accepted_queue_dir, **accepted_queue_opts_in)
-        accept_queue.push(message)
-        log.debug("APPROVED inbox %s on domain %s", inbox, domain)
+        try:
+            make_email(message, inbox, domain)
+        except DatabaseError, e:
+            log.debug("DB error: %s", e)
+            raise SMTPError(451, "Oops, melon exploded")
     else:
         if DEBUG:
             queue = Queue(reject_dir, **accepted_queue_opts_in)
@@ -75,5 +67,5 @@ def START(message, inbox=None, domain=None):
             code = 550
         else:
             code = 450
-        raise SMTPError(code, 'Inbox %s@%s does not exist')
+        raise SMTPError(code, 'Inbox %s@%s does not exist' % (inboxe, domain))
 

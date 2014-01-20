@@ -24,9 +24,7 @@ from pytz import utc
 import logging
 
 from inboxen.models import Inbox, Attachment, Email, Header
-from config.settings import datetime_format, recieved_header_name
 from django.db import transaction
-from dateutil import parser
 
 log = logging.getLogger(__name__)
 
@@ -44,11 +42,7 @@ def make_email(message, inbox, domain):
 
     user = inbox.user
     body = message.base.body
-    try:
-        recieved_date = parser.parse(message[recieved_header_name])
-    except (AttributeError, KeyError):
-        log.debug("No %s header in message, creating new timestamp", recieved_header_name)
-        recieved_date = datetime.now(utc)
+    recieved_date = datetime.now(utc)
 
     email = Email(inbox=inbox, user=user, body=body, recieved_date=recieved_date)
     email.save()
