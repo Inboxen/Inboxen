@@ -66,5 +66,5 @@ def START(message, inbox=None, domain=None):
             code = 550
         else:
             code = 450
-        raise SMTPError(code, 'Inbox %s@%s does not exist' % (inboxe, domain))
+        raise SMTPError(code, 'Inbox %s@%s does not exist' % (inbox, domain))
 
