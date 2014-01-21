@@ -22,8 +22,7 @@
 from config.settings import (DEBUG,
                             reject_dir,
                             queue_opts,
-                            datetime_format,
-                            recieved_header_name)
+                            )
 
 from salmon.routing import route, stateless, nolocking
 from salmon.server import SMTPError
