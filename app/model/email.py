@@ -23,7 +23,7 @@ from datetime import datetime
 from pytz import utc
 import logging
 
-from inboxen.models import Body, Email
+from inboxen.models import Body, Email, PartList
 from config.settings import datetime_format, recieved_header_name
 from dateutil import parser
 
@@ -36,23 +36,26 @@ def make_email(message, inbox):
     body = message.base.body
     recieved_date = datetime.now(utc)
 
-    email = Email(inbox=inbox, user=user, recieved_date=recieved_date)
+    body = Body.objects.only("id").get_or_create(data=mime_part.body)[0]
+
+    part = PartList(body=body)
+    part.save()
+
+    parents = {message.base: part.id}
+
+    for header in message.keys():
+        ordinal = message.keys().index(header)
+        Header.objects.create(name=header, data=message[header], ordinal=ordinal, part=part)
+
+    email = Email(id=part.email, inbox=inbox, recieved_date=recieved_date)
     email.save()
 
-    ordinal = 0
-    make_part(message.base, ordinal, email)
-
     for part in message.walk():
-        ordinal = ordinal + 1
-        make_part(part, ordinal, email)
+        body = Body.objects.only("id").get_or_create(data=mime_part.body)[0]
+        part_item = PartList(body=body, parent=parents[part.parent])
+        part_item.save()
+        parents[part] = part_item.id
 
-def make_part(mime_part, part_ordinal, email)
-    """Make a PartList object and add a body and headers
-    """
-    body = Body.objects.only("id").get_or_create(data=mime_part.body)[0]
-    part = email.partlist_set.create(body=body, ordinal=ordinal)
-
-    ordinal = 0
-    for header in mime_part.keys():
-        part.header_set.create(ordinal=ordinal, name=header, data=mime_part[header])
-        ordinal = ordinal + 1
+        for header in part.keys():
+            ordinal = part.keys().index(header)
+            Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
