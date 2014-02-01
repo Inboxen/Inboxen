@@ -26,8 +26,6 @@ from django.conf import settings
 from django.db import IntegrityError, models
 from django.utils.encoding import smart_bytes
 
-from inboxen.models import Body, Domain, HeaderName, HeaderData, Inbox, User
-
 class HashedManager(models.Manager):
     def hash_it(self, data):
         hashed = hashlib.new(settings.COLUMN_HASHER)
@@ -65,7 +63,7 @@ class InboxManager(models.Manager):
         """Returns an Inbox object or raises DoesNotExist"""
         inbox, domain = email.split("@", 1)
 
-        inbox = self.filter(inbox=inbox, domain__domain=domain, deleted)
+        inbox = self.filter(inbox=inbox, domain__domain=domain, deleted= deleted)
 
         if type(user) is User:
             inbox = inbox.filter(user=user)
@@ -98,7 +96,7 @@ class TagManager(models.Manager):
 class HeaderManager(HashedManager):
     use_for_related_fields = True
     def create(self, name, data, ordinal, hashed=None, **kwargs):
-        if hashed is not None:
+        if hashed is None:
             hashed = self.hash_it(data)
 
         name = HeaderName.objects.only('id').get_or_create(name=name)[0]
@@ -109,7 +107,7 @@ class HeaderManager(HashedManager):
 class BodyManager(HashedManager):
     use_for_related_fields = True
     def get_or_create(self, data=None, path=None, hashed=None, **kwargs):
-        if hashed is not None:
+        if hashed is None:
             if path is not None:
                 # look for data in the path
                 tpath = open(path, "rb")

@@ -133,8 +133,8 @@ class Request(models.Model):
     amount = models.IntegerField()
     succeeded = models.NullBooleanField(default=None)
     date = models.DateTimeField('requested')
-    authorizer = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-    requester = models.ForeignKey(User)
+    authorizer = models.ForeignKey(User, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL)
+    requester = models.ForeignKey(User, related_name="requester")
     result = models.CharField(max_length=1024, blank=True, null=True)
 
 ##
@@ -148,7 +148,7 @@ class Body(models.Model):
     bodies.
     """
     path = models.FilePathField(default=None, null=True, blank=True)
-    hashed = models.CharFields(max_length=80, unique=True) # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
     _data = models.BinaryField(
         db_column='data',
         blank=True,
@@ -208,7 +208,7 @@ class HeaderData(models.Model):
 
     RFC 2822 implies that header data may be infinite, may as well support it!
     """
-    hashed = models.CharFields(max_length=80, unique=True) # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
     data = models.TextField()
 
 class Header(models.Model):
@@ -238,7 +238,7 @@ class Email(models.Model):
     The body and headers can be found in the root of the PartList tree with
     a tree-id the same as Email.id.
     """
-    id = TreeOneToOneField(PartList, primary_key=True)
+    id = TreeOneToOneField(PartList, primary_key=True, related_name="message")
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted","read","seen"), default=0)
     received_date = models.DateTimeField()
