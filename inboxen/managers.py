@@ -21,12 +21,17 @@ import hashlib
 from random import choice
 from string import ascii_lowercase
 from types import StringTypes
+from datetime import datetime
 
 from django.conf import settings
 from django.db import IntegrityError, models
 from django.utils.encoding import smart_bytes
 
-class HashedManager(models.Manager):
+from dj_queryset_manager import QuerySetManager, queryset_method
+from pytz import utc
+
+class HashedManager(QuerySetManager):
+    @queryset_method
     def hash_it(self, data):
         hashed = hashlib.new(settings.COLUMN_HASHER)
         hashed.update(smart_bytes(data))
@@ -34,60 +39,38 @@ class HashedManager(models.Manager):
 
         return hashed
 
-class InboxManager(models.Manager):
-    def create(self, domain, length=0, **kwargs):
+class InboxManager(QuerySetManager):
+    use_for_related_fields = True
+
+    @queryset_method
+    def create(self, length=5, **kwargs):
         """length is ignored currently"""
         #TODO: define default for length with issue #57
-        length = 5
 
-        if type(domain) in StringTypes:
-            domain = Domain.objects.only('id').get(domain=domain)
-
-        doing = True
-        while doing:
+        while True:
             # loop around until we create a unique address
             local_part = ""
             for i in range(length):
                 local_part += choice(ascii_lowercase)
 
-            inbox = self.model(inbox=inbox, domain=domain, **kwargs)
             try:
-                inbox.save(force_insert=True)
-                doing = False
+                return super(type(self), self).create(inbox=local_part, created=datetime.now(utc), **kwargs)
             except IntegrityError:
-                doing = True
+                pass
 
-        return inbox
-
-    def from_string(self, email, user=None, deleted=False):
+    @queryset_method
+    def from_string(self, email="", user=None, deleted=False):
         """Returns an Inbox object or raises DoesNotExist"""
         inbox, domain = email.split("@", 1)
 
-        inbox = self.filter(inbox=inbox, domain__domain=domain, deleted= deleted)
+        inbox = self.filter(inbox=inbox, domain__domain=domain, deleted=deleted)
 
-        if type(user) is User:
+        if user is not None:
             inbox = inbox.filter(user=user)
 
         inbox = inbox.get()
 
         return inbox
-
-class TagManager(models.Manager):
-    use_for_related_fields = True
-
-    def from_string(self, tags, **kwargs):
-        """Create Tag objects from string"""
-        if "," in tags:
-            tags = tags.split(",")
-        else:
-            tags = tags.split(" ")
-
-        for i, tag in enumerate(tags):
-            tag = tag.strip()
-            tag = self.create(tag, **kwargs)
-            tags[i] = tag
-
-        return tags
 
 ##
 # Email managers
@@ -95,17 +78,24 @@ class TagManager(models.Manager):
 
 class HeaderManager(HashedManager):
     use_for_related_fields = True
+
+    @queryset_method
     def create(self, name, data, ordinal, hashed=None, **kwargs):
         if hashed is None:
             hashed = self.hash_it(data)
 
-        name = HeaderName.objects.only('id').get_or_create(name=name)[0]
-        data, created = HeaderData.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
+        name_model = self.model.name.to
+        data_model = self.model.data.to
 
-        return (super(HeaderManager, self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
+        name = name_model.objects.only('id').get_or_create(name=name)[0]
+        data, created = data_model.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
+
+        return (super(type(self), self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
 class BodyManager(HashedManager):
     use_for_related_fields = True
+
+    @queryset_method
     def get_or_create(self, data=None, path=None, hashed=None, **kwargs):
         if hashed is None:
             if path is not None:
@@ -117,4 +107,4 @@ class BodyManager(HashedManager):
                     tpath.close()
             hashed = self.hash_it(data)
 
-        return super(BodyManager, self).get_or_create(hashed=hashed, defaults={'path':path, 'data':data}, **kwargs)
+        return super(type(self), self).get_or_create(hashed=hashed, defaults={'path':path, 'data':data}, **kwargs)
