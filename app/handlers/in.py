@@ -19,15 +19,12 @@
 #
 ##
 
-from salmon.routing import route, stateless
-from salmon.queue import Queue
+from salmon.routing import nolocking, route, stateless
 from salmon.server import SMTPError
 
 from django.db import DatabaseError, transaction
 
-from config.settings import DEBUG
 from app.model.email import make_email
-
 from inboxen.models import Inbox
 
 import logging

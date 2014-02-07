@@ -20,12 +20,11 @@
 ##
 
 from datetime import datetime
-from pytz import utc
 import logging
 
-from inboxen.models import Body, Email, PartList
-from config.settings import datetime_format, recieved_header_name
-from dateutil import parser
+from pytz import utc
+
+from inboxen.models import Body, Email, Header, PartList
 
 log = logging.getLogger(__name__)
 
@@ -33,26 +32,26 @@ def make_email(message, inbox):
     """Push message to the database.
     """
     user = inbox.user
-    body = message.base.body
-    recieved_date = datetime.now(utc)
+    base = message.base
+    received_date = datetime.now(utc)
 
-    body = Body.objects.only("id").get_or_create(data=mime_part.body)[0]
+    body = Body.objects.only("id").get_or_create(data=base.body)[0]
 
     part = PartList(body=body)
     part.save()
 
-    parents = {message.base: part.id}
+    parents = {base: part.id}
 
     for header in message.keys():
         ordinal = message.keys().index(header)
         Header.objects.create(name=header, data=message[header], ordinal=ordinal, part=part)
 
-    email = Email(id=part.email, inbox=inbox, recieved_date=recieved_date)
+    email = Email(id=part, inbox=inbox, received_date=received_date)
     email.save()
 
     for part in message.walk():
-        body = Body.objects.only("id").get_or_create(data=mime_part.body)[0]
-        part_item = PartList(body=body, parent=parents[part.parent])
+        body = Body.objects.only("id").get_or_create(data=part.body)[0]
+        part_item = PartList(body=body, parent_id=parents[part.parent])
         part_item.save()
         parents[part] = part_item.id
 
