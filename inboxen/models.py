@@ -69,6 +69,9 @@ class UserProfile(models.Model):
 
         return left
 
+    def __unicode__(self):
+        return self.user.username
+
 class TOTPAuth(models.Model):
     user = models.OneToOneField(User)
     # base32 encoded and do you really want to type 128 characters into your phone?
@@ -207,6 +210,9 @@ class HeaderName(models.Model):
     """
     name = models.CharField(max_length=78, unique=True)
 
+    def __unicode__(self):
+        return self.name
+
 class HeaderData(models.Model):
     """Header data model
 
@@ -214,6 +220,9 @@ class HeaderData(models.Model):
     """
     hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
     data = models.TextField()
+
+    def __unicode__(self):
+        return self.hashed
 
 class Header(models.Model):
     """Header model
@@ -230,7 +239,7 @@ class Header(models.Model):
 
     objects = HeaderManager()
 
-    def __unicode__():
+    def __unicode__(self):
         return u"{0}".format(self.name.name)
 
 class Email(models.Model):
@@ -248,9 +257,12 @@ class Email(models.Model):
     received_date = models.DateTimeField()
 
     def get_eid(self):
-        return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
+        return hex(self.id.email)[2:].rstrip("L") # the [2:] is to strip 0x from the start
     
     def set_eid(self, data):
         pass # should not be used
 
     eid = property(get_eid, set_eid)
+
+    def __unicode__(self):
+        return u"{0}".format(self.eid)
