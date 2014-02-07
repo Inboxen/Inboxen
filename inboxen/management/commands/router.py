@@ -36,8 +36,7 @@ class Command(BaseCommand):
 
         # these need to be ordered from smtp in to database out
         self.salmon_options = [
-                {'pid': 'run/in.pid', 'boot': 'config.boot'},
-                {'pid': 'run/out.pid', 'boot': 'config.accepted'}
+                {'pid': 'run/router.pid', 'boot': 'config.boot'},
                 ]
 
     def handle(self, *args, **options):
