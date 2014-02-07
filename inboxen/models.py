@@ -41,8 +41,14 @@ class BlogPost(models.Model):
     def rendered_body(self):
         return markdown.markdown(self.body)
 
+    def __unicode__(self):
+        draft = ""
+        if self.draft:
+            draft = " (draft)"
+        return u"%s%s" % (self.date, draft)
+
 class UserProfile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, primary_key=True)
     html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
     pool_amount = models.IntegerField(default=500)
 

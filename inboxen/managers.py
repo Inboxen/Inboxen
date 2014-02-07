@@ -84,8 +84,8 @@ class HeaderManager(HashedManager):
         if hashed is None:
             hashed = self.hash_it(data)
 
-        name_model = self.model.name.to
-        data_model = self.model.data.to
+        name_model = self.model.name.field.rel.to
+        data_model = self.model.data.field.rel.to
 
         name = name_model.objects.only('id').get_or_create(name=name)[0]
         data, created = data_model.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
