@@ -35,9 +35,12 @@ def make_email(message, inbox):
     base = message.base
     received_date = datetime.now(utc)
 
+    email = Email(inbox=inbox, received_date=received_date)
+    email.save()
+
     body = Body.objects.only("id").get_or_create(data=base.body)[0]
 
-    part = PartList(body=body)
+    part = PartList(body=body, email=email)
     part.save()
 
     parents = {base: part.id}
@@ -46,12 +49,10 @@ def make_email(message, inbox):
         ordinal = message.keys().index(header)
         Header.objects.create(name=header, data=message[header], ordinal=ordinal, part=part)
 
-    email = Email(id=part, inbox=inbox, received_date=received_date)
-    email.save()
 
     for part in message.walk():
         body = Body.objects.only("id").get_or_create(data=part.body)[0]
-        part_item = PartList(body=body, parent_id=parents[part.parent])
+        part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
         part_item.save()
         parents[part] = part_item.id
 
