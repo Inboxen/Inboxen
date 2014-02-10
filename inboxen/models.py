@@ -148,6 +148,30 @@ class Request(models.Model):
 # Email models
 ##
 
+class Email(models.Model):
+    """Email model
+
+    eid is a convience property that outputs a hexidec ID
+    flags is a BitField for flags such as deleted, read, etc.
+
+    The body and headers can be found in the root of the PartList tree on Email.parts
+    """
+    id = TreeOneToOneField(PartList, primary_key=True, related_name="message")
+    inbox = models.ForeignKey(Inbox)
+    flags = BitField(flags=("deleted","read","seen"), default=0)
+    received_date = models.DateTimeField()
+
+    def get_eid(self):
+        return hex(self.id.email)[2:].rstrip("L") # the [2:] is to strip 0x from the start
+
+    def set_eid(self, data):
+        pass # should not be used
+
+    eid = property(get_eid, set_eid)
+
+    def __unicode__(self):
+        return u"{0}".format(self.eid)
+
 class Body(models.Model):
     """Body model
 
@@ -196,12 +220,9 @@ class PartList(MPTTModel):
 
     email is passed to Email as a workaround for https://github.com/django-mptt/django-mptt/issues/189
     """
+    email = models.ForeignKey(Email, related_name='parts')
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
-    email = models.PositiveIntegerField()
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-
-    class MPTTMeta:
-        tree_id_attr = 'email'
 
 class HeaderName(models.Model):
     """Header name model
@@ -241,28 +262,3 @@ class Header(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)
-
-class Email(models.Model):
-    """Email model
-
-    eid is a convience property that outputs a hexidec ID
-    flags is a BitField for flags such as deleted, read, etc.
-
-    The body and headers can be found in the root of the PartList tree with
-    a tree-id the same as Email.id.
-    """
-    id = TreeOneToOneField(PartList, primary_key=True, related_name="message")
-    inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=("deleted","read","seen"), default=0)
-    received_date = models.DateTimeField()
-
-    def get_eid(self):
-        return hex(self.id.email)[2:].rstrip("L") # the [2:] is to strip 0x from the start
-    
-    def set_eid(self, data):
-        pass # should not be used
-
-    eid = property(get_eid, set_eid)
-
-    def __unicode__(self):
-        return u"{0}".format(self.eid)
