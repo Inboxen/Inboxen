@@ -1,0 +1,11 @@
+Django>=1.6
+Markdown
+South
+django-bitfield
+django-mptt
+onetimepass
+pytz
+-e https://github.com/Inboxen/dj-queryset-manager.git@3aab4be7e6a6a7914e7830212cfc4105e54398d2#egg=dj-queryset-manager
+-r queue/requirements.txt
+-r router/requirements.txt
+-r website/requirements.txt
