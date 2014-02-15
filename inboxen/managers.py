@@ -96,13 +96,25 @@ class HeaderManager(HashedManager):
         return (super(type(self), self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
     @queryset_method
-    def get_many(self, *args):
+    def get_many(self, *args, group_by=None):
         query = Q()
         for item in args:
             query = query | Q(name__name=item)
 
-        values = self.filter(query).value_list("name__name", "data__data")
-        return dict(values)
+        values = self.filter(query)
+        if group_by is None:
+            values = values.value_list("name__name", "data__data")
+            return dict(values)
+
+        values = values.value_list(group_by, "name__name", "data__data")
+
+        headers = {}
+        for value in values:
+            part = headers.get(value[0], {})
+            part[value[1]] = value[2]
+            headers[value[0]] = part
+
+        return headers
 
 class BodyManager(HashedManager):
     use_for_related_fields = True
