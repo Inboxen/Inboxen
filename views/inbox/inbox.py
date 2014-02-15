@@ -59,20 +59,13 @@ def inbox(request, email_address="", page=1):
         emails = paginator.page(paginator.num_pages)
 
     # lets add the important headers (subject and who sent it (a.k.a. sender))
-    headers = Header.objects.filter(part__ordinal=0, part__email__in=emails.object_list)
-    headers = headers.filter(Q(header_name_name="Subject")|Q(header__name__name="From"))
-    headers = headers.values_list("part__email__id", "name__name", "data__data")
-
-    sort_headers = {}
-    for header in headers:
-        items = sorted_headers.get(header[0], {})
-        items[header[1]] = header[2]
-        sort_headers[header[0]] = items
+    headers = Header.objects.filter(part__parent=None, part__email__in=emails.object_list)
+    headers = headers.get_many("Subject", "From", group_by="part_email_id")
 
     for email in emails.object_list:
-        headers = sort_headers[email.id]
-        email.subject = headers["Subject"]
-        email.sender = headers["From"]
+        header_set = headers[email.id]
+        email.subject = header_set["Subject"]
+        email.sender = header_set["From"]
 
     if email_address:
         page = _("%s - Inbox") % email_address

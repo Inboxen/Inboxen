@@ -32,8 +32,7 @@ def download(request, attachmentid, method="download"):
 
     data = attachment.body.data
     headers = attachment.header_set
-    headers = headers.filter(Q(header_name_name="Subject")|Q(header__name__name="From"))
-    headers = dict(headers.values_list("name__name", "data__data"))
+    headers = headers.get_many("Content-Type", "Content-Disposition")
 
     try:
         response = HttpResponse(data, content_type=headers["Content-Type"].split(";",1)[0])

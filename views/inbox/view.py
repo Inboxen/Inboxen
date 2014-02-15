@@ -23,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.db.models import F
 
-from inboxen.models import Email
+from inboxen.models import Email, Header
 
 @login_required
 def view(request, email_address, emailid):
@@ -34,6 +34,9 @@ def view(request, email_address, emailid):
         email = Email.objects.get(id=email, flags=~Email.flags.deleted)
     except (Email.DoesNotExist, Inbox.DoesNotExist):
         return Http404
+
+    headers = Header.objects.filter(part__email=email, part__parent=None)
+    headers = headers.get_many("Subject", "From")
 
     email_obj = None #TODO
 
