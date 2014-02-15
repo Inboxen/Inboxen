@@ -95,6 +95,15 @@ class HeaderManager(HashedManager):
 
         return (super(type(self), self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
+    @queryset_method
+    def get_many(self, *args):
+        query = Q()
+        for item in args:
+            query = query | Q(name__name=item)
+
+        values = self.filter(query).value_list("name__name", "data__data")
+        return dict(values)
+
 class BodyManager(HashedManager):
     use_for_related_fields = True
 
