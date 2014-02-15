@@ -63,7 +63,10 @@ class InboxManager(QuerySetManager):
         """Returns an Inbox object or raises DoesNotExist"""
         inbox, domain = email.split("@", 1)
 
-        inbox = self.filter(inbox=inbox, domain__domain=domain, deleted=deleted)
+        inbox = self.filter(inbox=inbox, domain__domain=domain)
+
+        if deleted is not None:
+            inbox = inbox.filter(deleted=deleted)
 
         if user is not None:
             inbox = inbox.filter(user=user)
