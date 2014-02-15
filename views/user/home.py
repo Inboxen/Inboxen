@@ -32,6 +32,7 @@ def home(request, page=1):
     used = inboxes.count()
     inboxes = inboxes.filter(deleted=False)
 
+    flags = ~(Email.flags.deleted | Email.flags.read)
     total = 0
     for inbox in inboxes:
         try:
@@ -39,7 +40,7 @@ def home(request, page=1):
             inbox.tags = ", ".join([tag.tag for tag in tags])
         except Tag.DoesNotExist:
             inbox.tags = ''
-        inbox.email_count = inbox.email_set.filter(read=False, deleted=False).count()
+        inbox.email_count = inbox.email_set.filter(flags=flags).count()
         total += inbox.email_count
 
     paginator = Paginator(inboxes, 20)

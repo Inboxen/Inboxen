@@ -21,38 +21,27 @@ from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
+from django.db.models import F
 
-from inboxen.helper.mail import get_email, clean_html
 from inboxen.models import Email
 
 @login_required
 def view(request, email_address, emailid):
-
-    inbox, domain = email_address.split("@", 1)
-    
-    if not request.user.inbox_set.get(inbox=inbox, domain__domain=domain).exists()
-        raise Http404
-
     try:
-        email = get_email(request.user, emailid, read=True)
-    except Email.DoesNotExist:
-        raise Http404
+        inbox = request.user.inbox_set.from_string(email=email_address)
 
-    from_address = email["from"].split("@", 1)
+        email = int(emailid, 16)
+        email = Email.objects.get(id=email, flags=~Email.flags.deleted)
+    except (Email.DoesNotExist, Inbox.DoesNotExist):
+        return Http404
 
-    if email["plain"]:
-        plain_message = email["body"]
-    else:
-        plain_message = ""
-        # also because a html email lets parse
-        if "body" in email:
-            email["body"] = clean_html(email["body"])
-        else:
-            email["body"] = "" # emails can have no body
+    email_obj = None #TODO
+
+    email.update(flags=F('flags').bitand(Email.flags.read))
 
     context = {
-        "page":email["subject"],
-        "email":email,
+        "page":email_obj.subject,
+        "email":email_obj,
         "plain_message":plain_message,
         "user":request.user,
     }

@@ -22,7 +22,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import F, Q
 
 from inboxen.helper.paginator import page as paginator_page
 from inboxen.models import Inbox, Email
@@ -31,10 +31,6 @@ from queue.delete.tasks import delete_email
 INBOX_ORDER = {
                 '+date':    'received_date',
                 '-date':    '-received_date',
-                '+subject': 'subject',
-                '-subject': '-subject',
-                '+sender':  'sender',
-                '-sender':  '-sender',
 }
 
 @login_required
@@ -44,7 +40,7 @@ def inbox(request, email_address="", page=1):
         mass_tasks(request)
 
     order = request.GET.get('sort','-date')
-    emails = Email.objects.filter(inbox__user=request.user, deleted=False)
+    emails = Email.objects.filter(inbox__user=request.user, flags=~Email.flags.deleted)
 
     if len(email_address):
         # a specific inbox
@@ -110,10 +106,10 @@ def mass_tasks(request):
     emails = Email.objects.filter(emails, user=request.user).only('id','read')
 
     if "read" in request.POST:
-        emails.update(read=True)
+        emails.update(flags=F('flags').bitor(Email.flags.read))
     elif "unread" in request.POST:
-        emails.update(read=False)
+        emails.update(flags=F('flags').bitand(~Email.flags.read))
     elif "delete" in request.POST:
-        emails.update(deleted=True)
+        emails.update(flags=F('flags').bitor(Email.flags.deleted))
         for email in emails:
             delete_email.delay(email.id)
