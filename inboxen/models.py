@@ -156,7 +156,6 @@ class Email(models.Model):
 
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
-    id = TreeOneToOneField(PartList, primary_key=True, related_name="message")
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted","read","seen"), default=0)
     received_date = models.DateTimeField()
