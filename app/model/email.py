@@ -49,13 +49,13 @@ def make_email(message, inbox):
         ordinal = message.keys().index(header)
         Header.objects.create(name=header, data=message[header], ordinal=ordinal, part=part)
 
+    with PartList.objects.delay_mptt_updates():
+        for part in message.walk():
+            body = Body.objects.only("id").get_or_create(data=part.body)[0]
+            part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
+            part_item.save()
+            parents[part] = part_item.id
 
-    for part in message.walk():
-        body = Body.objects.only("id").get_or_create(data=part.body)[0]
-        part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
-        part_item.save()
-        parents[part] = part_item.id
-
-        for header in part.keys():
-            ordinal = part.keys().index(header)
-            Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
+            for header in part.keys():
+                ordinal = part.keys().index(header)
+                Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
