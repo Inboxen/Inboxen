@@ -8,28 +8,25 @@ from pytz import utc
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 
-from inboxen.helper.user import null_user, user_profile
-from inboxen.models import Attachment, Domain, Header, Email, Inbox, Tag
+from inboxen.models import Email, Inbox, Tag, User
 
 log = logging.getLogger(__name__)
 
 @task(rate_limit="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.atomic()
-def delete_inbox(email, user=None):
-    if type(email) in [types.StringType, types.UnicodeType]:
-        if not user:
-            raise Exception("Need to give username")
-        inbox, domain = email.split("@", 1)
-        try:
-            inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain, user=user)
-        except Inbox.DoesNotExist:
-            return False
-    else:
-        user = email.user
-        inbox = email
+def delete_inbox(email, username=None):
+    inbox = Inbox.objects
+
+    if username is not None:
+        inbox = Inbox.objects.filter(user__username=username)
+
+    try:
+        inbox = inobx.from_string(email=email)
+    except Inbox.DoesNotExist:
+        return False
 
     # delete emails in another task(s)
-    emails = Email.objects.filter(inbox=inbox, user=user).only('id')
+    emails = inbox.email_set.only('id')
 
     # sending an ID over the wire and refetching the Django model on the side
     # is cheaper than serialising the Django model - this appears to be the
@@ -43,6 +40,7 @@ def delete_inbox(email, user=None):
 
     # okay now mark the inbox as deleted
     inbox.created = datetime.fromtimestamp(0, utc)
+    inbox.deleted = True
     inbox.save()
 
     return True
@@ -63,25 +61,22 @@ def delete_inboxen_item(model, item_id):
 
 @task()
 @transaction.atomic()
-def disown_inbox(result, inbox, futr_user=None):
-    if not futr_user:
-        futr_user = null_user()
-
+def disown_inbox(result, inbox_id):
     # delete tags
-    tags = Tag.objects.filter(inbox=inbox).only('id')
+    tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
     tags.delete()
 
-    inbox.user = futr_user
+    inbox.user = None
     inbox.save()
 
 @task()
 @transaction.atomic()
-def delete_user(result, user):
-    inbox = Inbox.objects.filter(user=user).only('id').exists()
+def delete_user(result, username):
+    inbox = Inbox.objects.filter(user__username=username).only('id').exists()
     if inbox:
-        raise Exception("User {0}  still has inboxes!".format(user))
+        raise Exception("User {0}  still has inboxes!".format(username))
     else:
-        log.debug("Deleting user %s" % user.username)
+        log.debug("Deleting user %s" % username)
         user.delete()
     return True
 
@@ -94,9 +89,9 @@ def delete_account(user):
     user.save()
 
     # get ready to delete all inboxes
-    inbox = Inbox.objects.filter(user=user).only('id')
-    if len(inbox): # pull in all the data
-        delete = chord([chain(delete_inbox.s(a), disown_inbox.s(a)) for a in inbox], delete_user.s(user))
+    inboxes = user.inbox_set.only('id')
+    if len(inboxes): # pull in all the data
+        delete = chord([chain(delete_inbox.s(inbox.id), disown_inbox.s(inbox.id)) for inbox in inboxes], delete_user.s(username))
         delete.apply_async()
 
     log.debug("Deletion tasks for %s sent off", user.username)
@@ -122,7 +117,7 @@ def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_numbe
     else:
         raise Exception("You need to specify some filter options!")
 
-    tasks = [delete_email_item.s(model, item.id) for item in items[:batch_number]]
+    tasks = [delete_inboxen_item.s(model, item.id) for item in items[:batch_number]]
 
     if len(tasks):
         tasks = chord(tasks, major_cleanup_items.si(model, filter_args, filter_kwargs, batch_number, count+1))
