@@ -32,18 +32,58 @@ def view(request, email_address, emailid):
 
         email = int(emailid, 16)
         email = Email.objects.get(id=email, flags=~Email.flags.deleted)
+        email.update(flags=F('flags').bitand(Email.flags.read))
     except (Email.DoesNotExist, Inbox.DoesNotExist):
         return Http404
 
     headers = Header.objects.filter(part__email=email, part__parent=None)
     headers = headers.get_many("Subject", "From")
 
-    email_obj = None #TODO
+    email_obj = {}
+    email_obj["subject"] = headers["Subject"]
+    email_obj["from"] = headers["From"]
+    email_obj["date"] = email.received_date
 
-    email.update(flags=F('flags').bitand(Email.flags.read))
+    attachments = []
+    for part in email.parts:
+        item = part.header_set.get_many("Content-Type", "Content-Disposition")
+        item["id"] = part.id
+        item["part"]
+        item["parent"] = part.parent.id
+        attachments.append(item)
+
+    # find first text/html and first text/plain
+    html = False
+    plain = False
+    for part in attachments:
+        if not html and part["Content-Type"] == "text/html":
+            html = part["part"]
+        elif not plain and part["Content-Type"] == "text/plain":
+            plain = part["part"]
+        del part["part"]
+
+    # if siblings, use html_preference
+    if html["parent"] == plain["parent"]:
+        pref = request.user.userprofile.html_preference
+        if pref == 1:
+            plain_message = True
+            email["body"] = plain.body.data
+        elif pref == 2:
+            plain_message = False
+            email["body"] = html.body.data
+
+    # if not, which ever has the lower lft value
+    elif not html and attachments.index(html) < attachments.index(plain):
+        plain_message = False
+        email["body"] = html.body.data
+    elif not plain and attachments.index(html) > attachments.index(plain):
+        plain_message = True
+        email["body"] = plain.body.data
+
+    #TODO clean HTML body
 
     context = {
-        "page":email_obj.subject,
+        "page":email_obj["subject"],
         "email":email_obj,
         "plain_message":plain_message,
         "user":request.user,
