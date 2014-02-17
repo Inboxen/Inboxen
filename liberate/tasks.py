@@ -16,10 +16,7 @@ from pytz import utc
 from django.conf import settings
 from django.db import transaction
 
-from inboxen.helper.inbox import gen_inbox
-from inboxen.helper.mail import send_email, make_message
-from inboxen.helper.user import user_profile
-from inboxen.models import Attachment, Domain, Email, Inbox, Tag, User
+from inboxen.models import Domain, Email, Inbox, PartList, Tag, User
 
 log = logging.getLogger(__name__)
 
@@ -89,6 +86,10 @@ def liberate_collect_emails(results, mail_path, options):
 
     msg_tasks.apply_async()
 
+def make_message(message):
+    """ Make a Python  email.message.Message from our models """
+    pass #TODO
+
 @task(rate_limit='1000/m')
 def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
@@ -102,7 +103,9 @@ def liberate_message(mail_path, inbox, email_id):
         log.debug("Exception processing %s", msg_id, exc_info=exc)
         raise Exception(msg_id)
 
-    maildir.add(str(msg))
+    # http://docs.python.org/2/library/mailbox.html#mailbox.Maildir.add
+    # we're ignoring this warning, but we should probably fix it
+    maildir.add(msg)
 
 @task()
 def liberate_convert_box(result, mail_path, options):
@@ -111,7 +114,6 @@ def liberate_convert_box(result, mail_path, options):
         pass
 
     elif options['mailType'] == 'mailbox':
-
         maildir = mailbox.Maildir(mail_path)
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
@@ -168,64 +170,62 @@ def liberation_finish(result, options):
     tags = liberate_inbox_tags(options['user'], result['date'])
     profile = liberate_user_profile(options['user'], result['results'], result['date'])
 
-    inbox = Inbox.objects.filter(tag__tag="Inboxen")
-    inbox = inbox.filter(tag__tag="data")
-    inbox = inbox.filter(tag__tag="liberation")
+    inbox_tags = ["Inboxen", "data", "liberation"]
+    inbox = Inbox.objects
+    for tag in inbox_tags:
+        inbox = inbox.filter(tag__tag=tag)
 
-    user = User.objects.get(id=options['user'])
     try:
-        inbox = inbox.get(user=user)
+        inbox = inbox.get(user__id=options["user"])
     except Inbox.MultipleObjectsReturned:
-        inbox = inbox.filter(user=user)[0]
+        inbox = inbox.filter(user__id=options["user"])[0]
     except Inbox.DoesNotExist:
-        inbox = Inbox(
-                inbox=gen_inbox(5),
-                domain=random.choice(Domain.objects.all()),
-                user=user,
-                created=datetime.now(utc),
-                deleted=False
-            )
-        inbox.save()
-        tags = ["Inboxen", "data", "liberation"]
-        for i, tag in enumerate(tags):
-            tags[i] = Tag(tag=tag, inbox=inbox)
-            tags[i].save()
+        domain = random.choice(Domain.objects.all())
+        inbox = Inbox.objects.create(domain=domain, user_id=options["user"])
+        for tag in inbox_tags:
+            tag = Tag(tag=tag, inbox=inbox)
+            tag.save()
 
-    parts = []
+    email = Email(inbox=inbox reveived_date=datetime.now())
+    main_body = Body.objects.get_or_create(data="")
+    main_part = PartList(body=main_body, email=email)
+    main_part.save()
+
+    main_headers = main_part.header_set
+    main_headers.get_or_create(name="From", data="support@inboxen.org", ordinal=0)
+    main_headers.get_or_create(name="Subject", data=settings.LIBERATION_SUBJECT, ordinal=1)
+    main_headers.get_or_create(name="Content-Type", data="multipart/mixed; boundary=\"InboxenIsTheBest\"")
+
+    msg_body = Body.objects.get_or_create(data=settings.LIBERATION_BODY)
+    msg_part = PartList(body=msg_body, email=email, parent=main_part)
+    msg_part.save()
+    msg_part.headers_set.get_or_create(name="Content-Type", data="text/plain")
 
     if not options.get("noEmail", False):
         archive_body = Body.objects.get_or_create(path=result["path"])[0]
-        archive_part = PartList(body=archive_body)
+        archive_part = PartList(body=archive_body, email=email, parent=main_part)
+        archive_part.save()
         archive_headers = archive.header_set
         cont_dispos = "attachment; filename=\"emails-{0}.{1}\"".format(result['date'], options.get('compressType', 'tar.gz'))
         archive_headers.get_or_create(name="Content-Type", data=result['mime-type'], ordinal=0)
         archive_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
 
-        parts.append(archive_part)
-
     profile_body = Body.objects.get_or_create(data=profile['data'])[0]
-    profile_part = PartList(body=profile_body)
+    profile_part = PartList(body=profile_body, email=email, parent=main_part)
+    profile_part.save()
     profile_headers = profile_part.header_set
     cont_dispos = "attachment; filename=\"{0}\"".format(profile['name'])
     profile_headers.get_or_create(name="Content-Type", data=profile['type'], ordinal=0)
     profile_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
 
-    parts.append(profile_part)
-
     tags_body = Body.objects.get_or_create(data=tags['data'])[0]
-    tags_part = PartList(body=tags_body)
+    tags_part = PartList(body=tags_body, email=email, partent=main_part)
+    tags_part.save()
     tags_headers = tags_part.header_set
     cont_dispos = "attachment; filename=\"{0}\"".format(tags['name'])
     tags_headers.get_or_create(name="Content-Type", data=tags['type'], ordinal=0)
     tags_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
 
-    send_email(
-        inbox=inbox,
-        sender="support@inboxen.org",
-        subject=settings.LIBERATION_SUBJECT,
-        body=settings.LIBERATION_BODY,
-        attachments=parts
-        )
     log.debug("Finished liberation for %s", user.username)
 
 def liberate_user_profile(user_id, email_results, date):
@@ -238,9 +238,7 @@ def liberate_user_profile(user_id, email_results, date):
 
     # user's preferences
     profile = user.userprofile
-    if profile.html_preference == 0:
-        data['preferences']['html_preference'] = 'Reject HTML'
-    elif profile.html_preference == 1:
+    if profile.html_preference == 1:
         data['preferences']['html_preference'] = 'Prefer plain-text'
     else:
         data['preferences']['html_preference'] = 'Prefer HTML'
