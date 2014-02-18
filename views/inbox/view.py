@@ -22,6 +22,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.db.models import F
+from lxml.html.clean import Cleaner
 
 from inboxen.models import Email, Header
 
@@ -80,7 +81,12 @@ def view(request, email_address, emailid):
         plain_message = True
         email["body"] = plain.body.data
 
-    #TODO clean HTML body
+    if not plain_message:
+        # Mail Pile uses this, give back if you come up with something better
+        cleaner = Cleaner(page_structure=True, meta=True, links=True,
+                   javascript=True, scripts=True, frames=True,
+                   embedded=True, safe_attrs_only=True)
+        email["body"] = cleaner(email["body"])
 
     context = {
         "page":email_obj["subject"],
