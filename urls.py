@@ -39,10 +39,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^blog/feed/(rss)?', RssFeed()),
     urls.url(r'^blog(/(?P<page>\d+))?', 'website.views.blog.view.view'),
 
-    urls.url(r'^help/contact/success', 'website.views.help.contact.success.success'),
-    urls.url(r'^help/contact/reply', 'website.views.help.contact.reply.reply'),
-    urls.url(r'^help/contact/', 'website.views.help.contact.contact'),
-
     urls.url(r'^user/deleted/', 'website.views.user.settings.delete.success'),
     urls.url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
