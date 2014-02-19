@@ -103,8 +103,6 @@ def liberate_message(mail_path, inbox, email_id):
         log.debug("Exception processing %s", msg_id, exc_info=exc)
         raise Exception(msg_id)
 
-    # http://docs.python.org/2/library/mailbox.html#mailbox.Maildir.add
-    # we're ignoring this warning, but we should probably fix it
     maildir.add(msg)
 
 @task()
