@@ -26,32 +26,25 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
-from inboxen.helper.inbox import inbox_available, clean_tags, gen_inbox
 from inboxen.models import Domain, Inbox, Tag
 
 @login_required
 def add(request):
 
-    available = inbox_available(request.user)
-    if not available:
-        return HttpResponseRedirect("/email/request")
+    available = request.user.userprodile.available_inboxes()
+    if available > 0:
+        msg = _("You have used too many Inboxes")
+        request.session["messages"] = [msg]
+
+        return HttpResponseRedirect("/user/home")
 
     if request.method == "POST":
-        inbox = request.session["generated_inbox"]
         domain = Domain.objects.get(domain=request.POST["domain"])
         tags = request.POST["tags"]
 
-        if Inbox.objects.filter(inbox=inbox, domain=domain).exists():
-            return HttpResponseRedirect("/user/home")
+        new_inbox = request.user.inbox_set.create(domain=domain)
 
-        new_inbox = Inbox(inbox=inbox, domain=domain, user=request.user, created=datetime.now(utc))
-        new_inbox.save()
-
-        tags = clean_tags(tags)
-        for tag in tags:
-            tag = Tag(tag=tag)
-            tag.inbox = new_inbox
-            tag.save()
+        tags = Tag.objects.from_string(tags=tags, inbox=new_inbox)
 
         msg = _("You have successfully created %s!") % new_inbox
 
@@ -61,13 +54,9 @@ def add(request):
 
     domains = Domain.objects.all()
 
-    inbox = gen_inbox(5)
-    request.session["generated_inbox"] = inbox
-
     context = {
         "page":_("Add Inbox"),
         "domains":domains,
-        "inbox":inbox,
     }
 
     return render(request, "email/add.html", context)

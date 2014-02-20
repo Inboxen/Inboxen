@@ -22,14 +22,12 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from inboxen.helper.user import user_profile
-
 @login_required
 def settings(request):
     error = ""
 
     # check their html preferences
-    profile = user_profile(request.user)
+    profile = request.user.userprofile
     
     # they submitting it?
     if request.method == "POST":
@@ -42,7 +40,7 @@ def settings(request):
                 request.user.username = request.POST["username0"]
                 request.user.save()
             else:
-                error= _("Please enter your new username twice.")
+                error = _("Please enter your new username twice.")
 
     context = {
         "page":_("Settings"),

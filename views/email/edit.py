@@ -22,32 +22,21 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 
-from inboxen.helper.inbox import clean_tags, find_inbox
 from inboxen.models import Inbox
 
 @login_required
 def edit(request, email):
-    inbox, domain = email.split("@")
-
     try:
-        inbox = request.user.inbox_set.filter(deleted=False).select_related(domain).get(inbox=inbox, domain__domain=domain)
+        inbox = request.user.inbox_set.select_related("domain__domain")
+        inbox = inbox.from_string(email=email, deleted=False)
     except Inbox.DoesNotExist;
         return HttpResponseRedirect("/user/home")
-
-    domain = inbox.domain
 
     if request.method == "POST":
         if "tags" in request.POST and request.POST["tags"]:
             tags = clean_tags(request.POST["tags"])
-
-            # remove old tags
-            for old_tag in inbox.tag_set.all():
-                old_tag.delete()
-
-            for i, tag in enumerate(tags):
-                tags[i] = Tag(tag=tag)
-                tags[i].inbox = inbox
-                tags[i].save()
+            inbox.tag_set.delete()
+            inbox.tag_set.from_string(tags=tags, inbox=inbox)
 
         return HttpResponseRedirect("/user/home")
 
@@ -60,7 +49,7 @@ def edit(request, email):
         "page":_("Edit %s") % email,
         "email":email,
         "inbox":inbox.inbox,
-        "domain":domain.domain,
+        "domain":inbox.domain.domain,
         "tags":display_tags[2:],
     }
 
