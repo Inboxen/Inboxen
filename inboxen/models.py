@@ -27,7 +27,7 @@ from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 
-from inboxen.managers import BodyManager, HeaderManager, InboxManager
+from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
 
 class BlogPost(models.Model):
     subject = models.CharField(max_length=512)
@@ -131,6 +131,8 @@ class Tag(models.Model):
     """
     tag = models.CharField(max_length=256)
     inbox = models.ForeignKey(Inbox, on_delete=models.CASCADE)
+
+    objects = TagManager()
 
     def __unicode__(self):
         return self.tag

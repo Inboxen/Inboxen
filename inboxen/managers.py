@@ -75,6 +75,25 @@ class InboxManager(QuerySetManager):
 
         return inbox
 
+
+class TagManager(QuerySetManager):
+    use_for_related_fields = True
+
+    @queryset_method
+    def from_string(self, tags, **kwargs):
+        """Create Tag objects from string"""
+        if "," in tags:
+            tags = tags.split(",")
+        else:
+            tags = tags.split(" ")
+
+        for i, tag in enumerate(tags):
+            tag = tag.strip()
+            tag = self.create(tag, **kwargs)
+            tags[i] = tag
+
+        return tags
+
 ##
 # Email managers
 ##
