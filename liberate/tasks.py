@@ -8,6 +8,7 @@ import string
 import tarfile
 import time
 from datetime import datetime
+from email.message import Message
 from shutil import rmtree
 
 from celery import task, chain, group, chord
@@ -88,9 +89,31 @@ def liberate_collect_emails(results, mail_path, options):
 
 def make_message(message):
     """ Make a Python  email.message.Message from our models """
-    pass #TODO
+    parents = {}
+    part_list = message.parts.all()
+    first = None
+
+    for part in part_list:
+        msg = Message()
+
+        header_set = part.header_set.order_by("ordinal").select_related("name__name", "data__data")
+        for header in header_set:
+            msg[header.name.name] = header.data.data
+
+        if msg.is_multipart():
+            parents[part.id] = msg
+        else:
+            msg.set_payload(part.body.data)
+
+        if first is None:
+            first = msg
+        else:
+            parents[part.parent_id].attach(msg)
+
+    return first
 
 @task(rate_limit='1000/m')
+@transaction.atomic()
 def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
     maildir = mailbox.Maildir(mail_path).get_folder(inbox)
