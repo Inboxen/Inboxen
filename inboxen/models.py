@@ -31,6 +31,7 @@ from pytz import utc
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
 
 class BlogPost(models.Model):
+    """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512)
     body = models.TextField()
     date = models.DateTimeField('posted')
@@ -40,6 +41,7 @@ class BlogPost(models.Model):
 
     @property
     def rendered_body(self):
+        """Render MarkDown to HTML"""
         return markdown.markdown(self.body)
 
     def __unicode__(self):
@@ -75,17 +77,16 @@ class UserProfile(models.Model):
         return self.user.username
 
 class TOTPAuth(models.Model):
-    user = models.OneToOneField(User)
-    # base32 encoded and do you really want to type 128 characters into your phone?
-    # (might raise this later, need to test how bad this is perf. wise)
+    """TOTP authentication, not fully implemented yet
+
+    secret is base32 encoded"""
+    user = AutoOneToOneField(User)
     secret = models.CharField(max_length=128)
 
 class Statistic(models.Model):
-    # statistics about users
+    """Statistics about users"""
     user_count = models.IntegerField()
     active_count = models.IntegerField()
-
-    # generic
     new_count = models.IntegerField()
     date = models.DateTimeField('date')
 
