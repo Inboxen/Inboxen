@@ -43,7 +43,7 @@ def home(request, page=1):
         inbox.email_count = inbox.email_set.filter(flags=flags).count()
         total += inbox.email_count
 
-    paginator = Paginator(inboxes, 20)
+    paginator = Paginator(inboxes, 50)
 
     try:
         inboxes = paginator.page(page)
