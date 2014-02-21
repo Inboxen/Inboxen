@@ -1,3 +1,1 @@
-Django>=1.6
-pytz
 -e git+https://github.com/moggers87/salmon.git@bd51911d86d19f4f05fb36362c480c339b12d9dc#egg=salmon
