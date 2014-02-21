@@ -23,6 +23,7 @@ import markdown
 from django.contrib.auth.models import User
 from django.db import models, transaction
 
+from annoying.fields import AutoOneToOneField
 from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
@@ -48,7 +49,8 @@ class BlogPost(models.Model):
         return u"%s%s" % (self.date, draft)
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, primary_key=True)
+    """This is auto-created when accessed via a RelatedManager"""
+    user = AutoOneToOneField(User, primary_key=True)
     html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
     pool_amount = models.IntegerField(default=500)
 

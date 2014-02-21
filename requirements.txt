@@ -1,6 +1,7 @@
 Django>=1.6
 Markdown
 South
+django-annoying
 django-bitfield
 django-mptt
 onetimepass
