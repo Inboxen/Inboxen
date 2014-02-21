@@ -22,7 +22,6 @@
                                 {% if user.is_authenticated %}
                                     <li><a href="/email/add">{% trans "Add Inbox" %}</a></li>
                                     <li><a href="/blog/">{% trans "Blog" %}</a></li>
-                                    <li><a href="/help/contact">{% trans "Contact" %}</a></li>
                                     <li><a href="/user/settings">{% trans "Settings" %}</a></li>
                                     <li><a href="/user/logout">{% trans "Logout" %}</a></li>
                                 {% else %}
@@ -31,7 +30,6 @@
                                         <li><a href="/user/register/status/">{% trans "Register" %}</a></li>
                                     {% endif %}
                                     <li><a href="/blog/">{% trans "Blog" %}</a></li>
-                                    <li><a href="/help/contact">{% trans "Contact" %}</a></li>
                                 {% endif %}
                             </ul>
                         </div>

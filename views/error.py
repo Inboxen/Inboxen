@@ -38,20 +38,20 @@ def error(request, error_message, status=500):
 
 def not_found(request):
     error_message = _("""
-    The page you have requested has not been found. Please contact support if you believe this page should exist or you're brought to this page due to a link you have clicked while nagivating around the site.""")
+    The page you have requested has not been found.""")
 
     return error(request, error_message, status=404)
 
 def internal_server(request):
     error_message = _("""
-    There has been a server problem. We're currently looking into this, please try again soon.
+    There has been a server problem. We're currently looking into this, please try again later.
     """)
 
     return error(request, error_message, status=500)
 
 def permission_denied(request):
     error_message = _("""
-    Permission denied, you're not authorized to view this page, sorry.
+    Permission denied, you're not authorized to view this page.
     """)
 
     return error(request, error_message, status=403)
