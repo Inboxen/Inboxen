@@ -41,9 +41,7 @@ def edit(request, email):
         return HttpResponseRedirect("/user/home")
 
     tags = Tag.objects.filter(inbox=inbox)
-    display_tags = ""
-    for tag in tags:
-        display_tags += ", %s" % str(tag)
+    display_tags = ", ".join([str(tag) for tag in tags])
 
     context = {
         "page":_("Edit %s") % email,
