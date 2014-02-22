@@ -207,7 +207,7 @@ def liberation_finish(result, options):
             tag = Tag(tag=tag, inbox=inbox)
             tag.save()
 
-    email = Email(inbox=inbox reveived_date=datetime.now())
+    email = Email(inbox=inbox, reveived_date=datetime.now())
     main_body = Body.objects.get_or_create(data="")
     main_part = PartList(body=main_body, email=email)
     main_part.save()
