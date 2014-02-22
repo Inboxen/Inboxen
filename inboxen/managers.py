@@ -89,7 +89,7 @@ class TagManager(QuerySetManager):
 
         for i, tag in enumerate(tags):
             tag = tag.strip()
-            tag = self.create(tag, **kwargs)
+            tag = self.create(tag=tag, **kwargs)
             tags[i] = tag
 
         return tags
