@@ -17,36 +17,28 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.views import generic
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.contrib.auth import logout
+from django.contrib.auth import decorators as auth_decorators
+
+from website import forms
+from website.views.base import CommonContextMixin
 
 from queue.delete.tasks import delete_account
 
-@login_required
-def delete(request):
+class AccountDeletionView(CommonContextMixin, generic.FormView):
+    """ View to delete an account """
 
-    if request.method == "POST":
-        if "username" in request.POST and request.POST["username"]:
-            if request.user.username == request.POST["username"]:
-                # right!
-                delete_account.delay(request.user)
-                logout(request)
-                return HttpResponseRedirect("/user/deleted")
-            else:
-                return render(request, "user/settings/delete.html")
+    form_class = forms.DeleteAccountForm
+    success_url = "/"
+    template_name = "user/settings/delete/confirm.html"
+    title = "Delete Account"
 
-    context = {
-        "page":_("Delete Account"),
-    }
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(AccountDeletionView, self).get_form_kwargs(*args, **kwargs)
+        kwargs.setdefault("user", self.request.user)
+        return kwargs
 
-    return render(request, "user/settings/delete/confirm.html", context)
-
-def success(request):
-    context = {
-        "page":_("Goodbye"),
-    }
-     
-    return render(request, "user/settings/delete/success.html", context)
+    def form_valid(self, form, *args, **kwargs):
+        form.save()
+        return super(AccountDeletionView, self).form_valid(form=form, *args, **kwargs)

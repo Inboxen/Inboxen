@@ -25,7 +25,7 @@ from django.db import transaction
 from django.db.models import F, Q
 
 from inboxen.helper.paginator import page as paginator_page
-from inboxen.models import Inbox, Email
+from inboxen.models import Inbox, Email, Header
 from queue.delete.tasks import delete_email
 
 INBOX_ORDER = {
@@ -60,7 +60,7 @@ def inbox(request, email_address="", page=1):
 
     # lets add the important headers (subject and who sent it (a.k.a. sender))
     headers = Header.objects.filter(part__parent=None, part__email__in=emails.object_list)
-    headers = headers.get_many("Subject", "From", group_by="part_email_id")
+    headers = headers.get_many("Subject", "From", group_by="part__email_id")
 
     for email in emails.object_list:
         header_set = headers[email.id]

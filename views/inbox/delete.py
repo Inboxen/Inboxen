@@ -17,22 +17,24 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, Http404
+from django.views import generic
 
-from inboxen.models import Email
+from inboxen import models
 
-def delete(request, email_address, emailid):
+class DeleteInboxView(generic.DeleteView):
+	models = models.Email
+	pk_url_kwarg = "id"
 
-    emailid = int(emailid, 16)    
-    inbox, domain = email_address.split("@", 1)
+	def get_object(self, *args, **kwargs):
+		# Convert the id from base 16 to 10
+		self.kwargs[self.pk_url_kwargs] = int(self.kwargs[self.pk_url_kwargs], 16)
+		return super(DeleteInboxView, self).get_object(*args, **kwargs)
 
-    try:
-        email = Email.objects.filter(inbox__user=request.user).only("id").get(id=emailid)
-        email.delete()
-    except Email.DoesNotExist:
-        raise Http404
+	def get_success_url(self):
+		return "/inbox/{0}/".format(self.kwargs["email_address"])
 
-    return HttpResponseRedirect("/inbox/%s/" % email_address)
+	def get_queryset(self, *args, **kwargs):
+		queryset = super(DeleteInboxView, self).get_queryset(*args, **kwargs)
+		queryset = queryset.filter(inbox__user=self.request.user).only("id")
+		return queryset
 

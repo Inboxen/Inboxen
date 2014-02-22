@@ -17,41 +17,22 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.views import generic
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.http import Http404, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
 
-from queue.delete.tasks import delete_inbox
-from inboxen.models import Inbox
+from inboxen import models
+from website import forms
+from website.views.base import CommonContextMixin
 
-@login_required
-def confirm(request, email):
-    if request.method == "POST":
-        if request.POST["confirm"] != email:
-            raise Http404
-        else:
-            # set it to deleted first
-            inbox, domain = email.split("@", 1)
-            try:
-                inbox = request.user.inbox_set.get(inbox=inbox, domain__domain=domain)
-            except Inbox.DoesNotExist:
-                raise Http404
+class EmailDeletionView(generic.DeleteView):
+    model = models.Inbox
+    success_url = "/user/home/"
+    title = "Delete Inbox"
+    template_name = "email/delete/confirm.html"
 
-            inbox.deleted = True
-            inbox.save()
-
-            delete_inbox.delay(email, request.user)
-            message = _("The inbox %s@%s has now been deleted.") % (inbox.inbox, inbox.domain)
-            request.session["messages"] = [message]
-
-            return HttpResponseRedirect("/user/home") 
-
-        return HttpResponseRedirect("/user/home")
-    
-    context = {
-        "page":_("Delete Inbox"),
-        "inbox":email
-    }
-
-    return render(request, "email/delete/confirm.html", context)
+    def get_object(self, *args, **kwargs):
+        inbox, domain = self.kwargs["email"].split("@", 1)
+        return self.request.user.inbox_set.get(
+            inbox=inbox,
+            domain__domain=domain
+        )

@@ -15,12 +15,7 @@
             <div class="tab-pane active" id="tab1">
                 <form method="POST" action="/user/settings/delete/" class="form wide-form form-open-top">
                     {% csrf_token %}
-                    <p> {% trans "If you delete your account we cannot get it back. Your emails and ability to recieve new emails will be gone for good" %}
-                    <br /><br />
-                    {% trans "Please type your username to confirm" %}
-                    </p>
-                    <input type="text" placeholder="Username" name="username"><br />
-
+                    {{ form.as_p }}
                     <a href="/user/home" class="btn">{% trans "Don't delete my account!" %}</a>
                     <button class="btn btn-danger">{% trans "Delete my account" %}</button>
                 </form>

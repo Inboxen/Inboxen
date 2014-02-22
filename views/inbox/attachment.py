@@ -15,36 +15,31 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.views import generic
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
 
-from inboxen.models import PartList
+from inboxen import models
+from website.views.base import FileDownloadMixin
 
-@login_required
-def download(request, attachmentid, method="download"):
-    try:
-        attachment = PartList.objects.select_related('body').get(id=attachmentid, email__inbox__user=request.user)
-    except (PartList.DoesNotExist):
-    	# this should be an error
-        return HttpResponseRedirect("/user/home")
+class AttachmentDownloadView(FileDownloadMixin, generic.DetailView):
 
-    data = attachment.body.data
-    headers = attachment.header_set
-    headers = headers.get_many("Content-Type", "Content-Disposition")
+    @property
+    def file_contenttype(self):
+        contenttype = self.object.headet_set.get("Content-Type")
+        if contenttype is None:
+            return "application/octet-stream"
+        
+        return contenttype.split(";", 1)[0]
 
-    try:
-        response = HttpResponse(data, content_type=headers["Content-Type"].split(";",1)[0])
-        disposition = header["Content-Disposition"].split(";")[1]
+    @property
+    def file_filename(self):
+        return self.objects.headet_set.get("Content-Disposition")
 
-        response["Content-Disposition"] = "filename={0}".format(disposition)
-        if method == "download":
-            response["Content-Disposition"] = "attachment; filename={0}".format(disposition)
-    except (KeyError, IndexError):
-        # headers are fooked, we'll just ignore them :)
-        response = HttpResponse(data)
-    finally:
-        response["Content-Length"] = len(data)
+    def get_object(self):
+        return PartList.objects.select_related('body').get(id=attachmentid, email__inbox__user=request.user)
 
-    return response
+    def get(self, *args, **kwargs):
+        if kwargs.get("method", "download") == "download":
+            self.file_attachment = True
+
+        return super(AttachmentDownloadView, self).get(*args, **kwargs)

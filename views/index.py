@@ -15,18 +15,16 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext as _
 from django.conf import settings
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from . import TemplateView
 
-def index(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect("/user/home")
+class Index(TemplateView):
+	template_name = "index.html"
+	title = "home"
 
-    context = {
-        "page":_("Home"),
-        "registration_enabled":settings.ENABLE_REGISTRATION,
-    }
+	def dispatch(self, request, *args, **kwargs):
+		if request.user.is_authenticated():
+			return HttpResponseRedirect("/user/home/")
 
-    return render(request, "index.html", context)
+		return super(Index, self).dispatch(request=request, *args, **kwargs)

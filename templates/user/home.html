@@ -10,80 +10,73 @@
 
 {% block content %}
 
-{% if notify_messages %}
-    <div class="alert alert-success">
-        {{ notify_messages }}
-    </div>
-{% endif %}
-    
-
-{% if not inboxes %}
-    <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
-{% else %}
-<table class="table table-hover table-centre table-honeydew">
-        <thead>
-        <tr>
-            <th>{% trans "Inbox" %}</th>
-            <th>{% trans "Created" %}</th>
-            <th>{% trans "Tags" %}</th>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-        </tr>
-        </thead>
-        <tr class="warning">
-            <td><a href="/inbox/">{% trans "Unified" %}</a>
-            {% if total_email_count %}
-                <span class="badge">{{ total_email_count }}</span>
-            {% endif %}
-            </td>
-            <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-        </tr>
-
-        {% for inbox in inboxes.object_list %}
-
+    {% if not page_obj.object_list %}
+        <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
+    {% else %}
+        <table class="table table-hover table-centre table-honeydew">
+            <thead>
             <tr>
-                <td><a href="/inbox/{{ inbox.inbox }}@{{ inbox.domain }}">{{ inbox.inbox }}@{{ inbox.domain }}</a>
-                {% if inbox.email_count %}
-                    <span class="badge">{{ inbox.email_count }}</span>
+                <th>{% trans "Inbox" %}</th>
+                <th>{% trans "Created" %}</th>
+                <th>{% trans "Tags" %}</th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tr class="warning">
+                <td><a href="/inbox/">{% trans "Unified" %}</a>
+                {% if total_email_count %}
+                    <span class="badge">{{ unread_email_count }}</span>
                 {% endif %}
                 </td>
-                <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
-                {% if inbox.tags %}
-                    <td>{{ inbox.tags }}</td>
-                {% else %}
-                    <td>&nbsp;</td>
-                {% endif %}
-                <td><a class="close edit" href="/email/edit/{{ inbox.inbox }}@{{ inbox.domain }}">✍</a></td>
-                <td><a title="{% trans "Delete Inbox" %}" class="close" href="/email/delete/{{ inbox.inbox }}@{{ inbox.domain }}">&times;</a></td>
+                <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
-        {% endfor %}
-    </table>
-    <div class="pagination text-right">
-        <ul>
-            {% if inboxes.has_previous %}
-                <li><a href="/user/home/{{ inboxes.previous_page_number }}">&laquo;</a></li>
-            {% else %}
-                <li class="disabled"><a href="#">&laquo;</a></li>
-            {% endif %}
-            {% for page in pages %}
-                {% if page.active %}
-                    <li class="active">
-                {% else %}
-                    <li>
-                {% endif %}
-                <a href="/user/home/{{ page.page }}">{{ page.page }}</a></li>
+
+            {% for inbox in page_obj.object_list %}
+
+                <tr>
+                    <td><a href="/inbox/{{ inbox.inbox }}@{{ inbox.domain }}">{{ inbox.inbox }}@{{ inbox.domain }}</a>
+                    {% if inbox.email_count %}
+                        <span class="badge">{{ inbox.email_count }}</span>
+                    {% endif %}
+                    </td>
+                    <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
+                    {% if inbox.tags %}
+                        <td>{{ inbox.tags }}</td>
+                    {% else %}
+                        <td>&nbsp;</td>
+                    {% endif %}
+                    <td><a class="close edit" href="/email/edit/{{ inbox.inbox }}@{{ inbox.domain }}">✍</a></td>
+                    <td><a title="{% trans "Delete Inbox" %}" class="close" href="/email/delete/{{ inbox.inbox }}@{{ inbox.domain }}">&times;</a></td>
+                </tr>
             {% endfor %}
-    
-            {% if inboxes.has_next %}
-                <li><a href="/user/home/{{ inboxes.next_page_number }}">&raquo;</a></li>
-            {% else %}
-                <li class="disabled"><a href="#">&raquo;</a></li>
-            {% endif %}
-        </ul> 
-   </div>                
-{% endif %}
+        </table>
+        <div class="pagination text-right">
+            <ul>
+                {% if page_obj.has_previous %}
+                    <li><a href="/user/home/{{ page_obj.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><a href="#">&laquo;</a></li>
+                {% endif %}
+                {% for page in pages %}
+                    {% if page.active %}
+                        <li class="active">
+                    {% else %}
+                        <li>
+                    {% endif %}
+                    <a href="/user/home/{{ page.page }}">{{ page.page }}</a></li>
+                {% endfor %}
+        
+                {% if inboxes.has_next %}
+                    <li><a href="/user/home/{{ inboxes.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><a href="#">&raquo;</a></li>
+                {% endif %}
+            </ul> 
+       </div>                
+    {% endif %}
 
 {% endblock %}

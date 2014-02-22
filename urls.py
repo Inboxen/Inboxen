@@ -18,7 +18,10 @@
 ##
 
 from django.conf import settings, urls
+
+from website import views
 from website.views.blog.feed import RssFeed, AtomFeed
+
 
 
 # error views
@@ -29,7 +32,7 @@ urls.handler403 = "website.views.error.permission_denied"
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
-    urls.url(r'^$', 'website.views.index.index'),
+    urls.url(r'^$', views.Index.as_view(), name='index'),
     
     urls.url(r'^blog/add/', 'website.views.blog.add.add'),
     urls.url(r'^blog/post/(?P<postid>\d+)', 'website.views.blog.view.post'),
@@ -39,7 +42,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^blog/feed/(rss)?', RssFeed()),
     urls.url(r'^blog(/(?P<page>\d+))?', 'website.views.blog.view.view'),
 
-    urls.url(r'^user/deleted/', 'website.views.user.settings.delete.success'),
     urls.url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
             'template_name': 'user/login.html',
@@ -49,30 +51,30 @@ urlpatterns = urls.patterns('',
             },
         },
     ),
-    urls.url(r'^user/register/status', 'website.views.user.register.status'),
-    urls.url(r'^user/register/success', 'website.views.user.register.success'),
-    urls.url(r'^user/register/', 'website.views.user.register.register'),
-    urls.url(r'^user/home(/(?P<page>\d+))?', 'website.views.user.home.home'),
-    urls.url(r'^user/settings/liberate', 'website.views.user.settings.liberate.liberate.liberate'),
+    urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/software-status.html', title='We\'re not stable!'), name='user-status'),
+    urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', title='Welcome!'), name='user-success'),
+    urls.url(r'^user/register/', views.UserRegistrationView.as_view(), name='user-registration'),
+    urls.url(r'^user/home(/(?P<page>\d+))?', views.UserHomeView.as_view(), name='user-home'),
+    urls.url(r'^user/settings/liberate', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^user/settings/password', 'django.contrib.auth.views.password_change',
         {
-            'template_name':'user/settings/password/change.html',
-            'post_change_redirect':'/',
-            'extra_context':{
-                'page':'Change Password',
+            'template_name': 'user/settings/password/change.html',
+            'post_change_redirect': '/',
+            'extra_context': {
+                'page': 'Change Password',
             },
         },
     ),
-    urls.url(r'^user/settings/delete', 'website.views.user.settings.delete.delete'),
+    urls.url(r'^user/settings/delete', views.AccountDeletionView.as_view()),
     urls.url(r'^user/settings/', 'website.views.user.settings.settings.settings'),
-    urls.url(r'^user/logout/', 'website.views.user.logout.logout'),
+    urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
 
-    urls.url(r'^email/add/', 'website.views.email.add.add'),
-    urls.url(r'^email/edit/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', 'website.views.email.edit.edit'),
-    urls.url(r'^email/delete/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', 'website.views.email.delete.confirm'),
+    urls.url(r'^email/add/', views.InboxAddView.as_view(), name='email-add'),
+    urls.url(r'^email/edit/(?P<inbox>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', views.EmailEditView.as_view(), name='inbox-edit'),
+    urls.url(r'^email/delete/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', views.EmailDeletionView.as_view(), name='inbox-delete'),
 
-    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', 'website.views.inbox.attachment.download'),
-    urls.url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/delete/(?P<emailid>[a-fA-F0-9]+)', 'website.views.inbox.delete.delete'),
+    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', views.AttachmentDownloadView.as_view(), name='email-attachment-download'),
+    urls.url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/delete/(?P<id>[a-fA-F0-9]+)', views.DeleteInboxView.as_view(), name='email-delete'),
     urls.url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/view/(?P<emailid>[a-fA-F0-9]+)', 'website.views.inbox.view.view'),
     urls.url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),
 

@@ -15,23 +15,9 @@
             <div class="tab-pane active" id="tab1">
                 <form class="form wide-form form-open-top" action="/user/settings/liberate/liberate" method="POST">
                     {% csrf_token %}
-                    <div class="input-prepend">
-                        <span class="add-on">{% trans "Mail Storage Type:" %}</span>
-                        <select id="prependedInput" name="mailType">
-                            <option value="maildir">Maildir</option>
-                            <option value="mailbox">Mailbox (.mbox)</option>
-                        </select>
+                    <div style="width: 400px;">
+                        {{ form.as_p }}
                     </div>
-                    <br />
-                    <div class="input-prepend">
-                        <span class="add-on">{% trans "Compression Type:" %}</span>
-                        <select id="prependedInput" name="compressType">
-                            <option value="tar.gz">Tar (gzip compressed)</option>
-                            <option value="tar.bz2">Tar (bzip2 compressed)</option>
-                            <option value="tar">Tar (no compression)</option>
-                        </select>
-                    </div>
-                    <br />
                     <button class="btn">{% trans "Liberate!" %}</button>
                 </form>
             </div>

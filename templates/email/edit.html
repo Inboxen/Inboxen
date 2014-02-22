@@ -3,24 +3,10 @@
 {% load i18n %}
 
 {% block content %}
-<form class="form" action="/email/edit/{{ email }}" method="POST">
+<form class="form" action="/email/edit/{{ object.inbox }}@{{ object.domain }}/" method="POST">
     {% csrf_token %}
-    <div class="input-prepend input-append">
-        <span class="add-on">
-            {{ inbox }}
-        </span>
-        <a class="btn btn-attachment disabled" id="appendedPrependedInput">@</a>
-        <span class="add-on">
-            {{ domain }}
-        </span>
-    </div>
-
-    {% if tags %}
-        <input type="text" value="{{ tags }}" name="tags">
-    {% else %}
-        <input type="text" name="tags" placeholder="{% trans "Tag1, Tag2, etc.." %}">
-    {% endif %}
-
+    <p> Edit inbox <strong>{{ object.inbox }}@{{ object.domain }}</strong></p>
+    {{ form.as_p }}
     <button class="btn">{% trans "Save" %}</button>
     <a class="btn" href="/user/home">{% trans "Cancel" %}</a>
 </form>

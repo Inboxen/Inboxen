@@ -25,38 +25,28 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.views import generic
 
 from inboxen.models import Domain, Inbox, Tag
 
-@login_required
-def add(request):
+from website import forms
+from website.views.base import CommonContextMixin
 
-    available = request.user.userprofile.available_inboxes()
-    if available > 0:
-        msg = _("You have used too many Inboxes")
-        request.session["messages"] = [msg]
+class InboxAddView(CommonContextMixin, generic.CreateView):
+    title = "Add Inbox"
+    success_url = "/user/home"
+    form_class = forms.InboxAddForm
+    model = Inbox
+    template_name = "email/add.html"
 
-        return HttpResponseRedirect("/user/home")
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.userprofile.available_inboxes() <= 0:
+            ## TODO: add django message's error: you have too many inboxes
+            return HttpResponseRedirect("/user/home")
 
-    if request.method == "POST":
-        domain = Domain.objects.get(domain=request.POST["domain"])
-        tags = request.POST["tags"]
+        return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)
 
-        new_inbox = request.user.inbox_set.create(domain=domain)
-
-        tags = Tag.objects.from_string(tags=tags, inbox=new_inbox)
-
-        msg = _("You have successfully created %s!") % new_inbox
-
-        request.session["messages"] = [msg]
-
-        return HttpResponseRedirect("/user/home")
-
-    domains = Domain.objects.all()
-
-    context = {
-        "page":_("Add Inbox"),
-        "domains":domains,
-    }
-
-    return render(request, "email/add.html", context)
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(InboxAddView, self).get_form_kwargs(*args, **kwargs)
+        kwargs.setdefault("request", self.request)
+        return kwargs

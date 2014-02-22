@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{ SITE_NAME }} - {{ page }}</title>
+        <title>{{ settings.SITE_NAME }} - {{ page }}</title>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" />
@@ -17,7 +17,7 @@
                 <div class="container">
                     <div class="navbar navbar-inverse">
                         <div class="navbar-inner">
-                            <a class="brand" href="/">{{ SITE_NAME }}</a>
+                            <a class="brand" href="/">{{ settings.SITE_NAME }}</a>
                             <ul class="nav">
                                 {% if user.is_authenticated %}
                                     <li><a href="/email/add">{% trans "Add Inbox" %}</a></li>
@@ -26,7 +26,7 @@
                                     <li><a href="/user/logout">{% trans "Logout" %}</a></li>
                                 {% else %}
                                     <li><a href="/user/login">{% trans "Login" %}</a></li>
-                                    {% if registration_enabled %}
+                                    {% if settings.ENABLE_REGISTRATION %}
                                         <li><a href="/user/register/status/">{% trans "Register" %}</a></li>
                                     {% endif %}
                                     <li><a href="/blog/">{% trans "Blog" %}</a></li>

@@ -24,7 +24,7 @@ from django.http import Http404
 from django.db.models import F
 from lxml.html.clean import Cleaner
 
-from inboxen.models import Email, Header
+from inboxen.models import Email, Header, Inbox
 
 @login_required
 def view(request, email_address, emailid):
@@ -32,8 +32,10 @@ def view(request, email_address, emailid):
         inbox = request.user.inbox_set.from_string(email=email_address)
 
         email = int(emailid, 16)
-        email = Email.objects.get(id=email, flags=~Email.flags.deleted)
+        email = Email.objects.filter(id=email, flags=~Email.flags.deleted)
         email.update(flags=F('flags').bitand(Email.flags.read))
+        email = email[0]
+
     except (Email.DoesNotExist, Inbox.DoesNotExist):
         return Http404
 
@@ -46,7 +48,7 @@ def view(request, email_address, emailid):
     email_obj["date"] = email.received_date
 
     attachments = []
-    for part in email.parts:
+    for part in email.parts.all():
         item = part.header_set.get_many("Content-Type", "Content-Disposition")
         item["id"] = part.id
         item["part"]

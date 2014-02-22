@@ -17,12 +17,5 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.contrib.auth import logout as auth_logout
-
-@login_required
-def logout(request):
-    
-    auth_logout(request)
-    return HttpResponseRedirect("/")
+from .inbox import *
+from .account import *

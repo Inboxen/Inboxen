@@ -17,49 +17,26 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext as _
+from django.views import generic
 from django.conf import settings
-from django.shortcuts import render
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import forms as auth_forms
 
-def status(request):
-    context = {
-        "page":_("We're not stable!"),
-        "registration_enabled":settings.ENABLE_REGISTRATION,
-    }
+from website.views.base import CommonContextMixin
 
-    return render(request, "user/software-status.html", context)
+class UserRegistrationView(CommonContextMixin, generic.CreateView):
+    form_class = auth_forms.UserCreationForm
+    success_url = "/user/register/success"
+    title = "Register"
+    template_name = "user/register/register.html"
 
-def success(request):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return HttpResponseRedirect("/user/home/")
 
-    context = {
-        "page":_("Welcome!")
-    }
+        if not settings.ENABLE_REGISTRATION:
+            # I think this should be a 403 
+            return HttpResponseRedirect("/")
 
-    return render(request, "user/register/success.html", context)
-
-def register(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect("/user/home")
-
-    if not settings.ENABLE_REGISTRATION:
-        return HttpResponseRedirect("/")
-
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            return HttpResponseRedirect("/user/register/success")
-    else:
-        form = UserCreationForm()
-    
-    context = {
-        "form":form,
-        "page":_("Register"),
-        "registration_enabled":settings.ENABLE_REGISTRATION,
-    }
-
-    return render(request, "user/register/register.html", context, context_instance=RequestContext(request))
+        return super(UserRegistrationView, self).dispatch(request=request, *args, **kwargs)
 

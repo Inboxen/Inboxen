@@ -17,28 +17,24 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.views import generic
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
 
+from website import forms
+from website.views.base import CommonContextMixin
 from queue.liberate.tasks import liberate as data_liberate
 
-def liberate(request):
-    if request.method == "POST":
-        options = {}
-        if "mailType" in request.POST:
-            options["mailType"] = request.POST["mailType"]
-        if "compressType" in request.POST:
-            options["compressType"] = request.POST["compressType"]
+class LiberationView(CommonContextMixin, generic.FormView):
+    form_class = forms.LiberationForm
+    success_url = "/user/home/"
+    title = "Liberate your data"
+    template_name = "user/settings/liberate/liberate.html"
 
-        data_liberate.delay(request.user, options=options)
-        message = _("We're liberating! You should recieve an email shortly with your data in it ^_^")
-        request.session["messages"] = [message]
-        return HttpResponseRedirect("/user/home")    
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(LiberationView, self).get_form_kwargs(*args, **kwargs)
+        kwargs.setdefault("user", self.request.user)
+        return kwargs
 
-
-    context = {
-        "page":_("Liberate your data"),
-    }
-    
-    return render(request, "user/settings/liberate/liberate.html", context)
+    def form_valid(self, form, *args, **kwargs):
+        form.save()
+        return super(LiberationView, self).form_valid(*args, **kwargs)

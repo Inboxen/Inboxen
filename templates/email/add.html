@@ -6,15 +6,7 @@
 
         <form action="/email/add/" class="form" method="POST">
             {% csrf_token %}
-            <div class="input-prepend">
-                <select id="prependedInput" name="domain">
-                {% for domain in domains %}
-                    <option value="{{ domain }}">{{domain}}</option>
-                {% endfor %}
-                </select>
-            </div>
-            <br />
-            <input id="tag" name="tags" placeholder="{% trans "Tag1, Tag2, etc..." %}"><br />
+            {{ form.as_p }}
             <button class="btn btn-centre">{% trans "Add" %}</button>        
         </form>
 

@@ -19,51 +19,55 @@
 
 
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils import decorators
+from django.contrib.auth import decorators as auth_decorators
+from django.views import generic
 
 from inboxen.helper.paginator import page as page_paginator
 from inboxen.models import Inbox, Tag, Email
+from website.views.base import CommonContextMixin
 
-@login_required
-def home(request, page=1):
-    inboxes = request.user.inbox_set.order_by('-created')
-    used = inboxes.count()
-    inboxes = inboxes.filter(deleted=False)
+class UserHomeView(CommonContextMixin, generic.ListView):
+    """ The user's home which lists the inboxes """
+    allow_empty = True
+    paginate_by = 50
+    template_name = "user/home.html"
+    title = "Home"
 
-    flags = ~(Email.flags.deleted | Email.flags.read)
-    total = 0
-    for inbox in inboxes:
-        try:
-            tags = inbox.tag_set.all()
-            inbox.tags = ", ".join([tag.tag for tag in tags])
-        except Tag.DoesNotExist:
-            inbox.tags = ''
-        inbox.email_count = inbox.email_set.filter(flags=flags).count()
-        total += inbox.email_count
+    @decorators.method_decorator(auth_decorators.login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UserHomeView, self).dispatch(*args, **kwargs)
 
-    paginator = Paginator(inboxes, 50)
+    def get_queryset(self):
+        queryset = self.request.user.inbox_set.all()
+        queryset = queryset.filter(deleted=False)
+        return queryset.order_by("-created")
 
-    try:
-        inboxes = paginator.page(page)
-    except PageNotAnInteger: # sometimes it's None
-        inboxes = paginator.page(1)
-    except EmptyPage: # sometimes the user will try different numbers
-        inboxes = paginator.page(paginator.num_pages)
+    def get_flags(self):
+        return ~(Email.flags.deleted | Email.flags.read)
 
-    messages = ""
-    if "messages" in request.session and request.session["messages"]:
-        messages = request.session["messages"].pop()
-        request.session["messages"] = []
+    def process_messages(self, inboxes):
+        """ Get tags and message counts """
+        flags = self.get_flags()
+        self.unread_email_count = 0
+        for inbox in inboxes:
+            # Add the tags for the email to enable inbox.tags to produce tag1, tag2...
+            try:
+                tags = inbox.tag_set.all()
+                inbox.tags = ", ".join([tag.tag for tag in tags])
+            except Tag.DoesNotExist:
+                inbox.tags = ""
 
-    context = {
-        "page":_("Home"),
-        "inboxes":inboxes,
-        "total_email_count":total,
-        "pages":page_paginator(inboxes),
-        "notify_messages":messages,
-        "user":request.user,
-    }
+            # Add the number of emails with given flags
+            inbox.email_count = inbox.email_set.filter(flags=flags).count()
+            self.unread_email_count += inbox.email_count
 
-    return render(request, "user/home.html", context)
+        return inboxes
+
+    def get_context_data(self, *args, **kwargs):
+        self.object_list = self.process_messages(self.object_list)
+        context = super(UserHomeView, self).get_context_data(*args, **kwargs)
+        context.setdefault("unread_email_count", self.unread_email_count)
+        context.setdefault("user")
+        context.setdefault("pages", page_paginator(context['page_obj']))
+        return context
