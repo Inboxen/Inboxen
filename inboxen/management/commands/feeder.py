@@ -50,20 +50,42 @@ class Command(BaseCommand):
             self.inbox = None
 
         self.mbox = mailbox.mbox(args[0])
+        self.msg_count = len(self.mbox)
+        self.msg_done = 0.0
+
+        if self.msg_count == 0:
+            raise CommandError("Your mbox is empty!")
 
         self.mbox.lock()
-        self._iterate()
-        self.mbox.unlock()
+        try:
+            self._iterate()
+        finally:
+            self.mbox.close()
+
+        self.stdout.write("\nDone!")
+        self.stdout.flush()
 
     def _iterate(self):
+        self._print_percent()
         for key in self.mbox.keys():
             server = self._get_server()
             message = self.mbox.get(key)
+
             if self.inbox:
                 del message['To']
                 message['To'] = self.inbox
+
             server.sendmail(self._get_address(message['From']), self._get_address(message['To']), message.as_string())
-            self.mbox.discard(key)
+            self.mbox.remove(key)
+
+            self.msg_done = self.msg_done + 1
+            self._print_percent()
+
+    def _print_percent(self):
+        out = (self.msg_done / self.msg_count) * 100
+        out = "{0}% complete".format(int(out))
+        self.stdout.write(out, ending="\r")
+        self.stdout.flush()
 
     def _get_address(self, address):
         # i have this awful feeling that i'm reimplementing something in the stdlib
