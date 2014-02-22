@@ -29,7 +29,7 @@ def edit(request, email):
     try:
         inbox = request.user.inbox_set.select_related("domain__domain")
         inbox = inbox.from_string(email=email, deleted=False)
-    except Inbox.DoesNotExist;
+    except Inbox.DoesNotExist:
         return HttpResponseRedirect("/user/home")
 
     if request.method == "POST":

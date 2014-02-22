@@ -31,7 +31,7 @@ from inboxen.models import Domain, Inbox, Tag
 @login_required
 def add(request):
 
-    available = request.user.userprodile.available_inboxes()
+    available = request.user.userprofile.available_inboxes()
     if available > 0:
         msg = _("You have used too many Inboxes")
         request.session["messages"] = [msg]

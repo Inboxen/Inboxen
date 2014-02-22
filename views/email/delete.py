@@ -35,7 +35,7 @@ def confirm(request, email):
             inbox, domain = email.split("@", 1)
             try:
                 inbox = request.user.inbox_set.get(inbox=inbox, domain__domain=domain)
-            except Inbox.DoesNotExist;
+            except Inbox.DoesNotExist:
                 raise Http404
 
             inbox.deleted = True

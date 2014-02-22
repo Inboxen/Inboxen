@@ -24,7 +24,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from inboxen.helper.paginator import page as page_paginator
-from inboxen.models import Inbox, Tag
+from inboxen.models import Inbox, Tag, Email
 
 @login_required
 def home(request, page=1):
