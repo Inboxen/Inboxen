@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import mailbox
 import smtplib
 
 from django.core.management.base import BaseCommand, CommandError
@@ -41,8 +42,8 @@ class Command(BaseCommand):
             return
         elif len(args) == 2:
             try:
-                Inbox.objects.from_string(email=arg[1])
-                self.inbox = arg[1]
+                Inbox.objects.from_string(email=args[1])
+                self.inbox = args[1]
             except Inbox.DoesNotExist:
                 raise CommandError("Address malformed")
         else:
@@ -59,8 +60,9 @@ class Command(BaseCommand):
             server = self._get_server()
             message = self.mbox.get(key)
             if self.inbox:
-               message['To'] = self.inbox
-            server.sendmail(self._get_address(message['From']), self._get_address(message['To']), message)
+                del message['To']
+                message['To'] = self.inbox
+            server.sendmail(self._get_address(message['From']), self._get_address(message['To']), message.as_string())
             self.mbox.discard(key)
 
     def _get_address(self, address):
@@ -73,7 +75,7 @@ class Command(BaseCommand):
         elif start < 0:
             address = "<{0}>".format(address)
         else:
-            address = address[start:end]
+            address = address[start:end+1]
 
         return address
 
