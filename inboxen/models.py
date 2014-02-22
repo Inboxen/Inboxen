@@ -166,7 +166,7 @@ class Email(models.Model):
     received_date = models.DateTimeField()
 
     def get_eid(self):
-        return hex(self.id.email)[2:].rstrip("L") # the [2:] is to strip 0x from the start
+        return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
 
     def set_eid(self, data):
         pass # should not be used

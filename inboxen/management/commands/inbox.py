@@ -30,6 +30,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not args:
             self.stdout.write(self.help)
+            return
         
         if len(args) >= 2 and args[0] != "list":
             inbox, domain = args[1].split("@", 1)
