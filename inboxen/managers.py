@@ -115,7 +115,7 @@ class HeaderManager(HashedManager):
         return (super(type(self), self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
     @queryset_method
-    def get_many(self, *args, group_by=None):
+    def get_many(self, group_by=None, *args):
         query = Q()
         for item in args:
             query = query | Q(name__name=item)
