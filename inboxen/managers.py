@@ -26,6 +26,7 @@ from datetime import datetime
 from django.conf import settings
 from django.db import IntegrityError, models
 from django.utils.encoding import smart_bytes
+from django.utils.translation import ugettext as _
 
 from dj_queryset_manager import QuerySetManager, queryset_method
 from pytz import utc
@@ -43,9 +44,13 @@ class InboxManager(QuerySetManager):
     use_for_related_fields = True
 
     @queryset_method
-    def create(self, length=5, **kwargs):
+    def create(self, length=5, domain=None, **kwargs):
         """length is ignored currently"""
         #TODO: define default for length with issue #57
+        domain_model = self.model.domain.field.rel.to
+
+        if not isinstance(domain, domain_model):
+            raise domain_model.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
 
         while True:
             # loop around until we create a unique address
@@ -54,7 +59,7 @@ class InboxManager(QuerySetManager):
                 local_part += choice(ascii_lowercase)
 
             try:
-                return super(type(self), self).create(inbox=local_part, created=datetime.now(utc), **kwargs)
+                return super(type(self), self).create(inbox=local_part, created=datetime.now(utc), domain=domain, **kwargs)
             except IntegrityError:
                 pass
 
