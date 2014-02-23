@@ -134,10 +134,10 @@ class HeaderManager(HashedManager):
 
         values = self.filter(query)
         if group_by is None:
-            values = values.value_list("name__name", "data__data")
+            values = values.values_list("name__name", "data__data")
             return dict(values)
 
-        values = values.value_list(group_by, "name__name", "data__data")
+        values = values.values_list(group_by, "name__name", "data__data")
 
         headers = {}
         for value in values:
