@@ -38,7 +38,8 @@ def make_email(message, inbox):
     email = Email(inbox=inbox, received_date=received_date)
     email.save()
 
-    body = Body.objects.only("id").get_or_create(data=base.body)[0]
+    data = encode_body(base)
+    body = Body.objects.only("id").get_or_create(data=data)[0]
 
     part = PartList(body=body, email=email)
     part.save()
@@ -51,7 +52,8 @@ def make_email(message, inbox):
 
     with PartList.objects.delay_mptt_updates():
         for part in message.walk():
-            body = Body.objects.only("id").get_or_create(data=part.body)[0]
+            data = encode_body(part)
+            body = Body.objects.only("id").get_or_create(data=data)[0]
             part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
             part_item.save()
             parents[part] = part_item.id
@@ -59,3 +61,17 @@ def make_email(message, inbox):
             for header in part.keys():
                 ordinal = part.keys().index(header)
                 Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
+
+def encode_body(part):
+    """Make certain that the body of a part is bytes and not unicode"""
+    if isinstance(part.body, unicode):
+        ctype, params = part.content_encoding['Content-Type']
+        try:
+            data = part.body.encode(params.get("charset", "ascii"))
+        except (UnicodeError, LookupError):
+            # I have no time for your bullshit
+            data = part.body.encode("utf-8")
+    else:
+        data = part.body
+
+    return data
