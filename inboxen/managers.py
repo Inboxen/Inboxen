@@ -18,8 +18,8 @@
 ##
 
 import hashlib
-from random import choice
-from string import ascii_lowercase
+import random
+import string
 from types import StringTypes
 from datetime import datetime
 
@@ -54,12 +54,18 @@ class InboxManager(QuerySetManager):
 
         while True:
             # loop around until we create a unique address
-            local_part = ""
+            inbox = []
             for i in range(length):
-                local_part += choice(ascii_lowercase)
+                inbox += random.choice(string.ascii_lowercase)
 
             try:
-                return super(type(self), self).create(inbox=local_part, created=datetime.now(utc), domain=domain, **kwargs)
+                return super(type(self), self).create(
+                    inbox="".join(inbox),
+                    created=datetime.now(utc),
+                    domain=domain,
+                    **kwargs
+                )
+
             except IntegrityError:
                 pass
 
