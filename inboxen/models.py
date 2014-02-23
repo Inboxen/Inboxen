@@ -181,6 +181,8 @@ class Body(models.Model):
 
     Object manager has a get_or_create() method that deals with duplicated
     bodies.
+
+    This model expects and returns binary data, converting to and from unicode happens elsewhere
     """
     path = models.FilePathField(default=None, null=True, blank=True)
     hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
@@ -193,10 +195,7 @@ class Body(models.Model):
     objects = BodyManager()
 
     def set_data(self, data):
-        try:
-            data = data.encode('utf-8')
-        except (UnicodeEncodeError, UnicodeEncodeError):
-            self._data = data
+        self._data = data
 
     def get_data(self):
         if not self.path:
