@@ -1,4 +1,5 @@
 from config import settings
+from salmon import queue
 from salmon.routing import Router
 from salmon.server import SMTPReceiver
 import logging
