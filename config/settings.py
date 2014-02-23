@@ -3,8 +3,6 @@ import logging
 import sys
 import os
 
-DEBUG = False
-
 sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
