@@ -131,10 +131,10 @@ def liberate_message(mail_path, inbox, email_id):
 @task()
 def liberate_convert_box(result, mail_path, options):
     """ Convert maildir to mbox if needed """
-    if options['mailType'] == 'maildir':
+    if options['storage_type'] == 'maildir':
         pass
 
-    elif options['mailType'] == 'mailbox':
+    elif options['storage_type'] == 'mailbox':
         maildir = mailbox.Maildir(mail_path)
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
@@ -156,8 +156,8 @@ def liberate_convert_box(result, mail_path, options):
 def liberate_tarball(result, mail_path, options):
     """ Tar up and delete the maildir """
 
-    tar_type = TAR_TYPES[options.get('compressType', 'tar.gz')]
-    tar_name = "%s.%s" % (mail_path, options.get('compressType', 'tar.gz'))
+    tar_type = TAR_TYPES[options.get('compression_type', 'tar.gz')]
+    tar_name = "%s.%s" % (mail_path, options.get('compression_type', 'tar.gz'))
 
     try:
         tar = tarfile.open(tar_name, tar_type['writer'])
@@ -168,14 +168,14 @@ def liberate_tarball(result, mail_path, options):
     date = str(datetime.now(utc).date())
     dir_name = "inboxen-%s" % date
 
-    if options['mailType'] == 'maildir':
+    if options['storage_type'] == 'maildir':
         try:
             tar.add("%s/" % mail_path, dir_name) # directories are added recursively by default
         finally:
             tar.close()
         rmtree(mail_path)
 
-    elif options['mailType'] == 'mailbox':
+    elif options['storage_type'] == 'mailbox':
         try:
             tar.add("%s.mbox" % mail_path, dir_name)
         finally:
