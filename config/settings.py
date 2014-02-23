@@ -8,10 +8,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 receiver_config = {'host': 'localhost', 'port': 8823}
 
-handlers = ['app.handlers.in']
+handlers = ['app.server']
 
 router_defaults = {}
 
-template_config = {'dir': 'app', 'module': 'templates'}
-
-# the config/boot.py will turn these values into variables set in settings

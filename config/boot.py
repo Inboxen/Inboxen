@@ -1,7 +1,6 @@
 from config import settings
 from salmon.routing import Router
 from salmon.server import SMTPReceiver
-from salmon import queue
 import logging
 import logging.config
 
