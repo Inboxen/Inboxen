@@ -126,10 +126,11 @@ class HeaderManager(HashedManager):
         return (super(type(self), self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
     @queryset_method
-    def get_many(self, group_by=None, *args):
-        query = Q()
+    def get_many(self, *args, **kwargs):
+        group_by = kwargs.pop("group_by", None)
+        query = models.Q()
         for item in args:
-            query = query | Q(name__name=item)
+            query = query | models.Q(name__name=item)
 
         values = self.filter(query)
         if group_by is None:
