@@ -1,5 +1,4 @@
 import logging
-import types
 from datetime import datetime
 
 from celery import chain, chord, group, task
@@ -14,14 +13,14 @@ log = logging.getLogger(__name__)
 
 @task(rate_limit="10/m", default_retry_delay=5 * 60) # 5 minutes
 @transaction.atomic()
-def delete_inbox(email, username=None):
+def delete_inbox(inbox_id, user_id=None):
     inbox = Inbox.objects
 
-    if username is not None:
-        inbox = Inbox.objects.filter(user__username=username)
+    if user_id is not None:
+        inbox = Inbox.objects.filter(user__id=user_id)
 
     try:
-        inbox = inobx.from_string(email=email)
+        inbox = inbox.get(id=inbox_id)
     except Inbox.DoesNotExist:
         return False
 
@@ -66,24 +65,27 @@ def disown_inbox(result, inbox_id):
     tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
     tags.delete()
 
+    inbox = Inbox.objects.get(id=inbox_id)
     inbox.user = None
     inbox.save()
 
 @task()
 @transaction.atomic()
-def delete_user(result, username):
-    inbox = Inbox.objects.filter(user__username=username).only('id').exists()
+def finish_delete_user(result, user_id):
+    inbox = Inbox.objects.filter(user__id=user_id).only('id').exists()
+    user = User.objects.get(id=user_id)
     if inbox:
-        raise Exception("User {0}  still has inboxes!".format(username))
+        raise Exception("User {0} still has inboxes!".format(user.username))
     else:
-        log.debug("Deleting user %s" % username)
+        log.debug("Deleting user %s", user.username)
         user.delete()
     return True
 
 @task()
 @transaction.atomic()
-def delete_account(user):
+def delete_account(user_id):
     # first we need to make sure the user can't login
+    user = User.objects.get(id=user_id)
     user.set_unusable_password()
     user.is_active = False
     user.save()
@@ -91,7 +93,7 @@ def delete_account(user):
     # get ready to delete all inboxes
     inboxes = user.inbox_set.only('id')
     if len(inboxes): # pull in all the data
-        delete = chord([chain(delete_inbox.s(inbox.id), disown_inbox.s(inbox.id)) for inbox in inboxes], delete_user.s(username))
+        delete = chord([chain(delete_inbox.s(inbox.id), disown_inbox.s(inbox.id)) for inbox in inboxes], finish_delete_user.s(user_id))
         delete.apply_async()
 
     log.debug("Deletion tasks for %s sent off", user.username)
