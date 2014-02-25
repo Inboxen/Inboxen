@@ -8,7 +8,6 @@ import string
 import tarfile
 import time
 from datetime import datetime
-from email.message import Message
 from shutil import rmtree
 
 from celery import task, chain, group, chord
@@ -18,6 +17,7 @@ from django.conf import settings
 from django.db import transaction
 
 from inboxen.models import Body, Domain, Email, Header, Inbox, PartList, Tag, User
+from queue.liberate import utils
 
 log = logging.getLogger(__name__)
 
@@ -87,31 +87,6 @@ def liberate_collect_emails(results, mail_path, options):
 
     msg_tasks.apply_async()
 
-def make_message(message):
-    """ Make a Python  email.message.Message from our models """
-    parents = {}
-    part_list = message.parts.all()
-    first = None
-
-    for part in part_list:
-        msg = Message()
-
-        header_set = part.header_set.order_by("ordinal").select_related("name__name", "data__data")
-        for header in header_set:
-            msg[header.name.name] = header.data.data
-
-        if part.is_leaf_node():
-            msg.set_payload(str(part.body.data))
-        else:
-            parents[part.id] = msg
-
-        if first is None:
-            first = msg
-        else:
-            parents[part.parent_id].attach(msg)
-
-    return first
-
 @task(rate_limit='1000/m')
 @transaction.atomic()
 def liberate_message(mail_path, inbox, email_id):
@@ -120,7 +95,7 @@ def liberate_message(mail_path, inbox, email_id):
 
     try:
         msg = Email.objects.get(id=email_id, flags=~Email.flags.deleted)
-        msg = make_message(msg)
+        msg = utils.make_message(msg)
     except Exception, exc:
         msg_id = hex(int(email_id))[2:]
         log.debug("Exception processing %s", msg_id, exc_info=exc)
