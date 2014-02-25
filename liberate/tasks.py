@@ -17,7 +17,7 @@ from pytz import utc
 from django.conf import settings
 from django.db import transaction
 
-from inboxen.models import Domain, Email, Inbox, PartList, Tag, User
+from inboxen.models import Body, Domain, Email, Header, Inbox, PartList, Tag, User
 
 log = logging.getLogger(__name__)
 
@@ -207,47 +207,49 @@ def liberation_finish(result, options):
             tag = Tag(tag=tag, inbox=inbox)
             tag.save()
 
-    email = Email(inbox=inbox, reveived_date=datetime.now())
-    main_body = Body.objects.get_or_create(data="")
+    email = Email(inbox=inbox, received_date=datetime.now(utc))
+    email.save()
+
+    main_body = Body.objects.get_or_create(data="")[0]
     main_part = PartList(body=main_body, email=email)
     main_part.save()
 
-    main_headers = main_part.header_set
-    main_headers.get_or_create(name="From", data="support@inboxen.org", ordinal=0)
-    main_headers.get_or_create(name="Subject", data=settings.LIBERATION_SUBJECT, ordinal=1)
-    main_headers.get_or_create(name="Content-Type", data="multipart/mixed; boundary=\"InboxenIsTheBest\"")
+    Header.objects.create(part=main_part, name="From", data="support@inboxen.org", ordinal=0)
+    Header.objects.create(part=main_part, name="Subject", data=settings.LIBERATION_SUBJECT, ordinal=1)
+    Header.objects.create(part=main_part, name="Content-Type", data="multipart/mixed; boundary=\"InboxenIsTheBest\"", ordinal=2)
 
-    msg_body = Body.objects.get_or_create(data=settings.LIBERATION_BODY)
+    msg_body = Body.objects.get_or_create(data=settings.LIBERATION_BODY)[0]
     msg_part = PartList(body=msg_body, email=email, parent=main_part)
     msg_part.save()
-    msg_part.headers_set.get_or_create(name="Content-Type", data="text/plain")
+    Header.objects.create(part=msg_part, name="Content-Type", data="text/plain", ordinal=0)
 
     if not options.get("noEmail", False):
         archive_body = Body.objects.get_or_create(path=result["path"])[0]
         archive_part = PartList(body=archive_body, email=email, parent=main_part)
         archive_part.save()
-        archive_headers = archive.header_set
+
         cont_dispos = "attachment; filename=\"emails-{0}.{1}\"".format(result['date'], options.get('compressType', 'tar.gz'))
-        archive_headers.get_or_create(name="Content-Type", data=result['mime-type'], ordinal=0)
-        archive_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
+        Header.objects.create(part=archive_part, name="Content-Type", data=result['mime-type'], ordinal=0)
+        Header.objects.create(part=archive_part, name="Content-Disposition", data=cont_dispos, ordinal=1)
 
     profile_body = Body.objects.get_or_create(data=profile['data'])[0]
     profile_part = PartList(body=profile_body, email=email, parent=main_part)
     profile_part.save()
-    profile_headers = profile_part.header_set
+
     cont_dispos = "attachment; filename=\"{0}\"".format(profile['name'])
-    profile_headers.get_or_create(name="Content-Type", data=profile['type'], ordinal=0)
-    profile_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
+    Header.objects.create(part=profile_part, name="Content-Type", data=profile['type'], ordinal=0)
+    Header.objects.create(part=profile_part, name="Content-Disposition", data=cont_dispos, ordinal=1)
 
     tags_body = Body.objects.get_or_create(data=tags['data'])[0]
-    tags_part = PartList(body=tags_body, email=email, partent=main_part)
+    tags_part = PartList(body=tags_body, email=email, parent=main_part)
     tags_part.save()
-    tags_headers = tags_part.header_set
-    cont_dispos = "attachment; filename=\"{0}\"".format(tags['name'])
-    tags_headers.get_or_create(name="Content-Type", data=tags['type'], ordinal=0)
-    tags_headers.get_or_create(name="Content-Disposition", data=cont_dispos, ordinal=1)
 
-    log.debug("Finished liberation for %s", user.username)
+    cont_dispos = "attachment; filename=\"{0}\"".format(tags['name'])
+    Header.objects.create(part=tags_part, name="Content-Type", data=tags['type'], ordinal=0)
+    Header.objects.create(part=tags_part, name="Content-Disposition", data=cont_dispos, ordinal=1)
+    Header.objects.create(part=tags_part, name="Content-Transfer-Encoding", data="base64", ordinal=2)
+
+    log.info("Finished liberation for %s", options['user'])
 
 def liberate_user_profile(user_id, email_results, date):
     """ User profile data """
