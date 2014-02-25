@@ -63,7 +63,7 @@ def liberate_inbox(mail_path, inbox_id):
 
     return {
             'folder': str(inbox),
-            'ids': [email.id for email in Email.objects.filter(inbox=inbox, deleted=False).only('id')]
+            'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id')]
             }
 
 @task()
@@ -119,7 +119,7 @@ def liberate_message(mail_path, inbox, email_id):
     maildir = mailbox.Maildir(mail_path).get_folder(inbox)
 
     try:
-        msg = Email.objects.get(id=email_id, deleted=False)
+        msg = Email.objects.get(id=email_id, flags=~Email.flags.deleted)
         msg = make_message(msg)
     except Exception, exc:
         msg_id = hex(int(email_id))[2:]
@@ -278,7 +278,7 @@ def liberate_user_profile(user_id, email_results, date):
 
     data['errors'] = []
     for result in email_results:
-        if result != None:
+        if result is not None:
             data['errors'].append(str(result))
 
     data = json.dumps(data)
