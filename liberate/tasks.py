@@ -100,10 +100,10 @@ def make_message(message):
         for header in header_set:
             msg[header.name.name] = header.data.data
 
-        if msg.is_multipart():
-            parents[part.id] = msg
+        if part.is_leaf_node():
+            msg.set_payload(str(part.body.data))
         else:
-            msg.set_payload(part.body.data)
+            parents[part.id] = msg
 
         if first is None:
             first = msg
@@ -126,7 +126,7 @@ def liberate_message(mail_path, inbox, email_id):
         log.debug("Exception processing %s", msg_id, exc_info=exc)
         raise Exception(msg_id)
 
-    maildir.add(msg)
+    maildir.add(msg.as_string())
 
 @task()
 def liberate_convert_box(result, mail_path, options):
