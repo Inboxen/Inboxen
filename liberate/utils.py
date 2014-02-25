@@ -6,7 +6,7 @@ from email.message import Message
 
 class EncodeMessage(Message):
     """Just like a normal email.message.Message, but it automatically enocdes body parts"""
-    def get_payload(self, i=None, encode=True):
+    def get_payload(self, i=None):
         # taken from http://hg.python.org/cpython/file/0926adcc335c/Lib/email/message.py
         # Copyright (C) 2001-2006 Python Software Foundation
         # See PY-LIC for licence
@@ -16,26 +16,26 @@ class EncodeMessage(Message):
             raise TypeError('Expected list, got %s' % type(self._payload))
         else:
             payload = self._payload[i]
-        if encode:
-            if self.is_multipart():
-                return None
-            cte = self.get('content-transfer-encoding', '').lower()
-            if cte == 'quoted-printable':
-                return encoders._qencode(payload)
-            elif cte == 'base64':
-                try:
-                    return encoders._bencode(payload)
-                except binascii.Error:
-                    # Incorrect padding
-                    return payload
-            elif cte in ('x-uuencode', 'uuencode', 'uue', 'x-uue'):
-                sfp = StringIO()
-                try:
-                    uu.encode(StringIO(payload+'\n'), sfp, quiet=True)
-                    payload = sfp.getvalue()
-                except uu.Error:
-                    # Some decoding problem
-                    return payload
+
+        if self.is_multipart():
+            return payload
+        cte = self.get('content-transfer-encoding', '').lower()
+        if cte == 'quoted-printable':
+            return encoders._qencode(payload)
+        elif cte == 'base64':
+            try:
+                return encoders._bencode(payload)
+            except binascii.Error:
+                # Incorrect padding
+                return payload
+        elif cte in ('x-uuencode', 'uuencode', 'uue', 'x-uue'):
+            sfp = StringIO()
+            try:
+                uu.encode(StringIO(payload+'\n'), sfp, quiet=True)
+                payload = sfp.getvalue()
+            except uu.Error:
+                # Some decoding problem
+                return payload
         # Everything else, including encodings with 8bit or 7bit are returned
         # unchanged.
         return payload
