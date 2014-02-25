@@ -1,4 +1,4 @@
-Django==1.6
+Django>=1.6,<1.7
 Markdown
 South
 django-annoying
