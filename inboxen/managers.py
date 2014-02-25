@@ -113,7 +113,7 @@ class HeaderManager(HashedManager):
     use_for_related_fields = True
 
     @queryset_method
-    def create(self, name, data, ordinal, hashed=None, **kwargs):
+    def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
         if hashed is None:
             hashed = self.hash_it(data)
 
