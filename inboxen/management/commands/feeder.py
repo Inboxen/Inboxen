@@ -72,8 +72,7 @@ class Command(BaseCommand):
             message = self.mbox.get(key)
 
             if self.inbox:
-                del message['To']
-                message['To'] = self.inbox
+                message.replace_header("To", str(self.inbox))
 
             server.sendmail(self._get_address(message['From']), self._get_address(message['To']), message.as_string())
             self.mbox.remove(key)
