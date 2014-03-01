@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from itertools import izip_longest
 
 from celery import chain, chord, group, task
 from pytz import utc
@@ -92,18 +93,18 @@ def delete_account(user_id):
 
 @task(rate_limit=200, acks_late=True)
 @transaction.atomic()
-def delete_inboxen_item(model, item_id):
+def delete_inboxen_item(model, item_ids):
     _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
-
-    try:
-        item = _model.objects.only('id').get(id=item_id)
-        item.delete()
-    except (IntegrityError, item.DoesNotExist):
-        pass
+    for item_id in item_ids:
+        try:
+            item = _model.objects.only('id').get(id=item_id)
+            item.delete()
+        except (IntegrityError, _model.DoesNotExist):
+            pass
 
 @task(rate_limit="1/m")
 @transaction.atomic()
-def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000, count=0):
+def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=5000, count=0):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
@@ -113,23 +114,26 @@ def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_numbe
     """
     _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
 
-    if filter_args and filter_kwargs:
-        items = _model.objects.only('id').filter(*filter_args, **filter_kwargs)
-    elif filter_args:
-        items = _model.objects.only('id').filter(*filter_args)
-    elif filter_kwargs:
-        items = _model.objects.only('id').filter(**filter_kwargs)
-    else:
+    if filter_args is None and filter_kwargs is None:
         raise Exception("You need to specify some filter options!")
+    elif filter_args is None:
+        filter_args = []
+    elif filter_kwargs is None:
+        filter_kwargs = {}
 
-    tasks = [delete_inboxen_item.s(model, item.id) for item in items[:batch_number]]
+    items = _model.objects.only('id').filter(*filter_args, **filter_kwargs)
+    items = items[:batch_number]
+    items = [item.id for item in items]
+    items = [filter((lambda x: x is not None), item_set) for item_set in izip_longest(*[iter(items)]*50)]
+
+    tasks = [delete_inboxen_item.s(model, item_set) for item_set in items]
 
     if len(tasks):
         tasks = chord(tasks, major_cleanup_items.si(model, filter_args, filter_kwargs, batch_number, count+1))
         tasks.apply_async()
-        log.warning("%s deletes sent (overestimate), %s completed", batch_number, count*batch_number)
+        log.info("%s deletes sent (overestimate), %s completed", batch_number, count*batch_number)
     else:
-        log.warning("Batch deletes finished")
+        log.info("Batch deletes finished")
 
 @task(rate_limit="1/h")
 def clean_orphan_models():
