@@ -5,7 +5,7 @@ from celery import chain, chord, group, task
 from pytz import utc
 
 from django.contrib.contenttypes.models import ContentType
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 from inboxen.models import Email, Inbox, Tag, User
 
@@ -44,19 +44,11 @@ def delete_inbox(inbox_id, user_id=None):
 
     return True
 
-@task(rate_limit=200)
+@task(rate_limit=200) # Don't use `acks_late`, bad things happen if an ID is reused
 @transaction.atomic()
 def delete_email(email_id):
     email = Email.objects.only('id').get(id=email_id)
     email.delete()
-
-@task(rate_limit=200)
-@transaction.atomic()
-def delete_inboxen_item(model, item_id):
-    _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
-
-    item = _model.objects.only('id').get(id=item_id)
-    item.delete()
 
 @task()
 @transaction.atomic()
@@ -98,6 +90,17 @@ def delete_account(user_id):
 
     log.debug("Deletion tasks for %s sent off", user.username)
 
+@task(rate_limit=200, acks_late=True)
+@transaction.atomic()
+def delete_inboxen_item(model, item_id):
+    _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
+
+    try:
+        item = _model.objects.only('id').get(id=item_id)
+        item.delete()
+    except (IntegrityError, item.DoesNotExist):
+        pass
+
 @task(rate_limit="1/m")
 @transaction.atomic()
 def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=1000, count=0):
@@ -127,3 +130,14 @@ def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_numbe
         log.warning("%s deletes sent (overestimate), %s completed", batch_number, count*batch_number)
     else:
         log.warning("Batch deletes finished")
+
+@task(rate_limit="1/h")
+def clean_orphan_models():
+    # Body
+    major_cleanup_items.delay("body", filter_kwargs={"partlist__isnull": True})
+
+    # HeaderName
+    major_cleanup_items.delay("headername", filter_kwargs={"header__isnull": True})
+
+    # HeaderData
+    major_cleanup_items.delay("headerdata", filter_kwargs={"header__isnull": True})
