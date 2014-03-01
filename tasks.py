@@ -10,7 +10,7 @@ from inboxen.models import User, Statistic
 
 log = logging.getLogger(__name__)
 
-@task
+@task(ignore_result=True)
 @transaction.atomic()
 def statistics():
     # get user statistics

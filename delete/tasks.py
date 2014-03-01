@@ -44,13 +44,13 @@ def delete_inbox(inbox_id, user_id=None):
 
     return True
 
-@task(rate_limit=200) # Don't use `acks_late`, bad things happen if an ID is reused
+@task(rate_limit=200, ignore_result=True)
 @transaction.atomic()
 def delete_email(email_id):
     email = Email.objects.only('id').get(id=email_id)
     email.delete()
 
-@task()
+@task(ignore_result=True)
 @transaction.atomic()
 def disown_inbox(result, inbox_id):
     # delete tags
@@ -61,7 +61,7 @@ def disown_inbox(result, inbox_id):
     inbox.user = None
     inbox.save()
 
-@task()
+@task(ignore_result=True)
 @transaction.atomic()
 def finish_delete_user(result, user_id):
     inbox = Inbox.objects.filter(user__id=user_id).only('id').exists()
@@ -73,7 +73,7 @@ def finish_delete_user(result, user_id):
         user.delete()
     return True
 
-@task()
+@task(ignore_result=True)
 @transaction.atomic()
 def delete_account(user_id):
     # first we need to make sure the user can't login
