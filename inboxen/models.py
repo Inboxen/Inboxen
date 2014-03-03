@@ -153,50 +153,6 @@ class Request(models.Model):
 # Email models
 ##
 
-## Old models
-
-class Header(models.Model):
-    name = models.CharField(max_length=1024)
-    data = models.CharField(max_length=1024)
-
-class Attachment(models.Model):
-    content_type = models.CharField(max_length=256, null=True, blank=True)
-    content_disposition = models.CharField(max_length=512, null=True, blank=True)
-
-    path = models.FilePathField(default=None, null=True, blank=True)
-    _data = models.TextField(
-        db_column='data',
-        blank=True,
-        null=True,
-    )
-
-    def set_data(self, data):
-        try:
-            self._data = base64.encodestring(data)
-        except UnicodeEncodeError:
-            data = data.encode('utf-8')
-            self._data = base64.encodestring(data)
-
-    def get_data(self):
-        if not self.path:
-            return base64.decodestring(self._data)
-
-        # look for data in the path
-        _tpath = open(self.path, "rb")
-        try:
-            d = _tpath.read()
-        finally:
-            _tpath.close()
-        return d
-
-
-    data = property(get_data, set_data)
-
-    def __unicode__(self):
-        return self.data
-
-## End of old models
-
 class Email(models.Model):
     """Email model
 
@@ -208,17 +164,6 @@ class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted","read","seen"), default=0)
     received_date = models.DateTimeField()
-
-    ## Old fields
-    headers = models.ManyToManyField(Header)
-    body = models.TextField(null=True)
-    attachments = models.ManyToManyField(Attachment)
-
-    ## Old flags
-    deleted = models.BooleanField(default=False)
-    read = models.BooleanField(default=False)
-
-    ## End of oldness
 
     def get_eid(self):
         return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
