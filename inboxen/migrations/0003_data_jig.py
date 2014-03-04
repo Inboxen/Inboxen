@@ -1,39 +1,84 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
 from south.v2 import DataMigration
-from django.db import models
 
 import hashlib
+import mptt
 from django.utils.encoding import smart_bytes
 
 class Migration(DataMigration):
+    COLUMN_HASHER = 'sha1'
+    FLAGS = {"deleted":1, "read":2, "seen":4}
+
     def hash_it(self, data):
-        hashed = hashlib.new(settings.COLUMN_HASHER)
+        hashed = hashlib.new(self.COLUMN_HASHER)
         hashed.update(smart_bytes(data))
         hashed = "{0}:{1}".format(hashed.name, hashed.hexdigest())
 
         return hashed
 
-    def make_body(self, orm, data, path):
-        hashed = self.hash_it(data)
+    def make_body(self, orm, data=None, path=None):
+        if path is None:
+            hashed = self.hash_it(data)
+        else:
+            try:
+                file = open(path, "r")
+                file_data = file.read()
+            finally:
+                file.close()
+            hashed = self.hash_it(file_data)
 
         body = orm.Body.objects.get_or_create(hashed=hashed, defaults={'path':path, '_data':data})
 
         return body[0]
+
+    def make_header(self, orm, name, data, part, ordinal):
+        name = orm.HeaderName.objects.get_or_create(name=name)
+        data = orm.HeaderData.objects.get_or_create(hashed=self.hash_it(data), defaults={"data": data})
+        orm.NewHeader.objects.create(name=name, data=data, part=part, ordinal=ordinal)
+
+    def flag_setter(self, email):
+        flags = 0
+        if email.read:
+            flags = flags | self.FLAGS["read"]
+        elif email.deleted:
+            flags = flags | self.FLAGS["deleted"]
+
+        email.update(flags=flags)
 
     def forwards(self, orm):
         # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
 
-        """
-            Email.{read, deleted} -> Email.flags
+        # Take PartList and "extend" it with mtpp stuff
+        # http://django-mptt.github.io/django-mptt/models.html#registration-of-existing-models
+        mptt.register(orm.PartList)
 
-            Email.body -> Body(), PartList(body, parent=None), HeaderName(), HeaderData(), NewHeader(name, data, part)
+        with orm.PartList.objects.delay_mptt_updates():
+            for email in orm.Email.objects.all():
+                self.flag_setter(email)
 
-            Email.attachments -> Body(), PartList(body, parent=first_part), HeaderName(), HeaderData(), NewHeader(name, data, part)
-        """
+                try:
+                    body = email.body.encode("utf8")
+                except UnicodeError:
+                    body = email.body
+
+                body = self.make_body(orm, data=body)
+                first_part = orm.PartList(body=body, parent=None)
+                first_part.save()
+
+                ordinal = 0
+                for header in email.headers.all():
+                    self.make_header(orm, name=header.name, data=header.data, part=first_part, ordinal=ordinal)
+                    ordinal = ordinal + 1
+
+                for attachment in email.attachments.all():
+                    body = self.make_body(orm, data=attachment._data, path=attachment.path)
+                    part = orm.PartList(body=body, parent=first_part)
+                    part.save()
+
+                    self.make_header(orm, name="Content-Type", data=attachment.content_type, part=part, ordinal=0)
+                    self.make_header(orm, name="Content-Disposition", data=attachment.content_disposition, part=part, ordinal=1)
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration. You backed up, right?")
