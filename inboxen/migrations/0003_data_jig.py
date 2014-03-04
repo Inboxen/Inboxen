@@ -4,7 +4,23 @@ from south.db import db
 from south.v2 import DataMigration
 from django.db import models
 
+import hashlib
+from django.utils.encoding import smart_bytes
+
 class Migration(DataMigration):
+    def hash_it(self, data):
+        hashed = hashlib.new(settings.COLUMN_HASHER)
+        hashed.update(smart_bytes(data))
+        hashed = "{0}:{1}".format(hashed.name, hashed.hexdigest())
+
+        return hashed
+
+    def make_body(self, orm, data, path):
+        hashed = self.hash_it(data)
+
+        body = orm.Body.objects.get_or_create(hashed=hashed, defaults={'path':path, '_data':data})
+
+        return body[0]
 
     def forwards(self, orm):
         # Note: Don't use "from appname.models import ModelName".
