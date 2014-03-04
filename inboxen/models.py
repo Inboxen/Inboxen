@@ -248,7 +248,7 @@ class HeaderData(models.Model):
     def __unicode__(self):
         return self.hashed
 
-class NewHeader(models.Model):
+class Header(models.Model):
     """Header model
 
     ordinal preserves the order of headers as in the original message

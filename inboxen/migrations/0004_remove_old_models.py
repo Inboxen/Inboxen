@@ -31,6 +31,11 @@ class Migration(SchemaMigration):
         # Removing M2M table for field attachments on 'Email'
         db.delete_table(db.shorten_name(u'inboxen_email_attachments'))
 
+        # Rename NewHeader
+        db.rename_table('inboxen_newheader', 'inboxen_header')
+        if not db.dry_run:
+            orm['contenttypes.contenttype'].objects.filter(
+                app_label='inboxen', model='newheader').update(model='header', name="header")
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration. You backed up, right?")
