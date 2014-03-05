@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from south.v2 import DataMigration
 
+import base64
+import binascii
+
 import hashlib
 import mptt
 from django.utils.encoding import smart_bytes
@@ -86,6 +89,11 @@ class Migration(DataMigration):
                         data = ""
                 except UnicodeError:
                     data = attachment._data
+
+                try:
+                    data = base64.decodestring(data)
+                except binascii.Error:
+                    pass
 
                 body = self.make_body(orm, data=data, path=attachment.path)
                 part = orm.PartList(email=email, body=body, parent=first_part)
