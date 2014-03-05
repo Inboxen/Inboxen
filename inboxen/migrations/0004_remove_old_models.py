@@ -8,13 +8,11 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        raise RuntimeError("I haven't written the data migration yet!")
-
         # Deleting model 'Attachment'
-        db.delete_table(u'inboxen_attachment')
+        db.delete_table(u'inboxen_attachment', cascade=True)
 
         # Deleting model 'Header'
-        db.delete_table(u'inboxen_header')
+        db.delete_table(u'inboxen_header', cascade=True)
 
         # Deleting field 'Email.body'
         db.delete_column(u'inboxen_email', 'body')
@@ -30,6 +28,10 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field attachments on 'Email'
         db.delete_table(db.shorten_name(u'inboxen_email_attachments'))
+
+        # for some reason these sequences aren't owned by any table
+        db.execute("DROP SEQUENCE inboxen_header_id_seq")
+        db.execute("DROP SEQUENCE inboxen_attachment_id_seq")
 
         # Rename NewHeader
         db.rename_table('inboxen_newheader', 'inboxen_header')

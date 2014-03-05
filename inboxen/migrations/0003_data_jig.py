@@ -23,8 +23,8 @@ class Migration(DataMigration):
             try:
                 file = open(path, "r")
                 file_data = file.read()
-            finally:
-                file.close()
+            except Exception:
+                file_data = ""
             hashed = self.hash_it(file_data)
 
         body = orm.Body.objects.get_or_create(hashed=hashed, defaults={'path':path, '_data':data})
@@ -32,9 +32,12 @@ class Migration(DataMigration):
         return body[0]
 
     def make_header(self, orm, name, data, part, ordinal):
+        if data is None:
+            data = ""
+
         name = orm.HeaderName.objects.get_or_create(name=name)
         data = orm.HeaderData.objects.get_or_create(hashed=self.hash_it(data), defaults={"data": data})
-        orm.NewHeader.objects.create(name=name, data=data, part=part, ordinal=ordinal)
+        orm.NewHeader.objects.create(name=name[0], data=data[0], part=part, ordinal=ordinal)
 
     def flag_setter(self, email):
         flags = 0
@@ -43,7 +46,8 @@ class Migration(DataMigration):
         elif email.deleted:
             flags = flags | self.FLAGS["deleted"]
 
-        email.update(flags=flags)
+        email.flags = flags
+        email.save()
 
     def forwards(self, orm):
         # Note: Don't use "from appname.models import ModelName".
@@ -54,31 +58,41 @@ class Migration(DataMigration):
         # http://django-mptt.github.io/django-mptt/models.html#registration-of-existing-models
         mptt.register(orm.PartList)
 
-        with orm.PartList.objects.delay_mptt_updates():
-            for email in orm.Email.objects.all():
-                self.flag_setter(email)
+        for email in orm.Email.objects.all():
+            self.flag_setter(email)
 
-                try:
+            try:
+                if email.body is not None:
                     body = email.body.encode("utf8")
+                else:
+                    body = ""
+            except UnicodeError:
+                body = email.body
+
+            body = self.make_body(orm, data=body)
+            first_part = orm.PartList(email=email, body=body, parent=None)
+            first_part.save()
+
+            ordinal = 0
+            for header in email.headers.all():
+                self.make_header(orm, name=header.name, data=header.data, part=first_part, ordinal=ordinal)
+                ordinal = ordinal + 1
+
+            for attachment in email.attachments.all():
+                try:
+                    if attachment._data is not None:
+                        data = attachment._data.encode("utf8")
+                    else:
+                        data = ""
                 except UnicodeError:
-                    body = email.body
+                    data = attachment._data
 
-                body = self.make_body(orm, data=body)
-                first_part = orm.PartList(body=body, parent=None)
-                first_part.save()
+                body = self.make_body(orm, data=data, path=attachment.path)
+                part = orm.PartList(email=email, body=body, parent=first_part)
+                part.save()
 
-                ordinal = 0
-                for header in email.headers.all():
-                    self.make_header(orm, name=header.name, data=header.data, part=first_part, ordinal=ordinal)
-                    ordinal = ordinal + 1
-
-                for attachment in email.attachments.all():
-                    body = self.make_body(orm, data=attachment._data, path=attachment.path)
-                    part = orm.PartList(body=body, parent=first_part)
-                    part.save()
-
-                    self.make_header(orm, name="Content-Type", data=attachment.content_type, part=part, ordinal=0)
-                    self.make_header(orm, name="Content-Disposition", data=attachment.content_disposition, part=part, ordinal=1)
+                self.make_header(orm, name="Content-Type", data=attachment.content_type, part=part, ordinal=0)
+                self.make_header(orm, name="Content-Disposition", data=attachment.content_disposition, part=part, ordinal=1)
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration. You backed up, right?")
