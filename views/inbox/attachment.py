@@ -15,17 +15,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
+from django.views.generic import base
 from django.contrib.auth.decorators import login_required
 
 from inboxen import models
-from website.views.base import FileDownloadMixin
 
-class AttachmentDownloadView(FileDownloadMixin, generic.DetailView):
+class AttachmentDownloadView(base.BaseDetailView):
+    file_filename = ""
+    file_attachment = False
+    file_contenttype = "application/octet-stream"
+    file_status = 200
 
     @property
     def file_contenttype(self):
-        contenttype = self.object.headet_set.get("Content-Type")
+        contenttype = self.object.header_set.get_many("Content-Type")["Content-Type"]
         if contenttype is None:
             return "application/octet-stream"
         
@@ -33,7 +36,7 @@ class AttachmentDownloadView(FileDownloadMixin, generic.DetailView):
 
     @property
     def file_filename(self):
-        return self.objects.headet_set.get("Content-Disposition")
+        return self.object.headet_set.filter(name__name"Content-Disposition")[0].data.data
 
     def get_object(self):
         return PartList.objects.select_related('body').get(id=attachmentid, email__inbox__user=request.user)
@@ -43,3 +46,29 @@ class AttachmentDownloadView(FileDownloadMixin, generic.DetailView):
             self.file_attachment = True
 
         return super(AttachmentDownloadView, self).get(*args, **kwargs)
+
+    def get_file_data(self):
+        return self.object.body.data
+
+    def render_to_response(self):
+        # build the Content-Disposition header
+        dispisition = []
+        if self.file_attachment:
+            dispisition.append("attachment")
+
+        if self.file_filename:
+            dispisition.append("filename={0}".format(self.file_filename))
+
+        dispisition = "; ".join(dispisition)
+
+        # make header object
+        data = self.get_file_data()
+        response = http.HttpResponse(
+            content=data,
+            status=self.status
+        )
+
+        response["Content-Length"] = len(data)
+        response["Content-Disposition"] = dispisition
+        response["Content-Type"] = self.file_contenttype
+        return response

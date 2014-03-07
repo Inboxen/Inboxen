@@ -18,83 +18,110 @@
 ##
 
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.http import Http404
-from django.db.models import F
 from lxml.html.clean import Cleaner
 
-from inboxen.models import Email, Header, Inbox
+from django.views import generic
 
-@login_required
-def view(request, email_address, emailid):
-    try:
-        inbox = request.user.inbox_set.from_string(email=email_address)
+from inboxen import models
+from website.views import base
 
-        email = int(emailid, 16)
-        email = Email.objects.filter(id=email, flags=~Email.flags.deleted)
-        email.update(flags=F('flags').bitand(Email.flags.read))
-        email = email[0]
+class EmailView(
+                base.CommonContextMixin,
+                base.LoginRequiredMixin,
+                generic.DetailView,
+                generic.edit.DeletionMixin
+                ):
+    models = models.Email
+    pk_url_kwarg = "id"
 
-    except (Email.DoesNotExist, Inbox.DoesNotExist):
-        return Http404
+    def get_object(self, *args, **kwargs):
+        # Convert the id from base 16 to 10
+        self.kwargs[self.pk_url_kwargs] = int(self.kwargs[self.pk_url_kwargs], 16)
+        return super(EmailView, self).get_object(*args, **kwargs)
 
-    headers = Header.objects.filter(part__email=email, part__parent=None)
-    headers = headers.get_many("Subject", "From")
+    def get_success_url(self):
+        return "/inbox/{0}/".format(self.kwargs["email_address"])
 
-    email_obj = {}
-    email_obj["subject"] = headers["Subject"]
-    email_obj["from"] = headers["From"]
-    email_obj["date"] = email.received_date
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(EmailView, self).get_queryset(*args, **kwargs)
+        queryset = queryset.filter(inbox__user=self.request.user).only("id")
+        return queryset
 
-    attachments = []
-    for part in email.parts.all():
-        item = part.header_set.get_many("Content-Type", "Content-Disposition")
-        item["id"] = part.id
-        item["part"]
-        item["parent"] = part.parent.id
-        attachments.append(item)
+    def find_body(self, html, plain):
+        """Given a pair of plaintext and html MIME parts, return True or False
+        based on whether the body should be plaintext or not. Returns None
+        if there is no viable body
+        """
+        # find if one is None
+        if html is None and plain is None:
+            return None
+        elif html is None:
+            return True
+        else: # plain is None
+            return False
 
-    # find first text/html and first text/plain
-    html = False
-    plain = False
-    for part in attachments:
-        if not html and part["Content-Type"] == "text/html":
-            html = part["part"]
-        elif not plain and part["Content-Type"] == "text/plain":
-            plain = part["part"]
-        del part["part"]
+        # parts are siblings, user preference
+        if html.parent == plain.parent:
+            pref = self.request.user.userprofile.html_preference
+            if pref == 1:
+                return True
+            elif pref == 2:
+                return False
+        # which ever has the lower lft value will win
+        elif  html.lft < plain.lft:
+            return False
+        else: # html.lft > plain.lft
+            return True
 
-    # if siblings, use html_preference
-    if html["parent"] == plain["parent"]:
-        pref = request.user.userprofile.html_preference
-        if pref == 1:
-            plain_message = True
-            email["body"] = plain.body.data
-        elif pref == 2:
+    def get_context_data(self, **kwargs):
+        context = super(EmailView, self).get_context_data(**kwargs)
+
+        ## the following probably shouldn't be here?
+
+        headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
+        headers = headers.get_many("Subject", "From")
+
+        email_dict = {}
+        email_dict["subject"] = headers["Subject"]
+        email_dict["from"] = headers["From"]
+        email_dict["date"] = self.object.received_date
+
+        html = None
+        plain = None
+        attachments = []
+        for part in self.object.parts.all():
+            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
+            item = (part, part_head)
+
+            if html is None and part_head["Content-Type"].startswith("text/html"):
+                html = item
+            elif plain is None and part_head["Content-Type"].startswith("text/plain"):
+                plain = item
+
+            attachments.append(item)
+
+        plain_message = self.find_body(html, plain)
+
+        if plain_message is None:
+            email_dict["body"] = ""
             plain_message = False
-            email["body"] = html.body.data
+        elif plain_message:
+            email_dict["body"] = plain.body.data
+        else:
+            email_dict["body"] = html.body.data
 
-    # if not, which ever has the lower lft value
-    elif not html and attachments.index(html) < attachments.index(plain):
-        plain_message = False
-        email["body"] = html.body.data
-    elif not plain and attachments.index(html) > attachments.index(plain):
-        plain_message = True
-        email["body"] = plain.body.data
+        # if siblings, use html_preference
+        if not plain_message:
+            # Mail Pile uses this, give back if you come up with something better
+            cleaner = Cleaner(page_structure=True, meta=True, links=True,
+                       javascript=True, scripts=True, frames=True,
+                       embedded=True, safe_attrs_only=True)
+            email_dict["body"] = cleaner(email_dict["body"])
 
-    if not plain_message:
-        # Mail Pile uses this, give back if you come up with something better
-        cleaner = Cleaner(page_structure=True, meta=True, links=True,
-                   javascript=True, scripts=True, frames=True,
-                   embedded=True, safe_attrs_only=True)
-        email["body"] = cleaner(email["body"])
+        context.update({
+                        "page":email_dict["subject"],
+                        "email":email_dict,
+                        "plain_message":plain_message,
+                        })
 
-    context = {
-        "page":email_obj["subject"],
-        "email":email_obj,
-        "plain_message":plain_message,
-        "user":request.user,
-    }
- 
-    return render(request, "inbox/email.html", context)
+        return context
