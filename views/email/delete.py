@@ -31,8 +31,7 @@ class EmailDeletionView(generic.DeleteView):
     template_name = "email/delete/confirm.html"
 
     def get_object(self, *args, **kwargs):
-        inbox, domain = self.kwargs["email"].split("@", 1)
         return self.request.user.inbox_set.get(
-            inbox=inbox,
-            domain__domain=domain
-        )
+            inbox=self.kwargs["inbox"],
+            domain__domain=self.kwargs["domain"]
+            )

@@ -70,12 +70,11 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
 
     urls.url(r'^email/add/', views.InboxAddView.as_view(), name='email-add'),
-    urls.url(r'^email/edit/(?P<inbox>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', views.EmailEditView.as_view(), name='inbox-edit'),
-    urls.url(r'^email/delete/(?P<email>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)', views.EmailDeletionView.as_view(), name='inbox-delete'),
+    urls.url(r'^email/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.EmailEditView.as_view(), name='inbox-edit'),
+    urls.url(r'^email/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.EmailDeletionView.as_view(), name='inbox-delete'),
 
     urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', views.AttachmentDownloadView.as_view(), name='email-attachment-download'),
-    urls.url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)/email/(?P<emailid>[a-fA-F0-9]+)', views.EmailView.as_view(template_name="inbox/email.html"), name='email-view'),
-    urls.url(r'^inbox/(?P<email_address>[a-zA-Z0-9\.]+@[a-zA-Z0-9\.]+)(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),
-
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<emailid>[a-fA-F0-9]+)', views.EmailView.as_view(template_name="inbox/email.html"), name='email-view'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)(/(?P<page>\d+))?', views.SingleInboxView.as_view(template_name="inbox/inbox.html"), name="inbox-view"),
     urls.url(r'^inbox(/(?P<page>\d+))?', 'website.views.inbox.inbox.inbox'),
 )

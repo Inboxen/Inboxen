@@ -36,15 +36,19 @@ class EmailView(
 
     def get_object(self, *args, **kwargs):
         # Convert the id from base 16 to 10
-        self.kwargs[self.pk_url_kwargs] = int(self.kwargs[self.pk_url_kwargs], 16)
+        self.kwargs[self.pk_url_kwargs] = int(self.kwargs[self.pk_url_kwarg], 16)
         return super(EmailView, self).get_object(*args, **kwargs)
 
     def get_success_url(self):
-        return "/inbox/{0}/".format(self.kwargs["email_address"])
+        return "/inbox/{0}@{1}/".format(self.kwargs["inbox"], self.kwargs["domain"])
 
     def get_queryset(self, *args, **kwargs):
         queryset = super(EmailView, self).get_queryset(*args, **kwargs)
-        queryset = queryset.filter(inbox__user=self.request.user).only("id")
+        queryset = queryset.filter(
+                                    inbox__user=self.request.user,
+                                    inbox__inbox=self.kwargs["inbox"],
+                                    inbox__domain__domain=self.kwargs["domain"]
+                                    ).only("id")
         return queryset
 
     def find_body(self, html, plain):
