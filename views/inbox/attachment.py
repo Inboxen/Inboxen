@@ -15,12 +15,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views.generic import base
-from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.views import generic
 
 from inboxen import models
+from website.views import base
 
-class AttachmentDownloadView(base.BaseDetailView):
+class AttachmentDownloadView(base.LoginRequiredMixin, generic.base.BaseDetailView):
     file_filename = ""
     file_attachment = False
     file_contenttype = "application/octet-stream"
@@ -36,10 +37,10 @@ class AttachmentDownloadView(base.BaseDetailView):
 
     @property
     def file_filename(self):
-        return self.object.headet_set.filter(name__name"Content-Disposition")[0].data.data
+        return self.object.headet_set.filter(name__name="Content-Disposition")[0].data.data
 
     def get_object(self):
-        return PartList.objects.select_related('body').get(id=attachmentid, email__inbox__user=request.user)
+        return models.PartList.objects.select_related('body').get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
 
     def get(self, *args, **kwargs):
         if kwargs.get("method", "download") == "download":
@@ -63,7 +64,7 @@ class AttachmentDownloadView(base.BaseDetailView):
 
         # make header object
         data = self.get_file_data()
-        response = http.HttpResponse(
+        response = HttpResponse(
             content=data,
             status=self.status
         )

@@ -18,21 +18,14 @@
 ##
 
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import F, Q
+from django.http import HttpResponseRedirect
 
 from django.views import generic
 from inboxen import models
 from website.views import base
 
-from inboxen.helper.paginator import page as paginator_page
 from queue.delete.tasks import delete_email
-
-INBOX_ORDER = {
-                '+date':    'received_date',
-                '-date':    '-received_date',
-}
 
 class InboxView(
                 base.CommonContextMixin,
@@ -41,92 +34,78 @@ class InboxView(
                 ):
     """Base class for Inbox views"""
     model = models.Email
-    #TODO: get object list and add subject/from
+    paginate_by = 100
+    template = "inbox/inbox.html"
+
+    def get_success_url(self):
+        """Override this method to return the URL to return the user to"""
+        raise NotImplementedError
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(InboxView, self).get_queryset(*args, **kwargs)
+        qs = qs.order_by("-received_date")
+        return qs
+
+    def post(self, *args, **kwargs):
+        emails = Q()
+        for email in self.request.POST:
+            if self.request.POST[email] == "email":
+                try:
+                    email_id = int(email, 16)
+                    emails = emails | Q(id=email_id)
+                except (self.model.DoesNotExist, ValueError):
+                    return
+
+        # update() & delete() like to do a select first for some reason :s
+        emails = self.objects.filter(emails).only('id','flags')
+
+        if "read" in self.request.POST:
+            emails.update(flags=F('flags').bitor(self.model.flags.read))
+        elif "unread" in self.request.POST:
+            emails.update(flags=F('flags').bitand(~self.model.flags.read))
+        elif "delete" in self.request.POST:
+            emails.update(flags=F('flags').bitor(self.model.flags.deleted))
+            for email in emails:
+                delete_email.delay(email.id)
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, *args, **kwargs):
+        headers = models.Header.objects.filter(part__parent=None, part__email__in=self.object_list)
+        headers = headers.get_many("Subject", "From", group_by="part__email_id")
+
+        for email in self.object_list:
+            header_set = headers[email.id]
+            email.subject = header_set["Subject"]
+            email.sender = header_set["From"]
+
+        return super(InboxView, self).get_context_data(*args, **kwargs)
+
 
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
+    def get_success_url(self):
+        return "/inbox"
+
     def get_queryset(self, *args, **kwargs):
         qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
         qs = qs.filter(inbox__user=self.request.user)
         return qs
 
+    def get_context_data(self, *args, **kwargs):
+        self.title = _("Inbox")
+        return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
+
 class SingleInboxView(UnifiedInboxView):
     """View a single inbox"""
+    def get_success_url(self):
+        return "/inbox/{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
+
     def get_queryset(self, *args, **kwargs):
         qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)
         qs = qs.filter(inbox__inbox=self.kwargs["inbox"], inbox__domain__domain=self.kwargs["domain"])
         return qs
 
-@login_required
-def inbox(request, email_address="", page=1):
-    if request.method == "POST":
-        # deal with tasks, then show the page as normal
-        mass_tasks(request)
-
-    order = request.GET.get('sort','-date')
-    emails = Email.objects.filter(inbox__user=request.user, flags=~Email.flags.deleted)
-
-    if len(email_address):
-        # a specific inbox
-        inbox, domain = email_address.split("@", 1)
-        emails = emails.filter(inbox__inbox=inbox, inbox__domain__domain=domain)
-
-    emails.order_by(INBOX_ORDER[order])
-
-    paginator = Paginator(emails, 100)
-
-    try:
-        emails = paginator.page(page)
-    except PageNotAnInteger: # sometimes it's None
-        emails = paginator.page(1)
-    except EmptyPage: # sometimes the user will try different numbers
-        emails = paginator.page(paginator.num_pages)
-
-    # lets add the important headers (subject and who sent it (a.k.a. sender))
-    headers = Header.objects.filter(part__parent=None, part__email__in=emails.object_list)
-    headers = headers.get_many("Subject", "From", group_by="part__email_id")
-
-    for email in emails.object_list:
-        header_set = headers[email.id]
-        email.subject = header_set["Subject"]
-        email.sender = header_set["From"]
-
-    if email_address:
-        page = _("%s - Inbox") % email_address
-    else:
-        page = _("Inbox")
-
-    context = {
-        "page":page,
-        "error":"",
-        "emails":emails,
-        "email_address":email_address,
-        "pages":paginator_page(emails),
-        "user":request.user,
-    }
-
-    return render(request, "inbox/inbox.html", context)
-
-@transaction.atomic()
-def mass_tasks(request):
-    emails = Q()
-    for email in request.POST:
-        if request.POST[email] == "email":
-            try:
-                email_id = int(email, 16)
-                emails = emails | Q(id=email_id)
-            except (Email.DoesNotExist, ValueError):
-                # TODO: non-silent failure?
-                return
-
-    # update() & delete() like to do a select first for some reason :s
-    emails = Email.objects.filter(emails, user=request.user).only('id','read')
-
-    if "read" in request.POST:
-        emails.update(flags=F('flags').bitor(Email.flags.read))
-    elif "unread" in request.POST:
-        emails.update(flags=F('flags').bitand(~Email.flags.read))
-    elif "delete" in request.POST:
-        emails.update(flags=F('flags').bitor(Email.flags.deleted))
-        for email in emails:
-            delete_email.delay(email.id)
+    def get_context_data(self, *args, **kwargs):
+        self.title = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"]) + _("Inbox")
+        return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
