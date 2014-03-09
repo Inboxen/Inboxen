@@ -19,19 +19,43 @@
 
 from django.utils.translation import ugettext as _
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db import transaction
 from django.db.models import F, Q
 
+from django.views import generic
+from inboxen import models
+from website.views import base
+
 from inboxen.helper.paginator import page as paginator_page
-from inboxen.models import Inbox, Email, Header
 from queue.delete.tasks import delete_email
 
 INBOX_ORDER = {
                 '+date':    'received_date',
                 '-date':    '-received_date',
 }
+
+class InboxView(
+                base.CommonContextMixin,
+                base.LoginRequiredMixin,
+                generic.list.BaseListView
+                ):
+    """Base class for Inbox views"""
+    model = models.Email
+    #TODO: get object list and add subject/from
+
+class UnifiedInboxView(InboxView):
+    """View all inboxes together"""
+    def get_queryset(self, *args, **kwargs):
+        qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(inbox__user=self.request.user)
+        return qs
+
+class SingleInboxView(UnifiedInboxView):
+    """View a single inbox"""
+    def get_queryset(self, *args, **kwargs):
+        qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(inbox__inbox=self.kwargs["inbox"], inbox__domain__domain=self.kwargs["domain"])
+        return qs
 
 @login_required
 def inbox(request, email_address="", page=1):
