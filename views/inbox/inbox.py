@@ -85,7 +85,7 @@ def inbox(request, email_address="", page=1):
 
 @transaction.atomic()
 def mass_tasks(request):
-    emails = Q()
+    emails = Q(id=None)
     for email in request.POST:
         if request.POST[email] == "email":
             try:
