@@ -47,7 +47,7 @@ class InboxView(
         return qs
 
     def post(self, *args, **kwargs):
-        emails = Q()
+        emails = Q(id=None)
         for email in self.request.POST:
             if self.request.POST[email] == "email":
                 try:
