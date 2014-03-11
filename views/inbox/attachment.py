@@ -21,7 +21,7 @@ from django.views import generic
 from inboxen import models
 from website.views import base
 
-class AttachmentDownloadView(base.LoginRequiredMixin, generic.base.BaseDetailView):
+class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
     file_filename = ""
     file_attachment = False
     file_contenttype = "application/octet-stream"

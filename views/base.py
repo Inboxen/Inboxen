@@ -2,6 +2,7 @@ from django.conf import settings
 from django.views import generic
 from django.utils.translation import ugettext as _
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import classonlymethod
 
 class CommonContextMixin(object):
 	title = ""
@@ -18,5 +19,6 @@ class TemplateView(CommonContextMixin, generic.TemplateView):
 	pass
 
 class LoginRequiredMixin(object):
-    def as_view(cls):
-        return login_required(super(LoginRequiredMixin, cls).as_view())
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        return login_required(super(LoginRequiredMixin, cls).as_view(**initkwargs))

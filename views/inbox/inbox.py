@@ -30,12 +30,11 @@ from queue.delete.tasks import delete_email
 class InboxView(
                 base.CommonContextMixin,
                 base.LoginRequiredMixin,
-                generic.list.BaseListView
+                generic.ListView
                 ):
     """Base class for Inbox views"""
     model = models.Email
     paginate_by = 100
-    template = "inbox/inbox.html"
 
     def get_success_url(self):
         """Override this method to return the URL to return the user to"""
