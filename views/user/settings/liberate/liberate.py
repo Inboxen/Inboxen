@@ -27,7 +27,7 @@ from queue.liberate.tasks import liberate as data_liberate
 class LiberationView(CommonContextMixin, generic.FormView):
     form_class = forms.LiberationForm
     success_url = "/user/home/"
-    title = "Liberate your data"
+    title = _("Liberate your data")
     template_name = "user/settings/liberate/liberate.html"
 
     def get_form_kwargs(self, *args, **kwargs):

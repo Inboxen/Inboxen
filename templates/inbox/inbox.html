@@ -5,8 +5,8 @@
     <ul class="breadcrumb">
         <li><a href="/user/home">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
         
-        {% if email_address %}
-            <li class="active">{{ email_address }}</li>
+        {% if inbox %}
+            <li class="active">{{ inbox }}@{{ domain }}</li>
         {% else %}
             <li class="active">{% trans "Unified Inbox" %}</li>
         {% endif %}
@@ -15,13 +15,11 @@
 
 {% block content %}
 
-{% if error %}
-    <p> {{ error }} </p>
-{% elif not emails %}
+{% if object_list|length_is:0 %}
     <p> {% trans "You don't have any emails :(" %} </p>
 {% else %}
 
-    <form action="/inbox/{{ email_address }}/{{ page.page }}" method="POST">
+    <form action="/inbox/{{ inbox }}@{{ domain }}/{{ page.page }}" method="POST">
     {% csrf_token %}
     <button class="btn btn-ontop" type="submit" name="read">{% trans "Mark as read" %}</button>
     <button class="btn btn-ontop" type="submit" name="unread">{% trans "Mark as unread" %}</button>
@@ -37,7 +35,7 @@
     </tr>
     </thead>
     
-    {% for email in emails.object_list %}
+    {% for email in page_obj.object_list %}
             {% if email.read %}
                 <tr>
             {% else %}
@@ -47,11 +45,11 @@
                 <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
                 <td title="{{ email.sender }}"><div>{{ email.sender }}</div></td>
                 {% if email.subject %}
-                    <td title="{{ email.subject }}"><div><a href="/inbox/{{ email.inbox }}/view/{{ email.eid }}"> {{ email.subject }} </a></div></td>
+                    <td title="{{ email.subject }}"><div><a href="/inbox/{{ email.inbox }}/email/{{ email.eid }}"> {{ email.subject }} </a></div></td>
                 {% else %}
                     <td></td>
                 {% endif %}
-                    <td title="{{ email.recieved_date|date:"r" }}"><div>{{ email.recieved_date|timesince }} {% trans "ago" %}</div></td>
+                    <td title="{{ email.received_date|date:"r" }}"><div>{{ email.received_date|timesince }} {% trans "ago" %}</div></td>
                 <td><a title="{% trans "Delete Email" %}" class="close" href="/inbox/{{ email.inbox }}/delete/{{ email.eid }}">&times;</a></td>
 
             </tr>
@@ -62,34 +60,34 @@
 
     <div class="pagination text-right">
         <ul>
-            {% if emails.has_previous %}
-                {% if email_address %}
-                    <li><a href="/inbox/{{ email_address }}/{{ emails.previous_page_number }}">&laquo;</a></li>
+            {% if page_obj.has_previous %}
+                {% if inbox %}
+                    <li><a href="/inbox/{{ inbox }}@{{ domain }}/{{ emails.previous_page_number }}">&laquo;</a></li>
                 {% else %}
-                    <li><a href="/inbox/{{ emails.previous_page_number }}">&laquo;</a></li>
+                    <li><a href="/inbox/{{ page_obj.previous_page_number }}">&laquo;</a></li>
                 {% endif %}
             {% else %}
                 <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
-            {% for page in pages %}
+            {% for page in page_range %}
                 {% if page.active %}
                     <li class="active">
                 {% else %}
                     <li>
                 {% endif %}
-                {% if email_address %}
-                    <a href="/inbox/{{ email_address }}/{{ page.page }}">{{ page.page }}</a>
+                {% if inbox %}
+                    <a href="/inbox/{{ inbox }}@{{ domain }}/{{ page.number }}">{{ page.number }}</a>
                 {% else %}
-                    <a href="/inbox/{{ page.page }}">{{ page.page }}</a>
+                    <a href="/inbox/{{ page.number }}">{{ page.number }}</a>
                 {% endif %}
                 </li>
             {% endfor %}
             
-            {% if emails.has_next %}
-                {% if email_address %}
-                    <li><a href="/inbox/{{ email_address }}/{{ emails.next_page_number }}">&raquo;</a></li>
+            {% if page_obj.has_next %}
+                {% if inbox %}
+                    <li><a href="/inbox/{{ inbox }}@{{ domain }}/{{ page_obj.next_page_number }}">&raquo;</a></li>
                 {% else %}
-                    <li><a href="/inbox/{{ emails.next_page_number }}">&raquo;</a></li>
+                    <li><a href="/inbox/{{ page_obj.next_page_number }}">&raquo;</a></li>
                 {% endif %}
             {% else %}
                 <li class="disabled"><a href="#">&raquo;</a></li>
@@ -97,5 +95,4 @@
         </ul>
    </div>
 {% endif %}
-
 {% endblock %}

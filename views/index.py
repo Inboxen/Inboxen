@@ -15,13 +15,13 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings
+from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from . import TemplateView
 
 class Index(TemplateView):
 	template_name = "index.html"
-	title = "home"
+	title = _("Welcome")
 
 	def dispatch(self, request, *args, **kwargs):
 		if request.user.is_authenticated():

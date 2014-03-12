@@ -29,7 +29,7 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
 
     @property
     def file_contenttype(self):
-        contenttype = self.object.header_set.get_many("Content-Type")["Content-Type"]
+        contenttype = self.object.header_set.select_related("data").get(name__name="Content-Disposition").data.data
         if contenttype is None:
             return "application/octet-stream"
         
@@ -37,7 +37,7 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
 
     @property
     def file_filename(self):
-        return self.object.headet_set.filter(name__name="Content-Disposition")[0].data.data
+        return self.object.header_set.select_related("data").get(name__name="Content-Disposition").data.data
 
     def get_object(self):
         return models.PartList.objects.select_related('body').get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
@@ -51,7 +51,7 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
     def get_file_data(self):
         return self.object.body.data
 
-    def render_to_response(self):
+    def render_to_response(self, context):
         # build the Content-Disposition header
         dispisition = []
         if self.file_attachment:
@@ -66,7 +66,7 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
         data = self.get_file_data()
         response = HttpResponse(
             content=data,
-            status=self.status
+            status=self.file_status
         )
 
         response["Content-Length"] = len(data)

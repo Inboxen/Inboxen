@@ -31,12 +31,12 @@ class EmailView(
                 generic.DetailView,
                 generic.edit.DeletionMixin
                 ):
-    models = models.Email
+    model = models.Email
     pk_url_kwarg = "id"
 
     def get_object(self, *args, **kwargs):
         # Convert the id from base 16 to 10
-        self.kwargs[self.pk_url_kwargs] = int(self.kwargs[self.pk_url_kwarg], 16)
+        self.kwargs[self.pk_url_kwarg] = int(self.kwargs[self.pk_url_kwarg], 16)
         return super(EmailView, self).get_object(*args, **kwargs)
 
     def get_success_url(self):
@@ -48,7 +48,7 @@ class EmailView(
                                     inbox__user=self.request.user,
                                     inbox__inbox=self.kwargs["inbox"],
                                     inbox__domain__domain=self.kwargs["domain"]
-                                    ).only("id")
+                                    ).select_related("inbox", "inbox__domain")
         return queryset
 
     def find_body(self, html, plain):
@@ -78,7 +78,6 @@ class EmailView(
             return True
 
     def get_context_data(self, **kwargs):
-        context = super(EmailView, self).get_context_data(**kwargs)
 
         ## the following probably shouldn't be here?
 
@@ -89,17 +88,20 @@ class EmailView(
         email_dict["subject"] = headers["Subject"]
         email_dict["from"] = headers["From"]
         email_dict["date"] = self.object.received_date
+        email_dict["inbox"] = self.object.inbox
 
         html = None
         plain = None
         attachments = []
-        for part in self.object.parts.all():
+        for part in self.object.parts.select_related("body"):
             part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
+            part_head["content_type"] = part_head.pop("Content-Type").split(";")
+            part_head["content_disposition"] = part_head.pop("Content-Disposition").split(";")
             item = (part, part_head)
 
-            if html is None and part_head["Content-Type"].startswith("text/html"):
+            if html is None and part_head["content_type"][0] == "text/html":
                 html = item
-            elif plain is None and part_head["Content-Type"].startswith("text/plain"):
+            elif plain is None and part_head["content_type"][0] == "text/plain":
                 plain = item
 
             attachments.append(item)
@@ -110,9 +112,9 @@ class EmailView(
             email_dict["body"] = ""
             plain_message = False
         elif plain_message:
-            email_dict["body"] = plain.body.data
+            email_dict["body"] = plain[0].body.data
         else:
-            email_dict["body"] = html.body.data
+            email_dict["body"] = html[0].body.data
 
         # if siblings, use html_preference
         if not plain_message:
@@ -120,12 +122,15 @@ class EmailView(
             cleaner = Cleaner(page_structure=True, meta=True, links=True,
                        javascript=True, scripts=True, frames=True,
                        embedded=True, safe_attrs_only=True)
-            email_dict["body"] = cleaner(email_dict["body"])
+            email_dict["body"] = cleaner.clean_html(str(email_dict["body"]))
 
+        self.title = email_dict["subject"]
+
+        context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
-                        "page":email_dict["subject"],
-                        "email":email_dict,
-                        "plain_message":plain_message,
+                        "email": email_dict,
+                        "plain_message": plain_message,
+                        "attachments": attachments,
                         })
 
         return context

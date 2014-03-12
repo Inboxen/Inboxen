@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -43,9 +44,10 @@ def settings(request):
                 error = _("Please enter your new username twice.")
 
     context = {
+        "settings": settings,
         "page":_("Settings"),
-        "error":error,
-        "htmlpreference":int(profile.html_preference),
-    }
+        "error": error,
+        "htmlpreference": int(profile.html_preference),
+        }
 
     return render(request, "user/settings.html", context)

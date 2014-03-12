@@ -25,7 +25,7 @@
             </thead>
             <tr class="warning">
                 <td><a href="/inbox/">{% trans "Unified" %}</a>
-                {% if total_email_count %}
+                {% if unread_email_count > 0 %}
                     <span class="badge">{{ unread_email_count }}</span>
                 {% endif %}
                 </td>
@@ -70,8 +70,8 @@
                     <a href="/user/home/{{ page.page }}">{{ page.page }}</a></li>
                 {% endfor %}
         
-                {% if inboxes.has_next %}
-                    <li><a href="/user/home/{{ inboxes.next_page_number }}">&raquo;</a></li>
+                {% if page_obj.has_next %}
+                    <li><a href="/user/home/{{ page_obj.next_page_number }}">&raquo;</a></li>
                 {% else %}
                     <li class="disabled"><a href="#">&raquo;</a></li>
                 {% endif %}

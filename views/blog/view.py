@@ -44,7 +44,7 @@ def view(request, page=1):
     context = {
         "page":_("Blog"),
         "posts":posts,
-        "registration_enabled":settings.ENABLE_REGISTRATION,
+        "settings": settings,
     }
 
     return render(request, "blog/blog.html", context)
@@ -63,7 +63,7 @@ def post(request, postid):
     context = {
         "page":p.subject,
         "post":p,
-        "registration_enabled":settings.ENABLE_REGISTRATION,
+        "settings": settings,
     }
 
     return render(request, "blog/post.html", context)

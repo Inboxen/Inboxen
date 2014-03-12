@@ -21,7 +21,7 @@
         <pre>
     {% endif %}
 
-    {{ email.body }}
+    {{ email.body|safe }}
 
     {% if plain_message %}
         </pre>
@@ -29,12 +29,12 @@
 
     <br />
     <strong>{% trans "Attachments" %}</strong>:<br />
-    {% for attachment in email.attachments %}
+    {% for attachment in attachments %}
         <div class="input-prepend">
-            <span class="add-on">{{ attachment.content_disposition }} ({{ attachment.content_type }})</span>
+            <span class="add-on">{{ attachment.1.content_disposition.0 }} ({{ attachment.1.content_type.0 }})</span>
             <span class="btn-group" id="prependedInput">
-                    <a href="/inbox/attachment/{{ attachment.id }}/download/" class="btn btn-attachment">{% trans "Download" %}</a>
-                    <a href="/inbox/attachment/{{ attachment.id }}/view/" class="btn btn-attachment">{% trans "View" %}</a>
+                    <a href="/inbox/attachment/{{ attachment.0.id }}/download/" class="btn btn-attachment">{% trans "Download" %}</a>
+                    <a href="/inbox/attachment/{{ attachment.0.id }}/view/" class="btn btn-attachment">{% trans "View" %}</a>
                 </span>
         </span>
     </div><br />

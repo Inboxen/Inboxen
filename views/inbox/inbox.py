@@ -42,7 +42,7 @@ class InboxView(
 
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.order_by("-received_date")
+        qs = qs.order_by("-received_date").select_related("inbox", "inbox.domain")
         return qs
 
     def post(self, *args, **kwargs):
@@ -106,5 +106,8 @@ class SingleInboxView(UnifiedInboxView):
         return qs
 
     def get_context_data(self, *args, **kwargs):
-        self.title = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"]) + _("Inbox")
-        return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
+        self.title = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
+        context = super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
+        context.update({"inbox":self.kwargs["inbox"], "domain":self.kwargs["domain"]})
+
+        return context

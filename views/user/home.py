@@ -30,26 +30,22 @@ from website.views.base import CommonContextMixin
 class UserHomeView(CommonContextMixin, generic.ListView):
     """ The user's home which lists the inboxes """
     allow_empty = True
-    paginate_by = 50
+    paginate_by = 100
     template_name = "user/home.html"
-    title = "Home"
+    title = _("Home")
+    flags = Email.flags.deleted & Email.flags.read
 
     @decorators.method_decorator(auth_decorators.login_required)
     def dispatch(self, *args, **kwargs):
         return super(UserHomeView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        queryset = self.request.user.inbox_set.all()
-        queryset = queryset.filter(deleted=False)
+        queryset = self.request.user.inbox_set.filter(deleted=False)
+        queryset = queryset.select_related("domain")
         return queryset.order_by("-created")
-
-    def get_flags(self):
-        return ~(Email.flags.deleted | Email.flags.read)
 
     def process_messages(self, inboxes):
         """ Get tags and message counts """
-        flags = self.get_flags()
-        self.unread_email_count = 0
         for inbox in inboxes:
             # Add the tags for the email to enable inbox.tags to produce tag1, tag2...
             try:
@@ -59,15 +55,11 @@ class UserHomeView(CommonContextMixin, generic.ListView):
                 inbox.tags = ""
 
             # Add the number of emails with given flags
-            inbox.email_count = inbox.email_set.filter(flags=flags).count()
-            self.unread_email_count += inbox.email_count
-
-        return inboxes
+            inbox.email_count = inbox.email_set.filter(flags=self.flags).count()
 
     def get_context_data(self, *args, **kwargs):
-        self.object_list = self.process_messages(self.object_list)
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
-        context.setdefault("unread_email_count", self.unread_email_count)
-        context.setdefault("user")
-        context.setdefault("pages", page_paginator(context['page_obj']))
+        self.process_messages(context["object_list"])
+        unread_email_count = Email.objects.filter(flags=self.flags, inbox__user=self.request.user).count()
+        context.update({"unread_email_count": unread_email_count})
         return context
