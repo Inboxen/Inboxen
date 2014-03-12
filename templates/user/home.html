@@ -25,8 +25,8 @@
             </thead>
             <tr class="warning">
                 <td><a href="/inbox/">{% trans "Unified" %}</a>
-                {% if unread_email_count > 0 %}
-                    <span class="badge">{{ unread_email_count }}</span>
+                {% if unread_email %}
+                    <span class="badge">&#9733;</span>
                 {% endif %}
                 </td>
                 <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
@@ -39,8 +39,8 @@
 
                 <tr>
                     <td><a href="/inbox/{{ inbox.inbox }}@{{ inbox.domain }}">{{ inbox.inbox }}@{{ inbox.domain }}</a>
-                    {% if inbox.email_count %}
-                        <span class="badge">{{ inbox.email_count }}</span>
+                    {% if inbox.unread_email %}
+                        <span class="badge"> &#9733;</span>
                     {% endif %}
                     </td>
                     <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>

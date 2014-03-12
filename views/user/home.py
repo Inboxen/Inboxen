@@ -22,6 +22,7 @@ from django.utils.translation import ugettext as _
 from django.utils import decorators
 from django.contrib.auth import decorators as auth_decorators
 from django.views import generic
+from django.db.models import F
 
 from inboxen.helper.paginator import page as page_paginator
 from inboxen.models import Inbox, Tag, Email
@@ -33,7 +34,7 @@ class UserHomeView(CommonContextMixin, generic.ListView):
     paginate_by = 100
     template_name = "user/home.html"
     title = _("Home")
-    flags = Email.flags.deleted & Email.flags.read
+    flags = F('flags').bitand(~(Email.flags.deleted | Email.flags.read))
 
     @decorators.method_decorator(auth_decorators.login_required)
     def dispatch(self, *args, **kwargs):
@@ -55,11 +56,11 @@ class UserHomeView(CommonContextMixin, generic.ListView):
                 inbox.tags = ""
 
             # Add the number of emails with given flags
-            inbox.email_count = inbox.email_set.filter(flags=self.flags).count()
+            inbox.unread_email = inbox.email_set.filter(flags=self.flags).exists()
 
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
         self.process_messages(context["object_list"])
-        unread_email_count = Email.objects.filter(flags=self.flags, inbox__user=self.request.user).count()
-        context.update({"unread_email_count": unread_email_count})
+        unread_email = Email.objects.filter(flags=self.flags, inbox__user=self.request.user).exists()
+        context.update({"unread_email": unread_email})
         return context
