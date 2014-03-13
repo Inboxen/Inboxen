@@ -17,7 +17,7 @@
     {% endif %}
 
     <h2 class="inline">{{ post.subject }}</h2>
-    <p class="text-right"><i>{{ post.date|date:"r" }}</i></p>
-    <p> {{ post.rendered_body }}</p><br />
+    <p class="text-right" title="{{ post.date|date:"r" }}"><i>{{ post.date|date:"jS F Y" }}</i></p>
+    <p> {{ post.rendered_body|safe }}</p><br />
 
 {% endblock %}
