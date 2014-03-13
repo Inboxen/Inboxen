@@ -64,8 +64,9 @@ class EmailView(
             return None
         elif html is None:
             return True
-        else: # plain is None
+        elif plain is None: # plain is None
             return False
+
 
         # parts are siblings, user preference
         if html.parent == plain.parent:
@@ -120,9 +121,9 @@ class EmailView(
             item = (part, part_head)
 
             if html is None and part_head["content_type"][0] == "text/html":
-                html = item
+                html = part
             elif plain is None and part_head["content_type"][0] == "text/plain":
-                plain = item
+                plain = part
 
             attachments.append(item)
 
@@ -130,11 +131,10 @@ class EmailView(
 
         if plain_message is None:
             email_dict["body"] = ""
-            plain_message = False
         elif plain_message:
-            email_dict["body"] = plain[0].body.data
+            email_dict["body"] = plain.body.data
         else:
-            email_dict["body"] = html[0].body.data
+            email_dict["body"] = html.body.data
 
         # if siblings, use html_preference
         if not plain_message:
