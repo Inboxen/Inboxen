@@ -50,17 +50,16 @@ def make_email(message, inbox):
         ordinal = message.keys().index(header)
         Header.objects.create(name=header, data=message[header], ordinal=ordinal, part=part)
 
-    with PartList.objects.delay_mptt_updates():
-        for part in message.walk():
-            data = encode_body(part)
-            body = Body.objects.only("id").get_or_create(data=data)[0]
-            part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
-            part_item.save()
-            parents[part] = part_item.id
+    for part in message.walk():
+        data = encode_body(part)
+        body = Body.objects.only("id").get_or_create(data=data)[0]
+        part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
+        part_item.save()
+        parents[part] = part_item.id
 
-            for header in part.keys():
-                ordinal = part.keys().index(header)
-                Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
+        for header in part.keys():
+            ordinal = part.keys().index(header)
+            Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
 
 def encode_body(part):
     """Make certain that the body of a part is bytes and not unicode"""
