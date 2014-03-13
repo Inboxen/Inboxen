@@ -15,29 +15,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import re
+
 from django.http import HttpResponse
 from django.views import generic
 
 from inboxen import models
 from website.views import base
 
+HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
+
 class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
-    file_filename = ""
     file_attachment = False
-    file_contenttype = "application/octet-stream"
     file_status = 200
-
-    @property
-    def file_contenttype(self):
-        contenttype = self.object.header_set.select_related("data").get(name__name="Content-Disposition").data.data
-        if contenttype is None:
-            return "application/octet-stream"
-        
-        return contenttype.split(";", 1)[0]
-
-    @property
-    def file_filename(self):
-        return self.object.header_set.select_related("data").get(name__name="Content-Disposition").data.data
 
     def get_object(self):
         return models.PartList.objects.select_related('body').get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
@@ -49,18 +39,30 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
         return super(AttachmentDownloadView, self).get(*args, **kwargs)
 
     def get_file_data(self):
-        return self.object.body.data
+        return self.object.body.data or ""
 
     def render_to_response(self, context):
         # build the Content-Disposition header
-        dispisition = []
+        disposition = []
         if self.file_attachment:
-            dispisition.append("attachment")
+            disposition.append("attachment")
 
-        if self.file_filename:
-            dispisition.append("filename={0}".format(self.file_filename))
+        headers = self.object.header_set.get_many("Content-Type", "Content-Disposition")
+        content_type = headers.pop("Content-Type", "").split(";", 1)
+        dispos = headers.pop("Content-Disposition", "")
 
-        dispisition = "; ".join(dispisition)
+        try:
+            params = dict(HEADER_PARAMS.findall(content_type[1]))
+        except IndexError:
+            params = {}
+        params.update(dict(HEADER_PARAMS.findall(dispos)))
+
+        if "filename" in params:
+            disposition.append("filename={0}".format(params["filename"]))
+        elif "name" in params:
+            disposition.append("filename={0}".format(params["name"]))
+
+        disposition = "; ".join(disposition)
 
         # make header object
         data = self.get_file_data()
@@ -70,6 +72,6 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
         )
 
         response["Content-Length"] = len(data)
-        response["Content-Disposition"] = dispisition
-        response["Content-Type"] = self.file_contenttype
+        response["Content-Disposition"] = disposition
+        response["Content-Type"] = content_type[0]
         return response

@@ -17,13 +17,16 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import re
+
 from django.utils.translation import ugettext as _
 from lxml.html.clean import Cleaner
-
 from django.views import generic
 
 from inboxen import models
 from website.views import base
+
+HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 class EmailView(
                 base.CommonContextMixin,
@@ -95,8 +98,25 @@ class EmailView(
         attachments = []
         for part in self.object.parts.select_related("body"):
             part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
-            part_head["content_type"] = part_head.pop("Content-Type").split(";")
-            part_head["content_disposition"] = part_head.pop("Content-Disposition").split(";")
+            part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
+            dispos = part_head.pop("Content-Disposition", "")
+
+            if part_head["content_type"][0].startswith("multipart") or part_head["content_type"][0].startswith("message"):
+                continue
+
+            try:
+                params = dict(HEADER_PARAMS.findall(part_head["content_type"][1]))
+            except IndexError:
+                params = {}
+            params.update(dict(HEADER_PARAMS.findall(dispos)))
+
+            if "filename" in params:
+                part_head["filename"] = params["filename"]
+            elif "name" in params:
+                part_head["filename"] = params["name"]
+            else:
+                part_head["filename"] = ""
+
             item = (part, part_head)
 
             if html is None and part_head["content_type"][0] == "text/html":
