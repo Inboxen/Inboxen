@@ -36,7 +36,7 @@
     </thead>
     
     {% for email in page_obj.object_list %}
-            {% if email.read %}
+            {% if email.flags.read %}
                 <tr>
             {% else %}
                 <tr class="info">

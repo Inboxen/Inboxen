@@ -54,6 +54,13 @@ class EmailView(
                                     ).select_related("inbox", "inbox__domain")
         return queryset
 
+    def get(self, *args, **kwargs):
+        out = super(EmailView, self).get(*args, **kwargs)
+        self.object.flags.read = True
+        self.object.flags.seen = True
+        self.object.save()
+        return out
+
     def find_body(self, html, plain):
         """Given a pair of plaintext and html MIME parts, return True or False
         based on whether the body should be plaintext or not. Returns None
@@ -64,9 +71,8 @@ class EmailView(
             return None
         elif html is None:
             return True
-        elif plain is None: # plain is None
+        elif plain is None:
             return False
-
 
         # parts are siblings, user preference
         if html.parent == plain.parent:
@@ -82,9 +88,6 @@ class EmailView(
             return True
 
     def get_context_data(self, **kwargs):
-
-        ## the following probably shouldn't be here?
-
         headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
         headers = headers.get_many("Subject", "From")
 
@@ -118,14 +121,12 @@ class EmailView(
             else:
                 part_head["filename"] = ""
 
-            item = (part, part_head)
-
             if html is None and part_head["content_type"][0] == "text/html":
                 html = part
             elif plain is None and part_head["content_type"][0] == "text/plain":
                 plain = part
 
-            attachments.append(item)
+            attachments.append((part, part_head))
 
         plain_message = self.find_body(html, plain)
 
