@@ -227,6 +227,9 @@ class PartList(MPTTModel):
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
+    def __unicode__(self):
+        return unicode(self.id)
+
 class HeaderName(models.Model):
     """Header name model
 

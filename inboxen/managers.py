@@ -23,6 +23,11 @@ import string
 from types import StringTypes
 from datetime import datetime
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
 from django.conf import settings
 from django.db import IntegrityError, models
 from django.utils.encoding import smart_bytes
@@ -135,13 +140,13 @@ class HeaderManager(HashedManager):
         values = self.filter(query)
         if group_by is None:
             values = values.values_list("name__name", "data__data")
-            return dict(values)
+            return OrderedDict(values)
 
         values = values.values_list(group_by, "name__name", "data__data")
 
-        headers = {}
+        headers = OrderedDict()
         for value in values:
-            part = headers.get(value[0], {})
+            part = headers.get(value[0], OrderedDict())
             part[value[1]] = value[2]
             headers[value[0]] = part
 
