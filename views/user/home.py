@@ -31,7 +31,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     paginate_by = 100
     template_name = "user/home.html"
     title = _("Home")
-    flags = F('flags').bitand(~(Email.flags.deleted | Email.flags.read))
+    flags = F('flags').bitand(~(models.Email.flags.deleted | models.Email.flags.read))
 
     def get_queryset(self):
         queryset = self.request.user.inbox_set.filter(deleted=False)
