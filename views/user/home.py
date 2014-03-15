@@ -19,26 +19,19 @@
 
 
 from django.utils.translation import ugettext as _
-from django.utils import decorators
-from django.contrib.auth import decorators as auth_decorators
 from django.views import generic
 from django.db.models import F
 
-from inboxen.helper.paginator import page as page_paginator
-from inboxen.models import Inbox, Tag, Email
-from website.views.base import CommonContextMixin
+from inboxen import models
+from website.views import base
 
-class UserHomeView(CommonContextMixin, generic.ListView):
+class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListView):
     """ The user's home which lists the inboxes """
     allow_empty = True
     paginate_by = 100
     template_name = "user/home.html"
     title = _("Home")
     flags = F('flags').bitand(~(Email.flags.deleted | Email.flags.read))
-
-    @decorators.method_decorator(auth_decorators.login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(UserHomeView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         queryset = self.request.user.inbox_set.filter(deleted=False)
@@ -49,11 +42,8 @@ class UserHomeView(CommonContextMixin, generic.ListView):
         """ Get tags and message counts """
         for inbox in inboxes:
             # Add the tags for the email to enable inbox.tags to produce tag1, tag2...
-            try:
-                tags = inbox.tag_set.all()
-                inbox.tags = ", ".join([tag.tag for tag in tags])
-            except Tag.DoesNotExist:
-                inbox.tags = ""
+            tags = inbox.tag_set.all()
+            inbox.tags = ", ".join([tag.tag for tag in tags])
 
             # Add the number of emails with given flags
             inbox.unread_email = inbox.email_set.filter(flags=self.flags).exists()

@@ -19,14 +19,13 @@
 
 from django.views import generic
 from django.utils.translation import ugettext as _
-from django.contrib.auth import decorators as auth_decorators
 
 from website import forms
-from website.views.base import CommonContextMixin
+from website.views import base
 
 from queue.delete.tasks import delete_account
 
-class AccountDeletionView(CommonContextMixin, generic.FormView):
+class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     """ View to delete an account """
 
     form_class = forms.DeleteAccountForm

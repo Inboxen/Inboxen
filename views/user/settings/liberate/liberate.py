@@ -21,10 +21,9 @@ from django.views import generic
 from django.utils.translation import ugettext as _
 
 from website import forms
-from website.views.base import CommonContextMixin
-from queue.liberate.tasks import liberate as data_liberate
+from website.views import base
 
-class LiberationView(CommonContextMixin, generic.FormView):
+class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     form_class = forms.LiberationForm
     success_url = "/user/home/"
     title = _("Liberate your data")

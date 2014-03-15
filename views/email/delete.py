@@ -22,9 +22,9 @@ from django.utils.translation import ugettext as _
 
 from inboxen import models
 from website import forms
-from website.views.base import CommonContextMixin
+from website.views import base
 
-class EmailDeletionView(generic.DeleteView):
+class EmailDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DeleteView):
     model = models.Inbox
     success_url = "/user/home/"
     title = "Delete Inbox"

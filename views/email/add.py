@@ -24,15 +24,14 @@ from pytz import utc
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.views import generic
 
-from inboxen.models import Domain, Inbox, Tag
+from inboxen.models import Inbox
 
 from website import forms
-from website.views.base import CommonContextMixin
+from website.views import base
 
-class InboxAddView(CommonContextMixin, generic.CreateView):
+class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
     title = "Add Inbox"
     success_url = "/user/home"
     form_class = forms.InboxAddForm
