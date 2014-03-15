@@ -34,7 +34,6 @@ urls.handler403 = "website.views.error.permission_denied"
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^what', views.TemplateView.as_view(template_name='what.html'), name='what'),
-    urls.url(r'^who', views.TemplateView.as_view(template_name='who.html'), name='who'),
     
     urls.url(r'^blog/add/', 'website.views.blog.add.add'),
     urls.url(r'^blog/post/(?P<postid>\d+)', 'website.views.blog.view.post'),
