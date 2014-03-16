@@ -81,26 +81,31 @@ class Migration(DataMigration):
                 self.make_header(orm, name=header.name, data=header.data, part=first_part, ordinal=ordinal)
                 ordinal = ordinal + 1
 
-            for attachment in email.attachments.all():
-                try:
-                    if attachment._data is not None:
-                        data = attachment._data.encode("utf8")
-                    else:
-                        data = ""
-                except UnicodeError:
-                    data = attachment._data
+            old_attachments = email.attachments.all()
 
-                try:
-                    data = base64.decodestring(data)
-                except binascii.Error:
-                    pass
+            if len(old_attachments) > 0:
+                self.make_header(orm, name="Content-Type", data="multipart/mixed", part=first_part, ordinal=ordinal)
 
-                body = self.make_body(orm, data=data, path=attachment.path)
-                part = orm.PartList(email=email, body=body, parent=first_part)
-                part.save()
+                for attachment in old_attachments:
+                    try:
+                        if attachment._data is not None:
+                            data = attachment._data.encode("utf8")
+                        else:
+                            data = ""
+                    except UnicodeError:
+                        data = attachment._data
 
-                self.make_header(orm, name="Content-Type", data=attachment.content_type, part=part, ordinal=0)
-                self.make_header(orm, name="Content-Disposition", data=attachment.content_disposition, part=part, ordinal=1)
+                    try:
+                        data = base64.decodestring(data)
+                    except binascii.Error:
+                        pass
+
+                    body = self.make_body(orm, data=data, path=attachment.path)
+                    part = orm.PartList(email=email, body=body, parent=first_part)
+                    part.save()
+
+                    self.make_header(orm, name="Content-Type", data=attachment.content_type, part=part, ordinal=0)
+                    self.make_header(orm, name="Content-Disposition", data=attachment.content_disposition, part=part, ordinal=1)
 
     def backwards(self, orm):
         raise RuntimeError("Cannot reverse this migration. You backed up, right?")
