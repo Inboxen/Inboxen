@@ -42,10 +42,19 @@ class InboxView(
 
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.order_by("-received_date").select_related("inbox", "inbox.domain")
+        qs = qs.order_by("-received_date").select_related("inbox", "inbox__domain")
         return qs
 
     def post(self, *args, **kwargs):
+        qs = self.get_queryset()
+
+        # this is kinda bad, but nested forms aren't supported in all browsers
+        if "delete-single" in self.request.POST:
+            email_id = int(self.request.POST["delete-single"], 16)
+            email = qs.get(id=email_id)
+            email.delete()
+            return HttpResponseRedirect(self.get_success_url())
+
         emails = Q(id=None)
         for email in self.request.POST:
             if self.request.POST[email] == "email":
@@ -56,12 +65,12 @@ class InboxView(
                     return
 
         # update() & delete() like to do a select first for some reason :s
-        emails = self.objects.filter(emails).only('id','flags')
+        emails = qs.filter(emails)
 
         if "read" in self.request.POST:
-            emails.update(flags=F('flags').bitor(self.model.flags.read))
-        elif "unread" in self.request.POST:
             emails.update(flags=F('flags').bitand(~self.model.flags.read))
+        elif "unread" in self.request.POST:
+            emails.update(flags=F('flags').bitor(self.model.flags.read))
         elif "delete" in self.request.POST:
             emails.update(flags=F('flags').bitor(self.model.flags.deleted))
             for email in emails:

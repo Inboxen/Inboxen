@@ -33,4 +33,4 @@ class EmailEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
 
     def get_object(self, *args, **kwargs):
         inbox = self.request.user.inbox_set.select_related("domain")
-        return inbox.filter(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], deleted=False)
+        return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], deleted=False)
