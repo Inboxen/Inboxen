@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -88,7 +88,7 @@ class EmailView(
         headers = headers.get_many("Subject", "From")
 
         email_dict = {}
-        email_dict["subject"] = headers["Subject"]
+        email_dict["subject"] = headers.get("Subject", '(No subject)')
         email_dict["from"] = headers["From"]
         email_dict["date"] = self.object.received_date
         email_dict["inbox"] = self.object.inbox

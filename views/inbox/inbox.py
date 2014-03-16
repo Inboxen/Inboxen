@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -84,7 +84,7 @@ class InboxView(
 
         for email in self.object_list:
             header_set = headers[email.id]
-            email.subject = header_set["Subject"]
+            email.subject = header_set.get("Subject", "(No subject)")
             email.sender = header_set["From"]
 
         return super(InboxView, self).get_context_data(*args, **kwargs)
