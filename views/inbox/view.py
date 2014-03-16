@@ -32,7 +32,6 @@ class EmailView(
                 base.CommonContextMixin,
                 base.LoginRequiredMixin,
                 generic.DetailView,
-                generic.edit.DeletionMixin
                 ):
     model = models.Email
     pk_url_kwarg = "id"
@@ -41,9 +40,6 @@ class EmailView(
         # Convert the id from base 16 to 10
         self.kwargs[self.pk_url_kwarg] = int(self.kwargs[self.pk_url_kwarg], 16)
         return super(EmailView, self).get_object(*args, **kwargs)
-
-    def get_success_url(self):
-        return "/inbox/{0}@{1}/".format(self.kwargs["inbox"], self.kwargs["domain"])
 
     def get_queryset(self, *args, **kwargs):
         queryset = super(EmailView, self).get_queryset(*args, **kwargs)

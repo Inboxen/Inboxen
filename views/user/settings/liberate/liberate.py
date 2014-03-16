@@ -36,4 +36,4 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.F
 
     def form_valid(self, form, *args, **kwargs):
         form.save()
-        return super(LiberationView, self).form_valid(*args, **kwargs)
+        return super(LiberationView, self).form_valid(form, *args, **kwargs)

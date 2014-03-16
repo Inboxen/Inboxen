@@ -77,7 +77,7 @@ class LiberationForm(forms.Form):
 		return super(LiberationForm, self).__init__(initial=initial, *args, **kwargs)
 
 	def save(self):
-		data_liberate.delay(self.user, options=self.cleaned_data)
+		data_liberate.delay(self.user.id, options=self.cleaned_data)
 		return self.user
 
 

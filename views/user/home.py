@@ -51,6 +51,6 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
         self.process_messages(context["object_list"])
-        unread_email = Email.objects.filter(flags=self.flags, inbox__user=self.request.user).exists()
+        unread_email = models.Email.objects.filter(flags=self.flags, inbox__user=self.request.user).exists()
         context.update({"unread_email": unread_email})
         return context
