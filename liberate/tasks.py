@@ -25,19 +25,20 @@ for setting_name in ('LIBERATION_BODY', 'LIBERATION_SUBJECT', 'LIBERATION_PATH')
     assert hasattr(settings, setting_name), "%s has not been set" % setting_name
 
 TAR_TYPES = {
-    'tar.gz': {'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
-    'tar.bz2': {'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
-    'tar': {'writer': 'w:', 'mime-type': 'application/x-tar'}
+    '0': {'ext': 'tar.gz', 'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
+    '1': {'ext': 'tar.bz2', 'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
+    '2': {'ext': 'tar', 'writer': 'w:', 'mime-type': 'application/x-tar'}
     }
 
 @task(rate_limit='4/h')
-def liberate(user, options=None):
+def liberate(user_id, options=None):
     """ Get set for liberation, expects User object """
 
     if options == None:
         options = {}
 
-    options['user'] = user.id
+    options['user'] = user_id
+    user =  User.objects.get(id=user_id)
 
     rstr = ""
     for i in range(7):
@@ -53,7 +54,7 @@ def liberate(user, options=None):
                 )
     tasks.apply_async()
 
-@task(rate_limit='10/m')
+@task(rate_limit='100/m')
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
 
@@ -96,20 +97,20 @@ def liberate_message(mail_path, inbox, email_id):
     try:
         msg = Email.objects.get(id=email_id, flags=~Email.flags.deleted)
         msg = utils.make_message(msg)
+        maildir.add(msg.as_string())
     except Exception, exc:
         msg_id = hex(int(email_id))[2:]
         log.debug("Exception processing %s", msg_id, exc_info=exc)
         raise Exception(msg_id)
 
-    maildir.add(msg.as_string())
 
 @task()
 def liberate_convert_box(result, mail_path, options):
     """ Convert maildir to mbox if needed """
-    if options['storage_type'] == 'maildir':
+    if options['storage_type'] == '0':
         pass
 
-    elif options['storage_type'] == 'mailbox':
+    elif options['storage_type'] == '1':
         maildir = mailbox.Maildir(mail_path)
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
@@ -131,8 +132,8 @@ def liberate_convert_box(result, mail_path, options):
 def liberate_tarball(result, mail_path, options):
     """ Tar up and delete the maildir """
 
-    tar_type = TAR_TYPES[options.get('compression_type', 'tar.gz')]
-    tar_name = "%s.%s" % (mail_path, options.get('compression_type', 'tar.gz'))
+    tar_type = TAR_TYPES[options.get('compression_type', '0')]
+    tar_name = "%s.%s" % (mail_path, tar_type["ext"])
 
     try:
         tar = tarfile.open(tar_name, tar_type['writer'])
@@ -143,14 +144,14 @@ def liberate_tarball(result, mail_path, options):
     date = str(datetime.now(utc).date())
     dir_name = "inboxen-%s" % date
 
-    if options['storage_type'] == 'maildir':
+    if options['storage_type'] == '0': #MAILDIR
         try:
             tar.add("%s/" % mail_path, dir_name) # directories are added recursively by default
         finally:
             tar.close()
         rmtree(mail_path)
 
-    elif options['storage_type'] == 'mailbox':
+    elif options['storage_type'] == '1': #MBOX
         try:
             tar.add("%s.mbox" % mail_path, dir_name)
         finally:
@@ -167,7 +168,7 @@ def liberation_finish(result, options):
     profile = liberate_user_profile(options['user'], result['results'], result['date'])
 
     inbox_tags = ["Inboxen", "data", "liberation"]
-    inbox = Inbox.objects
+    inbox = Inbox.objects.filter(deleted=False)
     for tag in inbox_tags:
         inbox = inbox.filter(tag__tag=tag)
 
