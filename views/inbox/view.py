@@ -21,6 +21,7 @@ import re
 
 from django.utils.translation import ugettext as _
 from lxml.html.clean import Cleaner
+from lxml.etree import LxmlError
 from django.views import generic
 
 from inboxen import models
@@ -127,7 +128,11 @@ class EmailView(
         plain_message = self.find_body(html, plain)
 
         if plain_message is None:
-            email_dict["body"] = ""
+            if len(attachments) == 1:
+                email_dict["body"] = attachments[0][0].body.data
+            else:
+                email_dict["body"] = ""
+            plain_message = True
         elif plain_message:
             email_dict["body"] = plain.body.data
         else:
@@ -139,7 +144,10 @@ class EmailView(
             cleaner = Cleaner(page_structure=True, meta=True, links=True,
                        javascript=True, scripts=True, frames=True,
                        embedded=True, safe_attrs_only=True)
-            email_dict["body"] = cleaner.clean_html(str(email_dict["body"]))
+            try:
+                email_dict["body"] = cleaner.clean_html(str(email_dict["body"]))
+            except LxmlError:
+                pass #pass as-is
 
         self.title = email_dict["subject"]
 
