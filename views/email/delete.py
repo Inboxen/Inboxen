@@ -19,8 +19,10 @@
 
 from django.views import generic
 from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect
 
 from inboxen import models
+from queue.delete.tasks import delete_inbox
 from website import forms
 from website.views import base
 
@@ -35,3 +37,14 @@ class EmailDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generi
             inbox=self.kwargs["inbox"],
             domain__domain=self.kwargs["domain"]
             )
+
+    def delete(self, request,*args, **kawrgs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+
+        self.object.deleted = True
+        self.object.save()
+
+        delete_inbox.delay(self.object.id, request.user.id)
+
+        return HttpResponseRedirect(success_url)
