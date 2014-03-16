@@ -14,17 +14,30 @@
             {% endfor %}
             </ul>
         {% endif %}
-    </div>  
+    </div>
 
-    <form action="" class="form form-login" method="post">
-        {% csrf_token %}
-        <input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
-        <input id="id_password1" name="password1" type="password" placeholder="Password" />
-        <input id="id_password2" name="password2" type="password" placeholder="Repeat Password" />
+    <span class="span-6 registration-info">
+        <h4>Strong Passwords</h4>
+        <p>Mixing case, using numbers and symbols helps to make your password stronger. Try using a sentence than a single word if
+            it helps you remember it, always the longer the better. </p>
+    </span>
 
+    <span class="span-6">
+        <form action="" class="form form-register" method="post">
+            {% csrf_token %}
+            <input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
+            <input id="id_password1" name="password1" type="password" placeholder="Password" />
+            <input id="id_password2" name="password2" type="password" placeholder="Repeat Password" />
 
-        <button class="btn btn-centre">Sign up!</button>
-    </form>
+            <button class="btn btn-centre">Sign up!</button>
+        </form>
+    </span>
+
+    <span class="span-6 registration-info">
+        <h4>Loose your password, loose your account</h3>
+        <p>We don't have a way to recovery your account once you've lost your password. Please don't
+            forget your password, emailing us won't get your account back!</p>
+    </span>
 
 </div>
 {% endblock %}
