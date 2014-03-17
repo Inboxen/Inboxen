@@ -254,8 +254,9 @@ a.blog_title {
  * Registration
  */
 .form-register {
-    float: right;
+    float: left;
     margin-left: 20% !important;
+    margin-right: 20% !important;
 }
 
 .registration-info {
