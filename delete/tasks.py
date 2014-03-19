@@ -28,15 +28,16 @@ def delete_inbox(inbox_id, user_id=None):
     # delete emails in another task(s)
     emails = inbox.email_set.only('id')
 
-    # sending an ID over the wire and refetching the Django model on the side
-    # is cheaper than serialising the Django model - this appears to be the
-    # cause of our previous memory issues! - M
     emails = group([delete_email.s(email.id) for email in emails])
     try:
         emails.apply_async()
     except IndexError:
         # no emails in this inbox
         pass
+
+    # delete tags
+    tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
+    tags.delete()
 
     # okay now mark the inbox as deleted
     inbox.created = datetime.fromtimestamp(0, utc)
@@ -54,10 +55,6 @@ def delete_email(email_id):
 @task(ignore_result=True)
 @transaction.atomic()
 def disown_inbox(result, inbox_id):
-    # delete tags
-    tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
-    tags.delete()
-
     inbox = Inbox.objects.get(id=inbox_id)
     inbox.user = None
     inbox.save()
