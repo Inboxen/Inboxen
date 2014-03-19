@@ -3,7 +3,7 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="/user/home">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
         
         {% if inbox %}
             <li class="active">{{ inbox }}@{{ domain }}</li>
@@ -19,7 +19,13 @@
     <p> {% trans "You don't have any emails :(" %} </p>
 {% else %}
 
-    <form action="/inbox/{{ inbox }}@{{ domain }}/{{ page.page }}" method="POST">
+    {% if inbox %}
+        {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
+    {% else %}
+        {% url 'unified-inbox' as inbox_url %}
+    {% endif %}
+
+    <form action="{{ inbox_url}}/{{ page_obj.number }}" method="POST">
     {% csrf_token %}
     <button class="btn btn-ontop" type="submit" name="read">{% trans "Mark as read" %}</button>
     <button class="btn btn-ontop" type="submit" name="unread">{% trans "Mark as unread" %}</button>
@@ -44,10 +50,11 @@
 
                 <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
                 <td title="{{ email.sender }}"><div>{{ email.sender }}</div></td>
+                {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
                 {% if email.subject %}
-                    <td title="{{ email.subject }}"><div><a href="/inbox/{{ email.inbox }}/email/{{ email.eid }}"> {{ email.subject }} </a></div></td>
+                    <td title="{{ email.subject }}"><div><a href="{{ email_url }}"> {{ email.subject }} </a></div></td>
                 {% else %}
-                    <td></td>
+                    <td><div><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></div></td>
                 {% endif %}
                     <td title="{{ email.received_date|date:"r" }}"><div>{{ email.received_date|timesince }} {% trans "ago" %}</div></td>
                 <td>
@@ -63,34 +70,13 @@
     <div class="pagination text-right">
         <ul>
             {% if page_obj.has_previous %}
-                {% if inbox %}
-                    <li><a href="/inbox/{{ inbox }}@{{ domain }}/{{ emails.previous_page_number }}">&laquo;</a></li>
-                {% else %}
-                    <li><a href="/inbox/{{ page_obj.previous_page_number }}">&laquo;</a></li>
-                {% endif %}
+                <li><a href="{{ inbox_url }}/{{ emails.previous_page_number }}">&laquo;</a></li>
             {% else %}
                 <li class="disabled"><a href="#">&laquo;</a></li>
             {% endif %}
-            {% for page in page_range %}
-                {% if page.active %}
-                    <li class="active">
-                {% else %}
-                    <li>
-                {% endif %}
-                {% if inbox %}
-                    <a href="/inbox/{{ inbox }}@{{ domain }}/{{ page.number }}">{{ page.number }}</a>
-                {% else %}
-                    <a href="/inbox/{{ page.number }}">{{ page.number }}</a>
-                {% endif %}
-                </li>
-            {% endfor %}
-            
+
             {% if page_obj.has_next %}
-                {% if inbox %}
-                    <li><a href="/inbox/{{ inbox }}@{{ domain }}/{{ page_obj.next_page_number }}">&raquo;</a></li>
-                {% else %}
-                    <li><a href="/inbox/{{ page_obj.next_page_number }}">&raquo;</a></li>
-                {% endif %}
+                <li><a href="{{ inbox_url }}/{{ page_obj.next_page_number }}">&raquo;</a></li>
             {% else %}
                 <li class="disabled"><a href="#">&raquo;</a></li>
             {% endif %}

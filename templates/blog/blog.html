@@ -3,25 +3,25 @@
 {% load i18n %}
 
 {% block feeds %}
-    <link href="/blog/feed/rss" rel="alternate" type="application/rss+xml" title="{% blocktrans %} {{ settings.SITE_NAME }}  Blog {% endblocktrans %}" />
-    <link href="/blog/feed/atom" rel="alternate" type="application/atom+xml" title="{% blocktrans %} {{ settings.SITE_NAME }} Blog {% endblocktrans %} (Atom)" />
+    <link href="{% url 'blog-feed-rss' %}" rel="alternate" type="application/rss+xml" title="{% blocktrans with settings.SITE_NAME as name %}{{ name }}  Blog {% endblocktrans %}" />
+    <link href="{% url 'blog-feed-atom' %}" rel="alternate" type="application/atom+xml" title="{% blocktrans with settings.SITE_NAME as name %}{{ name }} Blog {% endblocktrans %} (Atom)" />
 {% endblock %}
 
 {% block content %}
 
     {% if user.is_staff %}
-        <p class="text-right"><a href="/blog/add/" class="btn">{% trans "New Post" %}</a></p>
+        <p class="text-right"><a href="{% url 'blog-post-add' %}" class="btn">{% trans "New Post" %}</a></p>
     {% endif %}
 
     {% for post in posts %}
         <div {% if post.draft %}class="draft-blog"{% endif %}>
-        <h2 class="inline"><a class="blog_title" href="/blog/post/{{post.id}}">{{ post.subject }}</a></h2>
+        <h2 class="inline"><a class="blog_title" href="{% url 'blog-post' postid=post.id %}">{{ post.subject }}</a></h2>
         <p class="text-right" title="{{ post.date|date:"r" }}"><i>{{ post.date|date:"jS F Y" }}</i></p>
         <p> {{ post.rendered_body|safe }}</p><br />
         <br />
         {% if user.is_staff %}
-            <p>    <a href="/blog/edit/{{ post.id }}" class="btn">{% trans "Edit" %}</a>
-                <a href="/blog/delete/{{ post.id }}" class="btn btn-danger">{% trans "Delete" %}</a>
+            <p>    <a href="{% url 'blog-post-edit' postid=post.id %}" class="btn">{% trans "Edit" %}</a>
+                <a href="{% url 'blog-post-delete' postid=post.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
             </p>
         {% endif %}
         </div>
@@ -30,7 +30,7 @@
     <div class="pagination text-right">
         <span class="step-links">
             {% if posts.has_previous %}
-                <a href="/blog/{{ posts.previous_page_number }}">{% trans "Previous" %}</a>
+                <a href="{% url 'blog' page=posts.previous_page_number %}">{% trans "Previous" %}</a>
             {% endif %}
 
             <span class="current">
@@ -38,7 +38,7 @@
             </span>
 
             {% if posts.has_next %}
-                <a href="/blog/{{ posts.next_page_number }}">{% trans "Next" %}</a>
+                <a href="{% url 'blog' page=posts.next_page_number %}">{% trans "Next" %}</a>
             {% endif %}
         </span>
     </div>

@@ -23,8 +23,8 @@ from pytz import utc
 
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.views import generic
+from django.core.urlresolvers import reverse_lazy
 
 from inboxen.models import Inbox
 
@@ -33,7 +33,7 @@ from website.views import base
 
 class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
     title = "Add Inbox"
-    success_url = "/user/home"
+    success_url = reverse_lazy('user-home')
     form_class = forms.InboxAddForm
     model = Inbox
     template_name = "email/add.html"
@@ -41,7 +41,7 @@ class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Cre
     def dispatch(self, request, *args, **kwargs):
         if request.user.userprofile.available_inboxes() <= 0:
             ## TODO: add django message's error: you have too many inboxes
-            return HttpResponseRedirect("/user/home")
+            return HttpResponseRedirect(self.success_url)
 
         return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)
 

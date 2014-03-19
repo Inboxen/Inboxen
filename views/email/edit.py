@@ -19,7 +19,7 @@
 
 from django.views import generic
 from django.utils.translation import ugettext as _
-from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy
 
 from website import forms
 from website.views import base
@@ -29,7 +29,7 @@ class EmailEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
     form_class = forms.InboxEditForm
     template_name = "email/edit.html"
     title = "Edit inbox"
-    success_url = "/user/home/"
+    success_url = reverse_lazy('user-home')
 
     def get_object(self, *args, **kwargs):
         inbox = self.request.user.inbox_set.select_related("domain")

@@ -21,22 +21,23 @@ from django.views import generic
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib.auth import forms as auth_forms
+from django.core.urlresolvers import reverse_lazy
 
 from website.views.base import CommonContextMixin
 
 class UserRegistrationView(CommonContextMixin, generic.CreateView):
     form_class = auth_forms.UserCreationForm
-    success_url = "/user/register/success"
+    success_url = reverse_lazy('user-success')
     title = "Register"
     template_name = "user/register/register.html"
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            return HttpResponseRedirect("/user/home/")
+            return HttpResponseRedirect(reverse_lazy('user-name'))
 
         if not settings.ENABLE_REGISTRATION:
             # I think this should be a 403 
-            return HttpResponseRedirect("/")
+            return HttpResponseRedirect(reverse_lazy("index"))
 
         return super(UserRegistrationView, self).dispatch(request=request, *args, **kwargs)
 

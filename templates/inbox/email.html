@@ -4,8 +4,8 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="/user/home">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
-        <li><a href="/inbox/{{ email.inbox }}/">{{ email.inbox }}</a> <span class="divider">/</span></li>
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
+        <li><a href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox }}</a> <span class="divider">/</span></li>
         <li class="active">{{ email.subject }}</li>
     </ul>
 {% endblock %}
@@ -34,8 +34,8 @@
         <div class="input-prepend">
             <span class="add-on">{{ attachment.1.filename }} ({{ attachment.1.content_type.0 }})</span>
             <span class="btn-group" id="prependedInput">
-                    <a href="/inbox/attachment/{{ attachment.0.id }}/download/" class="btn btn-attachment">{% trans "Download" %}</a>
-                    <a href="/inbox/attachment/{{ attachment.0.id }}/view/" class="btn btn-attachment">{% trans "View" %}</a>
+                    <a href="{% url 'email-attachment' attachmentid=attachment.0.id method='download' %}" class="btn btn-attachment">{% trans "Download" %}</a>
+                    <a href="{% url 'email-attachment' attachmentid=attachment.0.id method='view' %}" class="btn btn-attachment">{% trans "View" %}</a>
                 </span>
         </span>
     </div><br />

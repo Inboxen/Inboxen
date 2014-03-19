@@ -24,7 +24,7 @@
             </tr>
             </thead>
             <tr class="warning">
-                <td><a href="/inbox/">{% trans "Unified" %}</a>
+                <td><a href="{% url 'unified-inbox' %}">{% trans "Unified" %}</a>
                 {% if unread_email %}<span class="badge">{% trans 'Unread' %}</span></span>
                 {% endif %}
                 </td>
@@ -37,7 +37,7 @@
             {% for inbox in page_obj.object_list %}
 
                 <tr>
-                    <td><a href="/inbox/{{ inbox.inbox }}@{{ inbox.domain }}">{{ inbox.inbox }}@{{ inbox.domain }}</a>
+                    <td><a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">{{ inbox.inbox }}@{{ inbox.domain.domain }}</a>
                     {% if inbox.unread_email %}<span class="badge">{% trans 'Unread' %}</span>{% endif %}
                     </td>
                     <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
@@ -46,29 +46,21 @@
                     {% else %}
                         <td>&nbsp;</td>
                     {% endif %}
-                    <td><a class="close edit" href="/email/edit/{{ inbox.inbox }}@{{ inbox.domain }}">✍</a></td>
-                    <td><a title="{% trans "Delete Inbox" %}" class="close" href="/email/delete/{{ inbox.inbox }}@{{ inbox.domain }}">&times;</a></td>
+                    <td><a class="close edit" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">&#9997;</a></td>
+                    <td><a title="{% trans "Delete Inbox" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">&times;</a></td>
                 </tr>
             {% endfor %}
         </table>
         <div class="pagination text-right">
             <ul>
                 {% if page_obj.has_previous %}
-                    <li><a href="/user/home/{{ page_obj.previous_page_number }}">&laquo;</a></li>
+                    <li><a href="{% url 'user-home' %}/{{ page_obj.previous_page_number }}">&laquo;</a></li>
                 {% else %}
                     <li class="disabled"><a href="#">&laquo;</a></li>
                 {% endif %}
-                {% for page in pages %}
-                    {% if page.active %}
-                        <li class="active">
-                    {% else %}
-                        <li>
-                    {% endif %}
-                    <a href="/user/home/{{ page.page }}">{{ page.page }}</a></li>
-                {% endfor %}
 
                 {% if page_obj.has_next %}
-                    <li><a href="/user/home/{{ page_obj.next_page_number }}">&raquo;</a></li>
+                    <li><a href="{% url 'user-home' %}/{{ page_obj.next_page_number }}">&raquo;</a></li>
                 {% else %}
                     <li class="disabled"><a href="#">&raquo;</a></li>
                 {% endif %}

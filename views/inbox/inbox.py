@@ -20,6 +20,7 @@
 from django.utils.translation import ugettext as _
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 from django.views import generic
 from inboxen import models
@@ -84,7 +85,7 @@ class InboxView(
 
         for email in self.object_list:
             header_set = headers[email.id]
-            email.subject = header_set.get("Subject", "(No subject)")
+            email.subject = header_set.get("Subject")
             email.sender = header_set["From"]
 
         return super(InboxView, self).get_context_data(*args, **kwargs)
@@ -93,7 +94,7 @@ class InboxView(
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
     def get_success_url(self):
-        return "/inbox"
+        return reverse('unified-inbox')
 
     def get_queryset(self, *args, **kwargs):
         qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
@@ -107,7 +108,7 @@ class UnifiedInboxView(InboxView):
 class SingleInboxView(UnifiedInboxView):
     """View a single inbox"""
     def get_success_url(self):
-        return "/inbox/{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
+        return reverse('single-inbox', kwargs={"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
     def get_queryset(self, *args, **kwargs):
         qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)

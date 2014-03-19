@@ -1,18 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'blog/blog.html' %}
 
 {% load i18n %}
-
-{% block feeds %}
-    <link href="/blog/feed/rss" rel="alternate" type="application/rss+xml" title="{% blocktrans %} {{ SITE_NAME }}  Blog {% endblocktrans %}" />
-    <link href="/blog/feed/atom" rel="alternate" type="application/atom+xml" title="{% blocktrans %} {{ SITE_NAME }} Blog {% endblocktrans %} (Atom)" />
-{% endblock %}
 
 {% block content %}
 
     {% if user.is_staff %}
         <p class="text-right">
-            <a href="/blog/edit/{{ post.id }}" class="btn">{% trans "Edit" %}</a>
-            <a href="/blog/delete/{{ post.id }}" class="btn btn-danger">{% trans "Delete" %}</a>
+            <a href="{% url 'blog-post-edit' postid=post.id %}" class="btn">{% trans "Edit" %}</a>
+            <a href="{% url 'blog-post-delete' postid=post.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
         </p>
     {% endif %}
 

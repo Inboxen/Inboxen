@@ -50,4 +50,4 @@ def settings(request):
         "htmlpreference": int(profile.html_preference),
         }
 
-    return render(request, "user/settings.html", context)
+    return render(request, "user/settings/index.html", context)

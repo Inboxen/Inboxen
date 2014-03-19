@@ -17,7 +17,7 @@
     </div>
 
     <span class="span-6">
-        <form action="" class="form form-register" method="post">
+        <form action="{% url 'user-registration' %}" class="form form-register" method="post">
             {% csrf_token %}
             <input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
             <input id="id_password1" name="password1" type="password" placeholder="Password" />
@@ -32,7 +32,7 @@
         <p>Using a mix of upper and lower case letter, numbers and symbols help
             to make your password stronger. Try using a sentence rather than a
             single word if that helps you remember it.</p>
-        <h4>Lose Our Password, Lose Your Account</h4>
+        <h4>Lose Your Password, Lose Your Account</h4>
         <p>We have consciously chosen not to implement a password recovery procedure. Please don't
             forget your password, you won't be able to get into your account otherwise.</p>
     </span>

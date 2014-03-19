@@ -4,7 +4,7 @@
 
     <div class="login">
 
-        <form action="/email/add/" class="form" method="POST">
+        <form action="{% url 'inbox-add' %}" class="form" method="POST">
             {% csrf_token %}
             {{ form.as_p }}
             <button class="btn btn-centre">{% trans "Add" %}</button>        

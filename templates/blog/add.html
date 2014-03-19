@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'blog/blog.html' %}
 
 {% load i18n %}
 
@@ -8,7 +8,7 @@
         <h4>{{ error }}</h4>
     {% endif %}
 
-    <form class="form wide-form" action="/blog/add/" method="POST">
+    <form class="form wide-form" action="{% url 'blog-post-add' %}" method="POST">
         {% csrf_token %}
         <input type="text" placeholder="Title" name="title" class="input-xxlarge"><br />
         <textarea rows="20" name="body" placeholder="Body" class="input-xxlarge"></textarea><br />

@@ -15,6 +15,6 @@
 
     <br />
     <br />
-    <a href="/" class="btn btn-centre">{% trans "I'll return when you're stable" %}</a>
-    <a href="/user/register/" class="btn">{% trans "I accept! Let me join!" %}</a>
+    <a href="{% url 'index' %}" class="btn btn-centre">{% trans "I'll return when you're stable" %}</a>
+    <a href="{% url 'user-registration' %}" class="btn">{% trans "I accept! Let me join!" %}</a>
 {% endblock %}

@@ -22,6 +22,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
 
 from inboxen.models import BlogPost
 
@@ -58,7 +59,7 @@ def post(request, postid):
     try:
         p = BlogPost.objects.get(**kwargs)
     except BlogPost.DoesNotExist:
-        return HttpResponseRedirect("/blog/")
+        return HttpResponseRedirect(reverse('blog'))
 
     context = {
         "page":p.subject,

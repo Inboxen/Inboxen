@@ -22,16 +22,16 @@ from markdown import markdown
 from django.conf import settings
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.utils.translation import ugettext as _
 
 from inboxen.models import BlogPost
 
 
 class RssFeed(Feed):
-    title = "Inboxen News Feed"
-    link = "/blog/feed/rss"
-    feed_link = "http://%s/blog/feed/rss" % settings.ALLOWED_HOSTS[0]
-    description = "The latest news and updates for inboxen site"
+    title = "{0} News Feed".format(settings.SITE_NAME)
+    feed_url = reverse_lazy('blog-feed-rss')
+    link = reverse_lazy('blog')
 
     def items(self):
         return BlogPost.objects.filter(draft=False).order_by('-date')[:10]
@@ -43,10 +43,12 @@ class RssFeed(Feed):
         return markdown(item.body)
 
     def item_link(self, item):
-        return "/blog/post/%s" % item.id
+        return reverse('blog-post', kwargs={"postid": item.id})
+
+    def description(self):
+        return _("The latest news and updates for {0}").format(settings.SITE_NAME)
 
 class AtomFeed(RssFeed):
     feed_type = Atom1Feed
     subtitle = RssFeed.description
-    link = "/blog/feed/atom"
-    feed_link = "http://%s/blog/feed/atom" % settings.ALLOWED_HOSTS[0]
+    feed_url = reverse_lazy('blog-feed-atom')

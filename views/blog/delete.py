@@ -19,6 +19,7 @@
 
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.contrib.admin.views.decorators import staff_member_required
 
 from inboxen.models import BlogPost
@@ -29,8 +30,8 @@ def delete(request, postid):
     try:
         post = BlogPost.objects.filter(id=postid).only('id')
     except BlogPost.DoesNotExist:
-        return HttpResponseRedirect("/blog/")
+        return HttpResponseRedirect(reverse('blog'))
 
     post.delete()
 
-    return HttpResponseRedirect("/blog/")
+    return HttpResponseRedirect(reverse('blog'))
