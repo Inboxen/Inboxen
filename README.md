@@ -1,7 +1,7 @@
 infrastructure
 ==============
 
-A place to discuss issues that affect both the front- and back-end
+A place to bring together the project as a whole.
 
 Also, a repo to make the whole thing easier to deploy :)`
 
