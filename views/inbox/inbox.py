@@ -68,9 +68,9 @@ class InboxView(
         # update() & delete() like to do a select first for some reason :s
         emails = qs.filter(emails)
 
-        if "read" in self.request.POST:
+        if "unread" in self.request.POST:
             emails.update(flags=F('flags').bitand(~self.model.flags.read))
-        elif "unread" in self.request.POST:
+        elif "read" in self.request.POST:
             emails.update(flags=F('flags').bitor(self.model.flags.read))
         elif "delete" in self.request.POST:
             emails.update(flags=F('flags').bitor(self.model.flags.deleted))
