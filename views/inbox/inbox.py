@@ -36,6 +36,7 @@ class InboxView(
     """Base class for Inbox views"""
     model = models.Email
     paginate_by = 100
+    template_name = 'inbox/inbox.html'
 
     def get_success_url(self):
         """Override this method to return the URL to return the user to"""

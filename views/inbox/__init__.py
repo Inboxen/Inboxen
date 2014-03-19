@@ -15,6 +15,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .attachment import AttachmentDownloadView
-from .inbox import UnifiedInboxView, SingleInboxView
-from .view import EmailView
+from .add import *
+from .attachment import *
+from .delete import *
+from .edit import *
+from .email import *
+from .inbox import *

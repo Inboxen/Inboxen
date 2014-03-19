@@ -17,4 +17,20 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .liberate import *
+from django.views import generic
+from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse_lazy
+
+from website import forms
+from website.views import base
+from inboxen.models import Tag
+
+class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
+    form_class = forms.InboxEditForm
+    template_name = "inbox/edit.html"
+    title = "Edit inbox"
+    success_url = reverse_lazy('user-home')
+
+    def get_object(self, *args, **kwargs):
+        inbox = self.request.user.inbox_set.select_related("domain")
+        return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], deleted=False)

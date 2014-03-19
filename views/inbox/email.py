@@ -36,6 +36,7 @@ class EmailView(
                 ):
     model = models.Email
     pk_url_kwarg = "id"
+    template_name = 'inbox/email.html'
 
     def get_object(self, *args, **kwargs):
         # Convert the id from base 16 to 10

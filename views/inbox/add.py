@@ -17,20 +17,35 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
+from datetime import datetime
+
+from pytz import utc
+
 from django.utils.translation import ugettext as _
+from django.http import HttpResponseRedirect
+from django.views import generic
 from django.core.urlresolvers import reverse_lazy
+
+from inboxen.models import Inbox
 
 from website import forms
 from website.views import base
-from inboxen.models import Tag
 
-class EmailEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
-    form_class = forms.InboxEditForm
-    template_name = "email/edit.html"
-    title = "Edit inbox"
+class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
+    title = "Add Inbox"
     success_url = reverse_lazy('user-home')
+    form_class = forms.InboxAddForm
+    model = Inbox
+    template_name = "inbox/add.html"
 
-    def get_object(self, *args, **kwargs):
-        inbox = self.request.user.inbox_set.select_related("domain")
-        return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], deleted=False)
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.userprofile.available_inboxes() <= 0:
+            ## TODO: add django message's error: you have too many inboxes
+            return HttpResponseRedirect(self.success_url)
+
+        return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(InboxAddView, self).get_form_kwargs(*args, **kwargs)
+        kwargs.setdefault("request", self.request)
+        return kwargs

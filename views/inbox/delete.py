@@ -17,35 +17,35 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
-from pytz import utc
-
+from django.views import generic
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
-from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 
-from inboxen.models import Inbox
-
+from inboxen import models
+from queue.delete.tasks import delete_inbox
 from website import forms
 from website.views import base
 
-class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
-    title = "Add Inbox"
+class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DeleteView):
+    model = models.Inbox
     success_url = reverse_lazy('user-home')
-    form_class = forms.InboxAddForm
-    model = Inbox
-    template_name = "email/add.html"
+    title = "Delete Inbox"
+    template_name = "inbox/delete.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.userprofile.available_inboxes() <= 0:
-            ## TODO: add django message's error: you have too many inboxes
-            return HttpResponseRedirect(self.success_url)
+    def get_object(self, *args, **kwargs):
+        return self.request.user.inbox_set.get(
+            inbox=self.kwargs["inbox"],
+            domain__domain=self.kwargs["domain"]
+            )
 
-        return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)
+    def delete(self, request,*args, **kawrgs):
+        self.object = self.get_object()
+        success_url = self.get_success_url()
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(InboxAddView, self).get_form_kwargs(*args, **kwargs)
-        kwargs.setdefault("request", self.request)
-        return kwargs
+        self.object.deleted = True
+        self.object.save()
+
+        delete_inbox.delay(self.object.id, request.user.id)
+
+        return HttpResponseRedirect(success_url)
