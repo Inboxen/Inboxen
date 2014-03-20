@@ -37,12 +37,20 @@ log = logging.getLogger(__name__)
 @transaction.atomic()
 def START(message, inbox=None, domain=None):
     try:
-        inbox = Inbox.objects.get(inbox=inbox, domain__domain=domain)
+        inbox = Inbox.objects.select_related("user", "user__userprofile").get(inbox=inbox, domain__domain=domain)
 
-        if inbox.deleted:
+        if inbox.flags.deleted:
             raise SMTPError(550, "No such address")
 
         make_email(message, inbox)
+
+        inbox.flags.new = True
+        inbox.save()
+
+        profile = inbox.user.userprofile
+        profile.flags.unified_has_new_messages = True
+        profile.save()
+
     except DatabaseError, e:
         log.debug("DB error: %s", e)
         raise SMTPError(451, "Error processing message, try again later.")
