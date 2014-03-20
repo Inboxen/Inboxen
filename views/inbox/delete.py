@@ -43,7 +43,7 @@ class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generi
         self.object = self.get_object()
         success_url = self.get_success_url()
 
-        self.object.deleted = True
+        self.object.flags.deleted = True
         self.object.save()
 
         delete_inbox.delay(self.object.id, request.user.id)

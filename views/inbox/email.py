@@ -74,11 +74,7 @@ class EmailView(
 
         # parts are siblings, user preference
         if html.parent == plain.parent:
-            pref = self.request.user.userprofile.html_preference
-            if pref == 1:
-                return True
-            elif pref == 2:
-                return False
+            return self.request.user.userprofile.prefer_html_email
         # which ever has the lower lft value will win
         elif  html.lft < plain.lft:
             return False
@@ -139,7 +135,6 @@ class EmailView(
         else:
             email_dict["body"] = html.body.data
 
-        # if siblings, use html_preference
         if not plain_message:
             # Mail Pile uses this, give back if you come up with something better
             cleaner = Cleaner(page_structure=True, meta=True, links=True,

@@ -31,10 +31,9 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     paginate_by = 100
     template_name = "user/home.html"
     title = _("Home")
-    flags = F('flags').bitand(~(models.Email.flags.deleted | models.Email.flags.read))
 
     def get_queryset(self):
-        queryset = self.request.user.inbox_set.filter(deleted=False)
+        queryset = self.request.user.inbox_set.filter(flags=~models.Inbox.flags.deleted)
         queryset = queryset.select_related("domain")
         return queryset.order_by("-created")
 
@@ -45,12 +44,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
             tags = inbox.tag_set.all()
             inbox.tags = ", ".join([tag.tag for tag in tags])
 
-            # Add the number of emails with given flags
-            inbox.unread_email = inbox.email_set.filter(flags=self.flags).exists()
-
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
         self.process_messages(context["object_list"])
-        unread_email = models.Email.objects.filter(flags=self.flags, inbox__user=self.request.user).exists()
-        context.update({"unread_email": unread_email})
         return context

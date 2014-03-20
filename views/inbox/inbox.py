@@ -104,6 +104,11 @@ class UnifiedInboxView(InboxView):
 
     def get_context_data(self, *args, **kwargs):
         self.title = _("Inbox")
+        profile = self.request.user.userprofile
+        if profile.flags.unified_has_new_messages:
+            profile.flags.unified_has_new_messages = False
+            profile.save()
+
         return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
 
 class SingleInboxView(UnifiedInboxView):
@@ -112,13 +117,18 @@ class SingleInboxView(UnifiedInboxView):
         return reverse('single-inbox', kwargs={"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
     def get_queryset(self, *args, **kwargs):
+        self.inbox_obj = models.Inbox.objects.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
         qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.filter(inbox__inbox=self.kwargs["inbox"], inbox__domain__domain=self.kwargs["domain"])
+        qs = qs.filter(inbox=self.inbox_obj)
         return qs
 
     def get_context_data(self, *args, **kwargs):
         self.title = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
         context = super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
         context.update({"inbox":self.kwargs["inbox"], "domain":self.kwargs["domain"]})
+
+        if self.inbox_obj.flags.new:
+            self.inbox_obj.flags.new = False
+            self.inbox_obj.save()
 
         return context

@@ -29,11 +29,19 @@ def settings(request):
 
     # check their html preferences
     profile = request.user.userprofile
-    
+    if profile.flags.prefer_html_email:
+        html_pref = 2
+    else:
+        html_pref = 1
+
     # they submitting it?
     if request.method == "POST":
 
-        profile.html_preference = int(request.POST["html-preference"])
+        html_pref = int(request.POST["html-preference"])
+        if html_pref == 2:
+            profile.flags.prefer_html_email = True
+        else:
+            profile.flags.prefer_html_email = False
         profile.save()
 
         if len(request.POST["username0"]):
@@ -47,7 +55,7 @@ def settings(request):
         "settings": djsettings,
         "page":_("Settings"),
         "error": error,
-        "htmlpreference": int(profile.html_preference),
+        "htmlpreference": html_pref,
         }
 
     return render(request, "user/settings/index.html", context)
