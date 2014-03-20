@@ -11,13 +11,13 @@
 
     <div class="tabbable">
         <ul class="nav nav-tabs">
-            <li class="active"><a href="/user/settings/" data-toggle="tab">{% trans "General" %}</a></li>
-            <li><a href="/user/settings/password/" data-toggle="tab">{% trans "Change Password" %}</a></li>
-            <li><a href="/user/settings/liberate/" data-toggle="tab">{% trans "Liberate Data" %}</a></li>
-            <li><a href="/user/settings/delete/" data-toggle="tab">{% trans "Delete Account" %}</a></li>
+            <li class="active"><a href="{% url 'user-settings' %}" data-toggle="tab">{% trans "General" %}</a></li>
+            <li><a href="{% url 'user-password' %}" data-toggle="tab">{% trans "Change Password" %}</a></li>
+            <li><a href="{% url 'user-liberate' %}" data-toggle="tab">{% trans "Liberate Data" %}</a></li>
+            <li><a href="{% url 'user-delete' %}" data-toggle="tab">{% trans "Delete Account" %}</a></li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane active" id="tab1"> 
+            <div class="tab-pane active" id="tab1">
                 <form action="/user/settings/" class="form wide-form form-open-top" method="POST">
                     {% csrf_token %}
                     <div class="input-append" >
