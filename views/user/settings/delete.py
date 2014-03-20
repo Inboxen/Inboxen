@@ -36,7 +36,7 @@ class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, gene
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super(AccountDeletionView, self).get_form_kwargs(*args, **kwargs)
-        kwargs.setdefault("user", self.request.user)
+        kwargs.setdefault("request", self.request)
         return kwargs
 
     def form_valid(self, form, *args, **kwargs):
