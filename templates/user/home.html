@@ -24,10 +24,7 @@
             </tr>
             </thead>
             <tr class="warning">
-                <td><a href="{% url 'unified-inbox' %}">{% trans "Unified" %}</a>
-                {% if request.user.userprofile.flags.unified_has_new_messages %}<span class="badge" title="{% trans "New messages" %}">&#10026;</span></span>
-                {% endif %}
-                </td>
+                <td><a href="{% url 'unified-inbox' %}">{% trans "Unified" %}</a></td>
                 <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
