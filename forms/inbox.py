@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -35,7 +35,9 @@ class InboxAddForm(forms.ModelForm):
 				"domain": random.choice(models.Domain.objects.all()),
 			}
 
-		return super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
+		super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
+		# Remove empty option "-------"
+		self.fields["domain"].empty_label = None
 
 	class Meta:
 		model = models.Inbox
