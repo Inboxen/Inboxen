@@ -16,8 +16,8 @@
         {% endif %}
     </div>
 
-    <span class="span-6">
-        <form action="{% url 'user-registration' %}" class="form form-register" method="post">
+    <span class="span-6 form-register">
+        <form action="{% url 'user-registration' %}" class="form" method="post">
             {% csrf_token %}
             <input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
             <input id="id_password1" name="password1" type="password" placeholder="Password" />
