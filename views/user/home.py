@@ -38,11 +38,16 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
         return queryset.order_by("-created")
 
     def process_messages(self, inboxes):
-        """ Get tags and message counts """
+        """Get tags"""
+        tag_set = {}
+        tag_list = models.Tag.objects.filter(inbox__in=inboxes).values_list("inbox_id", "tag")
+        for id, tag in tag_list:
+            tags = tag_set.get(id, [])
+            tags.append(tag)
+            tag_set[id] = tags
+
         for inbox in inboxes:
-            # Add the tags for the email to enable inbox.tags to produce tag1, tag2...
-            tags = inbox.tag_set.all()
-            inbox.tags = ", ".join([tag.tag for tag in tags])
+            inbox.tags = ", ".join(tag_set.get(inbox.id, []))
 
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
