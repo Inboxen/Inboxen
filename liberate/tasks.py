@@ -49,7 +49,7 @@ def liberate(user_id, options=None):
     mailbox.Maildir(mail_path)
 
     tasks = chord(
-                [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, deleted=False).only('id')],
+                [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id')],
                 liberate_collect_emails.s(mail_path, options)
                 )
     tasks.apply_async()
@@ -58,7 +58,7 @@ def liberate(user_id, options=None):
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
 
-    inbox = Inbox.objects.get(id=inbox_id, deleted=False)
+    inbox = Inbox.objects.get(id=inbox_id, flags=~Inbox.flags.deleted)
     maildir = mailbox.Maildir(mail_path)
     maildir.add_folder(str(inbox))
 
@@ -168,7 +168,7 @@ def liberation_finish(result, options):
     profile = liberate_user_profile(options['user'], result['results'], result['date'])
 
     inbox_tags = ["Inboxen", "data", "liberation"]
-    inbox = Inbox.objects.filter(deleted=False)
+    inbox = Inbox.objects.filter(flags=~Inbox.flags.deleted)
     for tag in inbox_tags:
         inbox = inbox.filter(tag__tag=tag)
 
@@ -237,10 +237,10 @@ def liberate_user_profile(user_id, email_results, date):
 
     # user's preferences
     profile = user.userprofile
-    if profile.html_preference == 1:
-        data['preferences']['html_preference'] = 'Prefer plain-text'
-    else:
+    if profile.flags.prefer_html_email:
         data['preferences']['html_preference'] = 'Prefer HTML'
+    else:
+        data['preferences']['html_preference'] = 'Prefer plain-text'
 
     data['preferences']['pool_amount'] = profile.pool_amount
 
@@ -277,7 +277,7 @@ def liberate_inbox_tags(user_id, date):
         tags = [tag.tag for tag in Tag.objects.filter(inbox=inbox)]
         data[email] = {
             "created":inbox.created.isoformat(),
-            "deleted":inbox.deleted,
+            "deleted":inbox.flags.deleted,
             "tags":tags,
         }
 

@@ -41,7 +41,7 @@ def delete_inbox(inbox_id, user_id=None):
 
     # okay now mark the inbox as deleted
     inbox.created = datetime.fromtimestamp(0, utc)
-    inbox.deleted = True
+    inbox.flags.deleted = True
     inbox.save()
 
     return True
