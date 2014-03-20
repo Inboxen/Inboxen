@@ -22,6 +22,7 @@ import markdown
 
 from django.contrib.auth.models import User
 from django.db import models, transaction
+from django.utils.encoding import smart_str
 
 from annoying.fields import AutoOneToOneField
 from bitfield import BitField
@@ -53,8 +54,8 @@ class BlogPost(models.Model):
 class UserProfile(models.Model):
     """This is auto-created when accessed via a RelatedManager"""
     user = AutoOneToOneField(User, primary_key=True)
-    html_preference = models.IntegerField(default=2) # prefer-HTML emails by default
     pool_amount = models.IntegerField(default=500)
+    flags = BitField(flags=("prefer_html_email","unified_has_new_messages"), default=1)
 
     def available_inboxes(self):
         used = self.user.inbox_set.count()
@@ -107,20 +108,31 @@ class Inbox(models.Model):
     Object manager has a custom create() method to generate a random local part
     and a from_string() method to grab an Inbox object from the database given
     a string "inbox@domain"
+
+    `flags` are "deleted" and "new".
+    * "deleted" is obvious (and should be used instead of deleting the model)
+    * "new" should be set when an email is added to the inbox and unset when
+      the inbox is viewed
     """
     inbox = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    deleted = models.BooleanField(default=False)
+    flags = BitField(flags=("deleted","new"), default=0)
 
     objects = InboxManager()
 
     def __unicode__(self):
-        deleted = ""
-        if self.deleted:
-            deleted = " (deleted)"
-        return u"%s@%s%s" % (self.inbox, self.domain.domain, deleted)
+        return u"%s@%s" % (self.inbox, self.domain.domain)
+
+    def __repr__(self):
+        try:
+            u_rep = unicode(self)
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            u_rep = "[Bad Unicode data]"
+        if self.flags.deleted is True:
+            u_rep = "%s (deleted)" % u_rep
+        return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep))
 
     class Meta:
         verbose_name_plural = "Inboxes"

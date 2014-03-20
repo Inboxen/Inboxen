@@ -91,13 +91,13 @@ class Command(BaseCommand):
             self.stdout.write("Tags have been saved for %s" % inbox)
 
         elif "delete" == args[0]:
-            inbox.deleted = True
+            inbox.flags.deleted = True
             inbox.save()
             delete_inbox.delay(inbox)
             self.stdout.write("%s has been queued for deletion" % inbox)
         elif "resurrect" == args[0]:
-            if inbox.deleted:
-                inbox.deleted = False
+            if inbox.flags.deleted:
+                inbox.flags.deleted = False
                 inbox.save()
                 self.stdout.write("%s has been resurrected" % inbox)
             else:

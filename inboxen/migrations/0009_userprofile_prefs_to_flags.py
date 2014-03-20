@@ -1,46 +1,26 @@
 # -*- coding: utf-8 -*-
 from south.utils import datetime_utils as datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-        # Deleting model 'Attachment'
-        db.delete_table(u'inboxen_attachment', cascade=True)
-
-        # Deleting model 'Header'
-        db.delete_table(u'inboxen_header', cascade=True)
-
-        # Deleting field 'Email.body'
-        db.delete_column(u'inboxen_email', 'body')
-
-        # Deleting field 'Email.read'
-        db.delete_column(u'inboxen_email', 'read')
-
-        # Deleting field 'Email.deleted'
-        db.delete_column(u'inboxen_email', 'deleted')
-
-        # Removing M2M table for field headers on 'Email'
-        db.delete_table(db.shorten_name(u'inboxen_email_headers'))
-
-        # Removing M2M table for field attachments on 'Email'
-        db.delete_table(db.shorten_name(u'inboxen_email_attachments'))
-
-        # for some reason these sequences aren't owned by any table
-        db.execute("DROP SEQUENCE inboxen_header_id_seq")
-        db.execute("DROP SEQUENCE inboxen_attachment_id_seq")
-
-        # Rename NewHeader
-        db.rename_table('inboxen_newheader', 'inboxen_header')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(
-                app_label='inboxen', model='newheader').update(model='header', name="header")
+        for profile in orm.UserProfile.objects.all():
+            if profile.html_preference == 2:
+                profile.flags = 1
+            else:
+                profile.flags = 0
+            profile.save()
 
     def backwards(self, orm):
-        raise RuntimeError("Cannot reverse this migration. You backed up, right?")
+        for profile in orm.UserProfile.objects.all():
+            if profile.flags & 1:
+                profile.html_preference = 2
+            else:
+                profile.html_preference = 1
+            profile.save()
 
     models = {
         u'auth.group': {
@@ -108,6 +88,14 @@ class Migration(SchemaMigration):
             'inbox': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.Inbox']"}),
             'received_date': ('django.db.models.fields.DateTimeField', [], {})
         },
+        u'inboxen.header': {
+            'Meta': {'object_name': 'Header'},
+            'data': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderData']", 'on_delete': 'models.PROTECT'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderName']", 'on_delete': 'models.PROTECT'}),
+            'ordinal': ('django.db.models.fields.IntegerField', [], {}),
+            'part': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.PartList']"})
+        },
         u'inboxen.headerdata': {
             'Meta': {'object_name': 'HeaderData'},
             'data': ('django.db.models.fields.TextField', [], {}),
@@ -122,19 +110,11 @@ class Migration(SchemaMigration):
         u'inboxen.inbox': {
             'Meta': {'unique_together': "(('inbox', 'domain'),)", 'object_name': 'Inbox'},
             'created': ('django.db.models.fields.DateTimeField', [], {}),
-            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'domain': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.Domain']", 'on_delete': 'models.PROTECT'}),
+            'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inbox': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'on_delete': 'models.SET_NULL'})
-        },
-        u'inboxen.header': {
-            'Meta': {'object_name': 'Header'},
-            'data': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderData']", 'on_delete': 'models.PROTECT'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderName']", 'on_delete': 'models.PROTECT'}),
-            'ordinal': ('django.db.models.fields.IntegerField', [], {}),
-            'part': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.PartList']"})
         },
         u'inboxen.partlist': {
             'Meta': {'object_name': 'PartList'},
@@ -179,6 +159,7 @@ class Migration(SchemaMigration):
         },
         u'inboxen.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
+            'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '1'}),
             'html_preference': ('django.db.models.fields.IntegerField', [], {'default': '2'}),
             'pool_amount': ('django.db.models.fields.IntegerField', [], {'default': '500'}),
             'user': ('annoying.fields.AutoOneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'primary_key': 'True'})
@@ -186,3 +167,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['inboxen']
+    symmetrical = True

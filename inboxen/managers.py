@@ -81,8 +81,10 @@ class InboxManager(QuerySetManager):
 
         inbox = self.filter(inbox=inbox, domain__domain=domain)
 
-        if deleted is not None:
-            inbox = inbox.filter(deleted=deleted)
+        if deleted is True:
+            inbox = inbox.filter(flags=self.model.flags.deleted)
+        elif deleted is False:
+            inbox = inbox.filter(flags=~self.model.flags.deleted)
 
         if user is not None:
             inbox = inbox.filter(user=user)

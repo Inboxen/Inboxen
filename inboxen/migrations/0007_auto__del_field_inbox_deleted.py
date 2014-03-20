@@ -8,39 +8,16 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting model 'Attachment'
-        db.delete_table(u'inboxen_attachment', cascade=True)
+        # Deleting field 'Inbox.deleted'
+        db.delete_column(u'inboxen_inbox', 'deleted')
 
-        # Deleting model 'Header'
-        db.delete_table(u'inboxen_header', cascade=True)
-
-        # Deleting field 'Email.body'
-        db.delete_column(u'inboxen_email', 'body')
-
-        # Deleting field 'Email.read'
-        db.delete_column(u'inboxen_email', 'read')
-
-        # Deleting field 'Email.deleted'
-        db.delete_column(u'inboxen_email', 'deleted')
-
-        # Removing M2M table for field headers on 'Email'
-        db.delete_table(db.shorten_name(u'inboxen_email_headers'))
-
-        # Removing M2M table for field attachments on 'Email'
-        db.delete_table(db.shorten_name(u'inboxen_email_attachments'))
-
-        # for some reason these sequences aren't owned by any table
-        db.execute("DROP SEQUENCE inboxen_header_id_seq")
-        db.execute("DROP SEQUENCE inboxen_attachment_id_seq")
-
-        # Rename NewHeader
-        db.rename_table('inboxen_newheader', 'inboxen_header')
-        if not db.dry_run:
-            orm['contenttypes.contenttype'].objects.filter(
-                app_label='inboxen', model='newheader').update(model='header', name="header")
 
     def backwards(self, orm):
-        raise RuntimeError("Cannot reverse this migration. You backed up, right?")
+        # Adding field 'Inbox.deleted'
+        db.add_column(u'inboxen_inbox', 'deleted',
+                      self.gf('django.db.models.fields.BooleanField')(default=False),
+                      keep_default=False)
+
 
     models = {
         u'auth.group': {
@@ -108,6 +85,14 @@ class Migration(SchemaMigration):
             'inbox': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.Inbox']"}),
             'received_date': ('django.db.models.fields.DateTimeField', [], {})
         },
+        u'inboxen.header': {
+            'Meta': {'object_name': 'Header'},
+            'data': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderData']", 'on_delete': 'models.PROTECT'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderName']", 'on_delete': 'models.PROTECT'}),
+            'ordinal': ('django.db.models.fields.IntegerField', [], {}),
+            'part': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.PartList']"})
+        },
         u'inboxen.headerdata': {
             'Meta': {'object_name': 'HeaderData'},
             'data': ('django.db.models.fields.TextField', [], {}),
@@ -122,19 +107,11 @@ class Migration(SchemaMigration):
         u'inboxen.inbox': {
             'Meta': {'unique_together': "(('inbox', 'domain'),)", 'object_name': 'Inbox'},
             'created': ('django.db.models.fields.DateTimeField', [], {}),
-            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'domain': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.Domain']", 'on_delete': 'models.PROTECT'}),
+            'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inbox': ('django.db.models.fields.CharField', [], {'max_length': '64'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'on_delete': 'models.SET_NULL'})
-        },
-        u'inboxen.header': {
-            'Meta': {'object_name': 'Header'},
-            'data': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderData']", 'on_delete': 'models.PROTECT'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.HeaderName']", 'on_delete': 'models.PROTECT'}),
-            'ordinal': ('django.db.models.fields.IntegerField', [], {}),
-            'part': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.PartList']"})
         },
         u'inboxen.partlist': {
             'Meta': {'object_name': 'PartList'},
