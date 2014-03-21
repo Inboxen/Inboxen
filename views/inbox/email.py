@@ -115,6 +115,8 @@ class EmailView(
             else:
                 part_head["filename"] = ""
 
+            part.charset = params.get("charset", "utf-8")
+
             if html is None and part_head["content_type"][0] == "text/html":
                 html = part
             elif plain is None and part_head["content_type"][0] == "text/plain":
@@ -126,14 +128,15 @@ class EmailView(
 
         if plain_message is None:
             if len(attachments) == 1:
-                email_dict["body"] = attachments[0][0].body.data
+                charset = attachments[0][0].charset
+                email_dict["body"] = unicode(str(attachments[0][0].body.data), charset)
             else:
                 email_dict["body"] = ""
             plain_message = True
         elif plain_message:
-            email_dict["body"] = plain.body.data
+            email_dict["body"] = unicode(str(plain.body.data), plain.charset)
         else:
-            email_dict["body"] = html.body.data
+            email_dict["body"] = unicode(str(html.body.data), html.charset)
 
         if not plain_message:
             # Mail Pile uses this, give back if you come up with something better
@@ -141,7 +144,7 @@ class EmailView(
                        javascript=True, scripts=True, frames=True,
                        embedded=True, safe_attrs_only=True)
             try:
-                email_dict["body"] = cleaner.clean_html(str(email_dict["body"]))
+                email_dict["body"] = cleaner.clean_html(email_dict["body"])
             except LxmlError:
                 pass #pass as-is
 
