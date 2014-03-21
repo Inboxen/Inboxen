@@ -22,6 +22,7 @@ import re
 from django.utils.translation import ugettext as _
 from lxml.html.clean import Cleaner
 from lxml.etree import LxmlError
+from premailer.premailer import Premailer, PremailerError
 from django.views import generic
 
 from inboxen import models
@@ -144,9 +145,11 @@ class EmailView(
                        javascript=True, scripts=True, frames=True,
                        embedded=True, safe_attrs_only=True)
             try:
+                email_dict["body"] = Premailer(email_dict["body"]).transform()
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
-            except LxmlError:
-                pass #pass as-is
+            except (LxmlError, PremailerError):
+                email_dict["body"] = ""
+                plain_message = True
 
         self.title = email_dict["subject"]
 
