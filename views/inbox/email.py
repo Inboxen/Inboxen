@@ -75,7 +75,7 @@ class EmailView(
 
         # parts are siblings, user preference
         if html.parent == plain.parent:
-            return self.request.user.userprofile.flags.prefer_html_email
+            return not self.request.user.userprofile.flags.prefer_html_email
         # which ever has the lower lft value will win
         elif  html.lft < plain.lft:
             return False
