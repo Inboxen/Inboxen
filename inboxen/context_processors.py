@@ -19,6 +19,17 @@
 
 from django.conf import settings
 
-def site_name(request):
-    """Insert the SITE_NAME setting into templates"""
-    return {'SITE_NAME': settings.SITE_NAME}
+def reduced_settings_context(request):
+    """
+        Introduces a reduced set of settings into the context
+
+        This allows access to settings which will often be used
+        by the templates but exclude sensative information to such
+        as the salt to prevent accidents or bugs in the rest of django
+        compromising us.
+    """
+    reduced_settings = {
+        "SITE_NAME": settings.SITE_NAME,
+        "ENABLE_REGISTRATION": settings.ENABLE_REGISTRATION
+    }
+    return {"settings": reduced_settings}
