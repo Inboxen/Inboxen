@@ -43,18 +43,18 @@
     
     {% for email in page_obj.object_list %}
             {% if email.flags.read %}
-                <tr>
+                <tr title="{% trans "Message has been read" %}">
             {% else %}
-                <tr class="info">
+                <tr style="font-weight: bold" title="{% trans "Message is unread" %}">
             {% endif %}
 
                 <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
-                <td title="{{ email.sender }}"><div>{{ email.sender }}</div></td>
+                <td>{{ email.sender }}</td>
                 {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
                 {% if email.subject %}
-                    <td title="{{ email.subject }}"><div><a href="{{ email_url }}"> {{ email.subject }} </a></div></td>
+                    <td><a href="{{ email_url }}"> {{ email.subject }} </a></td>
                 {% else %}
-                    <td><div><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></div></td>
+                    <td><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
                 {% endif %}
                     <td title="{{ email.received_date|date:"r" }}"><div>{{ email.received_date|timesince }} {% trans "ago" %}</div></td>
                 <td>
