@@ -25,6 +25,8 @@ from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
+from django.contrib import messages
+
 
 from inboxen.models import Inbox
 
@@ -40,7 +42,7 @@ class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Cre
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.userprofile.available_inboxes() <= 0:
-            ## TODO: add django message's error: you have too many inboxes
+            messages.error(request, _("You have too many Inboxes."))
             return HttpResponseRedirect(self.success_url)
 
         return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)

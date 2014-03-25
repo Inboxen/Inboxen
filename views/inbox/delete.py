@@ -21,6 +21,7 @@ from django.views import generic
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
+from django.contrib import messages
 
 from inboxen import models
 from queue.delete.tasks import delete_inbox
@@ -39,7 +40,7 @@ class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generi
             domain__domain=self.kwargs["domain"]
             )
 
-    def delete(self, request,*args, **kawrgs):
+    def delete(self, request, *args, **kawrgs):
         self.object = self.get_object()
         success_url = self.get_success_url()
 
@@ -47,5 +48,5 @@ class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generi
         self.object.save()
 
         delete_inbox.delay(self.object.id, request.user.id)
-
+        messages.success(request, _("{0}@{1} has been deleted.".format(self.object.inbox, self.object.domain.domain)))
         return HttpResponseRedirect(success_url)

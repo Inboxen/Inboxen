@@ -21,11 +21,11 @@ from django.core.urlresolvers import reverse_lazy
 from . import TemplateView
 
 class Index(TemplateView):
-	template_name = "index.html"
-	title = _("Welcome")
+    template_name = "index.html"
+    title = _("Welcome")
 
-	def dispatch(self, request, *args, **kwargs):
-		if request.user.is_authenticated():
-			return HttpResponseRedirect(reverse_lazy('user-home'))
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(reverse_lazy('user-home'))
 
-		return super(Index, self).dispatch(request=request, *args, **kwargs)
+        return super(Index, self).dispatch(request=request, *args, **kwargs)

@@ -19,62 +19,66 @@
 
 import random
 
+from django.utils.translation import ugettext as _
 from django import forms
+from django.contrib import messages
+
 from inboxen import models
 
 class InboxAddForm(forms.ModelForm):
 
-	tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
+    tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
 
-	def __init__(self, request, initial=None, *args, **kwargs):
-		self.request = request # needed to create the inbox
+    def __init__(self, request, initial=None, *args, **kwargs):
+        self.request = request # needed to create the inbox
 
-		if not initial:
-			initial = {
-				"inbox": None, # This is filled in by the manager.create
-				"domain": random.choice(models.Domain.objects.all()),
-			}
+        if not initial:
+            initial = {
+                "inbox": None, # This is filled in by the manager.create
+                "domain": random.choice(models.Domain.objects.all()),
+            }
 
-		super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
-		# Remove empty option "-------"
-		self.fields["domain"].empty_label = None
+        super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
+        # Remove empty option "-------"
+        self.fields["domain"].empty_label = None
 
-	class Meta:
-		model = models.Inbox
-		fields = ["domain"]
+    class Meta:
+        model = models.Inbox
+        fields = ["domain"]
 
-	def save(self, commit=False):
-		# We want this instance created by .create() so we will ignore self.instance
-		# which is created just by model(**data)
-		data = self.cleaned_data.copy()
-		tags = data.pop("tags")
-		self.instance = self.request.user.inbox_set.create(**data)
-		models.Tag.objects.from_string(tags=tags, inbox=self.instance)
-		self.instance.save()
-		return self.instance
+    def save(self, commit=False):
+        # We want this instance created by .create() so we will ignore self.instance
+        # which is created just by model(**data)
+        data = self.cleaned_data.copy()
+        tags = data.pop("tags")
+        self.instance = self.request.user.inbox_set.create(**data)
+        models.Tag.objects.from_string(tags=tags, inbox=self.instance)
+        self.instance.save()
+        messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
+        return self.instance
 
 class InboxEditForm(forms.ModelForm):
 
-	tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
+    tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
 
-	class Meta:
-		model = models.Inbox
-		fields = []
+    class Meta:
+        model = models.Inbox
+        fields = []
 
-	def __init__(self, initial=None, instance=None, *args, **kwargs):
-		if not initial:
-			initial = {"tags": ", ".join([str(tag) for tag in models.Tag.objects.filter(inbox=instance)])}
+    def __init__(self, initial=None, instance=None, *args, **kwargs):
+        if not initial:
+            initial = {"tags": ", ".join([str(tag) for tag in models.Tag.objects.filter(inbox=instance)])}
 
-		return super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
+        return super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
 
-	def save(self, commit=True):
-		if not commit:
-			return
+    def save(self, commit=True):
+        if not commit:
+            return
 
-		self.instance.tag_set.all().delete()
-		self.instance.tag_set.from_string(
-			tags=self.cleaned_data.get("tags"),
-			inbox=self.instance
-		)
+        self.instance.tag_set.all().delete()
+        self.instance.tag_set.from_string(
+            tags=self.cleaned_data.get("tags"),
+            inbox=self.instance
+        )
 
-		return self.instance
+        return self.instance

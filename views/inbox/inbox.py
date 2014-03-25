@@ -19,7 +19,7 @@
 
 from django.utils.translation import ugettext as _
 from django.db.models import F, Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 
 from django.views import generic
@@ -117,7 +117,10 @@ class SingleInboxView(UnifiedInboxView):
         return reverse('single-inbox', kwargs={"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
     def get_queryset(self, *args, **kwargs):
-        self.inbox_obj = models.Inbox.objects.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
+        try:
+            self.inbox_obj = models.Inbox.objects.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
+        except models.Inbox.DoesNotExist:
+            raise Http404(_("No Inbox found matching the query."))
         qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)
         qs = qs.filter(inbox=self.inbox_obj)
         return qs
