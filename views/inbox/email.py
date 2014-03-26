@@ -24,6 +24,7 @@ from lxml.html.clean import Cleaner
 from lxml.etree import LxmlError
 from premailer.premailer import Premailer, PremailerError
 from django.views import generic
+from lxml.cssselect import SelectorSyntaxError, ExpressionError
 
 from inboxen import models
 from website.views import base
@@ -146,8 +147,12 @@ class EmailView(
                        embedded=True, safe_attrs_only=True)
             try:
                 email_dict["body"] = Premailer(email_dict["body"]).transform()
+            except (PremailerError, SelectorSyntaxError, ExpressionError):
+                cleaner.kill_tags = ["style"]
+
+            try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
-            except (LxmlError, PremailerError):
+            except LxmlError:
                 email_dict["body"] = ""
                 plain_message = True
 
