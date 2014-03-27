@@ -10,11 +10,13 @@ import time
 from datetime import datetime
 from shutil import rmtree
 
-from celery import task, chain, group, chord
-from pytz import utc
-
 from django.conf import settings
 from django.db import transaction
+from django.utils.translation import ugettext as _
+
+from celery import task, chain, group, chord
+from pytz import utc
+from async_messages import message_user
 
 from inboxen.models import Body, Domain, Email, Header, Inbox, PartList, Tag, User
 from queue.liberate import utils
@@ -224,6 +226,9 @@ def liberation_finish(result, options):
     Header.objects.create(part=tags_part, name="Content-Type", data=tags['type'], ordinal=0)
     Header.objects.create(part=tags_part, name="Content-Disposition", data=cont_dispos, ordinal=1)
     Header.objects.create(part=tags_part, name="Content-Transfer-Encoding", data="base64", ordinal=2)
+
+    # maybe add a link to the message?
+    message_user(inbox.user, _("Liberation finished! Check your messages :)"))
 
     log.info("Finished liberation for %s", options['user'])
 
