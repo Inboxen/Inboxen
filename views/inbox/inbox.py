@@ -81,16 +81,19 @@ class InboxView(
         return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, *args, **kwargs):
-        headers = models.Header.objects.filter(part__parent=None, part__email__in=self.object_list)
+        context = super(InboxView, self).get_context_data(*args, **kwargs)
+        object_list = [email for email in context["page_obj"].object_list]
+
+        # TODO: start caching
+        headers = models.Header.objects.filter(part__parent=None, part__email__in=object_list)
         headers = headers.get_many("Subject", "From", group_by="part__email_id")
 
-        for email in self.object_list:
+        for email in object_list:
             header_set = headers[email.id]
             email.subject = header_set.get("Subject")
             email.sender = header_set["From"]
 
-        return super(InboxView, self).get_context_data(*args, **kwargs)
-
+        return context
 
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
