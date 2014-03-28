@@ -26,6 +26,7 @@ from django.views import generic
 from inboxen import models
 from website.views import base
 
+from queue.tasks import deal_with_flags
 from queue.delete.tasks import delete_email
 
 class InboxView(
@@ -93,6 +94,11 @@ class InboxView(
             email.subject = header_set.get("Subject")
             email.sender = header_set["From"]
 
+        inbox = getattr(self, 'inbox_obj', None)
+        if inbox is not None:
+            inbox = inbox.id
+
+        deal_with_flags.delay([email.id for email in object_list], self.request.user.id, inbox)
         return context
 
 class UnifiedInboxView(InboxView):
