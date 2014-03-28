@@ -21,7 +21,6 @@ from django import forms
 from django.contrib import auth
 from django.core import exceptions
 from django.utils.translation import ugettext as _
-from django.contrib import messages
 
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
@@ -68,9 +67,8 @@ class LiberationForm(forms.Form):
     storage_type = forms.ChoiceField(choices=STORAGE_TYPES)
     compression_type = forms.ChoiceField(choices=COMPRESSION_TYPES)
 
-    def __init__(self, request, user, initial=None, *args, **kwargs):
+    def __init__(self, user, initial=None, *args, **kwargs):
         self.user = user
-        self.request = request
         if not initial:
             initial = {
                 "storage_type": 0,
@@ -81,7 +79,6 @@ class LiberationForm(forms.Form):
 
     def save(self):
         data_liberate.delay(self.user.id, options=self.cleaned_data)
-        messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
         return self.user
 
 

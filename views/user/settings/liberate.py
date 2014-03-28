@@ -20,6 +20,7 @@
 from django.views import generic
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy
+from django.contrib import messages
 
 from website import forms
 from website.views import base
@@ -37,4 +38,5 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.F
 
     def form_valid(self, form, *args, **kwargs):
         form.save()
+        messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
         return super(LiberationView, self).form_valid(form, *args, **kwargs)
