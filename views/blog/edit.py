@@ -26,7 +26,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
-from django.conf import settings
 
 from inboxen.models import BlogPost
 
@@ -67,7 +66,6 @@ def edit(request, postid):
         "error":error,
         "page":post.subject,
         "post":post,
-        "settings":settings,
     }
 
     return render(request, "blog/edit.html", context)

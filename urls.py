@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings, urls
+from django.conf import urls
 from django.core.urlresolvers import reverse_lazy
 
 from website import views
@@ -47,7 +47,6 @@ urlpatterns = urls.patterns('',
             'template_name': 'user/login.html',
             'extra_context': {
                 'page':'Login',
-                'settings': settings,
             },
         },
         name='user-login',
@@ -64,7 +63,6 @@ urlpatterns = urls.patterns('',
             'post_change_redirect': reverse_lazy('user-home'),
             'extra_context': {
                 'page': 'Change Password',
-                'settings': settings,
             },
         },
         name='user-password',

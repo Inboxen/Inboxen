@@ -26,7 +26,6 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
-from django.conf import settings
 
 from inboxen.models import BlogPost
 
@@ -61,7 +60,6 @@ def add(request):
     context = {
         "error":error,
         "page":_("Add Post"),
-        "settings":settings,
     }
 
     return render(request, "blog/add.html", context)

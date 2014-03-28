@@ -18,7 +18,6 @@
 ##
 
 from django.utils.translation import ugettext as _
-from django.conf import settings as djsettings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
@@ -52,7 +51,6 @@ def settings(request):
                 error = _("Please enter your new username twice.")
 
     context = {
-        "settings": djsettings,
         "page":_("Settings"),
         "error": error,
         "htmlpreference": html_pref,

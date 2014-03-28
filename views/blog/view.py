@@ -18,7 +18,6 @@
 ##
 
 from django.utils.translation import ugettext as _
-from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -45,7 +44,6 @@ def view(request, page=1):
     context = {
         "page":_("Blog"),
         "posts":posts,
-        "settings": settings,
     }
 
     return render(request, "blog/blog.html", context)
@@ -64,7 +62,6 @@ def post(request, postid):
     context = {
         "page":p.subject,
         "post":p,
-        "settings": settings,
     }
 
     return render(request, "blog/post.html", context)
