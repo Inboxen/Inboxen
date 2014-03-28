@@ -72,7 +72,10 @@ class Command(BaseCommand):
             message = self.mbox.get(key)
 
             if self.inbox:
-                message.replace_header("To", str(self.inbox))
+                try:
+                    message.replace_header("To", str(self.inbox))
+                except KeyError:
+                    message["To"] = str(self.inbox)
 
             server.sendmail(self._get_address(message['From']), self._get_address(message['To']), message.as_string())
             self.mbox.remove(key)
