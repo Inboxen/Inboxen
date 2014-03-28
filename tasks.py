@@ -62,7 +62,8 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
     if inbox_id is None:
         # grab affected inboxes
-        inbox_list = Inbox.objects.filter(email__id__in=email_id_list)
+        inbox_list = Inbox.objects.filter(user__id=user_id, email__id__in=email_id_list)
+        inbox_list = inbox_list.distinct()
 
         for inbox in inbox_list:
             inbox_new_flag.delay(user_id, inbox.id)
