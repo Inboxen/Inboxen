@@ -7,7 +7,7 @@ from pytz import utc
 from django.db import transaction
 from django.db.models import F
 
-from inboxen.models import Email, User, Statistic
+from inboxen.models import Email, Inbox, User, UserProfile, Statistic
 
 log = logging.getLogger(__name__)
 
@@ -33,5 +33,39 @@ def statistics():
 
 @task(ignore_result=True)
 @transaction.atomic()
-def deal_with_flags(email_id_list, inbox_id=None):
-    Email.objects.filter(id__in=email_id_list).update(flag=F('flags').bitor(Email.flags.seen))
+def inbox_new_flag(user_id, inbox_id=None):
+    emails = Email.objects.order_by("-received_date")
+    if inbox_id is not None:
+        emails = emails.filter(inbox__id=inbox_id)
+    emails = emails[:100] # number of emails on page
+    emails = Email.objects.filter(id__in=emails, flags=~Email.flags.seen)
+
+    # if some emails haven't been seen yet, we have nothing else to do
+    if emails.count() > 0:
+        return
+
+    if inbox_id is None:
+        profile = UserProfile.objects.get(user__id=user_id)
+        profile.flags.unified_has_new_messages = False
+        profile.save()
+    else:
+        inbox = Inbox.objects.get(user__id=user_id, id=inbox_id)
+        inbox.flags.new = False
+        inbox.save()
+
+@task(ignore_result=True)
+@transaction.atomic()
+def deal_with_flags(email_id_list, user_id, inbox_id=None):
+    """Set seen flags on a list of email IDs and then send off tasks to update
+    "new" flags on affected Inbox objects"""
+    # update seen flags
+    Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
+    if inbox_id is None:
+        # grab affected inboxes
+        inbox_list = Inbox.objects.filter(email__id__in=email_id_list)
+
+        for inbox in inbox_list:
+            inbox_new_flag.delay(user_id, inbox.id)
+    else:
+        # we only need to update
+        inbox_new_flag.delay(user_id)
