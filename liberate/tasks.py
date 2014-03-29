@@ -50,10 +50,17 @@ def liberate(user_id, options=None):
     # make maildir
     mailbox.Maildir(mail_path)
 
-    tasks = chord(
-                [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id')],
-                liberate_collect_emails.s(mail_path, options)
-                )
+    inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id')]
+    if len(inbox_tasks) > 0:
+        tasks = chord(
+                    inbox_tasks,
+                    liberate_collect_emails.s(mail_path, options)
+                    )
+    else:
+        options["noEmails"] = True
+        data = {"results": [], "date": str(datetime.now(utc).date())}
+        tasks = liberation_finish.s(data, options)
+
     tasks.apply_async()
 
 @task(rate_limit='100/m')
@@ -86,8 +93,8 @@ def liberate_collect_emails(results, mail_path, options):
                         )
     else:
         options["noEmails"] = True
-        msg_tasks = liberation_finish.s(options)
-
+        data = {"results": [], "date": str(datetime.now(utc).date())}
+        msg_tasks = liberation_finish.s(data, options)
     msg_tasks.apply_async()
 
 @task(rate_limit='1000/m')
@@ -201,7 +208,7 @@ def liberation_finish(result, options):
     msg_part.save()
     Header.objects.create(part=msg_part, name="Content-Type", data="text/plain", ordinal=0)
 
-    if not options.get("noEmail", False):
+    if not options.get("noEmails", False):
         archive_body = Body.objects.get_or_create(path=result["path"])[0]
         archive_part = PartList(body=archive_body, email=email, parent=main_part)
         archive_part.save()
@@ -282,7 +289,7 @@ def liberate_inbox_tags(user_id, date):
         tags = [tag.tag for tag in Tag.objects.filter(inbox=inbox)]
         data[email] = {
             "created":inbox.created.isoformat(),
-            "deleted":inbox.flags.deleted,
+            "deleted":bool(inbox.flags.deleted),
             "tags":tags,
         }
 
