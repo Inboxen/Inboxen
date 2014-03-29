@@ -39,6 +39,9 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
 
     def process_messages(self, inboxes):
         """Get tags"""
+        if len(inboxes) == 0:
+            return
+
         tag_set = {}
         tag_list = models.Tag.objects.filter(inbox__in=inboxes).values_list("inbox_id", "tag")
         for id, tag in tag_list:
