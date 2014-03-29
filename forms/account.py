@@ -39,7 +39,7 @@ class DeleteAccountForm(forms.Form):
 
     def clean(self, *args, **kwargs):
         cleaned_data = super(DeleteAccountForm, self).clean(*args, **kwargs)
-        if cleaned_data["username"] != self.user.get_username():
+        if cleaned_data.get("username", "") != self.user.get_username():
             raise exceptions.ValidationError(_("The username entered does not match your username"))
 
         return cleaned_data
