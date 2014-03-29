@@ -46,13 +46,13 @@ def delete_inbox(inbox_id, user_id=None):
 
     return True
 
-@task(rate_limit=200, ignore_result=True)
+@task(rate_limit=200)
 @transaction.atomic()
 def delete_email(email_id):
     email = Email.objects.only('id').get(id=email_id)
     email.delete()
 
-@task(ignore_result=True)
+@task()
 @transaction.atomic()
 def disown_inbox(result, inbox_id):
     inbox = Inbox.objects.get(id=inbox_id)
@@ -67,7 +67,7 @@ def finish_delete_user(result, user_id):
     if inbox:
         raise Exception("User {0} still has inboxes!".format(user.username))
     else:
-        log.debug("Deleting user %s", user.username)
+        log.info("Deleting user %s", user.username)
         user.delete()
     return True
 
@@ -86,7 +86,7 @@ def delete_account(user_id):
         delete = chord([chain(delete_inbox.s(inbox.id), disown_inbox.s(inbox.id)) for inbox in inboxes], finish_delete_user.s(user_id))
         delete.apply_async()
 
-    log.debug("Deletion tasks for %s sent off", user.username)
+    log.info("Deletion tasks for %s sent off", user.username)
 
 @task(rate_limit=200, acks_late=True)
 @transaction.atomic()
