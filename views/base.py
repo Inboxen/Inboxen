@@ -21,9 +21,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import classonlymethod
 
 class CommonContextMixin(object):
+    """Common items that our templates need, including title"""
     title = ""
 
     def get_context_data(self, *args, **kwargs):
+        if self.title == "":
+            raise AttributeError("Blank titles not supported")
+
         context = super(CommonContextMixin, self).get_context_data(*args, **kwargs)
         context.setdefault("page", _(self.title))
         context.setdefault("request", self.request)
