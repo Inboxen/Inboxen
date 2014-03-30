@@ -42,6 +42,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
         if len(inboxes) == 0:
             return
 
+        inboxes = list(inboxes)
         tag_set = {}
         tag_list = models.Tag.objects.filter(inbox__in=inboxes).values_list("inbox_id", "tag")
         for id, tag in tag_list:
@@ -54,5 +55,5 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
 
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
-        self.process_messages(context["object_list"])
+        self.process_messages(context["page_obj"].object_list)
         return context
