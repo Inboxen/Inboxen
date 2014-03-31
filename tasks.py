@@ -34,7 +34,7 @@ def statistics():
 @task(ignore_result=True)
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
-    emails = Email.objects.order_by("-received_date")
+    emails = Email.objects.order_by("-received_date").filter(inbox__user__id=user_id)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
     emails = emails[:100] # number of emails on page
