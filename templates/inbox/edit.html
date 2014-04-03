@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block content %}
-<form class="form" action="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+<form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
     {% csrf_token %}
     <p> Edit inbox <strong>{{ inbox.inbox }}@{{ inbox.domain.domain }}</strong></p>
     {{ form.as_p }}

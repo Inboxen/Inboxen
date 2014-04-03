@@ -13,10 +13,10 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab1">
-                <form method="POST" action="/user/settings/delete/" class="form wide-form form-open-top">
+                <form method="POST" action="{% url 'user-delete' %}" class="form wide-form form-open-top">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <a href="/user/home" class="btn">{% trans "Don't delete my account!" %}</a>
+                    <a href="{% url 'user-home' %}" class="btn">{% trans "Don't delete my account!" %}</a>
                     <button class="btn btn-danger">{% trans "Delete my account" %}</button>
                 </form>
         </div>

@@ -6,7 +6,7 @@
 
     <h2> {% trans "Really?" %} </h2>
     <p> {% trans "Are you sure you want to delete" %} {{ inbox.inbox }}@{{ inbox.domain.domain }}? {% trans "All emails in this inbox will be deleted and future emails sent to it will be rejected." %}</p><br />
-    <form action="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain%}" method="POST">
+    <form action="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
         {% csrf_token %} 
         <input type="hidden" name="confirm" value="{{ inbox.inbox }}@{{ inbox.domain.domain }}">
         <p>

@@ -13,7 +13,7 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab1">
-                <form class="form wide-form form-open-top" action="/user/settings/liberate/liberate" method="POST">
+                <form class="form wide-form form-open-top" action="{% url 'user-liberate' %}" method="POST">
                     {% csrf_token %}
                     <div style="width: 400px;">
                         {{ form.as_p }}
