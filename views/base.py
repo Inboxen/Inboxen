@@ -1,4 +1,6 @@
 ##
+#    Copyright (C) 2014 Jessica Tallon, Matt Molyneaux
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,27 +19,18 @@
 
 from django.views import generic
 from django.utils.translation import ugettext as _
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import classonlymethod
 
-class CommonContextMixin(object):
-    """Common items that our templates need, including title"""
-    title = ""
+from braces.views import LoginRequiredMixin, SetHeadlineMixin, StaticContextMixin
 
-    def get_context_data(self, *args, **kwargs):
-        if self.title == "":
-            raise AttributeError("Blank titles not supported")
+__all__ = ["LoginRequiredMixin", "CommonContextMixin", "TemplateView"]
 
-        context = super(CommonContextMixin, self).get_context_data(*args, **kwargs)
-        context.setdefault("page", _(self.title))
-        context.setdefault("request", self.request)
-        return context
+class CommonMixin(SetHeadlineMixin):
+    """Common items that are used in all views
+
+    Can be given headline (string)
+    """
+    pass
 
 class TemplateView(CommonContextMixin, generic.TemplateView):
     """ django's templateview with some commonly needed context data """
     pass
-
-class LoginRequiredMixin(object):
-    @classonlymethod
-    def as_view(cls, **initkwargs):
-        return login_required(super(LoginRequiredMixin, cls).as_view(**initkwargs))

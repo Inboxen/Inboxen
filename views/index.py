@@ -22,7 +22,7 @@ from . import TemplateView
 
 class Index(TemplateView):
     template_name = "index.html"
-    title = _("Welcome")
+    headline = _("Welcome")
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():

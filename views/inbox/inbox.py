@@ -112,7 +112,7 @@ class UnifiedInboxView(InboxView):
         return qs
 
     def get_context_data(self, *args, **kwargs):
-        self.title = _("Inbox")
+        self.headline = _("Inbox")
         profile = self.request.user.userprofile
         if profile.flags.unified_has_new_messages:
             profile.flags.unified_has_new_messages = False
@@ -135,7 +135,7 @@ class SingleInboxView(UnifiedInboxView):
         return qs
 
     def get_context_data(self, *args, **kwargs):
-        self.title = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
+        self.headline = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
         context = super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
         context.update({"inbox":self.kwargs["inbox"], "domain":self.kwargs["domain"]})
 

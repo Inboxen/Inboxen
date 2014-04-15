@@ -30,7 +30,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     allow_empty = True
     paginate_by = 100
     template_name = "user/home.html"
-    title = _("Home")
+    headline = _("Home")
 
     def get_queryset(self):
         queryset = self.request.user.inbox_set.filter(flags=~models.Inbox.flags.deleted)

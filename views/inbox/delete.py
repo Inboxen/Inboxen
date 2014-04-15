@@ -31,7 +31,7 @@ from website.views import base
 class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DeleteView):
     model = models.Inbox
     success_url = reverse_lazy('user-home')
-    title = "Delete Inbox"
+    headline = _("Delete Inbox")
     template_name = "inbox/delete.html"
 
     def get_object(self, *args, **kwargs):

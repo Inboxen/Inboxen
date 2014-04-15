@@ -34,7 +34,7 @@ from website import forms
 from website.views import base
 
 class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
-    title = "Add Inbox"
+    headline = _("Add Inbox")
     success_url = reverse_lazy('user-home')
     form_class = forms.InboxAddForm
     model = Inbox

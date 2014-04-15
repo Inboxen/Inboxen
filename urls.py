@@ -22,6 +22,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
 from website import views
+from website.forms import PlaceHolderAuthenticationForm
 from website.views.blog.feed import RssFeed, AtomFeed
 
 # error views
@@ -32,7 +33,7 @@ urls.handler403 = 'website.views.error.permission_denied'
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
-    urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', title=_('Huh?')), name='huh'),
+    urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', headline=_('Huh?')), name='huh'),
     
     urls.url(r'^blog/add/', 'website.views.blog.add.add', name='blog-post-add'),
     urls.url(r'^blog/post/(?P<postid>\d+)', 'website.views.blog.view.post', name='blog-post'),
@@ -46,14 +47,15 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/login/', 'django.contrib.auth.views.login', 
         {
             'template_name': 'user/login.html',
+            'authentication_form': PlaceHolderAuthenticationForm,
             'extra_context': {
-                'page':'Login',
+                'headline': _('Login'),
             },
         },
         name='user-login',
     ),
-    urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/register/software-status.html', title=_('We\'re not stable!')), name='user-status'),
-    urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', title=_('Welcome!')), name='user-success'),
+    urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/register/software-status.html', headline=_('We\'re not stable!')), name='user-status'),
+    urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', headline=_('Welcome!')), name='user-success'),
     urls.url(r'^user/register/', views.UserRegistrationView.as_view(), name='user-registration'),
     urls.url(r'^user/home/(?P<page>\d+)', views.UserHomeView.as_view(), name='user-home-pages'),
     urls.url(r'^user/home', views.UserHomeView.as_view(), name='user-home'),
@@ -63,7 +65,7 @@ urlpatterns = urls.patterns('',
             'template_name': 'user/settings/password.html',
             'post_change_redirect': reverse_lazy('user-home'),
             'extra_context': {
-                'page': 'Change Password',
+                'headline': _('Change Password'),
             },
         },
         name='user-password',

@@ -28,7 +28,7 @@ from inboxen.models import Inbox
 class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.InboxEditForm
     template_name = "inbox/edit.html"
-    title = "Edit inbox"
+    headline = _("Edit inbox")
     success_url = reverse_lazy('user-home')
 
     def get_object(self, *args, **kwargs):

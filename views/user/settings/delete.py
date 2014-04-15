@@ -32,7 +32,7 @@ class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, gene
     form_class = forms.DeleteAccountForm
     success_url = reverse_lazy('index')
     template_name = "user/settings/delete.html"
-    title = "Delete Account"
+    headline = _("Delete Account")
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super(AccountDeletionView, self).get_form_kwargs(*args, **kwargs)

@@ -156,7 +156,7 @@ class EmailView(
                 email_dict["body"] = ""
                 plain_message = True
 
-        self.title = email_dict["subject"]
+        self.headline = email_dict["subject"]
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({

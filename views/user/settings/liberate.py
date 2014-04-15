@@ -28,7 +28,7 @@ from website.views import base
 class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     form_class = forms.LiberationForm
     success_url = reverse_lazy('user-home')
-    title = _("Liberate your data")
+    headline = _("Liberate your data")
     template_name = "user/settings/liberate.html"
 
     def get_form_kwargs(self, *args, **kwargs):

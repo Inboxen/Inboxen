@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013-2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -19,6 +19,7 @@
 
 from django import forms
 from django.contrib import auth
+from django.contrib.auth.forms import AuthenticationForm
 from django.core import exceptions
 from django.utils.translation import ugettext as _
 
@@ -28,8 +29,8 @@ from queue.liberate.tasks import liberate as data_liberate
 class DeleteAccountForm(forms.Form):
 
     username = forms.CharField(
-        label="Please type your username to confirm",
-        widget=forms.TextInput(attrs={'placeholder': 'Username'})
+        label=_("Please type your username to confirm"),
+        widget=forms.TextInput(attrs={'placeholder': _('Username')})
     )
 
     def __init__(self, request, *args, **kwargs):
@@ -81,5 +82,11 @@ class LiberationForm(forms.Form):
         data_liberate.delay(self.user.id, options=self.cleaned_data)
         return self.user
 
-
-
+class PlaceHolderAuthenticationForm(AuthenticationForm):
+    """Same as auth.forms.AuthenticationForm but adds a label as the placeholder in each field"""
+    def __init__(self, *args, **kwargs):
+        output = super(PlaceHolderAuthenticationForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            label = field.label.title()
+            field.widget.attrs.update({"placeholder": label})
+        return output

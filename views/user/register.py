@@ -17,18 +17,19 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.contrib.auth import forms as auth_forms
 from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext as _
+from django.views import generic
 
 from website.views.base import CommonContextMixin
 
 class UserRegistrationView(CommonContextMixin, generic.CreateView):
     form_class = auth_forms.UserCreationForm
     success_url = reverse_lazy('user-success')
-    title = "Register"
+    headline = _("Register")
     template_name = "user/register/register.html"
 
     def dispatch(self, request, *args, **kwargs):
