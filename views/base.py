@@ -24,7 +24,7 @@ from braces.views import LoginRequiredMixin, SetHeadlineMixin, StaticContextMixi
 
 __all__ = ["LoginRequiredMixin", "CommonContextMixin", "TemplateView"]
 
-class CommonMixin(SetHeadlineMixin):
+class CommonContextMixin(SetHeadlineMixin):
     """Common items that are used in all views
 
     Can be given headline (string)
