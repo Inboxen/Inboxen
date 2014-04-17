@@ -29,9 +29,11 @@ class Migration(SchemaMigration):
         # Removing M2M table for field attachments on 'Email'
         db.delete_table(db.shorten_name(u'inboxen_email_attachments'))
 
-        # for some reason these sequences aren't owned by any table
-        db.execute("DROP SEQUENCE inboxen_header_id_seq")
-        db.execute("DROP SEQUENCE inboxen_attachment_id_seq")
+        # In the unlikely even that you actually have data in your database
+        # before running this migration, you may need to uncomment the
+        # following if you're running PostgeSQL
+        ##db.execute("DROP SEQUENCE inboxen_header_id_seq")
+        ##db.execute("DROP SEQUENCE inboxen_attachment_id_seq")
 
         # Rename NewHeader
         db.rename_table('inboxen_newheader', 'inboxen_header')
