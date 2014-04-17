@@ -131,7 +131,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "inboxen.context_processors.reduced_settings_context"
+    "website.context_processors.reduced_settings_context"
 )
 
 MIDDLEWARE_CLASSES = (
