@@ -1,8 +1,10 @@
 Django>=1.6,<1.7
 Markdown
 South
+configobj
 django-annoying
 django-bitfield
+django-extensions
 django-mptt
 onetimepass
 pytz

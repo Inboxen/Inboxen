@@ -4,7 +4,9 @@ docs/_*
 # inboxen specific
 /celerybeat-schedule
 /celerybeat.pid
-/settings.py
+/settings.ini
+/static_content
+/env
 
 *.py[cod]
 *.sw?

@@ -10,9 +10,15 @@ package in PATH
 
 See also: https://etherpad.mozilla.org/inboxen
 
-settings.py
+settings.ini
 -----------
 
-You need to set LIBERATION_PATH (full path to where archives of liberated email
-will be kept), LIBERATION_SUBJECT (subject line of the email sent to users) and
-LIBERATION_BODY (the body of the same email)
+At the very least, this file should contain the following:
+
+```
+[general]
+secret_key = some_random_string
+```
+
+Where `some_random_string` is a long (at least a length of 50) string,
+containing random characters.
