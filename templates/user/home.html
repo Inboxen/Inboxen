@@ -13,7 +13,8 @@
     {% if not page_obj.object_list %}
         <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
     {% else %}
-        <table class="table table-hover table-centre table-honeydew">
+        <div class="table-responsive">
+        <table class="table table-hover table-honeydew">
             <thead>
             <tr>
                 <th>{% trans "Inbox" %}</th>
@@ -50,8 +51,9 @@
                 </tr>
             {% endfor %}
         </table>
-        <div class="pagination text-right">
-            <ul>
+        </div>
+        <div class="text-right">
+            <ul class="pagination">
                 {% if page_obj.has_previous %}
                     <li><a href="{% url 'user-home' %}/{{ page_obj.previous_page_number }}">&laquo;</a></li>
                 {% else %}
@@ -64,7 +66,7 @@
                     <li class="disabled"><a href="#">&raquo;</a></li>
                 {% endif %}
             </ul>
-       </div>
+        </div>
     {% endif %}
 
 {% endblock %}

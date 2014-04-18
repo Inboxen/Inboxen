@@ -10,8 +10,8 @@
         {% csrf_token %} 
         <input type="hidden" name="confirm" value="{{ inbox.inbox }}@{{ inbox.domain.domain }}">
         <p>
-            <button class="btn btn-danger text-left">{% trans "Delete" %}</button>
-            <a class="btn text-left" href="{% url 'user-home' %}">{% trans "Keep it" %}</a>
+            <button class="btn btn-danger">{% trans "Delete" %}</button>
+            <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Keep it" %}</a>
         </p>
     </form>
 

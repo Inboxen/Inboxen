@@ -18,19 +18,18 @@
 {% if object_list|length_is:0 %}
     <p> {% trans "You don't have any emails :(" %} </p>
 {% else %}
-
     {% if inbox %}
         {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
     {% else %}
         {% url 'unified-inbox' as inbox_url %}
     {% endif %}
-
+    <div class="table-responsive">
     <form action="{{ inbox_url}}/{{ page_obj.number }}" method="POST">
     {% csrf_token %}
-    <button class="btn btn-ontop" type="submit" name="read">{% trans "Mark as read" %}</button>
-    <button class="btn btn-ontop" type="submit" name="unread">{% trans "Mark as unread" %}</button>
-    <button class="btn btn-ontop" type="submit" name="delete">{% trans "Delete" %}</button>
-    <table class="table table-hover table-centre table-honeydew">
+    <button class="btn btn-default" type="submit" name="read">{% trans "Mark as read" %}</button>
+    <button class="btn btn-default" type="submit" name="unread">{% trans "Mark as unread" %}</button>
+    <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
+    <table class="table table-hover table-honeydew">
     <thead>
     <tr>
         <th></th>
@@ -40,7 +39,6 @@
         <th></th>
     </tr>
     </thead>
-    
     {% for email in page_obj.object_list %}
             {% if email.flags.read %}
                 <tr title="{% trans "Message has been read" %}">
@@ -60,15 +58,13 @@
                 <td>
                     <button title="{% trans "Delete Email" %}" class="btn btn-link close" type="submit" name="delete-single" value="{{ email.eid }}">&times;</button>
                 </td>
-
             </tr>
-
     {% endfor %}
     </table>
     </form>
-
-    <div class="pagination text-right">
-        <ul>
+    </div>
+    <div class="text-right">
+        <ul class="pagination>
             {% if page_obj.has_previous %}
                 <li><a href="{{ inbox_url }}/{{ emails.previous_page_number }}">&laquo;</a></li>
             {% else %}

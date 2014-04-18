@@ -6,19 +6,17 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" />
+        <link href="{{ STATIC_URL }}css/bootstrap-theme.min.css" rel="stylesheet" />
         <link href="{{ STATIC_URL }}css/inboxen.min.css" rel="stylesheet" />
         <link rel="icon" type="image/png" href="{{ STATIC_URL }}megmelon-icon.png" />
 
         {% block feeds %}{% endblock %}
     </head>
     <body>
-        <div class="wrapper">
-            <div class="navbar-wrapper">
-                <div class="container">
-                    <div class="navbar navbar-inverse">
-                        <div class="navbar-inner">
-                            <a class="brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
-                            <ul class="nav">
+                    <div class="navbar navbar-default">
+                        <div class="container-fluid">
+                            <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
+                            <ul class="nav navbar-nav">
                                 {% if user.is_authenticated %}
                                     <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
                                     <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
@@ -34,9 +32,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="content">
+            <div class="container-fluid">
                 {% block breadcumbs %}
                 {% endblock %}
                 {% if messages %}
@@ -48,17 +44,17 @@
                 {% endif %}
                 {% block content %}
                 {% endblock %}
-                <div class="push">
-                </div>
             </div>
         </div>
-        <div class="footer">
-            <p class="muted">
-                <a href="https://github.com/Inboxen/">{% trans "Inboxen" %}</a> 
-                {% trans "is licensed under the" %} <a href="https://www.gnu.org/licenses/agpl.txt">AGPL v3</a> |  
-                <a href="http://twitter.github.io/bootstrap/">{% trans "Bootstrap" %}</a> 
-                {% trans "is licensed under the" %} <a href="https://www.apache.org/licenses/LICENSE-2.0">{% trans "Apache Licence" %}</a>
-            </p>
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted text-center">
+                    <a href="https://github.com/Inboxen/">{% trans "Inboxen" %}</a> 
+                    {% trans "is licensed under the" %} <a href="https://www.gnu.org/licenses/agpl.txt">AGPL v3</a> |  
+                    <a href="http://twitter.github.io/bootstrap/">{% trans "Bootstrap" %}</a> 
+                    {% trans "is licensed under the" %} <a href="https://www.apache.org/licenses/LICENSE-2.0">{% trans "Apache Licence" %}</a>
+                </p>
+            </div>
     </div>
     </body>
 </html>

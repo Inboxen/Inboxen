@@ -2,32 +2,39 @@
 {% load i18n %}
 {% block content %}
 
-<div class="registration">
+{% if form.non_field_errors %}
+    <p class="alert alert-danger">
+        {{ form.non_field_errors }}
+    </p>
+{% endif %}
+{% for field in form %}
+    {% if field.errors %}
+        {% for error in field.errors %}
+            <p class="alert alert-danger">
+                <strong>{{ field.label }}:</strong> {{ error }}
+            </p>
+        {% endfor %}
+    {% endif %}
+{% endfor %}
 
-    <div class="errors">
-        {% if form.errors %}
-            <ul>
-            {% for error in form.errors.values %}
-                {% for e in error %}
-                    <li class="remove-style text-center text-error">{{ e }}</li>
-                {% endfor %}
-            {% endfor %}
-            </ul>
-        {% endif %}
+<div class="row">
+    <div class="col-xs-6">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form action="{% url 'user-registration' %}" class="form" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input id="id_username" class="form-control" maxlength="30" name="username" type="text" placeholder="Username" />
+                        <input id="id_password1" class="form-control" name="password1" type="password" placeholder="Password" />
+                        <input id="id_password2" class="form-control" name="password2" type="password" placeholder="Repeat Password" />
+                    </div>
+
+                    <button class="btn btn-primary">Sign up!</button>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <span class="span-6 form-register">
-        <form action="{% url 'user-registration' %}" class="form" method="post">
-            {% csrf_token %}
-            <input id="id_username" maxlength="30" name="username" type="text" placeholder="Username" />
-            <input id="id_password1" name="password1" type="password" placeholder="Password" />
-            <input id="id_password2" name="password2" type="password" placeholder="Repeat Password" />
-
-            <button class="btn btn-centre">Sign up!</button>
-        </form>
-    </span>
-
-    <span class="span-6 registration-info">
+    <div class="col-xs-6">
         <h4>Strong Passwords</h4>
         <p>Using a mix of upper and lower case letter, numbers and symbols help
             to make your password stronger. Try using a sentence rather than a
@@ -35,7 +42,7 @@
         <h4>Lose Your Password, Lose Your Account</h4>
         <p>We have consciously chosen not to implement a password recovery procedure. Please don't
             forget your password, you won't be able to get into your account otherwise.</p>
-    </span>
+    </div>
 
 </div>
 {% endblock %}

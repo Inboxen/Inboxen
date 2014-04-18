@@ -3,8 +3,8 @@
 {% load i18n %}
 
 {% block content %}
-    <h2> {% blocktrans %} Current status of {{ SITE_NAME }} {% endblocktrans %}</h2>
-    <p> {% blocktrans %} {{ SITE_NAME }} is currently in heavy development, we're currently <strong>not</strong> feature complete. We expect there to be bugs. Please be aware of the following things:{% endblocktrans %}<br />
+    <h2> {% blocktrans with settings.SITE_NAME as SITE_NAME %} Current status of {{ SITE_NAME }} {% endblocktrans %}</h2>
+    <p> {% blocktrans with settings.SITE_NAME as SITE_NAME %} {{ SITE_NAME }} is currently in heavy development, we're currently <strong>not</strong> feature complete. We expect there to be bugs. Please be aware of the following things:{% endblocktrans %}<br />
         <ul>
             <li>{% trans "The software <strong>may</strong> contain critical bugs (which may result in data loss, non-functioning parts of the code, etc...)" %}</li>
             <li>{% trans "The infrastruture is also being tested and developed, this means we may have server problems and even downtime" %}</li>
@@ -15,6 +15,6 @@
 
     <br />
     <br />
-    <a href="{% url 'index' %}" class="btn btn-centre">{% trans "I'll return when you're stable" %}</a>
-    <a href="{% url 'user-registration' %}" class="btn">{% trans "I accept! Let me join!" %}</a>
+    <a href="{% url 'index' %}" class="btn btn-default">{% trans "I'll return when you're stable" %}</a>
+    <a href="{% url 'user-registration' %}" class="btn btn-primary">{% trans "I accept! Let me join!" %}</a>
 {% endblock %}

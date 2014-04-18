@@ -3,11 +3,19 @@
 {% load i18n %}
 
 {% block content %}
-<form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
-    {% csrf_token %}
-    <p> Edit inbox <strong>{{ inbox.inbox }}@{{ inbox.domain.domain }}</strong></p>
-    {{ form.as_p }}
-    <button class="btn">{% trans "Save" %}</button>
-    <a class="btn" href="{% url 'user-home' %}">{% trans "Cancel" %}</a>
-</form>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title"><strong>Edit {{ inbox.inbox }}@{{ inbox.domain.domain }}</strong></h3>
+    </div>
+    <div class="panel-body">
+        <form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.tags }}
+            </div>
+            <button class="btn btn-primary">{% trans "Save" %}</button>
+            <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Cancel" %}</a>
+        </form>
+    </div>
+</div>
 {% endblock %}
