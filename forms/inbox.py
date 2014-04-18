@@ -24,8 +24,9 @@ from django import forms
 from django.contrib import messages
 
 from inboxen import models
+from website.forms.mixins import BootstrapFormMixin
 
-class InboxAddForm(forms.ModelForm):
+class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
     tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
 
@@ -57,7 +58,7 @@ class InboxAddForm(forms.ModelForm):
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
-class InboxEditForm(forms.ModelForm):
+class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
     tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
 

@@ -25,8 +25,9 @@ from django.utils.translation import ugettext as _
 
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
+from website.forms.mixins import BootstrapFormMixin
 
-class DeleteAccountForm(forms.Form):
+class DeleteAccountForm(BootstrapFormMixin, forms.Form):
 
     username = forms.CharField(
         label=_("Please type your username to confirm"),
@@ -51,7 +52,7 @@ class DeleteAccountForm(forms.Form):
         auth.logout(self.request)
         return self.user
 
-class LiberationForm(forms.Form):
+class LiberationForm(BootstrapFormMixin, forms.Form):
 
     STORAGE_TYPES = (
         (0, _("Maildir")),
@@ -82,7 +83,7 @@ class LiberationForm(forms.Form):
         data_liberate.delay(self.user.id, options=self.cleaned_data)
         return self.user
 
-class PlaceHolderAuthenticationForm(AuthenticationForm):
+class PlaceHolderAuthenticationForm(BootstrapFormMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder in each field"""
     def __init__(self, *args, **kwargs):
         output = super(PlaceHolderAuthenticationForm, self).__init__(*args, **kwargs)
