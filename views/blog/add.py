@@ -59,7 +59,7 @@ def add(request):
 
     context = {
         "error":error,
-        "page":_("Add Post"),
+        "headline":_("Add Post"),
     }
 
     return render(request, "blog/add.html", context)

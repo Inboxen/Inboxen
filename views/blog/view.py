@@ -42,7 +42,7 @@ def view(request, page=1):
         posts = paginator.page(paginator.num_pages)
 
     context = {
-        "page":_("Blog"),
+        "headline":_("Blog"),
         "posts":posts,
     }
 
@@ -60,7 +60,7 @@ def post(request, postid):
         return HttpResponseRedirect(reverse('blog'))
 
     context = {
-        "page":p.subject,
+        "headline":p.subject,
         "post":p,
     }
 

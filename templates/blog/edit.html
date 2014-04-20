@@ -4,13 +4,19 @@
 
 {% block content %}
 
-    <form class="form wide-form" action="{% url 'blog-post-edit' postid=post.id %}" method="POST">
+    <form class="form-horizontal" action="{% url 'blog-post-edit' postid=post.id %}" method="POST">
         {% csrf_token %}
-
-        <input type="text" value="{{ post.subject }}" name="subject" class="input-xxlarge"><br />
-        <textarea rows="20" name="body" class="input-xxlarge">{{ post.body }}</textarea><br />
-        <input type="checkbox" name="draft" value="melon" {%if post.draft  %}checked{% endif %}>{% trans "Draft" %}<br />
-        <button class="btn">{% trans "Save" %}</button><br />
+        <div class="form-group">
+            <input type="text" value="{{ post.subject }}" name="subject" class="form-control">
+            <textarea rows="20" name="body" class="form-control">{{ post.body }}</textarea>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-1" for="draft">{% trans "Draft" %}</label>
+            <div class="col-xs-1">
+                <input type="checkbox" name="draft" value="melon" class="form-control" {%if post.draft  %}checked{% endif %} />
+            </div>
+        </div>
+        <button class="btn btn-default">{% trans "Save" %}</button>
 
     </form>
 

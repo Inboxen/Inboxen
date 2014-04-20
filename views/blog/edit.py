@@ -64,7 +64,7 @@ def edit(request, postid):
 
     context = {
         "error":error,
-        "page":post.subject,
+        "headline":post.subject,
         "post":post,
     }
 
