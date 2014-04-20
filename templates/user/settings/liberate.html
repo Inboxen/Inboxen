@@ -1,27 +1,17 @@
 {% extends 'base.html' %}
-
 {% load i18n %}
 
 {% block content %}
-
-    <div class="tabbable">
-        <ul class="nav nav-tabs">
-            <li><a href="{% url 'user-settings' %}" data-toggle="tab">{% trans "General" %}</a></li>
-            <li><a href="{% url 'user-password' %}" data-toggle="tab">{% trans "Change Password" %}</a></li>
-            <li class="active"><a href="{% url 'user-liberate' %}" data-toggle="tab">{% trans "Liberate Data" %}</a></li>
-            <li><a href="{% url 'user-delete' %}" data-toggle="tab">{% trans "Delete Account" %}</a></li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane active" id="tab1">
-                <form class="form wide-form form-open-top" action="{% url 'user-liberate' %}" method="POST">
-                    {% csrf_token %}
-                    <div style="width: 400px;">
-                        {{ form.as_p }}
-                    </div>
-                    <button class="btn btn-default">{% trans "Liberate!" %}</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
+<ul class="nav nav-pills">
+    <li><a href="{% url 'user-settings' %}">{% trans "General" %}</a></li>
+    <li><a href="{% url 'user-password' %}">{% trans "Change Password" %}</a></li>
+    <li class="active"><a href="{% url 'user-liberate' %}">{% trans "Liberate Data" %}</a></li>
+    <li><a href="{% url 'user-delete' %}">{% trans "Delete Account" %}</a></li>
+</ul>
+<br />
+<form class="form" action="{% url 'user-liberate' %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">{% trans "Liberate!" %}</button>
+</form>
 {% endblock %}

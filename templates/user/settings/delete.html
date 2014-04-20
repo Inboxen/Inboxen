@@ -3,19 +3,17 @@
 {% load i18n %}
 
 {% block content %}
-<ul class="nav nav-tabs">
-    <li><a href="{% url 'user-settings' %}" data-toggle="tab">{% trans "General" %}</a></li>
-    <li><a href="{% url 'user-password' %}" data-toggle="tab">{% trans "Change Password" %}</a></li>
-    <li><a href="{% url 'user-liberate' %}" data-toggle="tab">{% trans "Liberate Data" %}</a></li>
-    <li class="active"><a href="{% url 'user-delete' %}" data-toggle="tab">{% trans "Delete Account" %}</a></li>
+<ul class="nav nav-pills">
+    <li><a href="{% url 'user-settings' %}">{% trans "General" %}</a></li>
+    <li><a href="{% url 'user-password' %}">{% trans "Change Password" %}</a></li>
+    <li><a href="{% url 'user-liberate' %}">{% trans "Liberate Data" %}</a></li>
+    <li class="active"><a href="{% url 'user-delete' %}">{% trans "Delete Account" %}</a></li>
 </ul>
-<div class="tab-content">
-    <div class="tab-pane active" id="tab1">
-        <form method="POST" action="{% url 'user-delete' %}" class="form wide-form form-open-top">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Don't delete my account!" %}</a>
-            <button class="btn btn-danger">{% trans "Delete my account" %}</button>
-        </form>
-</div>
+<br />
+<form method="POST" action="{% url 'user-delete' %}" class="form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Don't delete my account!" %}</a>
+    <button class="btn btn-danger">{% trans "Delete my account" %}</button>
+</form>
 {% endblock %}
