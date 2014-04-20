@@ -3,8 +3,7 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a> <span class="divider">/</span></li>
-        
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
         {% if inbox %}
             <li class="active">{{ inbox }}@{{ domain }}</li>
         {% else %}
