@@ -1,48 +1,45 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block content %}
+{% if error %}
+    <p class="alert error">
+        <strong>{% trans "Error" %}:</strong>
+        {{ error }}
+    </p>
+{% endif %}
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{% url 'user-settings' %}" data-toggle="tab">{% trans "General" %}</a></li>
+        <li><a href="{% url 'user-password' %}" data-toggle="tab">{% trans "Change Password" %}</a></li>
+        <li><a href="{% url 'user-liberate' %}" data-toggle="tab">{% trans "Liberate Data" %}</a></li>
+        <li><a href="{% url 'user-delete' %}" data-toggle="tab">{% trans "Delete Account" %}</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+            <form action="{% url 'user-settings' %}" class="form wide-form form-open-top" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <select class="form-control" id="html-preference" name="html-preference">
+                        <option value="1" {% if htmlpreference == 1 %}selected="selected"{% endif %}>
+                            {% trans "Prefer Plain-text" %}
+                        </option>
+                        <option value="2" {% if htmlpreference == 2 %}selected="selected"{% endif %}>
+                            {% trans "Prefer HTML" %}
+                        </option>
+                    </select>
+                    <label class="control-label" for="html-preference">{% trans "for my emails" %}</label>
+                </div>
 
-    {% if error %}
-        <span class="alert error">
-            <strong>{% trans "Error" %}:</strong>
-            {{ error }}
-        </span>
-    {% endif %}
+                <p>{% trans "Your current username is" %} <b>{{ user.username }}</b></p>
+                <div class="form-group">
+                    <input class="form-control" id="username0" name="username0" type="text" placeholder="{% trans "New Username" %}" />
+                    <input class="form-control" id="username1" name="username1" type="text" placeholder="{% trans "Confirm Username" %}" />
+                </div>
 
-    <div class="tabbable">
-        <ul class="nav nav-tabs">
-            <li class="active"><a href="{% url 'user-settings' %}" data-toggle="tab">{% trans "General" %}</a></li>
-            <li><a href="{% url 'user-password' %}" data-toggle="tab">{% trans "Change Password" %}</a></li>
-            <li><a href="{% url 'user-liberate' %}" data-toggle="tab">{% trans "Liberate Data" %}</a></li>
-            <li><a href="{% url 'user-delete' %}" data-toggle="tab">{% trans "Delete Account" %}</a></li>
-        </ul>
-        <div class="tab-content">
-            <div class="tab-pane active" id="tab1">
-                <form action="{% url 'user-settings' %}" class="form wide-form form-open-top" method="POST">
-                    {% csrf_token %}
-                    <div class="input-append" >
-                        <select name="html-preference">
-                            <option value="1" {% if htmlpreference == 1 %}selected="selected"{% endif %}>
-                                {% trans "Prefer Plain-text" %}
-                            </option>
-
-                            <option value="2" {% if htmlpreference == 2 %}selected="selected"{% endif %}>
-                                {% trans "Prefer HTML" %}
-                            </option>
-                        </select>
-                        <span class="add-on">{% trans "for my emails" %}</span>
-                        <br /><br />
-                    </div><br />
-
-                    {% trans "Your current username is" %} <b>{{ user.username }}</b><br />
-                    <input id="username0" name="username0" type="text" placeholder="{% trans "New Username" %}" /><br />
-                    <input id="username1" name="username1" type="text" placeholder="{% trans "Confirm Username" %}" /><br />
-                    <br />
-
-                    <button class="btn">{% trans "Save" %}</button>
-                    <a href="{% url 'user-home' %}" class="btn">{% trans "Cancel" %}</a>
-                </form>
-            </div>
+                <button class="btn btn-primary">{% trans "Save" %}</button>
+                <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Cancel" %}</a>
+            </form>
         </div>
     </div>
+</div>
 {% endblock %}

@@ -27,3 +27,12 @@ class BootstrapFormMixin(object):
         for field in self.fields.values():
             field.widget.attrs.update({"class": "form-control"})
         return output
+
+class PlaceHolderMixin(object):
+    """Grabs the label of a text widget and adds it as the placeholder value"""
+    def __init__(self, *args, **kwargs):
+        output = super(PlaceHolderMixin, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            label = field.label.title()
+            field.widget.attrs.update({"placeholder": label})
+        return output

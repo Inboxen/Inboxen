@@ -22,7 +22,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
 from website import views
-from website.forms import PlaceHolderAuthenticationForm
+from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
 from website.views.blog.feed import RssFeed, AtomFeed
 
 # error views
@@ -64,6 +64,7 @@ urlpatterns = urls.patterns('',
         {
             'template_name': 'user/settings/password.html',
             'post_change_redirect': reverse_lazy('user-home'),
+            'password_change_form': PlaceHolderPasswordChangeForm,
             'extra_context': {
                 'headline': _('Change Password'),
             },

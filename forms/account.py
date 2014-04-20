@@ -19,13 +19,13 @@
 
 from django import forms
 from django.contrib import auth
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core import exceptions
 from django.utils.translation import ugettext as _
 
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
-from website.forms.mixins import BootstrapFormMixin
+from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin
 
 class DeleteAccountForm(BootstrapFormMixin, forms.Form):
 
@@ -83,11 +83,10 @@ class LiberationForm(BootstrapFormMixin, forms.Form):
         data_liberate.delay(self.user.id, options=self.cleaned_data)
         return self.user
 
-class PlaceHolderAuthenticationForm(BootstrapFormMixin, AuthenticationForm):
+class PlaceHolderAuthenticationForm(BootstrapFormMixin, PlaceHolderMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder in each field"""
-    def __init__(self, *args, **kwargs):
-        output = super(PlaceHolderAuthenticationForm, self).__init__(*args, **kwargs)
-        for field in self.fields.values():
-            label = field.label.title()
-            field.widget.attrs.update({"placeholder": label})
-        return output
+    pass
+
+class PlaceHolderPasswordChangeForm(BootstrapFormMixin, PlaceHolderMixin, PasswordChangeForm):
+    """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
+    pass
