@@ -9,52 +9,51 @@
         <link href="{{ STATIC_URL }}css/bootstrap-theme.min.css" rel="stylesheet" />
         <link href="{{ STATIC_URL }}css/inboxen.min.css" rel="stylesheet" />
         <link rel="icon" type="image/png" href="{{ STATIC_URL }}megmelon-icon.png" />
-
         {% block feeds %}{% endblock %}
     </head>
     <body>
-                    <div class="navbar navbar-default">
-                        <div class="container-fluid">
-                            <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
-                            <ul class="nav navbar-nav">
-                                {% if user.is_authenticated %}
-                                    <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
-                                    <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
-                                    <li><a href="{% url 'user-settings' %}">{% trans "Settings" %}</a></li>
-                                    <li><a href="{% url 'user-logout' %}">{% trans "Logout" %}</a></li>
-                                {% else %}
-                                    <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
-                                    {% if settings.ENABLE_REGISTRATION %}
-                                        <li><a href="{% url 'user-status' %}">{% trans "Register" %}</a></li>
-                                    {% endif %}
-                                    <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
+        <div class="navbar navbar-default">
             <div class="container-fluid">
-                {% block breadcumbs %}
-                {% endblock %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-                {% block content %}
-                {% endblock %}
+                <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
+                <ul class="nav navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
+                        <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
+                        <li><a href="{% url 'user-settings' %}">{% trans "Settings" %}</a></li>
+                        <li><a href="{% url 'user-logout' %}">{% trans "Logout" %}</a></li>
+                    {% else %}
+                        <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
+                        {% if settings.ENABLE_REGISTRATION %}
+                            <li><a href="{% url 'user-status' %}">{% trans "Register" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
-        <div id="footer">
-            <div class="container">
-                <p class="text-muted text-center">
-                    <a href="https://github.com/Inboxen/">{% trans "Inboxen" %}</a> 
-                    {% trans "is licensed under the" %} <a href="https://www.gnu.org/licenses/agpl.txt">AGPL v3</a> |  
-                    <a href="http://twitter.github.io/bootstrap/">{% trans "Bootstrap" %}</a> 
-                    {% trans "is licensed under the" %} <a href="https://www.apache.org/licenses/LICENSE-2.0">{% trans "Apache Licence" %}</a>
-                </p>
-            </div>
+        <div class="container-fluid">
+            {% block breadcumbs %}
+            {% endblock %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    <div id="footer">
+        <div class="container">
+            <p class="text-muted text-center">
+                <a href="https://github.com/Inboxen/">{% trans "Inboxen" %}</a> 
+                {% trans "is licensed under the" %} <a href="https://www.gnu.org/licenses/agpl.txt">AGPL v3</a> |  
+                <a href="http://twitter.github.io/bootstrap/">{% trans "Bootstrap" %}</a> 
+                {% trans "is licensed under the" %} <a href="https://www.apache.org/licenses/LICENSE-2.0">{% trans "Apache Licence" %}</a>
+            </p>
+        </div>
     </div>
     </body>
 </html>

@@ -52,21 +52,15 @@
             {% endfor %}
         </table>
         </div>
-        <div class="text-right">
-            <ul class="pagination">
-                {% if page_obj.has_previous %}
-                    <li><a href="{% url 'user-home' %}/{{ page_obj.previous_page_number }}">&laquo;</a></li>
-                {% else %}
-                    <li class="disabled"><a href="#">&laquo;</a></li>
-                {% endif %}
+        <ul class="pager">
+            {% if page_obj.has_previous %}
+                <li class="previous"><a href="{% url 'user-home' %}/{{ page_obj.previous_page_number }}">&laquo;</a></li>
+            {% endif %}
 
-                {% if page_obj.has_next %}
-                    <li><a href="{% url 'user-home' %}/{{ page_obj.next_page_number }}">&raquo;</a></li>
-                {% else %}
-                    <li class="disabled"><a href="#">&raquo;</a></li>
-                {% endif %}
-            </ul>
-        </div>
+            {% if page_obj.has_next %}
+                <li class="next"><a href="{% url 'user-home' %}/{{ page_obj.next_page_number }}">&raquo;</a></li>
+            {% endif %}
+        </ul>
     {% endif %}
 
 {% endblock %}
