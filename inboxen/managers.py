@@ -49,9 +49,8 @@ class InboxManager(QuerySetManager):
     use_for_related_fields = True
 
     @queryset_method
-    def create(self, length=5, domain=None, **kwargs):
-        """length is ignored currently"""
-        #TODO: define default for length with issue #57
+    def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
+        """Create a new Inbox, with a local part of `length`"""
         domain_model = self.model.domain.field.rel.to
 
         if not isinstance(domain, domain_model):

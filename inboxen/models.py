@@ -20,6 +20,7 @@
 from datetime import datetime
 import markdown
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.utils.encoding import smart_str
@@ -61,7 +62,7 @@ class UserProfile(models.Model):
         used = self.user.inbox_set.count()
         left = self.pool_amount - used
 
-        if left < 10: #TODO: issue #57
+        if left < settings.MIN_INBOX_FOR_REQUEST:
             with transaction.atomic():
                 try:
                     last_request = self.user.request_set.orderby('-date').only('succeeded')[0].succeeded
@@ -69,7 +70,7 @@ class UserProfile(models.Model):
                     last_request = True
 
                 if last_request:
-                    amount = self.pool_amont + 500 #TODO: issue #57
+                    amount = self.pool_amont + settings.REQUEST_NUMBER
                     request = Request(amount=amount, date=datetime.now(utc))
 
         return left

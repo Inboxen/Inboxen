@@ -58,6 +58,12 @@ SITE_NAME = general_conf["site_name"]
 STATIC_ROOT = os.path.join(BASE_DIR, general_conf["static_root"])
 TIME_ZONE = general_conf["time_zone"]
 
+### inboxes
+inbox_conf = config["inbox"]
+INBOX_LENGTH = inbox_conf["inbox_legth"]
+MIN_INBOX_FOR_REQUEST = inbox_conf["min_inbox_for_request"]
+REQUEST_NUMBER = inbox_conf["request_number"]
+
 ### task queue stuff
 tasks_conf = config["tasks"]
 BROKER_URL = tasks_conf["broker_url"]
