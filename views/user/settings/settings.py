@@ -51,7 +51,7 @@ def settings(request):
                 error = _("Please enter your new username twice.")
 
     context = {
-        "page":_("Settings"),
+        "headline":_("Settings"),
         "error": error,
         "htmlpreference": html_pref,
         }

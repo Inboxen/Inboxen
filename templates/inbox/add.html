@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block content %}
-
-<div class="panel panel-default">
-    <div class="panel-body">
-    <form action="{% url 'inbox-add' %}" class="form" method="POST">
-        {% csrf_token %}
-        <div class="form-group">
-            <div class="input-group">
-                <span class="input-group-addon">@</span>
-                {{ form.domain }}
+<div class="row">
+    <div class="panel panel-default col-lg-4 col-lg-offset-4">
+        <div class="panel-body">
+        <form action="{% url 'inbox-add' %}" class="form" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">@</span>
+                    {{ form.domain }}
+                </div>
+                {{ form.tags }}
             </div>
-            {{ form.tags }}
+            <button class="btn btn-default">{% trans "Add" %}</button>
+        </form>
         </div>
-        <button class="btn btn-default">{% trans "Add" %}</button>        
-    </form>
     </div>
 </div>
-
 {% endblock %}
