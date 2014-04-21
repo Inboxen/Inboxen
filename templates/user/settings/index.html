@@ -17,17 +17,10 @@
 <form action="{% url 'user-settings' %}" class="form-horizontal" method="POST">
     {% csrf_token %}
     <div class="form-group">
-        <label class="control-label col-md-2" for="html-preference">{% trans "Prefer HTML emails" %}</label>
-        <div class="col-md-10">
-            <select class="form-control" id="html-preference" name="html-preference">
-                <option value="1" {% if htmlpreference == 1 %}selected="selected"{% endif %}>
-                    {% trans "Prefer Plain-text" %}
-                </option>
-                <option value="2" {% if htmlpreference == 2 %}selected="selected"{% endif %}>
-                    {% trans "Prefer HTML" %}
-                </option>
-            </select>
+        <div class="col-xs-1">
+            <input type="checkbox" class="form-control" id="html-preference" name="html-preference" value="html" {%if htmlpreference %}checked{% endif %}/>
         </div>
+        <label class="control-label col-xs-2" for="html-preference">{% trans "Prefer HTML emails" %}</label>
     </div>
     <p>{% trans "Your current username is" %} <strong>{{ user.username }}</strong></p>
     <div class="form-group col-xs-12">

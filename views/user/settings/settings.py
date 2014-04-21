@@ -28,19 +28,16 @@ def settings(request):
 
     # check their html preferences
     profile = request.user.userprofile
-    if profile.flags.prefer_html_email:
-        html_pref = 2
-    else:
-        html_pref = 1
+    html_pref = profile.flags.prefer_html_email
 
     # they submitting it?
     if request.method == "POST":
-
-        html_pref = int(request.POST["html-preference"])
-        if html_pref == 2:
-            profile.flags.prefer_html_email = True
+        if "html-preference" in request.POST and request.POST["html-preference"] == "html":
+            html_pref = True
         else:
-            profile.flags.prefer_html_email = False
+            html_pref = False
+
+        profile.flags.prefer_html_email = html_pref
         profile.save()
 
         if len(request.POST["username0"]):
