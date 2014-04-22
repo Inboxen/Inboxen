@@ -111,8 +111,6 @@ CELERYBEAT_SCHEDULE = {
 # if you change this, you'll need to do a datamigration to change the rest
 COLUMN_HASHER = "sha1"
 
-MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_COOKIE_SECURE = True
