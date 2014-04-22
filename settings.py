@@ -61,7 +61,7 @@ TIME_ZONE = general_conf["time_zone"]
 
 ### inboxes
 inbox_conf = config["inbox"]
-INBOX_LENGTH = inbox_conf["inbox_legth"]
+INBOX_LENGTH = inbox_conf["inbox_length"]
 MIN_INBOX_FOR_REQUEST = inbox_conf["min_inbox_for_request"]
 REQUEST_NUMBER = inbox_conf["request_number"]
 
@@ -113,7 +113,7 @@ COLUMN_HASHER = "sha1"
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-MESSAGE_TAGS = {messages.ERROR: 'danger'}
+MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_COOKIE_SECURE = True
 
