@@ -19,9 +19,11 @@
 
 from django import forms
 from django.contrib import auth
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core import exceptions
 from django.utils.translation import ugettext as _
+
+from ratelimitbackend.forms import AuthenticationForm
 
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate

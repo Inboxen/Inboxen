@@ -44,7 +44,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^blog/(?P<page>\d+)', 'website.views.blog.view.view', name='blog'),
     urls.url(r'^blog/', 'website.views.blog.view.view', name='blog'),
 
-    urls.url(r'^user/login/', 'django.contrib.auth.views.login', 
+    urls.url(r'^user/login/', 'ratelimitbackend.views.login',
         {
             'template_name': 'user/login.html',
             'authentication_form': PlaceHolderAuthenticationForm,
