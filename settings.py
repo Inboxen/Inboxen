@@ -20,6 +20,7 @@
 from datetime import timedelta
 import os
 
+from django.contrib.messages import constants as message_constants
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse_lazy
 
@@ -109,6 +110,12 @@ CELERYBEAT_SCHEDULE = {
 
 # if you change this, you'll need to do a datamigration to change the rest
 COLUMN_HASHER = "sha1"
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+MESSAGE_TAGS = {messages.ERROR: 'danger'}
+
+SESSION_COOKIE_SECURE = True
 
 TEMPLATE_DEBUG = DEBUG
 
