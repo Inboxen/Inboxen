@@ -55,6 +55,8 @@ ALLOWED_HOSTS = general_conf["allowed_hosts"]
 DEBUG = general_conf["debug"]
 ENABLE_REGISTRATION = general_conf["enable_registration"]
 LANGUAGE_CODE = general_conf["language_code"]
+LOGIN_ATTEMPT_COOLOFF = general_conf["login_attempt_cooloff"]
+LOGIN_ATTEMPT_LIMIT = general_conf["login_attempt_limit"]
 SITE_NAME = general_conf["site_name"]
 STATIC_ROOT = os.path.join(BASE_DIR, general_conf["static_root"])
 TIME_ZONE = general_conf["time_zone"]
@@ -130,6 +132,17 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'website.backends.RateLimitWithSettings',
+)
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'inboxen_cache'),
+    }
+}
+
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
@@ -152,6 +165,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'async_messages.middleware.AsyncMiddleware',
+    'website.middleware.RateLimitMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 

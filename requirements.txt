@@ -6,6 +6,7 @@ django-annoying
 django-bitfield
 django-extensions
 django-mptt
+django-ratelimit-backend
 onetimepass
 pytz
 -e git+https://github.com/Inboxen/dj-queryset-manager.git@3aab4be7e6a6a7914e7830212cfc4105e54398d2#egg=dj-queryset-manager

@@ -4,6 +4,7 @@ docs/_*
 # inboxen specific
 /celerybeat-schedule
 /celerybeat.pid
+/inboxen_cache
 /settings.ini
 /static_content
 /env
