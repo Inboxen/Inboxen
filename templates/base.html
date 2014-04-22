@@ -14,13 +14,14 @@
     <body>
         <div class="navbar navbar-default">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
+                </div>
                 <ul class="nav navbar-nav">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                         <li><a href="{% url 'user-settings' %}">{% trans "Settings" %}</a></li>
-                        <li><a href="{% url 'user-logout' %}">{% trans "Logout" %}</a></li>
                     {% else %}
                         <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
                         {% if settings.ENABLE_REGISTRATION %}
@@ -29,6 +30,9 @@
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                     {% endif %}
                 </ul>
+                {% if user.is_authenticated %}
+                    <p class="navbar-text navbar-right"><a class="inherit-colour" href="{% url 'user-logout' %}">{% trans "Logout" %}</a></p>
+                {% endif %}
             </div>
         </div>
         <div class="container-fluid">

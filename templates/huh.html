@@ -2,34 +2,38 @@
 {% load i18n %}
 
 {% block content %}
-    <!-- this is not a what, don't call it a what -->
-    <div style="text-align: center; font-size:75px; line-height:75px">
-        <b><div>Emails identify you.</div><div style="font-size: 50px; line-height: 50px;">They're used to sell your data.</div></b>
+<!-- this is not a what, don't call it a what -->
+<div style="text-align: center; font-size:75px; line-height:75px">
+    <b><div>Emails identify you.</div><div style="font-size: 50px; line-height: 50px;">They're used to sell your data.</div></b>
+</div>
+<br />
+<div class="row">
+    <div class="col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2">
+        <h3>The Problem</h3>
+
+        <p>We often use the same email address when we register on a website or sign up
+        for a service, making it an unique piece of information about us. Two websites
+        that want to trade information about their users, use email addresses as
+        personal identifiers. It's the one piece of information that every website asks
+        for.</p>
+
+        <p>Web analytics companies and advertisers are increasingly turning to social
+        media to mine your data. They can find your public profiles and work
+        out your age, where you live and what you had for lunch yesterday. They can
+        build a profile about every user of their customer's website. By your second
+        visit they know as much about you as your friends - but you might not have
+        realised that.</p>
     </div>
+    <div class="col-sm-5 col-md-4">
+        <h3>What Is Inboxen?</h3>
+        <p>Inboxen is a service that provides you with an infinite number
+        <a href="#note-1">[1]</a> of unique inboxes. It's not designed your replace your
+        personal email address, but rather complement it. Every time you sign up on a
+        new website, click the "Add Inbox" button to create another email address. This
+        leaves your personal address free from promotional offers and other junk mail.</p>
 
-    <h3>The Problem</h3>
-
-    <p>We often use the same email address when we register on a website or sign up
-    for a service, making it an unique piece of information about us. Two websites
-    that want to trade information about their users, use email addresses as
-    personal identifiers. It's the one piece of information that every website asks
-    for.</p>
-
-    <p>Web analytics companies and advertisers are increasingly turning to social
-    media to mine your data. They can find your public profiles and work
-    out your age, where you live and what you had for lunch yesterday. They can
-    build a profile about every user of their customer's website. By your second
-    visit they know as much about you as your friends - but you might not have
-    realised that.</p>
-
-    <h3>What Is Inboxen?</h3>
-    <p>Inboxen is a service that provides you with an infinite number
-    <a href="#note-1">[1]</a> of unique inboxes. It's not designed your replace your
-    personal email address, but rather complement it. Every time you sign up on a
-    new website, click the "Add Inbox" button to create another email address. This
-    leaves your personal address free from promotional offers and other junk mail.</p>
-
-    <p class="small"><a id="#note-1">[1]</a> slightly less than that, it's currently 2<sup>64</sup>-1</p>
-
-    <div style="text-align: center"><a href="{% url 'user-status' %}" class="btn btn-large btn-primary">Join</a></div>
+        <p class="small"><a id="#note-1">[1]</a> slightly less than that, it's currently 2<sup>64</sup>-1</p>
+    </div>
+</div>
+<div style="padding-top: 25px; text-align: center"><a href="{% url 'user-status' %}" class="btn btn-large btn-primary">Join</a></div>
 {% endblock %}

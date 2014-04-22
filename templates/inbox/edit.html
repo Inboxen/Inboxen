@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="row">
-    <div class="panel panel-default col-lg-4 col-lg-offset-4">
+    <div class="panel panel-default col-sm-4 col-sm-offset-4">
         <div class="panel-body">
             <form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
                 {% csrf_token %}

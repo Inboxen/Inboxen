@@ -3,9 +3,10 @@
 {% load i18n %}
 
 {% block content %}
-
-    <h2> {% trans "Welcome!" %}</h2>
-    <p> {% blocktrans with settings.SITE_NAME as name %}
+<div class="row">
+<div class="col-sm-8 col-sm-offset-2">
+    <h2>{% trans "Welcome!" %}</h2>
+    <p>{% blocktrans with settings.SITE_NAME as name %}
     Welcome to {{ name }}, your registration was successful. We're glad you've come to help us test this service we're making! If you notice any problems or think of some improvements we could be doing can you head over to <a href="https://github.com/Inboxen/website/issues/">here</a> and let us know!
     <br />
     <br />
@@ -18,5 +19,6 @@
     If you like us, recomend us to a friend!
     {% endblocktrans %}
     <p><a class="btn btn-lg btn-default" href="{% url 'user-login' %}" style="margin-left:43%;">{% trans "Login" %}</a></p>
-
+</div>
+</div>
 {% endblock %}
