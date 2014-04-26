@@ -1,17 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'user/settings/index.html' %}
 {% load i18n %}
 
-{% block content %}
-<ul class="nav nav-pills">
+{% block navpills %}
     <li><a href="{% url 'user-settings' %}">{% trans "General" %}</a></li>
     <li><a href="{% url 'user-password' %}">{% trans "Change Password" %}</a></li>
     <li class="active"><a href="{% url 'user-liberate' %}">{% trans "Liberate Data" %}</a></li>
     <li><a href="{% url 'user-delete' %}">{% trans "Delete Account" %}</a></li>
-</ul>
-<br />
-<form class="form" action="{% url 'user-liberate' %}" method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary">{% trans "Liberate!" %}</button>
-</form>
+{% endblock %}
+
+{% block form %}
+    <form class="form" action="{% url 'user-liberate' %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary">{% trans "Liberate!" %}</button>
+    </form>
 {% endblock %}
