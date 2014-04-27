@@ -27,6 +27,9 @@ from django.core.urlresolvers import reverse_lazy
 from configobj import ConfigObj
 from validate import Validator
 
+import djcelery
+djcelery.setup_loader()
+
 BASE_DIR = os.path.dirname(__file__)
 
 config_spec = os.path.join(BASE_DIR, "inboxen/config_spec.ini")
