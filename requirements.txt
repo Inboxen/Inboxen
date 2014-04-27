@@ -4,6 +4,7 @@ South
 configobj
 django-annoying
 django-bitfield
+django-celery
 django-extensions
 django-mptt
 django-ratelimit-backend

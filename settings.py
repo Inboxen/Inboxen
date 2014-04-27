@@ -178,13 +178,14 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'south',
+    'django_extensions',
+    'djcelery',
     'inboxen',
     'website',
     'queue',
     'queue.delete',
     'queue.liberate',
-    'south',
-    'django_extensions',
 )
 
 if DEBUG:
