@@ -53,13 +53,17 @@ try:
 except KeyError:
     raise ImproperlyConfigured("You must set 'secret_key' in your settings.in")
 
-ADMINS = general_conf["admins"]
+if len(general_conf["admin_names"]) != len(general_conf["admin_emails"]):
+    raise ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.in")
+
+ADMINS = zip(general_conf["admin_names"], general_conf["admin_emails"])
 ALLOWED_HOSTS = general_conf["allowed_hosts"]
 DEBUG = general_conf["debug"]
 ENABLE_REGISTRATION = general_conf["enable_registration"]
 LANGUAGE_CODE = general_conf["language_code"]
 LOGIN_ATTEMPT_COOLOFF = general_conf["login_attempt_cooloff"]
 LOGIN_ATTEMPT_LIMIT = general_conf["login_attempt_limit"]
+SERVER_EMAIL = general_conf["server_email"]
 SITE_NAME = general_conf["site_name"]
 STATIC_ROOT = os.path.join(BASE_DIR, general_conf["static_root"])
 TIME_ZONE = general_conf["time_zone"]
