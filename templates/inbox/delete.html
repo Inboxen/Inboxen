@@ -4,9 +4,10 @@
 
 {% block content %}
 <div class="row">
-<div class="col-sm-6 col-sm-offset-3">
+<div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+    <div class="panel-body">
     <h2> {% trans "Really?" %} </h2>
-    <p> {% trans "Are you sure you want to delete" %} {{ inbox.inbox }}@{{ inbox.domain.domain }}? {% trans "All emails in this inbox will be deleted and future emails sent to it will be rejected." %}</p><br />
+    <p> {% blocktrans with inbox=inbox.inbox domain=inbox.domain.domain %}Are you sure you want to delete {{ inbox }}@{{ domain }}? All emails in this inbox will be deleted and future emails sent to it will be rejected.{% endblocktrans %}</p><br />
     <form action="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
         {% csrf_token %} 
         <input type="hidden" name="confirm" value="{{ inbox.inbox }}@{{ inbox.domain.domain }}">
@@ -15,5 +16,6 @@
             <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Keep it" %}</a>
         </p>
     </form>
+</div>
 </div>
 {% endblock %}
