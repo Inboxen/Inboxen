@@ -12,6 +12,6 @@
     <form class="form" action="{% url 'user-liberate' %}" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-primary">{% trans "Liberate!" %}</button>
+        <button class="btn btn-default">{% trans "Liberate!" %}</button>
     </form>
 {% endblock %}
