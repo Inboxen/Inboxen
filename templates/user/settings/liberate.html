@@ -11,7 +11,9 @@
 {% block form %}
     <form class="form" action="{% url 'user-liberate' %}" method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
         <button class="btn btn-default">{% trans "Liberate!" %}</button>
     </form>
 {% endblock %}

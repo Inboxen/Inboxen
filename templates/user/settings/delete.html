@@ -11,7 +11,9 @@
 {% block form %}
     <form method="POST" action="{% url 'user-delete' %}" class="form">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
         <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Don't delete my account!" %}</a>
         <button class="btn btn-danger">{% trans "Delete my account" %}</button>
     </form>

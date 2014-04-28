@@ -7,10 +7,14 @@
         <form action="{% url 'inbox-add' %}" class="form" method="POST">
             {% csrf_token %}
             <div class="form-group">
+                <label class="sr-only">{{ form.domain.label }}</label>
                 <div class="input-group">
                     <span class="input-group-addon">@</span>
                     {{ form.domain }}
                 </div>
+            </div>
+            <div class="form-group">
+                <label class="sr-only">{{ form.tags.label }}</label>
                 {{ form.tags }}
             </div>
             <button class="btn btn-default">{% trans "Add" %}</button>

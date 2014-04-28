@@ -4,12 +4,12 @@
 
 {% block content %}
 <div class="row">
-    <div class="panel panel-default col-sm-4 col-sm-offset-4">
+    <div class="panel panel-default panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
         <div class="panel-body">
             <form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label class="control-label">{% trans "Edit" %}</label><p class="form-control-static">{{ inbox.inbox }}@{{ inbox.domain.domain }}</p>
+                    <label class="sr-only">{% trans "Domain" %}</label><p class="form-control-static">{{ inbox.inbox }}@{{ inbox.domain.domain }}</p>
                 </div>
                 <div class="form-group">
                     <label class="sr-only">{{ form.tags.label }}</label>
