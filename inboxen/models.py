@@ -105,12 +105,13 @@ class Liberation(models.Model):
     """Liberation data
 
     `payload` is the compressed archive - it is not base64 encoded
-    `async_result` is the UUID of Celery result object
+    `async_result` is the UUID of Celery result object, which may or may not be valid
     """
     user = AutoOneToOneField(User, primary_key=True)
     flags = BitField(flags=("running", "errored"), default=0)
-    payload = models.BinaryField(blank=True, null=True)
-    async_result = UUIDField()
+    payload = models.BinaryField(null=True)
+    async_result = UUIDField(auto=False, null=True)
+    started = models.DateTimeField(null=True)
 
 ##
 # Inbox models

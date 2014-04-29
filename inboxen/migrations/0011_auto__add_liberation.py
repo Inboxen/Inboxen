@@ -12,8 +12,9 @@ class Migration(SchemaMigration):
         db.create_table(u'inboxen_liberation', (
             ('user', self.gf('annoying.fields.AutoOneToOneField')(to=orm['auth.User'], unique=True, primary_key=True)),
             ('flags', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
-            ('payload', self.gf('django.db.models.fields.BinaryField')(null=True, blank=True)),
-            ('async_result', self.gf('django.db.models.fields.CharField')(max_length=36, blank=True)),
+            ('payload', self.gf('django.db.models.fields.BinaryField')(null=True)),
+            ('async_result', self.gf('django.db.models.fields.CharField')(max_length=36, null=True)),
+            ('started', self.gf('django.db.models.fields.DateTimeField')(null=True)),
         ))
         db.send_create_signal(u'inboxen', ['Liberation'])
 
@@ -119,9 +120,10 @@ class Migration(SchemaMigration):
         },
         u'inboxen.liberation': {
             'Meta': {'object_name': 'Liberation'},
-            'async_result': ('django.db.models.fields.CharField', [], {'max_length': '36', 'blank': 'True'}),
+            'async_result': ('django.db.models.fields.CharField', [], {'max_length': '36', 'null': 'True'}),
             'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
-            'payload': ('django.db.models.fields.BinaryField', [], {'null': 'True', 'blank': 'True'}),
+            'payload': ('django.db.models.fields.BinaryField', [], {'null': 'True'}),
+            'started': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'user': ('annoying.fields.AutoOneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'primary_key': 'True'})
         },
         u'inboxen.partlist': {
