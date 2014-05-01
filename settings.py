@@ -17,91 +17,145 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import timedelta
+import datetime
 import os
 
 from django.contrib.messages import constants as message_constants
-from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import reverse_lazy
+from django.core import exceptions, urlresolvers
 
-from configobj import ConfigObj
-from validate import Validator
+import configobj
+import validate
 
 import djcelery
 djcelery.setup_loader()
 
-BASE_DIR = os.path.dirname(__file__)
+##
+# Most configuration can be done via settings.ini
+#
+# The file is searched for in the follow way:
+# 1. The environment variable "INBOXEN_CONFIG", which contains an absolute path
+# 2. ~/.config/inboxen/settings.ini
+# 3. settings.ini in the same folder as this file
+#
+# See inboxen/config_spec.ini for defaults, see below for comments
+##
 
-config_spec = os.path.join(BASE_DIR, "inboxen/config_spec.ini")
-config_path = os.path.join(BASE_DIR, "settings.ini")
+# Shorthand for Django's default database backends
 db_dict = {
             "postgresql": "django.db.backends.postgresql_psycopg2",
             "mysql": "django.db.backends.mysql",
             "oracle": "django.db.backends.oracle",
             "sqlite": "django.db.backends.sqlite3"
             }
-validator = Validator()
 
-config = ConfigObj(config_path, configspec=config_spec)
-config.validate(validator)
+BASE_DIR = os.path.dirname(__file__)
 
-## START boxen
-### general
-general_conf = config["general"]
+if os.path.exists(os.getenv('INBOX_CONFIG', '')):
+    CONFIG_PATH = os.getenv('INBOX_CONFIG')
+elif os.path.exists(os.path.expanduser("~/.config/inboxen/settings.ini")):
+    CONFIG_PATH = os.path.expanduser("~/.config/inboxen/settings.ini")
+elif os.path.exists(os.path.join(BASE_DIR, "settings.ini")):
+    CONFIG_PATH = os.path.join(BASE_DIR, "settings.ini")
+else:
+    raise exceptions.ImproperlyConfigured("You must provide a settings.ini file")
+
+config_spec = os.path.join(BASE_DIR, "inboxen/config_spec.ini")
+
+config = configobj.ConfigObj(CONFIG_PATH, configspec=config_spec)
+config.validate(validate.Validator())
+
+# TODO: These could be merged into a custom validator
 try:
-    SECRET_KEY = general_conf["secret_key"]
+    SECRET_KEY = config["general"]["secret_key"]
 except KeyError:
-    raise ImproperlyConfigured("You must set 'secret_key' in your settings.in")
+    raise exceptions.ImproperlyConfigured("You must set 'secret_key' in your settings.ini")
 
-if len(general_conf["admin_names"]) != len(general_conf["admin_emails"]):
-    raise ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.in")
+if len(config["general"]["admin_names"]) != len(config["general"]["admin_emails"]):
+    raise exceptions.ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.ini")
 
-ADMINS = zip(general_conf["admin_names"], general_conf["admin_emails"])
-ALLOWED_HOSTS = general_conf["allowed_hosts"]
-DEBUG = general_conf["debug"]
-ENABLE_REGISTRATION = general_conf["enable_registration"]
-LANGUAGE_CODE = general_conf["language_code"]
-LOGIN_ATTEMPT_COOLOFF = general_conf["login_attempt_cooloff"]
-LOGIN_ATTEMPT_LIMIT = general_conf["login_attempt_limit"]
-SERVER_EMAIL = general_conf["server_email"]
-SITE_NAME = general_conf["site_name"]
-STATIC_ROOT = os.path.join(BASE_DIR, general_conf["static_root"])
-TIME_ZONE = general_conf["time_zone"]
+# Admins (and managers)
+ADMINS = zip(config["general"]["admin_names"], config["general"]["admin_emails"])
 
-### inboxes
-inbox_conf = config["inbox"]
-INBOX_LENGTH = inbox_conf["inbox_length"]
-MIN_INBOX_FOR_REQUEST = inbox_conf["min_inbox_for_request"]
-REQUEST_NUMBER = inbox_conf["request_number"]
+# List of hosts allowed
+ALLOWED_HOSTS = config["general"]["allowed_hosts"]
 
-### task queue stuff
-tasks_conf = config["tasks"]
-BROKER_URL = tasks_conf["broker_url"]
-CELERYD_CONCURRENCY = tasks_conf["concurrency"]
-LIBERATION_BODY = tasks_conf["liberation"]["body"]
-LIBERATION_PATH = os.path.join(BASE_DIR, tasks_conf["liberation"]["path"])
-LIBERATION_SUBJECT = tasks_conf["liberation"]["subject"]
+# Enable debugging - DO NOT USE IN PRODUCTION
+DEBUG = config["general"]["debug"]
 
-### db
-db_conf = config["database"]
+# Alloew new users to register
+ENABLE_REGISTRATION = config["general"]["enable_registration"]
+
+# Cooloff time, in minutes, for failed logins
+LOGIN_ATTEMPT_COOLOFF = config["general"]["login_attempt_cooloff"]
+
+# Maximum number of unsuccessful login attempts
+LOGIN_ATTEMPT_LIMIT = config["general"]["login_attempt_limit"]
+
+# Language code, e.g. en-gb
+LANGUAGE_CODE = config["general"]["language_code"]
+
+# Email the server uses when sending emails
+SERVER_EMAIL = config["general"]["server_email"]
+
+# Site name used in page titles
+SITE_NAME = config["general"]["site_name"]
+
+# Where `manage.py collectstatic` puts static files
+STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
+
+# Time zone
+TIME_ZONE = config["general"]["time_zone"]
+
+# Length of the local part (bit before the @) of autogenerated inbox addresses
+INBOX_LENGTH = config["inbox"]["inbox_length"]
+
+# Maximum number of free inboxes before a request for more will be generated
+MIN_INBOX_FOR_REQUEST = config["inbox"]["min_inbox_for_request"]
+
+# Increase the pool amount by this number when a user request is granted
+REQUEST_NUMBER = config["inbox"]["request_number"]
+
+# Where Celery looks for new tasks and stores results
+BROKER_URL = config["tasks"]["broker_url"]
+
+# Number of Celery processes to start
+CELERYD_CONCURRENCY = config["tasks"]["concurrency"]
+
+# Subject of email sent to users with their data
+LIBERATION_SUBJECT = config["tasks"]["liberation"]["subject"]
+
+# Body of email sent to users with their data
+LIBERATION_BODY = config["tasks"]["liberation"]["body"]
+
+# Path where liberation data should be stored
+LIBERATION_PATH = os.path.join(BASE_DIR, config["tasks"]["liberation"]["path"])
+
+
+# Databases!
 DATABASES = {
     'default': {
-        'ENGINE': db_dict[db_conf["engine"]],
-        'USER': db_conf["user"],
-        'PASSWORD': db_conf["password"],
-        'HOST': db_conf["host"],
-        'PORT': db_conf["port"],
+        'ENGINE': db_dict[config["database"]["engine"]],
+        'USER': config["database"]["user"],
+        'PASSWORD': config["database"]["password"],
+        'HOST': config["database"]["host"],
+        'PORT': config["database"]["port"],
     }
 }
 
-if db_conf["engine"] == "sqlite":
-    DATABASES["default"]["NAME"] = os.path.join(BASE_DIR, db_conf["name"])
+# "name" is a path for sqlite databases
+if config["database"]["engine"] == "sqlite":
+    DATABASES["default"]["NAME"] = os.path.join(BASE_DIR, config["database"]["name"])
 else:
-    DATABASES["default"]["NAME"] = db_conf["name"]
+    DATABASES["default"]["NAME"] = config["database"]["name"]
 
-## END boxen
+##
+# To override the following settings, create a separate settings module.
+# Import this module, override what you need to and set the environment
+# variable DJANGO_SETTINGS_MODULE to your module. See Django docs for details
+##
 
 if not DEBUG:
+    # These security settings are annoying while debugging
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
@@ -114,11 +168,11 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERYBEAT_SCHEDULE = {
     'statistics':{
         'task':'queue.tasks.statistics',
-        'schedule':timedelta(hours=6),
+        'schedule':datetime.timedelta(hours=6),
     },
     'cleanup':{
         'task':'queue.delete.tasks.clean_orphan_models',
-        'schedule':timedelta(hours=2),
+        'schedule':datetime.timedelta(hours=2),
     },
 }
 
@@ -200,9 +254,9 @@ if DEBUG:
 
 ROOT_URLCONF = 'website.urls'
 
-LOGIN_URL = reverse_lazy("user-login")
-LOGOUT_URL = reverse_lazy("user-logout")
-LOGIN_REDIRECT_URL = reverse_lazy("user-home")
+LOGIN_URL = urlresolvers.reverse_lazy("user-login")
+LOGOUT_URL = urlresolvers.reverse_lazy("user-logout")
+LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'website.wsgi.application'
