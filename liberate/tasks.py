@@ -58,7 +58,7 @@ def liberate(user_id, options=None):
 
     mail_path = os.path.join(path, 'emails')
     # make maildir
-    mailbox.Maildir()
+    mailbox.Maildir(mail_path)
 
     inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id')]
     if len(inbox_tasks) > 0:
@@ -157,16 +157,16 @@ def liberate_convert_box(result, mail_path, options):
 def liberate_fetch_info(result, options):
     """Fetch user info and dump json to files"""
     tags_json = liberate_inbox_tags(options['user'])
-    profile_json = liberate_user_profile(options['user'], result['results'])
+    profile_json = liberate_user_profile(options['user'], result)
 
     with open(os.path.join(options["path"], "profile.json"), "w") as profile:
         profile.write(profile_json)
-    with open(os.path.join(options["path"], "profile.json"), "w") as tags:
+    with open(os.path.join(options["path"], "tags.json"), "w") as tags:
         tags.write(tags_json)
 
 @task(default_retry_delay=600)
 def liberate_tarball(result, options):
-    """Tar up and delete the dir"""
+    """ Tar up and delete the dir """
 
     tar_type = TAR_TYPES[options.get('compression_type', '0')]
     tar_name = "%s.%s" % (options["path"], tar_type["ext"])
@@ -180,7 +180,7 @@ def liberate_tarball(result, options):
     user =  User.objects.get(id=options['user'])
     lib_status = user.liberation
 
-    date = str(lib_status.date())
+    date = str(lib_status.started)
     dir_name = "inboxen-%s" % date
 
     try:
@@ -190,7 +190,7 @@ def liberate_tarball(result, options):
         tar.close()
     rmtree(options["path"])
 
-    return {'path': tar_name, 'results': result}
+    return tar_name
 
 @task(ignore_result=True)
 @transaction.atomic()
@@ -198,18 +198,13 @@ def liberation_finish(result, options):
     """ Create email to send to user """
     user =  User.objects.get(id=options['user'])
     lib_status = user.liberation
-    date = str(lib_status.date())
+    lib_status.flags.running = False
+    lib_status.payload = open(result, "r").read()
+    lib_status.save()
 
-    tags = liberate_inbox_tags(options['user'])
-    profile = liberate_user_profile(options['user'], result['results'])
+    os.remove(result)
 
-    if options["noEmails"]:
-    else:
-        archive = result["path"]
-        pass
-
-    # maybe add a link to the message?
-    message_user(inbox.user, _("Liberation finished! Click <a class=\"alert-link\" href=\"%s\""))
+    message_user(user, _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"#\">here</a>"))
 
     log.info("Finished liberation for %s", options['user'])
 
