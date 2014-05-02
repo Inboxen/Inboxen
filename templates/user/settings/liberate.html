@@ -9,6 +9,11 @@
 {% endblock %}
 
 {% block form %}
+{% if object.flags.running %}
+    <p>{% blocktrans with started=object.started|timesince %}
+        Liberation was started {{ started }} ago.
+    {% endblocktrans %}</p>
+{% else %}
     <form class="form" action="{% url 'user-liberate' %}" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -16,4 +21,5 @@
         </div>
         <button class="btn btn-default">{% trans "Liberate!" %}</button>
     </form>
+{% endif %}
 {% endblock %}

@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 
 from ratelimitbackend.forms import AuthenticationForm
 
+from inboxen import models
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
 from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin
@@ -54,7 +55,10 @@ class DeleteAccountForm(BootstrapFormMixin, forms.Form):
         auth.logout(self.request)
         return self.user
 
-class LiberationForm(BootstrapFormMixin, forms.Form):
+class LiberationForm(BootstrapFormMixin, forms.ModelForm):
+    class Meta:
+        model = models.Inbox
+        fields = []
 
     STORAGE_TYPES = (
         (0, _("Maildir")),

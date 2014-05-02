@@ -25,11 +25,14 @@ from django.contrib import messages
 from website import forms
 from website.views import base
 
-class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
+class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.LiberationForm
     success_url = reverse_lazy('user-home')
     headline = _("Liberate your data")
     template_name = "user/settings/liberate.html"
+
+    def get_object(self, queryset=None):
+        return self.request.user.liberation
 
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super(LiberationView, self).get_form_kwargs(*args, **kwargs)
