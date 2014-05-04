@@ -9,7 +9,7 @@
             </p>
         {% endif %}
     {% endblock %}
-    <ul class="nav nav-pills nav-justified">
+    <ul class="nav nav-pills">
     {% block navpills %}
         <li class="active"><a href="{% url 'user-settings' %}">{% trans "General" %}</a></li>
         <li><a href="{% url 'user-password' %}">{% trans "Change Password" %}</a></li>
