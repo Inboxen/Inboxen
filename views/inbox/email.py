@@ -145,10 +145,13 @@ class EmailView(
             cleaner = Cleaner(page_structure=True, meta=True, links=True,
                        javascript=True, scripts=True, frames=True,
                        embedded=True, safe_attrs_only=True)
+            cleaner.kill_tags = ["style"] # remove style tags, not attrs
+
             try:
                 email_dict["body"] = Premailer(email_dict["body"]).transform()
-            except (PremailerError, SelectorSyntaxError, ExpressionError):
-                cleaner.kill_tags = ["style"]
+            except Exception:
+                # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
+                pass
 
             try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
