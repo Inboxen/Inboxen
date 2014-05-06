@@ -19,12 +19,13 @@
 
 import re
 
+from django.contrib import messages
 from django.utils.translation import ugettext as _
-from lxml.html.clean import Cleaner
-from lxml.etree import LxmlError
-from premailer.premailer import Premailer, PremailerError
 from django.views import generic
-from lxml.cssselect import SelectorSyntaxError, ExpressionError
+
+from lxml.etree import LxmlError
+from lxml.html.clean import Cleaner
+from premailer.premailer import Premailer
 
 from inboxen import models
 from website.views import base
@@ -151,13 +152,18 @@ class EmailView(
                 email_dict["body"] = Premailer(email_dict["body"]).transform()
             except Exception:
                 # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
-                pass
+                messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
             try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
             except LxmlError:
-                email_dict["body"] = ""
+                if plain is not None and len(plain.body.data) > 0:
+                    email_dict["body"] = unicode(str(plain.body.data), plain.charset)
+                else:
+                    email_dict["body"] = ""
+
                 plain_message = True
+                messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
 
         self.headline = email_dict["subject"]
 
