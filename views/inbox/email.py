@@ -23,7 +23,7 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from lxml.etree import LxmlError
+from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
 from premailer.premailer import Premailer
 
@@ -94,6 +94,7 @@ class EmailView(
         email_dict["date"] = self.object.received_date
         email_dict["inbox"] = self.object.inbox
 
+        # iterate over MIME parts
         html = None
         plain = None
         attachments = []
@@ -111,6 +112,7 @@ class EmailView(
                 params = {}
             params.update(dict(HEADER_PARAMS.findall(dispos)))
 
+            # find filename, could be anywhere
             if "filename" in params:
                 part_head["filename"] = params["filename"]
             elif "name" in params:
@@ -118,6 +120,7 @@ class EmailView(
             else:
                 part_head["filename"] = ""
 
+            # grab charset
             part.charset = params.get("charset", "utf-8")
 
             if html is None and part_head["content_type"][0] == "text/html":
@@ -127,8 +130,8 @@ class EmailView(
 
             attachments.append((part, part_head))
 
+        # set raw body
         plain_message = self.find_body(html, plain)
-
         if plain_message is None:
             if len(attachments) == 1:
                 charset = attachments[0][0].charset
@@ -156,7 +159,7 @@ class EmailView(
 
             try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
-            except LxmlError:
+            except etree.LxmlError:
                 if plain is not None and len(plain.body.data) > 0:
                     email_dict["body"] = unicode(str(plain.body.data), plain.charset)
                 else:
