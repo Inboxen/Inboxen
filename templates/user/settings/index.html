@@ -24,12 +24,24 @@
         <form action="{% url 'user-settings' %}" class="form-horizontal" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <div class="col-xs-10">
-                    <div class="checkbox"><label>
-                    <input type="checkbox" id="html-preference" name="html-preference" value="html" {%if htmlpreference %}checked{% endif %}/>
+                <div class="checkbox"><label>
+                <input type="checkbox" id="html-preference" name="html-preference" value="html" {%if htmlpreference %}checked{% endif %}/>
                 {% trans "Prefer HTML emails" %}
                 </label></div>
-                </div>
+            </div>
+            <div class="form-group">
+                <div class="radio"><label>
+                    <input type="radio" name="images" id="ask" value="ask" {% if ask_images %}checked{% endif %}>
+                    {% trans "Always ask to display images" %}
+                </label></div>
+                <div class="radio"><label>
+                    <input type="radio" name="images" id="always" value="always" {% if not ask_images and display_images %}checked{% endif%}>
+                    {% trans "Always display images" %}
+                </label></div>
+                <div class="radio"><label>
+                    <input type="radio" name="images" id="never" value="never" {% if not ask_images and not display_images%}checked{% endif %}>
+                    {% trans "Never display images" %}
+                </label></div>
             </div>
             <div class="form-group">
                 <p>{% trans "Your current username is" %} <strong>{{ user.username }}</strong></p>

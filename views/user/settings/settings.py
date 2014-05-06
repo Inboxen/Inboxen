@@ -28,16 +28,25 @@ def settings(request):
 
     # check their html preferences
     profile = request.user.userprofile
-    html_pref = profile.flags.prefer_html_email
 
     # they submitting it?
     if request.method == "POST":
-        if "html-preference" in request.POST and request.POST["html-preference"] == "html":
-            html_pref = True
-        else:
-            html_pref = False
+        if "html-preference" in request.POST:
+            if request.POST["html-preference"] == "html":
+                profile.flags.prefer_html_email = True
+            else:
+                profile.flags.prefer_html_email = False
 
-        profile.flags.prefer_html_email = html_pref
+        if "images" in request.POST:
+            if request.POST["images"] == "ask":
+                profile.flags.ask_images = True
+            elif request.POST["images"] == "always":
+                profile.flags.display_images = True
+                profile.flags.ask_images = False
+            elif request.POST["images"] == "never":
+                profile.flags.display_images = False
+                profile.flags.ask_images = False
+
         profile.save()
 
         if len(request.POST["username0"]):
@@ -50,7 +59,9 @@ def settings(request):
     context = {
         "headline":_("Settings"),
         "error": error,
-        "htmlpreference": html_pref,
+        "htmlpreference": profile.flags.prefer_html_email,
+        "ask_images": profile.flags.ask_images,
+        "display_images": profile.flags.display_images,
         }
 
     return render(request, "user/settings/index.html", context)

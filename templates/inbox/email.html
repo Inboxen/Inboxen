@@ -11,6 +11,11 @@
 {% endblock %}
 
 {% block content %}
+{% if ask_images %}
+    <p class="alert alert-warning">
+        <a class="alert-link" href="{{ request.path }}?imgDisplay=1">{% trans "Click here to view images" %}</a>
+    </p>
+{% endif %}
 <strong>{% trans "From" %}</strong>: {{ email.from }} <br />
 <strong>{% trans "Received" %}</strong>: <span title="{{ email.date|date:"r" }}">{{ email.date|timesince }} {% trans "ago" %}</span>
 <br />

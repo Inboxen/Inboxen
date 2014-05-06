@@ -170,11 +170,33 @@ class EmailView(
 
         self.headline = email_dict["subject"]
 
+        # GET params for users with `ask_image` set in their profile
+        if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
+            img_display = True
+            ask_images = False
+        elif self.request.user.userprofile.flags.ask_images:
+            img_display = False
+            ask_images = True
+        else:
+            img_display = self.request.user.userprofile.flags.display_images
+            ask_images = False
+
+        # filter images if we need to
+        if not img_display and not plain_message:
+            tree = lxml_html.fromstring(email_dict["body"])
+            for img in tree.findall(".//img"):
+                try:
+                    del img.attrib["src"]
+                except KeyError:
+                    pass
+            email_dict["body"] = etree.tostring(tree)
+
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
                         "email": email_dict,
                         "plain_message": plain_message,
                         "attachments": attachments,
+                        "ask_images": ask_images,
                         })
 
         return context
