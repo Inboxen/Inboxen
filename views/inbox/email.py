@@ -51,7 +51,8 @@ class EmailView(
         queryset = queryset.filter(
                                     inbox__user=self.request.user,
                                     inbox__inbox=self.kwargs["inbox"],
-                                    inbox__domain__domain=self.kwargs["domain"]
+                                    inbox__domain__domain=self.kwargs["domain"],
+                                    flags=~models.Email.flags.deleted
                                     ).select_related("inbox", "inbox__domain")
         return queryset
 

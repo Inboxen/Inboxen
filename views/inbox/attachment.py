@@ -30,7 +30,9 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
     file_status = 200
 
     def get_object(self):
-        return models.PartList.objects.select_related('body').get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
+        qs = models.PartList.objects.select_related('body')
+        qs = qs.filter(email__flags=~models.Email.flags.deleted)
+        return qs.get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
 
     def get(self, *args, **kwargs):
         if kwargs.get("method", "download") == "download":

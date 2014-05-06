@@ -45,6 +45,7 @@ class InboxView(
 
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(flags=~models.Email.flags.deleted)
         qs = qs.order_by("-received_date").select_related("inbox", "inbox__domain")
         return qs
 
