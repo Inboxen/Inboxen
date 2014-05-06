@@ -35,5 +35,9 @@
         <p class="small"><a id="#note-1">[1]</a> slightly less than that, it's currently 2<sup>64</sup>-1</p>
     </div>
 </div>
-<div style="padding-top: 25px; text-align: center"><a href="{% url 'user-status' %}" class="btn btn-large btn-primary">Join</a></div>
+{% if settings.ENABLE_REGISTRATION %}
+    <div style="padding-top: 25px; text-align: center">
+        <a href="{% url 'user-status' %}" class="btn btn-large btn-primary">Join</a>
+    </div>
+{% endif %}
 {% endblock %}

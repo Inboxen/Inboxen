@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django.conf import settings, urls
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
@@ -44,6 +44,17 @@ urlpatterns = urls.patterns('',
     urls.url(r'^blog/(?P<page>\d+)', 'website.views.blog.view.view', name='blog'),
     urls.url(r'^blog/', 'website.views.blog.view.view', name='blog'),
 
+    urls.url(r'^inbox/add/', views.InboxAddView.as_view(), name='inbox-add'),
+    urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxEditView.as_view(), name='inbox-edit'),
+    urls.url(r'^inbox/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxDeletionView.as_view(), name='inbox-delete'),
+
+    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', views.AttachmentDownloadView.as_view(), name='email-attachment'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)', views.EmailView.as_view(), name='email-view'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)', views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/(?P<page>\d+)', views.UnifiedInboxView.as_view(), name='unified-inbox'),
+    urls.url(r'^inbox', views.UnifiedInboxView.as_view(), name='unified-inbox'),
+
     urls.url(r'^user/login/', 'ratelimitbackend.views.login',
         {
             'template_name': 'user/login.html',
@@ -54,9 +65,6 @@ urlpatterns = urls.patterns('',
         },
         name='user-login',
     ),
-    urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/register/software-status.html', headline=_('We\'re not stable!')), name='user-status'),
-    urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', headline=_('Welcome!')), name='user-success'),
-    urls.url(r'^user/register/', views.UserRegistrationView.as_view(), name='user-registration'),
     urls.url(r'^user/home/(?P<page>\d+)', views.UserHomeView.as_view(), name='user-home-pages'),
     urls.url(r'^user/home', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/settings/liberate', views.LiberationView.as_view(), name='user-liberate'),
@@ -74,15 +82,11 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/settings/delete', views.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^user/settings/', 'website.views.user.settings.settings.settings', name='user-settings'),
     urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
-
-    urls.url(r'^inbox/add/', views.InboxAddView.as_view(), name='inbox-add'),
-    urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxEditView.as_view(), name='inbox-edit'),
-    urls.url(r'^inbox/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxDeletionView.as_view(), name='inbox-delete'),
-
-    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', views.AttachmentDownloadView.as_view(), name='email-attachment'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)', views.EmailView.as_view(), name='email-view'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)', views.SingleInboxView.as_view(), name='single-inbox'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.SingleInboxView.as_view(), name='single-inbox'),
-    urls.url(r'^inbox/(?P<page>\d+)', views.UnifiedInboxView.as_view(), name='unified-inbox'),
-    urls.url(r'^inbox', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 )
+
+if settings.ENABLE_REGISTRATION:
+    urlpatterns += urls.patterns('',
+        urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/register/software-status.html', headline=_('We\'re not stable!')), name='user-status'),
+        urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', headline=_('Welcome!')), name='user-success'),
+        urls.url(r'^user/register/', views.UserRegistrationView.as_view(), name='user-registration'),
+    )
