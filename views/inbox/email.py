@@ -171,7 +171,11 @@ class EmailView(
         self.headline = email_dict["subject"]
 
         # GET params for users with `ask_image` set in their profile
-        if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
+        if plain_message:
+            # bypass image scrubber
+            img_display = True
+            ask_images = False
+        elif "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
             img_display = True
             ask_images = False
         elif self.request.user.userprofile.flags.ask_images:
@@ -182,7 +186,7 @@ class EmailView(
             ask_images = False
 
         # filter images if we need to
-        if not img_display and not plain_message:
+        if not img_display:
             tree = lxml_html.fromstring(email_dict["body"])
             for img in tree.findall(".//img"):
                 try:
