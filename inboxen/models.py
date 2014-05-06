@@ -53,10 +53,18 @@ class BlogPost(models.Model):
         return u"%s%s" % (self.date, draft)
 
 class UserProfile(models.Model):
-    """This is auto-created when accessed via a RelatedManager"""
+    """This is auto-created when accessed via a RelatedManager
+
+    Flag definitions are as follows, order !!important!!:
+    prefer_html_email - if we have both HTML and plaintext available, prefer
+                        HTML if set, prefer plain if not
+    unified_has_new_messages - controls the display of the `new` badge on the Unified inbox
+    ask_images - should we offer to enable image display for HTML emails?
+    display_images - should we display images in HTML emails by default? Implies we should never ask
+    """
     user = AutoOneToOneField(User, primary_key=True)
     pool_amount = models.IntegerField(default=500)
-    flags = BitField(flags=("prefer_html_email","unified_has_new_messages"), default=1)
+    flags = BitField(flags=("prefer_html_email","unified_has_new_messages","ask_images","display_images"), default=5)
 
     def available_inboxes(self):
         used = self.user.inbox_set.count()
