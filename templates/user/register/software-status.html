@@ -13,12 +13,12 @@
         </ul>
 
     <br />
-    {% blocktrans %} Please only continue if you accept these could occur while using this software. We're constantly working on {{ SITE_NAME}}, in the future the risks will be much lower and we will have a stable, reliable service.{% endblocktrans %}
+    {% blocktrans %} Please only continue if you accept these could occur while using this software. We're constantly working on {{ SITE_NAME}}, in the future the risks will be much lower and we will have a stable, reliable service.{% endblocktrans %}<p>
 
-    <br />
-    <br />
-    <a href="{% url 'index' %}" class="btn btn-default">{% trans "I'll return when you're stable" %}</a>
-    <a href="{% url 'user-registration' %}" class="btn btn-primary">{% trans "I accept! Let me join!" %}</a>
+    <div class="text-center">
+        <a href="{% url 'index' %}" class="btn btn-default">{% trans "I'll return when you're stable" %}</a>
+        <a href="{% url 'user-registration' %}" class="btn btn-primary">{% trans "I accept! Let me join!" %}</a>
+    </div>
 </div>
 </div>
 {% endblock %}
