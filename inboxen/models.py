@@ -153,7 +153,7 @@ class Tag(models.Model):
     Object manager has a from_string() method that returns Tag objects from a
     string.
     """
-    tag = models.CharField(max_length=256)
+    tag = models.CharField(max_length=256, db_index=True)
     inbox = models.ForeignKey(Inbox, on_delete=models.CASCADE)
 
     objects = TagManager()
