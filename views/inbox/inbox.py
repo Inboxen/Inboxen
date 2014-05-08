@@ -29,7 +29,7 @@ from website.views import base
 from queue.tasks import deal_with_flags
 from queue.delete.tasks import delete_email
 
-__all__ = ["UnifiedInboxView", "SingleInboxView"]
+__all__ = ["UnifiedInboxView", "SingleInboxView", "TaggedInboxView"]
 
 class InboxView(
                 base.CommonContextMixin,
@@ -140,5 +140,36 @@ class SingleInboxView(InboxView):
         if self.inbox_obj.flags.new:
             self.inbox_obj.flags.new = False
             self.inbox_obj.save()
+
+        return context
+
+class TaggedInboxView(InboxView):
+    """View all inboxes belonging to a set of tags"""
+    def get_success_url(self):
+        return reverse('tagged-inbox', kwargs={"tags": self.kwargs["tags"]})
+
+    def filter_tags(self):
+        """Returns OR'd tags from the tags in kwargs["tags"]"""
+        tags = self.kwargs["tags"]
+
+        if "," in tags:
+            tags = tags.split(",")
+        else:
+            tags = tags.split(" ")
+
+        q_objs = Q(id=None) # This Q object will return nothing if there are no tags
+        for tag in tags:
+           q_objs = q_objs | Q(inbox__tag__tag__icontains=tag)
+
+        return q_objs
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super(TaggedInboxView, self).get_queryset(*args, **kwargs)
+        return qs.filter(self.filter_tags())
+
+    def get_context_data(self, *args, **kwargs):
+        self.headline = _("Inbox for {tags}").format(tags=self.kwargs["tags"])
+        context = super(TaggedInboxView, self).get_context_data(*args, **kwargs)
+        context.update({"tags": self.kwargs["tags"]})
 
         return context
