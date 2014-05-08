@@ -9,8 +9,10 @@
         {% else %}
             {% if tags %}
                 <li><a href="{% url "tagged-home" tags=tags %}">{{ tags }}</a></li>
+                <li class="active">{% trans "Tag Inbox" %}</li>
+            {% else %}
+                <li class="active">{% trans "Unified Inbox" %}</li>
             {% endif %}
-            <li class="active">{% trans "Unified Inbox" %}</li>
         {% endif %}
     </ul>
 {% endblock %}

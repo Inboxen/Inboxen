@@ -38,8 +38,15 @@
             </tr>
             </thead>
             <tr class="warning">
-                <td><a href="{% if tags %}{% url 'tagged-inbox' tags=tags %}{% else %}{% url 'unified-inbox' %}{% endif %}">{% trans "Unified" %}</a>
-                    {% if user.userprofile.flags.unified_has_new_messages %}<span class="badge" title="{% trans "New messages" %}">{% trans "New" %}</span>{% endif %}
+                <td>
+                    {% if tags %}
+                        <a href="{% url 'tagged-inbox' tags=tags %}">{% trans "Tag Inbox" %}</a>
+                    {% else %}
+                        <a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a>
+                        {% if user.userprofile.flags.unified_has_new_messages %}
+                            <span class="badge" title="{% trans "New messages" %}">{% trans "New" %}</span>
+                        {% endif %}
+                    {% endif %}
                 </td>
                 <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
                 <td>&nbsp;</td>
@@ -50,8 +57,13 @@
             {% for inbox in page_obj.object_list %}
 
                 <tr>
-                    <td><a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">{{ inbox.inbox }}@{{ inbox.domain.domain }}</a>
-                    {% if inbox.flags.new %}<span class="badge" title="{% trans "New messages" %}">{% trans "New" %}</span>{% endif %}
+                    <td>
+                        <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                            {{ inbox.inbox }}@{{ inbox.domain.domain }}
+                        </a>
+                        {% if inbox.flags.new %}
+                            <span class="badge" title="{% trans "New messages" %}">{% trans "New" %}</span>
+                        {% endif %}
                     </td>
                     <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
                     {% if inbox.tags %}
@@ -59,8 +71,12 @@
                     {% else %}
                         <td>&nbsp;</td>
                     {% endif %}
-                    <td><a class="close edit" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">&#9997;</a></td>
-                    <td><a title="{% trans "Delete Inbox" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">&times;</a></td>
+                    <td>
+                        <a class="close edit" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">&#9997;</a>
+                    </td>
+                    <td>
+                        <a title="{% trans "Delete Inbox" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">&times;</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
