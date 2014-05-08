@@ -7,6 +7,9 @@
         {% if inbox %}
             <li class="active">{{ inbox }}@{{ domain }}</li>
         {% else %}
+            {% if tags %}
+                <li><a href="{% url "tagged-home" tags=tags %}">{{ tags }}</a></li>
+            {% endif %}
             <li class="active">{% trans "Unified Inbox" %}</li>
         {% endif %}
     </ul>
@@ -19,11 +22,13 @@
 {% else %}
     {% if inbox %}
         {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
+    {% elif tags %}
+        {% url "tagged-inbox" tags=tags as inbox_url %}
     {% else %}
         {% url 'unified-inbox' as inbox_url %}
     {% endif %}
     <div class="table-responsive">
-        <form action="{{ inbox_url}}/{{ page_obj.number }}" method="POST">
+        <form action="{{ inbox_url}}{{ page_obj.number }}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="read">{% trans "Mark as read" %}</button>
         <button class="btn btn-default" type="submit" name="unread">{% trans "Mark as unread" %}</button>
@@ -64,11 +69,11 @@
     </div>
     <ul class="pager">
         {% if page_obj.has_previous %}
-            <li class="previous"><a href="{{ inbox_url }}/{{ page_obj.previous_page_number }}">&laquo;</a></li>
+            <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}">&laquo;</a></li>
         {% endif %}
 
         {% if page_obj.has_next %}
-            <li class="next"><a href="{{ inbox_url }}/{{ page_obj.next_page_number }}">&raquo;</a></li>
+            <li class="next"><a href="{{ inbox_url }}{{ page_obj.next_page_number }}">&raquo;</a></li>
         {% endif %}
     </ul>
 {% endif %}

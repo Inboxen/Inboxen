@@ -20,7 +20,7 @@
 
 from django.utils.translation import ugettext as _
 from django.views import generic
-from django.db.models import F
+from django.db.models import F, Q
 
 from inboxen import models
 from website.views import base
@@ -37,7 +37,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     def get_queryset(self):
         queryset = self.request.user.inbox_set.filter(flags=~models.Inbox.flags.deleted)
         queryset = queryset.select_related("domain")
-        return queryset.order_by("-created")
+        return queryset.order_by("-created").distinct()
 
     def get_tags(self, inboxes):
         """Get tags in one shot"""
@@ -62,18 +62,22 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
 
 class TaggedHomeView(UserHomeView):
     """Same as UserHomeView, but limited to a tag set"""
+
     def filter_tags(self):
         """Returns OR'd tags from the tags in kwargs["tags"]"""
-        tags = self.kwargs["tags"]
+        if not hasattr(self, "tags"):
+            self.tags = self.kwargs.get("tags", "") or self.request.GET.get("tags", "")
 
-        if "," in tags:
-            tags = tags.split(",")
+        if "," in self.tags:
+            tags = self.tags.split(",")
+        elif " " in self.tags:
+            tags = self.tags.split(" ")
         else:
-            tags = tags.split(" ")
+            tags = [self.tags]
 
         q_objs = Q(id=None) # This Q object will return nothing if there are no tags
         for tag in tags:
-           q_objs = q_objs | Q(tag__tag__icontains=tag)
+           q_objs = q_objs | Q(tag__tag__icontains=tag.strip())
 
         return q_objs
 
@@ -82,4 +86,8 @@ class TaggedHomeView(UserHomeView):
         return qs.filter(self.filter_tags())
 
     def get_context_data(self, *args, **kwargs):
-        self.headline = self.kwargs["tags"]
+        self.headline = self.tags
+        context = super(TaggedHomeView, self).get_context_data(*args, **kwargs)
+        context.update({"tags": self.tags})
+
+        return context

@@ -3,14 +3,12 @@ html {
   min-height: 100%;
 }
 body {
-  /* Margin bottom by footer height */
   margin-bottom: 30px;
 }
 #footer {
   position: absolute;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
   height: 30px;
 }
 
@@ -19,7 +17,8 @@ body {
     border-collapse:collapse;
     -webkit-border-radius:4px;
     -moz-border-radius:4px;
-    border-radius:4px
+    border-radius:4px;
+    margin-top: 20px;
 }
 
 .inherit-colour {

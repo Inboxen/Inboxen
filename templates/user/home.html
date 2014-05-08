@@ -4,12 +4,24 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li class="active">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</li>
+        <li {% if tags %}><a href="{% url "user-home" %}"{% else %}class="active"{% endif %}>{% blocktrans %}{{ user }}'s Home{% endblocktrans %}{% if tags %}</a>{% endif %}</li>
+        {% if tags %}
+            <li class="active">{{ tags }}</li>
+        {% endif %}
     </ul>
 {% endblock %}
 
 {% block content %}
-
+    <div class="row">
+        <form class="form col-sm-4 col-sm-offset-8 col-md-3 col-md-offset-9 col-lg-2 col-lg-offset-10" method="GET" action="{% url 'tagged-home' %}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="tags" placeholder="Tag1, Tag2, ...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default">{% trans 'Search' %}</button>
+                </span>
+            </div>
+        </form>
+    </div>
     {% if not page_obj.object_list %}
         <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
     {% else %}
@@ -25,7 +37,7 @@
             </tr>
             </thead>
             <tr class="warning">
-                <td><a href="{% url 'unified-inbox' %}">{% trans "Unified" %}</a>
+                <td><a href="{% if tags %}{% url 'tagged-inbox' tags=tags %}{% else %}{% url 'unified-inbox' %}{% endif %}">{% trans "Unified" %}</a>
                     {% if user.userprofile.flags.unified_has_new_messages %}<span class="badge" title="{% trans "New messages" %}">{% trans "New" %}</span>{% endif %}
                 </td>
                 <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
@@ -52,13 +64,18 @@
             {% endfor %}
         </table>
         </div>
+        {% if tags %}
+            {% url "tagged-home" tags=tags as inbox_url %}
+        {% else %}
+            {% url 'unified-inbox' as inbox_url %}
+        {% endif %}
         <ul class="pager">
             {% if page_obj.has_previous %}
-                <li class="previous"><a href="{% url 'user-home' %}/{{ page_obj.previous_page_number }}">&laquo;</a></li>
+                <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}">&laquo;</a></li>
             {% endif %}
 
             {% if page_obj.has_next %}
-                <li class="next"><a href="{% url 'user-home' %}/{{ page_obj.next_page_number }}">&raquo;</a></li>
+                <li class="next"><a href="{{ inbox_url }}{{ page_obj.next_page_number }}">&raquo;</a></li>
             {% endif %}
         </ul>
     {% endif %}

@@ -46,7 +46,7 @@ class InboxView(
         raise NotImplementedError
 
     def get_queryset(self, *args, **kwargs):
-        qs = super(InboxView, self).get_queryset(*args, **kwargs)
+        qs = super(InboxView, self).get_queryset(*args, **kwargs).distinct()
         qs = qs.filter(inbox__user=self.request.user, flags=~models.Email.flags.deleted)
         qs = qs.order_by("-received_date").select_related("inbox", "inbox__domain")
         return qs
@@ -159,7 +159,7 @@ class TaggedInboxView(InboxView):
 
         q_objs = Q(id=None) # This Q object will return nothing if there are no tags
         for tag in tags:
-           q_objs = q_objs | Q(inbox__tag__tag__icontains=tag)
+           q_objs = q_objs | Q(inbox__tag__tag__icontains=tag.strip())
 
         return q_objs
 
