@@ -47,9 +47,10 @@ def START(message, inbox=None, domain=None):
         inbox.flags.new = True
         inbox.save()
 
-        profile = inbox.user.userprofile
-        profile.flags.unified_has_new_messages = True
-        profile.save()
+        if not inbox.flags.exclude_from_unified:
+            profile = inbox.user.userprofile
+            profile.flags.unified_has_new_messages = True
+            profile.save()
 
     except DatabaseError, e:
         log.debug("DB error: %s", e)
