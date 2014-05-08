@@ -109,6 +109,11 @@ class UnifiedInboxView(InboxView):
     def get_success_url(self):
         return reverse('unified-inbox')
 
+    def get_queryset(self, *args, **kwargs):
+        qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
+        qs = qs.filter(inbox__flags=~models.Inbox.flags.exclude_from_unified)
+        return qs
+
     def get_context_data(self, *args, **kwargs):
         self.headline = _("Inbox")
         profile = self.request.user.userprofile

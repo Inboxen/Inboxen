@@ -29,6 +29,7 @@ from website.forms.mixins import BootstrapFormMixin
 class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
     tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
+    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified inbox"))
 
     def __init__(self, request, initial=None, *args, **kwargs):
         self.request = request # needed to create the inbox
@@ -52,15 +53,20 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
         # which is created just by model(**data)
         data = self.cleaned_data.copy()
         tags = data.pop("tags")
+        excludes = data.pop("exclude_from_unified", False)
+
         self.instance = self.request.user.inbox_set.create(**data)
-        models.Tag.objects.from_string(tags=tags, inbox=self.instance)
+        self.instance.flags.exclude_from_unified = excludes
         self.instance.save()
+
+        models.Tag.objects.from_string(tags=tags, inbox=self.instance)
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
 class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
     tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
+    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified inbox"))
 
     class Meta:
         model = models.Inbox
@@ -68,7 +74,10 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
     def __init__(self, initial=None, instance=None, *args, **kwargs):
         if not initial:
-            initial = {"tags": ", ".join([str(tag) for tag in models.Tag.objects.filter(inbox=instance)])}
+            initial = {
+                "tags": ", ".join([str(tag) for tag in models.Tag.objects.filter(inbox=instance)]),
+                "exclude_from_unified": bool(instance.flags.exclude_from_unified),
+            }
 
         return super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
 
@@ -81,5 +90,8 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
             tags=self.cleaned_data.get("tags"),
             inbox=self.instance
         )
+        data = self.cleaned_data.copy()
+        self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False) 
+        self.instance.save()
 
         return self.instance

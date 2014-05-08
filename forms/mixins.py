@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.forms import widgets
+
 class BootstrapFormMixin(object):
     """Mixin for add CSS classes to Django forms
 
@@ -25,7 +27,8 @@ class BootstrapFormMixin(object):
     def __init__(self, *args, **kwargs):
         output = super(BootstrapFormMixin, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs.update({"class": "form-control"})
+            if not isinstance(field.widget, widgets.CheckboxInput):
+                field.widget.attrs.update({"class": "form-control"})
         return output
 
 class PlaceHolderMixin(object):
