@@ -37,8 +37,8 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
         queryset = queryset.select_related("domain")
         return queryset.order_by("-created")
 
-    def process_messages(self, inboxes):
-        """Get tags"""
+    def get_tags(self, inboxes):
+        """Get tags in one shot"""
         if len(inboxes) == 0:
             return
 
@@ -55,5 +55,5 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
 
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
-        self.process_messages(context["page_obj"].object_list)
+        self.get_tags(context["page_obj"].object_list)
         return context
