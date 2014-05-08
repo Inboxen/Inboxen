@@ -29,6 +29,8 @@ from website.views import base
 from queue.tasks import deal_with_flags
 from queue.delete.tasks import delete_email
 
+__all__ = ["UnifiedInboxView", "SingleInboxView"]
+
 class InboxView(
                 base.CommonContextMixin,
                 base.LoginRequiredMixin,
@@ -45,7 +47,7 @@ class InboxView(
 
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.filter(flags=~models.Email.flags.deleted)
+        qs = qs.filter(inbox__user=self.request.user, flags=~models.Email.flags.deleted)
         qs = qs.order_by("-received_date").select_related("inbox", "inbox__domain")
         return qs
 
@@ -107,11 +109,6 @@ class UnifiedInboxView(InboxView):
     def get_success_url(self):
         return reverse('unified-inbox')
 
-    def get_queryset(self, *args, **kwargs):
-        qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.filter(inbox__user=self.request.user)
-        return qs
-
     def get_context_data(self, *args, **kwargs):
         self.headline = _("Inbox")
         profile = self.request.user.userprofile
@@ -121,7 +118,7 @@ class UnifiedInboxView(InboxView):
 
         return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
 
-class SingleInboxView(UnifiedInboxView):
+class SingleInboxView(InboxView):
     """View a single inbox"""
     def get_success_url(self):
         return reverse('single-inbox', kwargs={"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
@@ -137,7 +134,7 @@ class SingleInboxView(UnifiedInboxView):
 
     def get_context_data(self, *args, **kwargs):
         self.headline = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
-        context = super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
+        context = super(SingleInboxView, self).get_context_data(*args, **kwargs)
         context.update({"inbox":self.kwargs["inbox"], "domain":self.kwargs["domain"]})
 
         if self.inbox_obj.flags.new:

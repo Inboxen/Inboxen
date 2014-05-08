@@ -32,6 +32,8 @@ from website.views import base
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
+__all__ = ["EmailView"]
+
 class EmailView(
                 base.CommonContextMixin,
                 base.LoginRequiredMixin,

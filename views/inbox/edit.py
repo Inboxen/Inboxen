@@ -25,6 +25,8 @@ from website import forms
 from website.views import base
 from inboxen.models import Inbox
 
+__all__ = ["InboxEditView"]
+
 class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.InboxEditForm
     template_name = "inbox/edit.html"

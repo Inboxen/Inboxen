@@ -28,6 +28,8 @@ from queue.delete.tasks import delete_inbox
 from website import forms
 from website.views import base
 
+__all__ = ["InboxDeletionView"]
+
 class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DeleteView):
     model = models.Inbox
     success_url = reverse_lazy('user-home')

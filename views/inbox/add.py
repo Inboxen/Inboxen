@@ -33,6 +33,8 @@ from inboxen.models import Inbox
 from website import forms
 from website.views import base
 
+__all__ = ["InboxAddView"]
+
 class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
     headline = _("Add Inbox")
     success_url = reverse_lazy('user-home')
