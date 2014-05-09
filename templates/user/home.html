@@ -13,7 +13,12 @@
 
 {% block content %}
     <div class="row">
-        <form class="form col-sm-4 col-sm-offset-8 col-md-3 col-md-offset-9 col-lg-2 col-lg-offset-10" method="GET" action="{% url 'tagged-home' %}">
+        <form
+            class="form col-sm-4 col-sm-offset-8 col-md-3 col-md-offset-9 col-lg-2 col-lg-offset-10"
+            method="GET"
+            action="{% url 'tagged-home' %}"
+            onsubmit='window.location="{% url 'tagged-home' %}"+this.tags.value; return false;'
+        >
             <div class="input-group">
                 <label class="sr-only">{% trans "Search for inboxes by tag" %}</label>
                 <input type="text" class="form-control" name="tags" placeholder="Tag1, Tag2, ...">
