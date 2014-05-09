@@ -31,11 +31,10 @@ def settings(request):
 
     # they submitting it?
     if request.method == "POST":
-        if "html-preference" in request.POST:
-            if request.POST["html-preference"] == "html":
-                profile.flags.prefer_html_email = True
-            else:
-                profile.flags.prefer_html_email = False
+        if request.POST.get("html-preference", "") == "html":
+            profile.flags.prefer_html_email = True
+        else:
+            profile.flags.prefer_html_email = False
 
         if "images" in request.POST:
             if request.POST["images"] == "ask":
