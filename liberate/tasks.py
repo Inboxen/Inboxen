@@ -249,12 +249,8 @@ def liberate_user_profile(user_id, email_results, date):
 
     # user's preferences
     profile = user.userprofile
-    if profile.flags.prefer_html_email:
-        data['preferences']['html_preference'] = 'Prefer HTML'
-    else:
-        data['preferences']['html_preference'] = 'Prefer plain-text'
-
     data['preferences']['pool_amount'] = profile.pool_amount
+    data['preferences']['flags'] = dict(profile.flags.items())
 
     # user data
     data["id"] = user.id
@@ -288,9 +284,9 @@ def liberate_inbox_tags(user_id, date):
         email = "%s@%s" % (inbox.inbox, inbox.domain)
         tags = [tag.tag for tag in Tag.objects.filter(inbox=inbox)]
         data[email] = {
-            "created":inbox.created.isoformat(),
-            "deleted":bool(inbox.flags.deleted),
-            "tags":tags,
+            "created": inbox.created.isoformat(),
+            "flags": dict(inbox.flags.items()),
+            "tags": tags,
         }
 
     data = json.dumps(data)
