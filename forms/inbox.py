@@ -29,7 +29,7 @@ from website.forms.mixins import BootstrapFormMixin
 class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
     tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
-    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified inbox"))
+    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     def __init__(self, request, initial=None, *args, **kwargs):
         self.request = request # needed to create the inbox
@@ -66,7 +66,7 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
     tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
-    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified inbox"))
+    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     class Meta:
         model = models.Inbox
