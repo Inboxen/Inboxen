@@ -21,7 +21,7 @@
     <div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
     <div class="panel-body">
     {% block form %}
-        <form action="{% url 'user-settings' %}" class="form-horizontal" method="POST">
+        <form action="{% url 'user-settings' %}" class="form" method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <div class="checkbox"><label>
@@ -50,10 +50,8 @@
                 <label class="sr-only" for="username1">{% trans "Confirm Username" %}</label>
                 <input class="form-control" id="username1" name="username1" type="text" placeholder="{% trans "Confirm Username" %}" />
             </div>
-            <div class="form-group col-xs-12">
-                <button class="btn btn-primary">{% trans "Save" %}</button>
-                <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Cancel" %}</a>
-            </div>
+            <button class="btn btn-primary">{% trans "Save" %}</button>
+            <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Cancel" %}</a>
         </form>
     {% endblock %}
     </div>

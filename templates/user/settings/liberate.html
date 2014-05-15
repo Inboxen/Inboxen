@@ -11,9 +11,19 @@
 {% block form %}
 {% if object.flags.running %}
     <p>{% blocktrans with started=object.started|timesince %}
-        Liberation was started {{ started }} ago.
+        Liberation was requested {{ started }} ago and is still pending. Please wait…
     {% endblocktrans %}</p>
 {% else %}
+    {% if object.last_finished %}
+    <div class="panel panel-primary">
+        <div class="panel-body">
+            <p>{% blocktrans with finished=object.last_finished|timesince %}
+                Your data is available for download. It was generated {{ finished }} ago.
+            {% endblocktrans %}</p>
+            <a class="btn btn-primary" href="{% url 'user-liberate-get' %}">{% trans "Download" %}</a>
+        </div>
+    </div>
+    {% endif %}
     <form class="form" action="{% url 'user-liberate' %}" method="POST">
         {% csrf_token %}
         <div class="form-group">

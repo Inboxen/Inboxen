@@ -17,13 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
-from django.utils.translation import ugettext as _
-from django.core.urlresolvers import reverse_lazy
+from django import http
 from django.contrib import messages
+from django.core.urlresolvers import reverse_lazy
+from django.utils.translation import ugettext as _
+from django.views import generic
 
+from inboxen import models
+from queue.liberate.tasks import TAR_TYPES
 from website import forms
 from website.views import base
+
+__all__ = ["LiberationView", "LiberationDownloadView"]
 
 class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.LiberationForm
@@ -43,3 +48,23 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
         form.save()
         messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
         return super(LiberationView, self).form_valid(form, *args, **kwargs)
+
+class LiberationDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
+    def get_object(self):
+        return self.request.user.liberation
+
+    def render_to_response(self, context):
+        content_type = TAR_TYPES[str(self.object.content_type)]["mime-type"]
+
+        disposition = "attachment; filename=liberated_data.{ext}"
+        disposition = disposition.format(ext=TAR_TYPES[str(self.object.content_type)]["ext"])
+
+        response = http.HttpResponse(
+            content=self.object.payload,
+            status=200
+        )
+
+        response["Content-Length"] = len(self.object.payload)
+        response["Content-Disposition"] = disposition
+        response["Content-Type"] = content_type
+        return response
