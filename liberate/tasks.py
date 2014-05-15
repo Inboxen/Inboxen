@@ -11,8 +11,10 @@ from datetime import datetime
 from shutil import rmtree
 
 from django.conf import settings
+from django.core import urlresolvers
 from django.db import transaction
 from django.utils.translation import ugettext as _
+from django.utils import safestring
 
 from celery import task, chain, group, chord
 from pytz import utc
@@ -200,11 +202,15 @@ def liberation_finish(result, options):
     lib_status = user.liberation
     lib_status.flags.running = False
     lib_status.payload = open(result, "r").read()
+    lib_status.last_finished = datetime.now(utc)
+    lib_status.content_type = int(options.get('compression_type', '0'))
+
     lib_status.save()
 
     os.remove(result)
 
-    message_user(user, _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"#\">here</a>"))
+    message = _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"%s\">here</a>")
+    message_user(user, safestring.mark_safe(message % urlresolvers.reverse("user-liberate-get")))
 
     log.info("Finished liberation for %s", options['user'])
 
