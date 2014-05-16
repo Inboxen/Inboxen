@@ -121,13 +121,7 @@ BROKER_URL = config["tasks"]["broker_url"]
 # Number of Celery processes to start
 CELERYD_CONCURRENCY = config["tasks"]["concurrency"]
 
-# Subject of email sent to users with their data
-LIBERATION_SUBJECT = config["tasks"]["liberation"]["subject"]
-
-# Body of email sent to users with their data
-LIBERATION_BODY = config["tasks"]["liberation"]["body"]
-
-# Path where liberation data should be stored
+# Path where liberation data is temporarily stored
 LIBERATION_PATH = os.path.join(BASE_DIR, config["tasks"]["liberation"]["path"])
 
 

@@ -27,6 +27,7 @@ from django.utils.encoding import smart_str
 
 from annoying.fields import AutoOneToOneField
 from bitfield import BitField
+from django_extensions.db.fields import UUIDField
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 
@@ -99,6 +100,20 @@ class Statistic(models.Model):
     active_count = models.IntegerField()
     new_count = models.IntegerField()
     date = models.DateTimeField('date')
+
+class Liberation(models.Model):
+    """Liberation data
+
+    `payload` is the compressed archive - it is not base64 encoded
+    `async_result` is the UUID of Celery result object, which may or may not be valid
+    """
+    user = AutoOneToOneField(User, primary_key=True)
+    flags = BitField(flags=("running", "errored"), default=0)
+    payload = models.BinaryField(null=True)
+    content_type = models.PositiveSmallIntegerField(default=0)
+    async_result = UUIDField(auto=False, null=True)
+    started = models.DateTimeField(null=True)
+    last_finished = models.DateTimeField(null=True)
 
 ##
 # Inbox models
