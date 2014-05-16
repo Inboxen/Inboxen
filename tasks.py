@@ -34,10 +34,11 @@ def statistics():
 @task(ignore_result=True)
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
-    emails = Email.objects.order_by("-received_date").filter(inbox__flags=~Inbox.flags.exclude_from_unified, inbox__user__id=user_id)
+    emails = Email.objects.order_by("-received_date").only('id')
+    emails = emails.filter(inbox__user__id=user_id, inbox__flags=~Inbox.flags.exclude_from_unified)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
-    emails = emails[:100] # number of emails on page
+    emails = [email.id for email in emails[:100]] # number of emails on page
     emails = Email.objects.filter(id__in=emails, flags=~Email.flags.seen)
 
     # if some emails haven't been seen yet, we have nothing else to do
