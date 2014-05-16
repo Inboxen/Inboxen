@@ -45,9 +45,9 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
         return kwargs
 
     def form_valid(self, form, *args, **kwargs):
-        form.save()
+        output = super(LiberationView, self).form_valid(form, *args, **kwargs)
         messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
-        return super(LiberationView, self).form_valid(form, *args, **kwargs)
+        return output
 
 class LiberationDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):

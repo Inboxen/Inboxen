@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime
+
 from django import forms
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordChangeForm
@@ -24,6 +26,7 @@ from django.core import exceptions
 from django.utils.translation import ugettext as _
 
 from ratelimitbackend.forms import AuthenticationForm
+from pytz import utc
 
 from inboxen import models
 from queue.delete.tasks import delete_account
@@ -86,8 +89,19 @@ class LiberationForm(BootstrapFormMixin, forms.ModelForm):
         return super(LiberationForm, self).__init__(initial=initial, *args, **kwargs)
 
     def save(self):
-        if not self.user.liberation.flags.running:
-            data_liberate.delay(self.user.id, options=self.cleaned_data)
+        lib_status = self.user.liberation
+        if not lib_status.flags.running:
+            lib_status.flags = models.Liberation.flags.running
+            lib_status.started = datetime.now(utc)
+
+            result = data_liberate.apply_async(
+                                    kwargs={"user_id": self.user.id, "options": self.cleaned_data},
+                                    countdown=10
+                                    )
+
+            lib_status.async_result = result.id
+            lib_status.save()
+
         return self.user
 
 class PlaceHolderAuthenticationForm(BootstrapFormMixin, PlaceHolderMixin, AuthenticationForm):
