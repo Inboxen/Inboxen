@@ -56,7 +56,7 @@ def liberate(user_id, options=None):
 
     mail_path = os.path.join(path, 'emails')
     # make maildir
-    mailbox.Maildir(mail_path)
+    mailbox.Maildir(mail_path, factory=None)
 
     inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id')]
     if len(inbox_tasks) > 0:
@@ -83,7 +83,7 @@ def liberate(user_id, options=None):
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
     inbox = Inbox.objects.get(id=inbox_id, flags=~Inbox.flags.deleted)
-    maildir = mailbox.Maildir(mail_path)
+    maildir = mailbox.Maildir(mail_path, factory=None)
     maildir.add_folder(str(inbox))
 
     return {
@@ -120,7 +120,7 @@ def liberate_collect_emails(results, mail_path, options):
 @transaction.atomic()
 def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
-    maildir = mailbox.Maildir(mail_path).get_folder(inbox)
+    maildir = mailbox.Maildir(mail_path, factory=None).get_folder(inbox)
 
     try:
         msg = Email.objects.get(id=email_id, flags=~Email.flags.deleted)
@@ -139,7 +139,7 @@ def liberate_convert_box(result, mail_path, options):
         pass
 
     elif options['storage_type'] == '1':
-        maildir = mailbox.Maildir(mail_path)
+        maildir = mailbox.Maildir(mail_path, factory=None)
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
 
@@ -147,7 +147,7 @@ def liberate_convert_box(result, mail_path, options):
             folder = maildir.get_folder(inbox)
 
             for key in folder.iterkeys():
-                msg = str(folder.pop(key))
+                msg = folder.pop(key)
                 mbox.add(msg)
             maildir.remove_folder(inbox)
 
