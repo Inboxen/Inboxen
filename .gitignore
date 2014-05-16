@@ -13,6 +13,7 @@ docs/_*
 *.sw?
 *~
 
+db.sqlite3
 
 # C extensions
 *.so
