@@ -86,7 +86,8 @@ class LiberationForm(BootstrapFormMixin, forms.ModelForm):
         return super(LiberationForm, self).__init__(initial=initial, *args, **kwargs)
 
     def save(self):
-        data_liberate.delay(self.user.id, options=self.cleaned_data)
+        if not self.user.liberation.flags.running:
+            data_liberate.delay(self.user.id, options=self.cleaned_data)
         return self.user
 
 class PlaceHolderAuthenticationForm(BootstrapFormMixin, PlaceHolderMixin, AuthenticationForm):
