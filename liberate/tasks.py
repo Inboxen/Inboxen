@@ -39,10 +39,6 @@ def liberate(user_id, options=None):
 
     options['user'] = user_id
     user =  User.objects.get(id=user_id)
-    lib_status = user.liberation
-
-    lib_status.flags = Liberation.flags.running
-    lib_status.started = datetime.now(utc)
 
     rstr = ""
     for i in range(7):
@@ -79,6 +75,7 @@ def liberate(user_id, options=None):
 
     async_result = tasks.apply_async()
 
+    lib_status = Liberation.objects.get(user_id=options['user'])
     lib_status.async_result = async_result.id
     lib_status.save()
 
@@ -113,7 +110,11 @@ def liberate_collect_emails(results, mail_path, options):
         options["noEmails"] = True
         data = {"results": []}
         msg_tasks = liberation_finish.s(data, options)
-    msg_tasks.apply_async()
+    async_result = msg_tasks.apply_async()
+
+    lib_status = Liberation.objects.get(user_id=options["user"])
+    lib_status.async_result = async_result.id
+    lib_status.save()
 
 @task(rate_limit='1000/m')
 @transaction.atomic()
@@ -209,7 +210,7 @@ def liberation_finish(result, options):
 
     os.remove(result)
 
-    message = _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"%s\">here</a>")
+    message = _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"%s\">here</a> to download your archive.")
     message_user(user, safestring.mark_safe(message % urlresolvers.reverse("user-liberate-get")))
 
     log.info("Finished liberation for %s", options['user'])
