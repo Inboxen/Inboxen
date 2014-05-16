@@ -110,8 +110,10 @@ class Liberation(models.Model):
     user = AutoOneToOneField(User, primary_key=True)
     flags = BitField(flags=("running", "errored"), default=0)
     payload = models.BinaryField(null=True)
+    content_type = models.PositiveSmallIntegerField(default=0)
     async_result = UUIDField(auto=False, null=True)
     started = models.DateTimeField(null=True)
+    last_finished = models.DateTimeField(null=True)
 
 ##
 # Inbox models

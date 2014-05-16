@@ -13,8 +13,10 @@ class Migration(SchemaMigration):
             ('user', self.gf('annoying.fields.AutoOneToOneField')(to=orm['auth.User'], unique=True, primary_key=True)),
             ('flags', self.gf('django.db.models.fields.BigIntegerField')(default=0)),
             ('payload', self.gf('django.db.models.fields.BinaryField')(null=True)),
+            ('content_type', self.gf('django.db.models.fields.PositiveSmallIntegerField')(default=0)),
             ('async_result', self.gf('django.db.models.fields.CharField')(max_length=36, null=True)),
             ('started', self.gf('django.db.models.fields.DateTimeField')(null=True)),
+            ('last_finished', self.gf('django.db.models.fields.DateTimeField')(null=True)),
         ))
         db.send_create_signal(u'inboxen', ['Liberation'])
 
@@ -121,7 +123,9 @@ class Migration(SchemaMigration):
         u'inboxen.liberation': {
             'Meta': {'object_name': 'Liberation'},
             'async_result': ('django.db.models.fields.CharField', [], {'max_length': '36', 'null': 'True'}),
+            'content_type': ('django.db.models.fields.PositiveSmallIntegerField', [], {'default': '0'}),
             'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '0'}),
+            'last_finished': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'payload': ('django.db.models.fields.BinaryField', [], {'null': 'True'}),
             'started': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'user': ('annoying.fields.AutoOneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'primary_key': 'True'})
@@ -159,7 +163,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Tag'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inbox': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inboxen.Inbox']"}),
-            'tag': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+            'tag': ('django.db.models.fields.CharField', [], {'max_length': '256', 'db_index': 'True'})
         },
         u'inboxen.totpauth': {
             'Meta': {'object_name': 'TOTPAuth'},
@@ -169,7 +173,7 @@ class Migration(SchemaMigration):
         },
         u'inboxen.userprofile': {
             'Meta': {'object_name': 'UserProfile'},
-            'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '1'}),
+            'flags': ('django.db.models.fields.BigIntegerField', [], {'default': '5'}),
             'pool_amount': ('django.db.models.fields.IntegerField', [], {'default': '500'}),
             'user': ('annoying.fields.AutoOneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'primary_key': 'True'})
         }
