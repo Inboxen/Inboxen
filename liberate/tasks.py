@@ -97,11 +97,11 @@ def liberate_collect_emails(results, mail_path, options):
     msg_tasks = []
     results = results or []
     for result in results:
-        inbox = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
+        inbox = [(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.extend(inbox)
     if len(msg_tasks) > 0:
         msg_tasks = chain(
-                        group(msg_tasks),
+                        liberate_message.chunk(msg_tasks, 100),
                         liberate_convert_box.s(mail_path, options),
                         liberate_fetch_info.s(options),
                         liberate_tarball.s(options),
@@ -237,9 +237,10 @@ def liberate_user_profile(user_id, email_results):
     data['groups'] = [str(groups) for groups in user.groups.all()]
 
     data['errors'] = []
-    for result in email_results:
-        if result is not None:
-            data['errors'].append(str(result))
+    for results in email_results:
+        for result results:
+            if result is not None:
+                data['errors'].append(str(result))
 
     return json.dumps(data)
 
