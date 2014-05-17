@@ -95,6 +95,7 @@ def liberate_inbox(mail_path, inbox_id):
 def liberate_collect_emails(results, mail_path, options):
     """ Send off data mining tasks """
     msg_tasks = []
+    results = results or []
     for result in results:
         inbox = [liberate_message.s(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.extend(inbox)
@@ -160,7 +161,7 @@ def liberate_convert_box(result, mail_path, options):
 def liberate_fetch_info(result, options):
     """Fetch user info and dump json to files"""
     tags_json = liberate_inbox_tags(options['user'])
-    profile_json = liberate_user_profile(options['user'], result)
+    profile_json = liberate_user_profile(options['user'], result or [])
 
     with open(os.path.join(options["path"], "profile.json"), "w") as profile:
         profile.write(profile_json)
