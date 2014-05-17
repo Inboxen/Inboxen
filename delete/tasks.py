@@ -12,7 +12,7 @@ from inboxen.models import Email, Inbox, Tag, User
 
 log = logging.getLogger(__name__)
 
-@task(rate_limit="10/m", default_retry_delay=5 * 60) # 5 minutes
+@task(rate_limit="10/m", default_retry_delay=5*60) # 5 minutes
 @transaction.atomic()
 def delete_inbox(inbox_id, user_id=None):
     inbox = Inbox.objects
@@ -26,14 +26,7 @@ def delete_inbox(inbox_id, user_id=None):
         return False
 
     # delete emails in another task(s)
-    emails = inbox.email_set.only('id')
-
-    emails = group([delete_email.s(email.id) for email in emails])
-    try:
-        emails.apply_async()
-    except IndexError:
-        # no emails in this inbox
-        pass
+    batch_delete_items.delay("inbox", kwargs={'inbox_id': inbox.pk})
 
     # delete tags
     tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
@@ -69,7 +62,6 @@ def finish_delete_user(result, user_id):
     else:
         log.info("Deleting user %s", user.username)
         user.delete()
-    return True
 
 @task(ignore_result=True)
 @transaction.atomic()
@@ -88,57 +80,50 @@ def delete_account(user_id):
 
     log.info("Deletion tasks for %s sent off", user.username)
 
-@task(rate_limit=200, acks_late=True)
+@task(rate_limit=200)
 @transaction.atomic()
-def delete_inboxen_item(model, item_ids):
+def delete_inboxen_item(model, item_pk):
     _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
-    for item_id in item_ids:
-        try:
-            item = _model.objects.only('id').get(id=item_id)
-            item.delete()
-        except (IntegrityError, _model.DoesNotExist):
-            pass
+    try:
+        item = _model.objects.only('pk').get(pk=item_id)
+        item.delete()
+    except (IntegrityError, _model.DoesNotExist):
+        pass
 
 @task(rate_limit="1/m")
 @transaction.atomic()
-def major_cleanup_items(model, filter_args=None, filter_kwargs=None, batch_number=5000, count=0):
+def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
+    Be aware: this task pulls a list of PKs from the database which may cause
+    increased memory use in the short term.
+
     * model is a string
-    * filter_args and filter_kwargs should be obvious
+    * args and kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
     _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
 
-    if filter_args is None and filter_kwargs is None:
+    if args is None and kwargs is None:
         raise Exception("You need to specify some filter options!")
-    elif filter_args is None:
-        filter_args = []
-    elif filter_kwargs is None:
-        filter_kwargs = {}
+    elif args is None:
+        args = []
+    elif kwargs is None:
+        kwargs = {}
 
-    items = _model.objects.only('id').filter(*filter_args, **filter_kwargs)
-    items = items[:batch_number]
-    items = [item.id for item in items]
-    items = [filter((lambda x: x is not None), item_set) for item_set in izip_longest(*[iter(items)]*50)]
-
-    tasks = [delete_inboxen_item.s(model, item_set) for item_set in items]
-
-    if len(tasks):
-        tasks = chord(tasks, major_cleanup_items.si(model, filter_args, filter_kwargs, batch_number, count+1))
-        tasks.apply_async()
-        log.info("%s deletes sent (overestimate), %s completed", batch_number, count*batch_number)
-    else:
-        log.info("Batch deletes finished")
+    items = _model.objects.only('pk').filter(*args, **kwargs)
+    items = [(model, item.pk) for item in items]
+    items = delete_inboxen_item.chunk(items, batch_number)
+    items.apply_async()
 
 @task(rate_limit="1/h")
 def clean_orphan_models():
     # Body
-    major_cleanup_items.delay("body", filter_kwargs={"partlist__isnull": True})
+    batch_delete_items.delay("body", kwargs={"partlist__isnull": True})
 
     # HeaderName
-    major_cleanup_items.delay("headername", filter_kwargs={"header__isnull": True})
+    batch_delete_items.delay("headername", kwargs={"header__isnull": True})
 
     # HeaderData
-    major_cleanup_items.delay("headerdata", filter_kwargs={"header__isnull": True})
+    batch_delete_items.delay("headerdata", kwargs={"header__isnull": True})
