@@ -75,7 +75,7 @@ def liberate(user_id, options=None):
 
     async_result = tasks.apply_async()
 
-    lib_status = Liberation.objects.get(user_id=options['user'])
+    lib_status = user.liberation
     lib_status.async_result = async_result.id
     lib_status.save()
 
@@ -112,7 +112,7 @@ def liberate_collect_emails(results, mail_path, options):
         msg_tasks = liberation_finish.s(data, options)
     async_result = msg_tasks.apply_async()
 
-    lib_status = Liberation.objects.get(user_id=options["user"])
+    lib_status = User.objects.get(id=options["user"]).liberation
     lib_status.async_result = async_result.id
     lib_status.save()
 
