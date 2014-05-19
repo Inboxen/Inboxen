@@ -26,7 +26,7 @@ def delete_inbox(inbox_id, user_id=None):
         return False
 
     # delete emails in another task(s)
-    batch_delete_items.delay("inbox", kwargs={'inbox_id': inbox.pk})
+    batch_delete_items.delay("email", kwargs={'inbox__id': inbox.pk})
 
     # delete tags
     tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
@@ -85,7 +85,7 @@ def delete_account(user_id):
 def delete_inboxen_item(model, item_pk):
     _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
     try:
-        item = _model.objects.only('pk').get(pk=item_id)
+        item = _model.objects.only('pk').get(pk=item_pk)
         item.delete()
     except (IntegrityError, _model.DoesNotExist):
         pass
@@ -113,8 +113,13 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
         kwargs = {}
 
     items = _model.objects.only('pk').filter(*args, **kwargs)
+    items_len = len(items)
+    if items_len == 0:
+        return
+
     items = [(model, item.pk) for item in items]
-    items = delete_inboxen_item.chunk(items, batch_number)
+    items = delete_inboxen_item.chunks(items, batch_number).group()
+    items.skew(step=batch_number/2.0)
     items.apply_async()
 
 @task(rate_limit="1/h")

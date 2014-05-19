@@ -99,9 +99,14 @@ def liberate_collect_emails(results, mail_path, options):
     for result in results:
         inbox = [(mail_path, result['folder'], email_id) for email_id in result['ids']]
         msg_tasks.extend(inbox)
-    if len(msg_tasks) > 0:
+
+    task_len = len(msg_tasks)
+
+    if task_len > 0:
+        msg_tasks = liberate_message.chunks(msg_tasks, 100).group()
+        msg_tasks.skew(step=10)
         msg_tasks = chain(
-                        liberate_message.chunk(msg_tasks, 100),
+                        msg_tasks,
                         liberate_convert_box.s(mail_path, options),
                         liberate_fetch_info.s(options),
                         liberate_tarball.s(options),
@@ -238,7 +243,7 @@ def liberate_user_profile(user_id, email_results):
 
     data['errors'] = []
     for results in email_results:
-        for result results:
+        for result in results:
             if result is not None:
                 data['errors'].append(str(result))
 
