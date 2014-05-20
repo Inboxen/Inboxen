@@ -113,11 +113,10 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
         kwargs = {}
 
     items = _model.objects.only('pk').filter(*args, **kwargs)
-    items_len = len(items)
-    if items_len == 0:
+    items = [(model, item.pk) for item in items.iterator()]
+    if len(items) == 0:
         return
 
-    items = [(model, item.pk) for item in items]
     items = delete_inboxen_item.chunks(items, batch_number).group()
     items.skew(step=batch_number/2.0)
     items.apply_async()

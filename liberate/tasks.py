@@ -58,7 +58,7 @@ def liberate(user_id, options=None):
     # make maildir
     mailbox.Maildir(mail_path, factory=None)
 
-    inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id')]
+    inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id').iterator()]
     if len(inbox_tasks) > 0:
         tasks = chord(
                     inbox_tasks,
@@ -88,7 +88,7 @@ def liberate_inbox(mail_path, inbox_id):
 
     return {
             'folder': str(inbox),
-            'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id')]
+            'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id').iterator()]
             }
 
 @task()
