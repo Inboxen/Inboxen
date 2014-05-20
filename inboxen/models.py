@@ -32,6 +32,7 @@ from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
+from inboxen import fields
 
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
@@ -107,7 +108,7 @@ class Liberation(models.Model):
     `payload` is the compressed archive - it is not base64 encoded
     `async_result` is the UUID of Celery result object, which may or may not be valid
     """
-    user = AutoOneToOneField(User, primary_key=True)
+    user = fields.DeferAutoOneToOneField(User, primary_key=True, defer_fields=["payload"])
     flags = BitField(flags=("running", "errored"), default=0)
     payload = models.BinaryField(null=True)
     content_type = models.PositiveSmallIntegerField(default=0)
