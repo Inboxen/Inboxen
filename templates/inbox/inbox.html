@@ -30,7 +30,7 @@
         {% url 'unified-inbox' as inbox_url %}
     {% endif %}
     <div class="table-responsive">
-        <form action="{{ inbox_url}}{{ page_obj.number }}" method="POST">
+        <form action="{{ request.path }}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="read">{% trans "Mark as read" %}</button>
         <button class="btn btn-default" type="submit" name="unread">{% trans "Mark as unread" %}</button>
