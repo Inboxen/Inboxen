@@ -28,11 +28,16 @@ from django.utils.encoding import smart_str
 from annoying.fields import AutoOneToOneField
 from bitfield import BitField
 from django_extensions.db.fields import UUIDField
+from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
 from inboxen import fields
+
+# South fix for djorm_pgbytea
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ['^djorm_pgbytea\.lobject\.LargeObjectField'])
 
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
@@ -108,13 +113,31 @@ class Liberation(models.Model):
     `payload` is the compressed archive - it is not base64 encoded
     `async_result` is the UUID of Celery result object, which may or may not be valid
     """
-    user = fields.DeferAutoOneToOneField(User, primary_key=True, defer_fields=["payload"])
+    user = fields.DeferAutoOneToOneField(User, primary_key=True, defer_fields=["data"])
     flags = BitField(flags=("running", "errored"), default=0)
-    payload = models.BinaryField(null=True)
+    data = LargeObjectField(null=True)
     content_type = models.PositiveSmallIntegerField(default=0)
     async_result = UUIDField(auto=False, null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
+
+    def set_payload(self, data):
+        if data is None:
+            self.data = None
+            return
+        elif self.data is None:
+            self.data = LargeObjectFile(0)
+        file = self.data.open(mode="wb")
+        file.write(data)
+        file.close()
+
+    def get_payload(self):
+        with transaction.atomic():
+            if self.data is None:
+                return None
+            return buffer(self.data.open(mode="rb").read())
+
+    payload = property(get_payload, set_payload)
 
 ##
 # Inbox models
