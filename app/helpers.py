@@ -23,11 +23,13 @@ from datetime import datetime
 import logging
 
 from pytz import utc
+import watson
 
 from inboxen.models import Body, Email, Header, PartList
 
 log = logging.getLogger(__name__)
 
+@watson.update_index()
 def make_email(message, inbox):
     """Push message to the database.
     """
