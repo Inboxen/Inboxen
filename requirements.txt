@@ -8,6 +8,7 @@ django-celery
 django-extensions
 django-mptt
 django-ratelimit-backend
+django-watson
 djorm-ext-pgbytea
 onetimepass
 psycopg2

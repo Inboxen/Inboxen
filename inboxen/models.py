@@ -31,6 +31,7 @@ from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
+import watson
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
 from inboxen import fields
@@ -316,3 +317,8 @@ class Header(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)
+
+# Search
+watson.register(Body, fields=("_data",))
+watson.register(Tag)
+watson.register(HeaderData, fields=("data",))
