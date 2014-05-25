@@ -34,7 +34,7 @@ from pytz import utc
 import watson
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
-from inboxen import fields
+from inboxen import fields, search
 
 # South fix for djorm_pgbytea
 from south.modelsinspector import add_introspection_rules
@@ -319,6 +319,5 @@ class Header(models.Model):
         return u"{0}".format(self.name.name)
 
 # Search
-watson.register(Body, fields=("_data",))
-watson.register(Tag)
-watson.register(HeaderData, fields=("data",))
+watson.register(Email, search.EmailSearchAdapter)
+watson.register(Tag, search.TagSearchAdapter)
