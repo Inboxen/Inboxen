@@ -120,6 +120,7 @@ class Liberation(models.Model):
     async_result = UUIDField(auto=False, null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
+    size = models.PositiveIntegerField(null=True)
 
     def set_payload(self, data):
         if data is None:
@@ -127,9 +128,12 @@ class Liberation(models.Model):
             return
         elif self.data is None:
             self.data = LargeObjectFile(0)
+
         file = self.data.open(mode="wb")
         file.write(data)
         file.close()
+
+        self.size = len(data)
 
     def get_payload(self):
         with transaction.atomic():
@@ -251,11 +255,13 @@ class Body(models.Model):
         blank=True,
         null=True,
     )
+    size = models.PositiveIntegerField(null=True)
 
     objects = BodyManager()
 
     def set_data(self, data):
         self._data = data
+        self.size = len(data)
 
     def get_data(self):
         if not self.path:
