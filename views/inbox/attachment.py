@@ -42,9 +42,6 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
 
         return super(AttachmentDownloadView, self).get(*args, **kwargs)
 
-    def get_file_data(self):
-        return self.object.body.data or ""
-
     def render_to_response(self, context):
         # build the Content-Disposition header
         disposition = []
@@ -72,13 +69,13 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
             content_type = "{0}; charset={1}".format(content_type, params["charset"])
 
         # make header object
-        data = self.get_file_data()
+        data = self.object.body.data or ""
         response = HttpResponse(
             content=data,
             status=self.file_status
         )
 
-        response["Content-Length"] = len(data)
+        response["Content-Length"] = self.object.body.size or len(data)
         response["Content-Disposition"] = disposition
         response["Content-Type"] = content_type[0]
         return response

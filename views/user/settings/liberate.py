@@ -64,7 +64,7 @@ class LiberationDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
             status=200
         )
 
-        response["Content-Length"] = len(self.object.payload)
+        response["Content-Length"] = self.object.size or len(self.object.payload)
         response["Content-Disposition"] = disposition
         response["Content-Type"] = content_type
         return response
