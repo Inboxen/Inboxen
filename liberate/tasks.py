@@ -115,7 +115,13 @@ def liberate_collect_emails(results, mail_path, options):
     else:
         options["noEmails"] = True
         data = {"results": []}
-        msg_tasks = liberation_finish.s(data, options)
+        msg_tasks = chain(
+                        liberate_convert_box.s(data, mail_path, options),
+                        liberate_fetch_info.s(options),
+                        liberate_tarball.s(options),
+                        liberation_finish.s(options)
+                        )
+
     async_result = msg_tasks.apply_async()
 
     lib_status = User.objects.get(id=options["user"]).liberation
