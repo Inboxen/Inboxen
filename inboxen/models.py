@@ -248,34 +248,11 @@ class Body(models.Model):
 
     This model expects and returns binary data, converting to and from unicode happens elsewhere
     """
-    path = models.FilePathField(default=None, null=True, blank=True)
     hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
-    _data = models.BinaryField(
-        db_column='data',
-        blank=True,
-        null=True,
-    )
+    data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
     objects = BodyManager()
-
-    def set_data(self, data):
-        self._data = data
-        self.size = len(data)
-
-    def get_data(self):
-        if not self.path:
-            return self._data
-        
-        # look for data in the path
-        _tpath = open(self.path, "rb")
-        try:
-            d = _tpath.read()
-        finally:
-            _tpath.close()
-        return d
-
-    data = property(get_data, set_data)
 
     def __unicode__(self):
         return self.hashed
