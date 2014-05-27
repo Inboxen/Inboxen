@@ -17,20 +17,58 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.contrib.contenttypes.models import ContentType
+from django.utils import encoding
+
 import watson
 
 class EmailSearchAdapter(watson.SearchAdapter):
-    def get_title(self, obj)
-        return u"" # return subject
+    trunc_to_size = 2**20 # 1MB. Or two copies of 1984
+
+    def get_title(self, obj):
+        HeaderData = ContentType.objects.get(app_label="inboxen", model="headerdata").model_class()
+        try:
+            subject = HeaderData.objects.filter(header__part__parent__isnull=True, header__name__name="Subject")
+            subject = subject[0]
+            return encoding.smart_text(subject.data)
+        except IndexError:
+            return u""
+
+    def get_bodies(self, obj):
+        Body = ContentType.objects.get(app_label="inboxen", model="body").model_class()
+        data = Body.objects.filter(
+                                partlist__email__id=obj.id,
+                                partlist__header__name__name="Content-Type",
+                                partlist__header__data__data__startswith="text/"
+                                )
+        return data
 
     def get_description(self, obj):
-        return u"" # return the body that would be displayed to user (just plain?)
+        try:
+            body = self.get_bodies(obj)[0]
+            return encoding.smart_text(body.data[:self.trunc_to_size])
+        except IndexError:
+            return u""
 
     def get_content(self, obj):
-        return u"" # return all text/ bodies?
+        data = []
+        size = 0
+        for body in self.get_bodies(obj):
+            remains = self.trunc_to_size - size
+            size = size + body.size
+
+            if remains <= 0:
+                break
+            elif remains < body.size:
+                data.append(encoding.smart_text(body.data[:remains]))
+                break
+            else:
+                data.append(encoding.smart_text(body.data))
+
+        return u"".join(data)
 
 class TagSearchAdapter(watson.SearchAdapter):
-    def get_title(self, obj)
+    def get_title(self, obj):
         return obj.tag
 
     def get_description(self, obj):
