@@ -254,6 +254,11 @@ class Body(models.Model):
 
     objects = BodyManager()
 
+    def save(self, *args, **kwargs):
+        if self.size is None:
+            self.size = len(self.data)
+        return super(Body, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return self.hashed
 
