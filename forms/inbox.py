@@ -23,6 +23,8 @@ from django.utils.translation import ugettext as _
 from django import forms
 from django.contrib import messages
 
+import watson
+
 from inboxen import models
 from website.forms.mixins import BootstrapFormMixin
 
@@ -55,11 +57,12 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
         tags = data.pop("tags")
         excludes = data.pop("exclude_from_unified", False)
 
-        self.instance = self.request.user.inbox_set.create(**data)
-        self.instance.flags.exclude_from_unified = excludes
-        self.instance.save()
+        with watson.update_index():
+            self.instance = self.request.user.inbox_set.create(**data)
+            self.instance.flags.exclude_from_unified = excludes
+            self.instance.save()
 
-        models.Tag.objects.from_string(tags=tags, inbox=self.instance)
+            models.Tag.objects.from_string(tags=tags, inbox=self.instance)
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
@@ -85,13 +88,14 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
         if not commit:
             return
 
-        self.instance.tag_set.all().delete()
-        self.instance.tag_set.from_string(
-            tags=self.cleaned_data.get("tags"),
-            inbox=self.instance
-        )
-        data = self.cleaned_data.copy()
-        self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False) 
-        self.instance.save()
+        with watson.update_index():
+            self.instance.tag_set.all().delete()
+            self.instance.tag_set.from_string(
+                tags=self.cleaned_data.get("tags"),
+                inbox=self.instance
+            )
+            data = self.cleaned_data.copy()
+            self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
+            self.instance.save()
 
         return self.instance
