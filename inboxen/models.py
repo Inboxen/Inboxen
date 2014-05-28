@@ -320,4 +320,4 @@ class Header(models.Model):
 
 # Search
 watson.register(Email, search.EmailSearchAdapter)
-watson.register(Tag, search.TagSearchAdapter)
+watson.register(Inbox, search.InboxSearchAdapter)

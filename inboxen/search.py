@@ -67,9 +67,9 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
         return u"".join(data)
 
-class TagSearchAdapter(watson.SearchAdapter):
+class InboxSearchAdapter(watson.SearchAdapter):
     def get_title(self, obj):
-        return obj.tag
+        return " ".join(obj.tag_set.all())
 
     def get_description(self, obj):
         return u""
