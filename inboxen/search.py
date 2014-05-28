@@ -67,12 +67,25 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
         return u"".join(data)
 
+    def get_meta(self, obj):
+        HeaderData = ContentType.objects.get(app_label="inboxen", model="headerdata").model_class()
+        try:
+            from_header = HeaderData.objects.filter(header__part__parent__isnull=True, header__name__name="From")[0]
+            from_header = encoding.smart_text(from_header.data)
+        except IndexError:
+            from_header = u""
+
+        return {"from": from_header}
+
 class InboxSearchAdapter(watson.SearchAdapter):
     def get_title(self, obj):
-        return " ".join(obj.tag_set.all())
+        return " ".join([tag.tag for tag in obj.tag_set.only("tag").iterator()])
 
     def get_description(self, obj):
         return u""
 
     def get_content(self, obj):
         return u""
+
+    def get_meta(self, obj):
+        return {"domain": obj.domain.domain}
