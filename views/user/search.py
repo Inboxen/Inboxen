@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.db.models import F
 from django.views import generic
 from django.utils.translation import ugettext as _
 
@@ -34,10 +35,12 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     template_name = "user/search.html"
 
     def get_models(self):
-        inboxes = models.Inbox.objects.filter(flags=~models.Inbox.flags.deleted, user=self.request.user)
+        ## Use F expressions here because these are actually subqueries
+        ## https://github.com/disqus/django-bitfield/issues/31
+        inboxes = models.Inbox.objects.filter(flags=F("flags").bitand(~models.Inbox.flags.deleted), user=self.request.user)
         emails = models.Email.objects.filter(
-                                        flags=~models.Email.flags.deleted,
-                                        inbox__flags=~models.Inbox.flags.deleted,
+                                        flags=F("flags").bitand(~models.Email.flags.deleted),
+                                        inbox__flags=F("inbox__flags").bitand(~models.Inbox.flags.deleted),
                                         inbox__user=self.request.user,
                                         )
         return (inboxes, emails)

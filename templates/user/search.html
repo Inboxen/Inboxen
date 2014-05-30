@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block content %}
-Hey
+<ul>
+{% for result in search_results %}
+<li>{{ results.title }}</li>
+{% endfor %}
+</ul>
 {% endblock %}
