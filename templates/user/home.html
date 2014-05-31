@@ -4,24 +4,22 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li {% if tags %}><a href="{% url "user-home" %}"{% else %}class="active"{% endif %}>{% blocktrans %}{{ user }}'s Home{% endblocktrans %}{% if tags %}</a>{% endif %}</li>
-        {% if tags %}
-            <li class="active">{{ tags }}</li>
-        {% endif %}
+        <li class="active">{% blocktrans %}{{ user }}'s Home{% endblocktrans %}</li>
     </ul>
 {% endblock %}
 
 {% block content %}
+    {% url 'unified-inbox' as inbox_url %}
     <div class="row">
         <form
             class="form col-sm-4 col-sm-offset-8 col-md-3 col-md-offset-9 col-lg-2 col-lg-offset-10"
             method="GET"
-            action="{% url 'tagged-home' %}"
-            onsubmit='window.location="{% url 'tagged-home' %}"+this.tags.value+"/"; return false;'
+            action="{% url 'user-search' %}"
+            onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
         >
             <div class="input-group">
-                <label class="sr-only">{% trans "Search for inboxes by tag" %}</label>
-                <input type="text" class="form-control" name="tags" placeholder="Tag1, Tag2, ...">
+                <label class="sr-only">{% trans "Search emails and tags" %}</label>
+                <input type="text" class="form-control" name="q">
                 <span class="input-group-btn">
                     <button class="btn btn-default">{% trans 'Search' %}</button>
                 </span>
@@ -44,13 +42,9 @@
             </thead>
             <tr class="warning">
                 <td>
-                    {% if tags %}
-                        <a href="{% url 'tagged-inbox' tags=tags %}">{% trans "Tag Inbox" %}</a>
-                    {% else %}
-                        <a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a>
-                        {% if user.userprofile.flags.unified_has_new_messages %}
-                            <span class="label label-primary" title="{% trans "New messages" %}">{% trans "New" %}</span>
-                        {% endif %}
+                    <a href="{{ inbox_url }}">{% trans "Unified Inbox" %}</a>
+                    {% if user.userprofile.flags.unified_has_new_messages %}
+                        <span class="label label-primary" title="{% trans "New messages" %}">{% trans "New" %}</span>
                     {% endif %}
                 </td>
                 <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
@@ -86,11 +80,6 @@
             {% endfor %}
         </table>
         </div>
-        {% if tags %}
-            {% url "tagged-home" tags=tags as inbox_url %}
-        {% else %}
-            {% url 'unified-inbox' as inbox_url %}
-        {% endif %}
         <ul class="pager">
             {% if page_obj.has_previous %}
                 <li class="previous"><a href="{{ inbox_url }}/{{ page_obj.previous_page_number }}/">&laquo;</a></li>

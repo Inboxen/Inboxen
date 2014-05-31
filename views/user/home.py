@@ -25,7 +25,7 @@ from django.db.models import F, Q
 from inboxen import models
 from website.views import base
 
-__all__ = ["UserHomeView", "TaggedHomeView"]
+__all__ = ["UserHomeView"]
 
 class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListView):
     """ The user's home which lists the inboxes """
@@ -58,36 +58,4 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
         self.get_tags(context["page_obj"].object_list)
-        return context
-
-class TaggedHomeView(UserHomeView):
-    """Same as UserHomeView, but limited to a tag set"""
-
-    def filter_tags(self):
-        """Returns OR'd tags from the tags in kwargs["tags"]"""
-        if not hasattr(self, "tags"):
-            self.tags = self.kwargs.get("tags", "") or self.request.GET.get("tags", "")
-
-        if "," in self.tags:
-            tags = self.tags.split(",")
-        elif " " in self.tags:
-            tags = self.tags.split(" ")
-        else:
-            tags = [self.tags]
-
-        q_objs = Q(id=None) # This Q object will return nothing if there are no tags
-        for tag in tags:
-           q_objs = q_objs | Q(tag__tag__icontains=tag.strip())
-
-        return q_objs
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super(TaggedHomeView, self).get_queryset(*args, **kwargs)
-        return qs.filter(self.filter_tags())
-
-    def get_context_data(self, *args, **kwargs):
-        self.headline = self.tags
-        context = super(TaggedHomeView, self).get_context_data(*args, **kwargs)
-        context.update({"tags": self.tags})
-
         return context
