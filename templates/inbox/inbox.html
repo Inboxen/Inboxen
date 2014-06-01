@@ -31,21 +31,28 @@
             <table class="table table-hover table-honeydew">
             <thead>
             <tr>
-                <th></th>
+                <th>&nbsp;</th>
+                <th>&nbsp;</th>
                 <th>{% trans "From" %}</th>
                 <th>{% trans "Subject" %}</th>
                 <th>{% trans "Received" %}</th>
-                <th></th>
+                <th>&nbsp;</th>
             </tr>
             </thead>
             {% for email in page_obj.object_list %}
                     {% if email.flags.read %}
                         <tr title="{% trans "Message has been read" %}">
                     {% else %}
-                        <tr style="font-weight: bold" title="{% trans "Message is unread" %}">
+                        <tr title="{% trans "Message is unread" %}">
                     {% endif %}
-
                         <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
+                    <td>
+                        {% if not email.flags.read %}
+                            <span class="label label-primary">{% trans "Unread" %}</span>
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </td>
                         <td>{{ email.sender }}</td>
                         {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
                         {% if email.subject %}
