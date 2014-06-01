@@ -28,7 +28,11 @@ class EmailSearchAdapter(watson.SearchAdapter):
     def get_title(self, obj):
         HeaderData = ContentType.objects.get(app_label="inboxen", model="headerdata").model_class()
         try:
-            subject = HeaderData.objects.filter(header__part__parent__isnull=True, header__name__name="Subject")
+            subject = HeaderData.objects.filter(
+                                header__part__parent__isnull=True,
+                                header__name__name="Subject",
+                                header__part__email__id=obj.id,
+                                )
             subject = subject[0]
             return encoding.smart_text(subject.data)
         except IndexError:
@@ -39,7 +43,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
         data = Body.objects.filter(
                                 partlist__email__id=obj.id,
                                 partlist__header__name__name="Content-Type",
-                                partlist__header__data__data__startswith="text/"
+                                partlist__header__data__data__startswith="text/",
                                 )
         return data
 
@@ -65,17 +69,23 @@ class EmailSearchAdapter(watson.SearchAdapter):
             else:
                 data.append(encoding.smart_text(body.data))
 
-        return u"".join(data)
+        return u"\n".join(data)
 
     def get_meta(self, obj):
         HeaderData = ContentType.objects.get(app_label="inboxen", model="headerdata").model_class()
         try:
-            from_header = HeaderData.objects.filter(header__part__parent__isnull=True, header__name__name="From")[0]
+            from_header = HeaderData.objects.filter(
+                                    header__part__parent__isnull=True,
+                                    header__name__name="From",
+                                    header__part__email__id=obj.id,
+                                    )[0]
             from_header = encoding.smart_text(from_header.data)
         except IndexError:
             from_header = u""
 
-        return {"from": from_header}
+        return {
+            "from": from_header,
+            }
 
 class InboxSearchAdapter(watson.SearchAdapter):
     def get_title(self, obj):
@@ -88,4 +98,6 @@ class InboxSearchAdapter(watson.SearchAdapter):
         return u""
 
     def get_meta(self, obj):
-        return {"domain": obj.domain.domain}
+        return {
+            "domain": obj.domain.domain,
+            }
