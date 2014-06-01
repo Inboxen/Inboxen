@@ -59,8 +59,6 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     def get_query(self, request):
         get_query = super(SearchView, self).get_query(request)
         kwarg_query = self.kwargs.get(self.get_query_param(), "").strip()
-        print get_query
-        print kwarg_query
         return kwarg_query or get_query
 
     def get_queryset(self):
