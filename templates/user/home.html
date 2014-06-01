@@ -10,22 +10,6 @@
 
 {% block content %}
     {% url 'unified-inbox' as inbox_url %}
-    <div class="row">
-        <form
-            class="form col-sm-4 col-sm-offset-8 col-md-3 col-md-offset-9 col-lg-2 col-lg-offset-10"
-            method="GET"
-            action="{% url 'user-search' %}"
-            onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
-        >
-            <div class="input-group">
-                <label class="sr-only">{% trans "Search emails and tags" %}</label>
-                <input type="text" class="form-control" name="q">
-                <span class="input-group-btn">
-                    <button class="btn btn-default">{% trans 'Search' %}</button>
-                </span>
-            </div>
-        </form>
-    </div>
     {% if not page_obj.object_list %}
         <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
     {% else %}

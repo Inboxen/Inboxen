@@ -33,12 +33,13 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     """A specialised search view that splits results by model"""
     paginate_by = None
     template_name = "user/search.html"
+    filter_limit = 10
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
         context.update({
-                    "emails": context["object_list"].filter(content_type__model="email"),
-                    "inboxes": context["object_list"].filter(content_type__model="inbox"),
+                    "emails": context["object_list"].filter(content_type__model="email")[:self.filter_limit],
+                    "inboxes": context["object_list"].filter(content_type__model="inbox")[:self.filter_limit],
                     })
         return context
 
