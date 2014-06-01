@@ -1,9 +1,27 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li>{% blocktrans %}{{ user }}'s Home{% endblocktrans %}</li>
+        <li class="active">{% trans "Search" %}: {{ query }}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
-<ul>
-{% for result in search_results %}
-<li>{{ results.title }}</li>
-{% endfor %}
-</ul>
+<div class="table-responsive">
+    <table class="table table-hover table-honeydew">
+        <thead>
+        <tr>
+            <th>{% trans "Type" %}</th>
+            <th>{% trans "Subject/Tags" %}</th>
+        </tr>
+        </thead>
+        {% for result in search_results %}
+        <tr>
+            <td>{{ result.object.created }}{{ result.object.received_date }}</td>
+            <td>{{ result.title }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}

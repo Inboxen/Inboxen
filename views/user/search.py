@@ -31,8 +31,19 @@ __all__ = ["SearchView"]
 class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
                                     views.SearchMixin, generic.ListView):
     """A specialised search view that splits results by model"""
-    headline = _("Search")
+    paginate_by = None
     template_name = "user/search.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchView, self).get_context_data(**kwargs)
+        context.update({
+                    "emails": context["object_list"].filter(content_type__model="email"),
+                    "inboxes": context["object_list"].filter(content_type__model="inbox"),
+                    })
+        return context
+
+    def get_headline(self):
+        return "%s: %s" % (_("Search"), self.query)
 
     def get_models(self):
         ## Use F expressions here because these are actually subqueries
@@ -48,4 +59,16 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     def get_query(self, request):
         get_query = super(SearchView, self).get_query(request)
         kwarg_query = self.kwargs.get(self.get_query_param(), "").strip()
+        print get_query
+        print kwarg_query
         return kwarg_query or get_query
+
+    def get_queryset(self):
+        return super(SearchView, self).get_queryset().prefetch_related("object")
+
+    def get(self, request, *args, **kwargs):
+        response = super(SearchView, self).get(request, *args, **kwargs)
+        if self.query == "":
+            self.query = self.get_query(request)
+
+        return response
