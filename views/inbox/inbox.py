@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013-2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -47,7 +47,8 @@ class InboxView(
 
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs).distinct()
-        qs = qs.filter(inbox__user=self.request.user, flags=~models.Email.flags.deleted)
+        qs = qs.filter(inbox__user=self.request.user, flags=F('flags').bitand(~models.Email.flags.deleted))
+        qs = qs.filter(inbox__flags=F('inbox__flags').bitand(~models.Inbox.flags.deleted))
         qs = qs.order_by("-received_date").select_related("inbox", "inbox__domain")
         return qs
 
