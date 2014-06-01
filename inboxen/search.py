@@ -85,6 +85,8 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
         return {
             "from": from_header,
+            "inbox": obj.inbox.inbox,
+            "domain": obj.inbox.domain.domain,
             }
 
 class InboxSearchAdapter(watson.SearchAdapter):
