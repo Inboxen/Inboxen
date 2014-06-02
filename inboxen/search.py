@@ -71,7 +71,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
                 data.append(encoding.smart_text(body.data[:remains], errors='replace'))
                 break
             else:
-                data.append(encoding.smart_text(body.data), errors='replace')
+                data.append(encoding.smart_text(body.data, errors='replace'))
 
         return u"\n".join(data)
 
