@@ -34,7 +34,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
                                 header__part__email__id=obj.id,
                                 )
             subject = subject[0]
-            return encoding.smart_text(subject.data)
+            return encoding.smart_text(subject.data, errors='replace')
         except IndexError:
             return u""
 
@@ -54,7 +54,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
     def get_description(self, obj):
         try:
             body = self.get_bodies(obj)[0]
-            return encoding.smart_text(body.data[:self.trunc_to_size])
+            return encoding.smart_text(body.data[:self.trunc_to_size], errors='replace')
         except IndexError:
             return u""
 
@@ -68,10 +68,10 @@ class EmailSearchAdapter(watson.SearchAdapter):
             if remains <= 0:
                 break
             elif remains < body.size:
-                data.append(encoding.smart_text(body.data[:remains]))
+                data.append(encoding.smart_text(body.data[:remains], errors='replace'))
                 break
             else:
-                data.append(encoding.smart_text(body.data))
+                data.append(encoding.smart_text(body.data), errors='replace')
 
         return u"\n".join(data)
 
@@ -83,7 +83,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
                                     header__name__name="From",
                                     header__part__email__id=obj.id,
                                     )[0]
-            from_header = encoding.smart_text(from_header.data)
+            from_header = encoding.smart_text(from_header.data, errors='replace')
         except IndexError:
             from_header = u""
 
