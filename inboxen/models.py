@@ -31,9 +31,10 @@ from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
+import watson
 
 from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
-from inboxen import fields
+from inboxen import fields, search
 
 # South fix for djorm_pgbytea
 from south.modelsinspector import add_introspection_rules
@@ -248,34 +249,16 @@ class Body(models.Model):
 
     This model expects and returns binary data, converting to and from unicode happens elsewhere
     """
-    path = models.FilePathField(default=None, null=True, blank=True)
     hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
-    _data = models.BinaryField(
-        db_column='data',
-        blank=True,
-        null=True,
-    )
+    data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
     objects = BodyManager()
 
-    def set_data(self, data):
-        self._data = data
-        self.size = len(data)
-
-    def get_data(self):
-        if not self.path:
-            return self._data
-        
-        # look for data in the path
-        _tpath = open(self.path, "rb")
-        try:
-            d = _tpath.read()
-        finally:
-            _tpath.close()
-        return d
-
-    data = property(get_data, set_data)
+    def save(self, *args, **kwargs):
+        if self.size is None:
+            self.size = len(self.data)
+        return super(Body, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.hashed
@@ -334,3 +317,7 @@ class Header(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)
+
+# Search
+watson.register(Email, search.EmailSearchAdapter)
+watson.register(Inbox, search.InboxSearchAdapter)

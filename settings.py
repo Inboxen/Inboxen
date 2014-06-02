@@ -236,6 +236,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'django_extensions',
+    'watson',
     'djcelery',
     'inboxen',
     'website',

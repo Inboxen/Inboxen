@@ -13,6 +13,7 @@ onetimepass
 psycopg2
 pytz
 -e git+https://github.com/Inboxen/dj-queryset-manager.git@3aab4be7e6a6a7914e7830212cfc4105e54398d2#egg=dj-queryset-manager
+-e git+https://github.com/moggers87/django-watson.git@view-mixin-kwargs#egg=django-watson
 -r queue/requirements.txt
 -r router/requirements.txt
 -r website/requirements.txt

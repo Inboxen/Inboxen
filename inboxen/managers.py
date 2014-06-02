@@ -157,15 +157,8 @@ class BodyManager(HashedManager):
     use_for_related_fields = True
 
     @queryset_method
-    def get_or_create(self, data=None, path=None, hashed=None, **kwargs):
+    def get_or_create(self, data=None, hashed=None, **kwargs):
         if hashed is None:
-            if path is not None:
-                # look for data in the path
-                tpath = open(path, "rb")
-                try:
-                    data = tpath.read()
-                finally:
-                    tpath.close()
             hashed = self.hash_it(data)
 
-        return super(type(self), self).get_or_create(hashed=hashed, defaults={'path':path, 'data':data}, **kwargs)
+        return super(type(self), self).get_or_create(hashed=hashed, defaults={'data':data}, **kwargs)
