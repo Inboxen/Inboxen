@@ -86,6 +86,10 @@
 </div>
 {% endif %}
 {% if not inboxes and not emails %}
-<p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>{% endblocktrans %}</p>
+{% if query %}
+    <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>{% endblocktrans %}</p>
+{% else %}
+    <p>{% trans "Well, we don't get much call for that around here." %}</p>
+{% endif %}
 {% endif %}
 {% endblock %}
