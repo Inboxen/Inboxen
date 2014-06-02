@@ -45,6 +45,10 @@ class EmailSearchAdapter(watson.SearchAdapter):
                                 partlist__header__name__name="Content-Type",
                                 partlist__header__data__data__startswith="text/",
                                 )
+        if len(data) == 0:
+            data = Body.objects.filter(partlist__email__id=obj.id)
+            data = data.exclude(partlist__header__name__name="Content-Type")
+            data = data.exclude(partlist__header__name__name="MIME-Version")
         return data
 
     def get_description(self, obj):
