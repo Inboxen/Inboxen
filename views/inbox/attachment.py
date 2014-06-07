@@ -66,7 +66,9 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
         disposition = "; ".join(disposition)
 
         if "charset" in params:
-            content_type = "{0}; charset={1}".format(content_type, params["charset"])
+            content_type = "{0}; charset={1}".format(content_type[0], params["charset"])
+        else:
+            content_type = content_type[0]
 
         # make header object
         data = self.object.body.data or ""
