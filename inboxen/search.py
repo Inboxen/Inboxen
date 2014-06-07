@@ -17,10 +17,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import re
+
+from django.core import exceptions
 from django.contrib.contenttypes.models import ContentType
 from django.utils import encoding
 
 import watson
+
+HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 class EmailSearchAdapter(watson.SearchAdapter):
     trunc_to_size = 2**20 # 1MB. Or two copies of 1984
@@ -51,12 +56,25 @@ class EmailSearchAdapter(watson.SearchAdapter):
             data = data.exclude(partlist__header__name__name="MIME-Version")
         return data
 
+    def get_body_charset(self, body):
+        content_type = body.header_set.filter(name__name="Content-Type").select_related("data")
+        try:
+            content_type = content_type.get().split(";", 1)
+            params = dict(HEADER_PARAMS.findall(content_type[1]))
+            if "charset" in params:
+                encoding = params["charset"]
+        except (exceptions.ObjectDoesNotExist, IndexError):
+            encoding = "utf-8"
+
+        return encoding
+
     def get_description(self, obj):
         try:
             body = self.get_bodies(obj)[0]
-            return encoding.smart_text(body.data[:self.trunc_to_size], errors='replace')
         except IndexError:
             return u""
+
+        return encoding.smart_text(body.data[:self.trunc_to_size], encoding=self.get_body_charset(body), errors='replace')
 
     def get_content(self, obj):
         data = []
@@ -68,10 +86,10 @@ class EmailSearchAdapter(watson.SearchAdapter):
             if remains <= 0:
                 break
             elif remains < body.size:
-                data.append(encoding.smart_text(body.data[:remains], errors='replace'))
+                data.append(encoding.smart_text(body.data[:remains], encoding=self.get_body_charset(body), errors='replace'))
                 break
             else:
-                data.append(encoding.smart_text(body.data, errors='replace'))
+                data.append(encoding.smart_text(body.data, encoding=self.get_body_charset(body), errors='replace'))
 
         return u"\n".join(data)
 
