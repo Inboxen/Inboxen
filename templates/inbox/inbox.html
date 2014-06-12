@@ -48,7 +48,7 @@
                         <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
                     <td>
                         {% if not email.flags.read %}
-                            <span class="label label-primary">{% trans "Unread" %}</span>
+                            <span class="label label-info">{% trans "Unread" %}</span>
                         {% else %}
                             &nbsp;
                         {% endif %}
