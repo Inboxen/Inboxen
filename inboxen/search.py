@@ -30,8 +30,10 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 class EmailSearchAdapter(watson.SearchAdapter):
     trunc_to_size = 2**20 # 1MB. Or two copies of 1984
 
+    # We can't import our models at module load time nor at object
+    # initialisation due to circular imports (this class is initialised via
+    # inboxen.models), so we'll do it this way instead.
     _model_cache = {}
-
     def get_model(self, model):
         try:
             model_class = self._model_cache[model]
@@ -40,20 +42,8 @@ class EmailSearchAdapter(watson.SearchAdapter):
             self._model_cache[model] = model_class
         return model_class
 
-    def get_title(self, obj):
-        HeaderData = self.get_model("headerdata")
-        try:
-            subject = HeaderData.objects.filter(
-                                header__part__parent__isnull=True,
-                                header__name__name="Subject",
-                                header__part__email__id=obj.id,
-                                )
-            subject = subject[0]
-            return encoding.smart_text(subject.data, errors='replace')
-        except IndexError:
-            return u""
-
     def get_bodies(self, obj):
+        """Return a queryset of text/* bodies for given obj"""
         Body = self.get_model("body")
         data = Body.objects.filter(
                                 partlist__email__id=obj.id,
@@ -67,6 +57,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
         return data
 
     def get_body_charset(self, obj, body):
+        """Figure out the charset for the body we've just been given"""
         Header = self.get_model("header")
         content_type = Header.objects.filter(part__email__id=obj.id, part__body__id=body.id, name__name="Content-Type").select_related("data")
         try:
@@ -80,7 +71,25 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
         return encoding
 
+    ## Overridden SearchAdapter methods, see Watson docs
+
+    def get_title(self, obj):
+        """Fetch subject for obj"""
+        HeaderData = self.get_model("headerdata")
+        try:
+            subject = HeaderData.objects.filter(
+                                header__part__parent__isnull=True,
+                                header__name__name="Subject",
+                                header__part__email__id=obj.id,
+                                )
+            subject = subject[0]
+            return encoding.smart_text(subject.data, errors='replace')
+        except IndexError:
+            return u""
+
     def get_description(self, obj):
+        """Fetch first text/* body for obj, reading up to `trunc_to_size` bytes
+        """
         try:
             body = self.get_bodies(obj)[0]
         except IndexError:
@@ -89,6 +98,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
         return encoding.smart_text(body.data[:self.trunc_to_size], encoding=self.get_body_charset(obj, body), errors='replace')
 
     def get_content(self, obj):
+        """Fetch all text/* bodies for obj, reading up to `trunc_to_size` bytes"""
         data = []
         size = 0
         for body in self.get_bodies(obj):
@@ -106,6 +116,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
         return u"\n".join(data)
 
     def get_meta(self, obj):
+        """Extra meta data to save DB queries later"""
         HeaderData = self.get_model("headerdata")
         try:
             from_header = HeaderData.objects.filter(
@@ -128,10 +139,10 @@ class InboxSearchAdapter(watson.SearchAdapter):
         return ", ".join([tag.tag for tag in obj.tag_set.only("tag").iterator()])
 
     def get_description(self, obj):
-        return u""
+        return u"" # no point in repeating what's in get_title
 
     def get_content(self, obj):
-        return u""
+        return u"" # ditto
 
     def get_meta(self, obj):
         return {
