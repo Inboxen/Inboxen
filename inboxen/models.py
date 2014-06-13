@@ -227,7 +227,7 @@ class Email(models.Model):
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
     inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=("deleted","read","seen"), default=0)
+    flags = BitField(flags=("deleted","read","seen","important"), default=0)
     received_date = models.DateTimeField()
 
     def get_eid(self):
