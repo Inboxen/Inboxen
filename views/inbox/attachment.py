@@ -49,7 +49,7 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
             disposition.append("attachment")
 
         headers = self.object.header_set.get_many("Content-Type", "Content-Disposition")
-        content_type = headers.pop("Content-Type", "").split(";", 1)
+        content_type = headers.pop("Content-Type", "text/plain").split(";", 1)
         dispos = headers.pop("Content-Disposition", "")
 
         try:
@@ -79,5 +79,6 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
 
         response["Content-Length"] = self.object.body.size or len(data)
         response["Content-Disposition"] = disposition
-        response["Content-Type"] = content_type[0]
+        response["Content-Type"] = content_type
+
         return response
