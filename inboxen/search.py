@@ -30,8 +30,18 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 class EmailSearchAdapter(watson.SearchAdapter):
     trunc_to_size = 2**20 # 1MB. Or two copies of 1984
 
+    _model_cache = {}
+
+    def get_model(self, model):
+        try:
+            model_class = self._model_cache[model]
+        except KeyError:
+            model_class = ContentType.objects.get(app_label="inboxen", model=model).model_class()
+            self._model_cache[model] = model_class
+        return model_class
+
     def get_title(self, obj):
-        HeaderData = ContentType.objects.get(app_label="inboxen", model="headerdata").model_class()
+        HeaderData = self.get_model("headerdata")
         try:
             subject = HeaderData.objects.filter(
                                 header__part__parent__isnull=True,
@@ -44,7 +54,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
             return u""
 
     def get_bodies(self, obj):
-        Body = ContentType.objects.get(app_label="inboxen", model="body").model_class()
+        Body = self.get_model("body")
         data = Body.objects.filter(
                                 partlist__email__id=obj.id,
                                 partlist__header__name__name="Content-Type",
@@ -56,10 +66,12 @@ class EmailSearchAdapter(watson.SearchAdapter):
             data = data.exclude(partlist__header__name__name="MIME-Version")
         return data
 
-    def get_body_charset(self, body):
-        content_type = body.header_set.filter(name__name="Content-Type").select_related("data")
+    def get_body_charset(self, obj, body):
+        Header = self.get_model("header")
+        content_type = Header.objects.filter(part__email__id=obj.id, part__body__id=body.id, name__name="Content-Type").select_related("data")
         try:
-            content_type = content_type.get().split(";", 1)
+            content_type = content_type[0].data.data
+            content_type = content_type.split(";", 1)
             params = dict(HEADER_PARAMS.findall(content_type[1]))
             if "charset" in params:
                 encoding = params["charset"]
@@ -74,7 +86,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
         except IndexError:
             return u""
 
-        return encoding.smart_text(body.data[:self.trunc_to_size], encoding=self.get_body_charset(body), errors='replace')
+        return encoding.smart_text(body.data[:self.trunc_to_size], encoding=self.get_body_charset(obj, body), errors='replace')
 
     def get_content(self, obj):
         data = []
@@ -86,15 +98,15 @@ class EmailSearchAdapter(watson.SearchAdapter):
             if remains <= 0:
                 break
             elif remains < body.size:
-                data.append(encoding.smart_text(body.data[:remains], encoding=self.get_body_charset(body), errors='replace'))
+                data.append(encoding.smart_text(body.data[:remains], encoding=self.get_body_charset(obj, body), errors='replace'))
                 break
             else:
-                data.append(encoding.smart_text(body.data, encoding=self.get_body_charset(body), errors='replace'))
+                data.append(encoding.smart_text(body.data, encoding=self.get_body_charset(obj, body), errors='replace'))
 
         return u"\n".join(data)
 
     def get_meta(self, obj):
-        HeaderData = ContentType.objects.get(app_label="inboxen", model="headerdata").model_class()
+        HeaderData = self.get_model("headerdata")
         try:
             from_header = HeaderData.objects.filter(
                                     header__part__parent__isnull=True,
