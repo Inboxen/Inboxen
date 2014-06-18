@@ -22,6 +22,7 @@ import re
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.views import generic
+from django.http import HttpResponseRedirect
 
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
@@ -43,6 +44,13 @@ class EmailView(
     pk_url_kwarg = "id"
     template_name = 'inbox/email.html'
 
+    def get(self, *args, **kwargs):
+        out = super(EmailView, self).get(*args, **kwargs)
+        self.object.flags.read = True
+        self.object.flags.seen = True
+        self.object.save()
+        return out
+
     def get_object(self, *args, **kwargs):
         # Convert the id from base 16 to 10
         self.kwargs[self.pk_url_kwarg] = int(self.kwargs[self.pk_url_kwarg], 16)
@@ -58,12 +66,19 @@ class EmailView(
                                     ).select_related("inbox", "inbox__domain")
         return queryset
 
-    def get(self, *args, **kwargs):
-        out = super(EmailView, self).get(*args, **kwargs)
-        self.object.flags.read = True
-        self.object.flags.seen = True
-        self.object.save()
-        return out
+    def get_success_url(self):
+        return self.request.path
+
+    # added for "mark as read" button in email view... which makes no sense at all :P
+    # but it will be useful for fixing Inboxen/website#152
+    def post(self, *args, **kwargs):
+        obj = self.get_object()
+
+        if "important-toggle" in self.request.POST:
+            obj.flags.read = not bool(obj.flags.read)
+            obj.save()
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def find_body(self, html, plain):
         """Given a pair of plaintext and html MIME parts, return True or False
