@@ -62,17 +62,21 @@ class InboxView(
             email.delete()
             return HttpResponseRedirect(self.get_success_url())
 
-        emails = Q(id=None)
+        emails = []
         for email in self.request.POST:
             if self.request.POST[email] == "email":
                 try:
                     email_id = int(email, 16)
-                    emails = emails | Q(id=email_id)
-                except (self.model.DoesNotExist, ValueError):
+                    emails.append(email_id)
+                except ValueError:
                     return
 
         # update() & delete() like to do a select first for some reason :s
-        emails = qs.filter(emails)
+        emails = qs.filter(id__in=emails).only("id")
+
+        # TODO: fix bug in django-bitfield that causes the invalid reference bug
+        email_ids = list(emails.values_list('id', flat=True))
+        emails = self.model.objects.filter(id__in=email_ids).only("id")
 
         if "unread" in self.request.POST:
             emails.update(flags=F('flags').bitand(~self.model.flags.read))
