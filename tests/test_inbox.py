@@ -22,20 +22,31 @@ from django.core import urlresolvers
 
 from inboxen import models
 
+@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class SingleInboxTestCase(test.TestCase):
     """Test Inbox specific views"""
     def setUp(self):
         """Create the client and some inboxes"""
-        self.client = test.Client()
-        self.client.login(username="isdabizda")
-        self.user = models.User.objects.get(username="isdabizda")
+        self.user = models.User.objects.create(username="isdabizda")
         domain = models.Domain.objects.create(domain="localhost")
-        self.inbox = models.Inbox.objects.create(domain=domain, user=self.user)
+        self.inbox = models.Inbox.objects.create(domain=self.domain, user=self.user)
+
+        self.url = urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": domain.domain})
+
+        password = "123456"
+        self.user.set_password(password)
+        self.user.save()
+
+        self.client = test.Client()
+        login = self.client.login(username=self.user.username, password=password)
+
+        if not login:
+            raise Exception("Could not log in")
 
         #TODO: insert emails
 
     def test_get(self):
-        response = self.client.get(urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.domain.domain}))
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
