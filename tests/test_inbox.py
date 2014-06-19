@@ -45,7 +45,21 @@ class SingleInboxTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
-        pass
+        emails = models.Email.objects.filter(inbox=self.inbox).order_by('-received_date').only("id")
+        params = {"read": ""}
+
+        for email in emails[:12]:
+            params[email.eid] = "email"
+
+        response = self.client.post(self.url, params)
+
+        self.assertEqual(response.status_code, 302)
 
     def test_pagin(self):
-        pass
+        # there should be 150 emails in the test fixtures
+        # and pages are paginated by 100 items
+        response = self.client.get(self.url + "2")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.url + "3")
+        self.assertEqual(response.status_code, 404)
