@@ -25,25 +25,20 @@ from inboxen import models
 @test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class SingleInboxTestCase(test.TestCase):
     """Test Inbox specific views"""
+    fixtures = ['inboxen_testdata.json']
+
     def setUp(self):
         """Create the client and some inboxes"""
-        self.user = models.User.objects.create(username="isdabizda")
-        domain = models.Domain.objects.create(domain="localhost")
-        self.inbox = models.Inbox.objects.create(domain=self.domain, user=self.user)
+        self.inbox = models.Inbox.objects.filter(id=1).select_related("user", "domain").get()
+        self.user = self.inbox.user
 
-        self.url = urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": domain.domain})
-
-        password = "123456"
-        self.user.set_password(password)
-        self.user.save()
+        self.url = urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
         self.client = test.Client()
-        login = self.client.login(username=self.user.username, password=password)
+        login = self.client.login(username=self.user.username, password="123456")
 
         if not login:
             raise Exception("Could not log in")
-
-        #TODO: insert emails
 
     def test_get(self):
         response = self.client.get(self.url)
