@@ -14,4 +14,9 @@ install:
     - if [[ $DB == postgres ]]; then pip install -q psycopg2; fi
     - pip install -q -r requirements.txt
 
-script: runtests.py
+script: python manage.py test --settings=tests.settings
+
+notifications:
+  irc:
+    channels:
+      - ircs://irc.megworld.co.uk:9000#inboxen"
