@@ -1,6 +1,8 @@
 infrastructure
 ==============
 
+[![Build Status](https://travis-ci.org/Inboxen/infrastructure.svg?branch=master)](https://travis-ci.org/Inboxen/infrastructure)
+
 A place to bring together the project as a whole.
 
 Also, a repo to make the whole thing easier to deploy :)`
