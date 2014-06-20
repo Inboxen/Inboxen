@@ -22,17 +22,14 @@ from django.core import urlresolvers
 
 from inboxen import models
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
-class SingleInboxTestCase(test.TestCase):
-    """Test Inbox specific views"""
+class InboxTestAbstract(object):
+    """An abstract TestCase that won't get picked up by Django's test finder"""
     fixtures = ['inboxen_testdata.json']
 
     def setUp(self):
-        """Create the client and some inboxes"""
-        self.inbox = models.Inbox.objects.filter(id=1).select_related("user", "domain").get()
-        self.user = self.inbox.user
-
-        self.url = urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        """Create the client and grab the user"""
+        super(InboxTestAbstract, self).setUp()
+        self.user = models.User.objects.get(id=1)
 
         self.client = test.Client()
         login = self.client.login(username=self.user.username, password="123456")
@@ -41,25 +38,49 @@ class SingleInboxTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def test_get(self):
-        response = self.client.get(self.url)
+        response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
     def test_post(self):
-        emails = models.Email.objects.filter(inbox=self.inbox).order_by('-received_date').only("id")
+        emails = self.get_emails().order_by('-received_date').only("id")
         params = {"read": ""}
 
         for email in emails[:12]:
             params[email.eid] = "email"
 
-        response = self.client.post(self.url, params)
+        response = self.client.post(self.get_url(), params)
 
         self.assertEqual(response.status_code, 302)
 
     def test_pagin(self):
         # there should be 150 emails in the test fixtures
         # and pages are paginated by 100 items
-        response = self.client.get(self.url + "2")
+        response = self.client.get(self.get_url() + "2")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(self.url + "3")
+        response = self.client.get(self.get_url() + "3")
         self.assertEqual(response.status_code, 404)
+
+
+@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
+class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
+    """Test Inbox specific views"""
+    def setUp(self):
+        self.inbox = models.Inbox.objects.filter(id=1).select_related("domain").get()
+        super(SingleInboxTestCase, self).setUp()
+
+    def get_url(self):
+        return urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+
+    def get_emails(self):
+        return models.Email.objects.filter(inbox=self.inbox)
+
+
+@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
+class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
+    """Test Inbox specific views"""
+    def get_url(self):
+        return urlresolvers.reverse("unified-inbox")
+
+    def get_emails(self):
+        return models.Email.objects.filter(inbox__user=self.user)
