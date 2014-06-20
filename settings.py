@@ -19,6 +19,7 @@
 
 import datetime
 import os
+import warnings
 
 from django.contrib.messages import constants as message_constants
 from django.core import exceptions, urlresolvers
@@ -48,6 +49,8 @@ db_dict = {
             "sqlite": "django.db.backends.sqlite3"
             }
 
+is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
+
 BASE_DIR = os.path.dirname(__file__)
 
 if os.path.exists(os.getenv('INBOX_CONFIG', '')):
@@ -56,6 +59,8 @@ elif os.path.exists(os.path.expanduser("~/.config/inboxen/settings.ini")):
     CONFIG_PATH = os.path.expanduser("~/.config/inboxen/settings.ini")
 elif os.path.exists(os.path.join(BASE_DIR, "settings.ini")):
     CONFIG_PATH = os.path.join(BASE_DIR, "settings.ini")
+elif is_testing:
+    CONFIG_PATH=""
 else:
     raise exceptions.ImproperlyConfigured("You must provide a settings.ini file")
 
@@ -68,7 +73,10 @@ config.validate(validate.Validator())
 try:
     SECRET_KEY = config["general"]["secret_key"]
 except KeyError:
-    raise exceptions.ImproperlyConfigured("You must set 'secret_key' in your settings.ini")
+    if is_testing:
+        warnings.warn("You haven't set 'secret_key' in your settings.ini", ImportWarning)
+    else:
+        raise exceptions.ImproperlyConfigured("You must set 'secret_key' in your settings.ini")
 
 if len(config["general"]["admin_names"]) != len(config["general"]["admin_emails"]):
     raise exceptions.ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.ini")

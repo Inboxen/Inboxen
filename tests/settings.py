@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 import os
+
+os.environ['INBOX_TESTING'] = '1'
 from settings import *
 
 db = os.environ.get('DB')
