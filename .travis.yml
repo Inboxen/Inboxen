@@ -19,4 +19,4 @@ script: python manage.py test --settings=tests.settings
 notifications:
   irc:
     channels:
-      - ircs://irc.megworld.co.uk:9000#inboxen"
+      - "ircs://irc.megworld.co.uk:9000#inboxen"
