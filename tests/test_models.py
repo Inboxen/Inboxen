@@ -20,7 +20,6 @@
 import datetime
 
 from django import test
-from django.core import urlresolvers
 
 from inboxen import models
 
@@ -54,8 +53,8 @@ class ModelTestCase(test.TestCase):
         tags = "one, two, three, four, five"
         inbox = models.Inbox.objects.get(id=1)
 
-        tag_objs = inbox.tag_set.from_method(tags)
-        tag_str = ", ".join([tag.tag for tag in tag_obj])
+        tag_objs = inbox.tag_set.from_string(tags)
+        tag_str = ", ".join([tag.tag for tag in tag_objs])
 
         self.assertEqual(tags, tag_str)
         for tag in tag_objs:
