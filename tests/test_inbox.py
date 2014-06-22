@@ -41,7 +41,7 @@ class InboxTestAbstract(object):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-    def test_post(self):
+    def test_post_read(self):
         emails = self.get_emails().order_by('-received_date').only("id")
         params = {"read": ""}
 
@@ -49,8 +49,29 @@ class InboxTestAbstract(object):
             params[email.eid] = "email"
 
         response = self.client.post(self.get_url(), params)
-
         self.assertEqual(response.status_code, 302)
+
+        read_count = emails.filter(flags=models.Email.flags.read).count()
+        self.assertEqual(read_count, 12)
+
+    def test_post_delete(self):
+        email_ids = self.get_emails().order_by('?').only('id')[:5]
+        email_ids = [email.eid for email in email_ids]
+        count_1st = self.get_emails().count()
+
+        response = self.client.post(self.get_url(), {"delete-single": email_ids.pop()})
+        self.assertEqual(response.status_code, 302)
+
+        count_2nd = self.get_emails().count()
+        self.assertEqual(count_1st-1, count_2nd)
+
+        params = dict([(email_id, "email") for email_id in email_ids])
+        params["delete"] = ""
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 302)
+
+        count_3rd = self.get_emails().count()
+        self.assertEqual(count_2nd-4, count_3rd)
 
     def test_pagin(self):
         # there should be 150 emails in the test fixtures
