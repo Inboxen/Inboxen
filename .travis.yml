@@ -1,7 +1,7 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
+    - "2.6"
+    - "2.7"
 
 env:
     - DB=sqlite
@@ -14,9 +14,10 @@ install:
     - if [[ $DB == postgres ]]; then pip install -q psycopg2; fi
     - pip install -q -r requirements.txt
 
-script: python manage.py test --settings=tests.settings
+script: python manage.py test --settings=inboxen.tests.settings
 
 notifications:
-  irc:
-    channels:
-      - "ircs://irc.megworld.co.uk:9000#inboxen"
+    irc:
+        channels:
+            - "ircs://irc.megworld.co.uk:9000#inboxen"
+        use_notice: true
