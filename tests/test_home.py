@@ -19,6 +19,7 @@
 
 from django import test
 from django.core import urlresolvers
+from django.conf import settings as dj_settings
 
 from inboxen import models
 
@@ -37,6 +38,17 @@ class HomeViewTestCase(test.TestCase):
 
     def get_url(self):
         return urlresolvers.reverse("user-home")
+
+    def test_context(self):
+        response = self.client.get(self.get_url())
+        context_settings = response.context['settings']
+
+        # test that something is getting set
+        self.assertEqual(dj_settings.SITE_NAME, context_settings["SITE_NAME"])
+
+        # Please add any settings that may contain passwords or secrets:
+        self.assertEqual("SECRET_KEY" in context_settings, False)
+        self.assertEqual("DATABASES" in context_settings, False)
 
     def test_get(self):
         response = self.client.get(self.get_url())

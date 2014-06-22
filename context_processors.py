@@ -30,6 +30,6 @@ def reduced_settings_context(request):
     """
     reduced_settings = {
         "SITE_NAME": settings.SITE_NAME,
-        "ENABLE_REGISTRATION": settings.ENABLE_REGISTRATION
+        "ENABLE_REGISTRATION": settings.ENABLE_REGISTRATION,
     }
     return {"settings": reduced_settings}
