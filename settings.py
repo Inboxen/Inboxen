@@ -209,9 +209,13 @@ CACHES = {
     }
 }
 
+# Make sure all custom template tags are thread safe
+# https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/#template-tag-thread-safety
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
+    ('django.template.loaders.cached.Loader', (
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    )),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
