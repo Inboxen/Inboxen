@@ -318,6 +318,13 @@ class Header(models.Model):
     def __unicode__(self):
         return u"{0}".format(self.name.name)
 
+# Unregister update_last_login handler
+# See https://github.com/Inboxen/website/issues/156
+from django.contrib.auth.signals import user_logged_in
+from django.contrib.auth.models import update_last_login
+
+user_logged_in.disconnect(update_last_login)
+
 # Search
 watson.register(Email, search.EmailSearchAdapter)
 watson.register(Inbox, search.InboxSearchAdapter)
