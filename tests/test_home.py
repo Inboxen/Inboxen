@@ -28,9 +28,9 @@ class HomeViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
     def setUp(self):
+        super(HomeViewTestCase, self).setUp()
         self.user = models.User.objects.get(id=1)
 
-        self.client = test.Client()
         login = self.client.login(username=self.user.username, password="123456")
 
         if not login:
