@@ -99,15 +99,18 @@ class TagManager(QuerySetManager):
     @queryset_method
     def from_string(self, tags, **kwargs):
         """Create Tag objects from string"""
-        if hasattr(self, "_known_related_objects") and not hasattr(self, "instance"):
+        if hasattr(self, "_known_related_objects") and not hasattr(self, "instance") and "inbox" not in kwargs:
             # hack hack hack. See issue #61
             inbox = self._known_related_objects.values()
 
-            assert len(inbox) == 1, "More than one known related object!"
-            assert len(inbox[0]) == 1, "More than one known related object!"
+            assert len(inbox) <= 1, "More than one known related object!"
+            assert len(inbox[0]) <= 1, "More than one known related object!"
 
-            inbox = inbox[0].values()[0]
-            kwargs.setdefault("inbox", inbox)
+            try:
+                inbox = inbox[0].values()[0]
+                kwargs.setdefault("inbox", inbox)
+            except IndexError:
+                pass
 
         if "," in tags:
             tags = tags.split(",")
