@@ -21,6 +21,7 @@ from django import test
 from django.core import urlresolvers
 
 from inboxen import models
+from website import forms as inboxen_forms
 
 class InboxTestAbstract(object):
     """An abstract TestCase that won't get picked up by Django's test finder"""
@@ -104,3 +105,34 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
 
     def get_emails(self):
         return models.Email.objects.filter(inbox__user=self.user)
+
+@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
+class InboxAddTestCase(test.TestCase):
+    """Test the add inbox page"""
+    fixtures = ['inboxen_testdata.json']
+
+    def setUp(self):
+        """Create the client and grab the user"""
+        super(InboxAddTestCase, self).setUp()
+        self.user = models.User.objects.get(id=1)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urlresolvers.reverse("inbox-add")
+
+    def test_inbox_add_form(self):
+        response = self.client.get(self.get_url())
+        form = response.context["form"]
+        self.assertEqual(isinstance(form, inboxen_forms.InboxAddForm), True)
+
+    def test_inbox_add(self):
+        inbox_count_1st = models.Inbox.objects.count()
+        response = self.client.post(self.get_url(), {"domain":"1", "tags":"no tags"})
+        self.assertEqual(response.status_code, 302)
+
+        inbox_count_2nd = models.Inbox.objects.count()
+        self.assertEqual(inbox_count_1st, inbox_count_2nd-1)
