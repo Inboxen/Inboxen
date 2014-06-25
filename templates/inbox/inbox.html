@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load inboxen_flags %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -40,18 +41,10 @@
             </tr>
             </thead>
             {% for email in page_obj.object_list %}
-                    {% if email.flags.read %}
-                        <tr title="{% trans "Message has been read" %}">
-                    {% else %}
-                        <tr title="{% trans "Message is unread" %}">
-                    {% endif %}
-                        <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
+                <tr>
+                    <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
                     <td>
-                        {% if not email.flags.read %}
-                            <span class="label label-info">{% trans "Unread" %}</span>
-                        {% else %}
-                            &nbsp;
-                        {% endif %}
+                        {{ email.flags|render_flags }}
                     </td>
                         <td>{{ email.sender }}</td>
                         {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load inboxen_flags %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
@@ -27,7 +29,7 @@
                     <a href="{% url 'single-inbox' inbox=result.object.inbox domain=result.meta.domain %}">
                         {{ result.object.inbox }}@{{ result.meta.domain }}
                     </a>
-                    {% if result.object.flags.new %}
+                    {{ result.object.flags|render_flags }}
                         <span class="label label-primary" title="{% trans "New messages" %}">{% trans "New" %}</span>
                     {% endif %}
                 </td>
@@ -58,17 +60,9 @@
         </tr>
         </thead>
         {% for result in emails %}
-            {% if result.object.flags.read %}
-                <tr title="{% trans "Message has been read" %}">
-            {% else %}
-                <tr title="{% trans "Message is unread" %}">
-            {% endif %}
+            <tr>
                 <td>
-                    {% if not result.object.flags.read %}
-                        <span class="label label-info">{% trans "Unread" %}</span>
-                    {% else %}
-                        &nbsp;
-                    {% endif %}
+                    {{ result.object.flags|render_flags }}
                 </td>
                 <td>{{ result.meta.from }}</td>
                 <td><a href="{% url 'email-view' inbox=result.meta.inbox domain=result.meta.domain id=result.object.eid %}">
