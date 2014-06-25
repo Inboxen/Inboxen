@@ -129,6 +129,9 @@ class InboxAddTestCase(test.TestCase):
         form = response.context["form"]
         self.assertEqual(isinstance(form, inboxen_forms.InboxAddForm), True)
 
+        self.assertEqual("inbox" in form.fields, False)
+        self.assertEqual("tags" in form.fields, True)
+
     def test_inbox_add(self):
         inbox_count_1st = models.Inbox.objects.count()
         response = self.client.post(self.get_url(), {"domain":"1", "tags":"no tags"})
