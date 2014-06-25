@@ -130,6 +130,7 @@ class InboxAddTestCase(test.TestCase):
         self.assertEqual(isinstance(form, inboxen_forms.InboxAddForm), True)
 
         self.assertEqual("inbox" in form.fields, False)
+        self.assertEqual("domain" in form.fields, True)
         self.assertEqual("tags" in form.fields, True)
 
     def test_inbox_add(self):
@@ -139,3 +140,38 @@ class InboxAddTestCase(test.TestCase):
 
         inbox_count_2nd = models.Inbox.objects.count()
         self.assertEqual(inbox_count_1st, inbox_count_2nd-1)
+
+@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
+class InboxEditTestCase(test.TestCase):
+    """Test the add inbox page"""
+    fixtures = ['inboxen_testdata.json']
+
+    def setUp(self):
+        """Create the client and grab the user"""
+        super(InboxEditTestCase, self).setUp()
+        self.user = models.User.objects.get(id=1)
+        self.inbox = self.user.inbox_set.select_related("domain")[0]
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urlresolvers.reverse("inbox-edit", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+
+    def test_inbox_add_form(self):
+        response = self.client.get(self.get_url())
+        form = response.context["form"]
+        self.assertEqual(isinstance(form, inboxen_forms.InboxEditForm), True)
+
+        self.assertEqual("inbox" in form.fields, False)
+        self.assertEqual("domain" in form.fields, False)
+        self.assertEqual("tags" in form.fields, True)
+
+    def test_inbox_add(self):
+        response = self.client.post(self.get_url(), {"tags":"no tags"})
+        self.assertEqual(response.status_code, 302)
+
+        tags = " ".join([tag.tag for tag in self.inbox.tag_set.all()])
+        self.assertEqual(tags, "no tags")
