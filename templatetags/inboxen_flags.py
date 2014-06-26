@@ -40,7 +40,7 @@ FLAGS_TO_TAGS = {
                     "title": _("Message has been marked as important"),
                     "str": _("Important"),
                     "class": "label-danger",
-                    "inverse": True,
+                    "inverse": False,
                     },
                 }
 
