@@ -62,7 +62,7 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
             self.instance.flags.exclude_from_unified = excludes
             self.instance.save()
 
-            models.Tag.objects.from_string(tags=tags, inbox=self.instance)
+            self.instance.tag_set.create(tags=tags)
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
@@ -90,10 +90,7 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
         with watson.update_index():
             self.instance.tag_set.all().delete()
-            self.instance.tag_set.from_string(
-                tags=self.cleaned_data.get("tags"),
-                inbox=self.instance
-            )
+            self.instance.tag_set.create(tags=self.cleaned_data.get("tags"))
             data = self.cleaned_data.copy()
             self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
             self.instance.save()
