@@ -29,11 +29,12 @@ from annoying.fields import AutoOneToOneField
 from bitfield import BitField
 from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
+from model_utils.managers import PassThroughManager
 from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 import watson
 
-from inboxen.managers import BodyManager, HeaderManager, InboxManager, TagManager
+from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet, TagQuerySet
 from inboxen import fields, search
 
 # South fix for djorm_pgbytea
@@ -173,7 +174,7 @@ class Inbox(models.Model):
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted","new","exclude_from_unified"), default=0)
 
-    objects = InboxManager()
+    objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
 
     def __unicode__(self):
         return u"%s@%s" % (self.inbox, self.domain.domain)
@@ -200,7 +201,7 @@ class Tag(models.Model):
     tag = models.CharField(max_length=256, db_index=True)
     inbox = models.ForeignKey(Inbox, on_delete=models.CASCADE)
 
-    objects = TagManager()
+    objects = PassThroughManager.for_queryset_class(TagQuerySet)()
 
     def __unicode__(self):
         return self.tag
@@ -253,7 +254,7 @@ class Body(models.Model):
     data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
-    objects = BodyManager()
+    objects = PassThroughManager.for_queryset_class(BodyQuerySet)()
 
     def save(self, *args, **kwargs):
         if self.size is None:
@@ -313,7 +314,7 @@ class Header(models.Model):
     part = models.ForeignKey(PartList)
     ordinal = models.IntegerField()
 
-    objects = HeaderManager()
+    objects = PassThroughManager.for_queryset_class(HeaderQuerySet)()
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)

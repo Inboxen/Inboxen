@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013-2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -30,14 +30,14 @@ except ImportError:
 
 from django.conf import settings
 from django.db import IntegrityError, models
+from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
-from dj_queryset_manager import QuerySetManager, queryset_method
+
 from pytz import utc
 
-class HashedManager(QuerySetManager):
-    @queryset_method
+class HashedQuerySet(QuerySet):
     def hash_it(self, data):
         hashed = hashlib.new(settings.COLUMN_HASHER)
         hashed.update(smart_bytes(data))
@@ -45,10 +45,7 @@ class HashedManager(QuerySetManager):
 
         return hashed
 
-class InboxManager(QuerySetManager):
-    use_for_related_fields = True
-
-    @queryset_method
+class InboxQuerySet(QuerySet):
     def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
         domain_model = self.model.domain.field.rel.to
@@ -63,7 +60,7 @@ class InboxManager(QuerySetManager):
                 inbox += random.choice(string.ascii_lowercase)
 
             try:
-                return super(type(self), self).create(
+                return super(InboxQuerySet, self).create(
                     inbox="".join(inbox),
                     created=datetime.now(utc),
                     domain=domain,
@@ -73,7 +70,6 @@ class InboxManager(QuerySetManager):
             except IntegrityError:
                 pass
 
-    @queryset_method
     def from_string(self, email="", user=None, deleted=False):
         """Returns an Inbox object or raises DoesNotExist"""
         inbox, domain = email.split("@", 1)
@@ -93,25 +89,9 @@ class InboxManager(QuerySetManager):
         return inbox
 
 
-class TagManager(QuerySetManager):
-    use_for_related_fields = True
-
-    @queryset_method
-    def from_string(self, tags, **kwargs):
+class TagQuerySet(QuerySet):
+    def create(self, tags, **kwargs):
         """Create Tag objects from string"""
-        if hasattr(self, "_known_related_objects") and not hasattr(self, "instance") and "inbox" not in kwargs:
-            # hack hack hack. See issue #61
-            inbox = self._known_related_objects.values()
-
-            assert len(inbox) <= 1, "More than one known related object!"
-            assert len(inbox[0]) <= 1, "More than one known related object!"
-
-            try:
-                inbox = inbox[0].values()[0]
-                kwargs.setdefault("inbox", inbox)
-            except IndexError:
-                pass
-
         if "," in tags:
             tags = tags.split(",")
         else:
@@ -119,7 +99,7 @@ class TagManager(QuerySetManager):
 
         for i, tag in enumerate(tags):
             tag = tag.strip()
-            tag = self.create(tag=tag, **kwargs)
+            tag = super(TagQuerySet, self).create(tag=tag, **kwargs)
             tags[i] = tag
 
         return tags
@@ -128,10 +108,7 @@ class TagManager(QuerySetManager):
 # Email managers
 ##
 
-class HeaderManager(HashedManager):
-    use_for_related_fields = True
-
-    @queryset_method
+class HeaderQuerySet(HashedQuerySet):
     def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
         if hashed is None:
             hashed = self.hash_it(data)
@@ -142,9 +119,8 @@ class HeaderManager(HashedManager):
         name = name_model.objects.only('id').get_or_create(name=name)[0]
         data, created = data_model.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
 
-        return (super(type(self), self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
+        return (super(HeaderQuerySet, self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
-    @queryset_method
     def get_many(self, *args, **kwargs):
         group_by = kwargs.pop("group_by", None)
         query = models.Q()
@@ -166,12 +142,9 @@ class HeaderManager(HashedManager):
 
         return headers
 
-class BodyManager(HashedManager):
-    use_for_related_fields = True
-
-    @queryset_method
+class BodyQuerySet(HashedQuerySet):
     def get_or_create(self, data=None, hashed=None, **kwargs):
         if hashed is None:
             hashed = self.hash_it(data)
 
-        return super(type(self), self).get_or_create(hashed=hashed, defaults={'data':data}, **kwargs)
+        return super(BodyQuerySet, self).get_or_create(hashed=hashed, defaults={'data':data}, **kwargs)
