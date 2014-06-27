@@ -52,7 +52,7 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 302)
 
         read_count = emails.filter(flags=models.Email.flags.read).count()
-        self.assertEqual(read_count, 12)
+        self.assertEqual(read_count, 15)
 
     def test_post_delete(self):
         email_ids = self.get_emails().order_by('?').only('id')[:5]
@@ -72,6 +72,13 @@ class InboxTestAbstract(object):
 
         count_3rd = self.get_emails().count()
         self.assertEqual(count_2nd-4, count_3rd)
+
+    def test_important_first(self):
+        response = self.client.get(self.get_url())
+        objs = response.context["page_obj"].object_list[:5]
+        objs = [obj.important for obj in objs]
+
+        self.assertEqual(objs, [1,1,1,0,0])
 
     def test_pagin(self):
         # there should be 150 emails in the test fixtures

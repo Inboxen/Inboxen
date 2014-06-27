@@ -17,17 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect, Http404
-from django.core.urlresolvers import reverse
-
+from django.utils.translation import ugettext as _
 from django.views import generic
-from inboxen import models
-from website.views import base
 
-from queue.tasks import deal_with_flags
+from aggregate_if import Count as ConditionalCount
+
+from inboxen import models
 from queue.delete.tasks import delete_email
+from queue.tasks import deal_with_flags
+from website.views import base
 
 __all__ = ["UnifiedInboxView", "SingleInboxView"]
 
@@ -49,7 +50,8 @@ class InboxView(
         qs = super(InboxView, self).get_queryset(*args, **kwargs).distinct()
         qs = qs.filter(inbox__user=self.request.user, flags=F('flags').bitand(~models.Email.flags.deleted))
         qs = qs.filter(inbox__flags=F('inbox__flags').bitand(~models.Inbox.flags.deleted))
-        qs = qs.order_by("-received_date").select_related("inbox", "inbox__domain")
+        qs = qs.annotate(important=ConditionalCount('id', only=Q(flags=models.Email.flags.important)))
+        qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 
     def post(self, *args, **kwargs):
@@ -72,7 +74,7 @@ class InboxView(
                     return
 
         # update() & delete() like to do a select first for some reason :s
-        emails = qs.filter(id__in=emails).only("id")
+        emails = qs.filter(id__in=emails).order_by("id").only("id")
 
         # TODO: fix bug in django-bitfield that causes the invalid reference bug
         email_ids = list(emails.values_list('id', flat=True))
