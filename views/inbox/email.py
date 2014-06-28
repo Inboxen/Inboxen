@@ -69,13 +69,11 @@ class EmailView(
     def get_success_url(self):
         return self.request.path
 
-    # added for "mark as read" button in email view... which makes no sense at all :P
-    # but it will be useful for fixing Inboxen/website#152
     def post(self, *args, **kwargs):
         obj = self.get_object()
 
         if "important-toggle" in self.request.POST:
-            obj.flags.read = not bool(obj.flags.read)
+            obj.flags.important = not bool(obj.flags.important)
             obj.save()
 
         return HttpResponseRedirect(self.get_success_url())
