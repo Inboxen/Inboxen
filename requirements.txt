@@ -1,1 +1,1 @@
--e git+https://github.com/moggers87/salmon.git@aa1565518bc85da51d0e3ca7e1e7049b06da59ba#egg=salmon
+salmon-mail>=2
