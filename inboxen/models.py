@@ -95,13 +95,6 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return self.user.username
 
-class TOTPAuth(models.Model):
-    """TOTP authentication, not fully implemented yet
-
-    secret is base32 encoded"""
-    user = AutoOneToOneField(User)
-    secret = models.CharField(max_length=128)
-
 class Statistic(models.Model):
     """Statistics about users"""
     user_count = models.IntegerField()

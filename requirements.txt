@@ -10,7 +10,6 @@ django-model-utils
 django-mptt
 django-ratelimit-backend
 djorm-ext-pgbytea
-onetimepass
 psycopg2
 pytz
 -e git+https://github.com/moggers87/django-watson.git@view-mixin-kwargs#egg=django-watson
