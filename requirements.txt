@@ -8,6 +8,7 @@ django-celery
 django-extensions
 django-model-utils
 django-mptt
+django-otp
 django-ratelimit-backend
 djorm-ext-pgbytea
 psycopg2
