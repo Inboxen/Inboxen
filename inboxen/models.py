@@ -21,7 +21,7 @@ from datetime import datetime
 import markdown
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models, transaction
 from django.utils.encoding import smart_str
 
@@ -40,6 +40,9 @@ from inboxen import fields, search
 # South fix for djorm_pgbytea
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ['^djorm_pgbytea\.lobject\.LargeObjectField'])
+
+# don't define a user model here, or the following line will fail
+User = get_user_model()
 
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
