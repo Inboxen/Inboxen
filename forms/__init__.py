@@ -17,5 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .inbox import *
 from .account import *
+from .inbox import *
+from .twofactor import *
