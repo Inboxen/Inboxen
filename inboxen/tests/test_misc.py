@@ -18,12 +18,19 @@
 ##
 
 from django import test
+from django.conf import settings as dj_settings
+from django.core import urlresolvers
+from django.core.cache import cache
 
 from inboxen import models
 
-class LastLoginTestCase(test.TestCase):
-    """Test that last_login is not set"""
+class LoginTestCase(test.TestCase):
+    """Test various login things"""
     fixtures = ['inboxen_testdata.json']
+
+    def setUp(self):
+        super(LoginTestCase, self).setUp()
+        cache.clear()
 
     def test_last_login(self):
         login = self.client.login(username="isdabizda", password="123456")
@@ -31,3 +38,29 @@ class LastLoginTestCase(test.TestCase):
 
         user = models.User.objects.get(username="isdabizda")
         self.assertEqual(user.last_login, user.date_joined)
+
+    def test_normal_login(self):
+        response = self.client.get(urlresolvers.reverse("user-home"))
+        self.assertEqual(response.status_code, 302)
+
+        params = {"username": "isdabizda", "password": "123456"}
+        response = self.client.post(dj_settings.LOGIN_URL, params)
+        self.assertEqual(response.status_code, 302)
+
+        response = self.client.get(urlresolvers.reverse("user-home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["request"].user.is_authenticated(), True)
+
+    def test_ratelimit(self):
+        params = {"username": "isdabizda", "password": "bad password"}
+        response = self.client.post(dj_settings.LOGIN_URL, params)
+        self.assertEqual(response.status_code, 200)
+        for i in range(100):
+            resp = self.client.post(dj_settings.LOGIN_URL, params=params)
+
+        params["password"] = "123456"
+        response = self.client.post(dj_settings.LOGIN_URL, params=params)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(urlresolvers.reverse("user-home"))
+        self.assertEqual(response.status_code, 302)
