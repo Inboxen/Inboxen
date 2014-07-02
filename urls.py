@@ -55,7 +55,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^inbox/(?P<page>\d+)', views.UnifiedInboxView.as_view(), name='unified-inbox'),
     urls.url(r'^inbox/', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 
-    urls.url(r'^user/login/', 'ratelimitbackend.views.login',
+    urls.url(r'^user/login/', 'django.contrib.auth.views.login',
         {
             'template_name': 'user/login.html',
             'authentication_form': PlaceHolderAuthenticationForm,
