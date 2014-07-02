@@ -24,6 +24,7 @@ from django.core.cache import cache
 
 from inboxen import models
 
+@test.utils.override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
     """Test various login things"""
     fixtures = ['inboxen_testdata.json']
@@ -56,11 +57,18 @@ class LoginTestCase(test.TestCase):
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 200)
         for i in range(100):
-            resp = self.client.post(dj_settings.LOGIN_URL, params=params)
+            response = self.client.post(dj_settings.LOGIN_URL, params)
 
+        # check we got rejected on bad password 
+        self.assertEqual(response.status_code, 302)
+
+        # check we still get rejected even with a good password
         params["password"] = "123456"
-        response = self.client.post(dj_settings.LOGIN_URL, params=params)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(dj_settings.LOGIN_URL, params)
+        self.assertEqual(response.status_code, 302)
 
         response = self.client.get(urlresolvers.reverse("user-home"))
         self.assertEqual(response.status_code, 302)
+
+        response = self.client.get(urlresolvers.reverse("index"))
+        self.assertEqual(response.context["request"].user.is_authenticated(), False)
