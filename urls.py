@@ -55,16 +55,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^inbox/(?P<page>\d+)', views.UnifiedInboxView.as_view(), name='unified-inbox'),
     urls.url(r'^inbox/', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 
-    urls.url(r'^user/login/', 'django.contrib.auth.views.login',
-        {
-            'template_name': 'user/login.html',
-            'authentication_form': PlaceHolderAuthenticationForm,
-            'extra_context': {
-                'headline': _('Login'),
-            },
-        },
-        name='user-login',
-    ),
+    urls.url(r'^user/login/', views.LoginView.as_view(), name='user-login'),
     urls.url(r'^user/home/(?P<page>\d+)', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/home/', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)', views.SearchView.as_view(), name='user-search'),

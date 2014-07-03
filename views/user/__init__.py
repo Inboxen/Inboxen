@@ -14,7 +14,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
-from .register import *
 from .home import *
-from .settings import *
+from .login import *
+from .register import *
 from .search import *
+from .settings import *
