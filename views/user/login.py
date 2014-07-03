@@ -38,3 +38,8 @@ class LoginView(CommonContextMixin, core.LoginView):
         ('backup', BackupTokenForm),
         )
 
+    def get_form_kwargs(self, step):
+        if step == "auth":
+            return {"request": self.request}
+        else:
+            return super(LoginView, self).get_form_kwargs(step)
