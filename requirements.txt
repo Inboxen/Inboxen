@@ -10,6 +10,7 @@ django-model-utils
 django-mptt
 django-otp
 django-ratelimit-backend
+django-two-factor-auth
 djorm-ext-pgbytea
 psycopg2
 pytz
