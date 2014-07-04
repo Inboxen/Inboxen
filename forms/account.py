@@ -31,7 +31,7 @@ from pytz import utc
 from inboxen import models
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
-from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin
+from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin
 
 class DeleteAccountForm(BootstrapFormMixin, forms.Form):
 
@@ -104,8 +104,14 @@ class LiberationForm(BootstrapFormMixin, forms.ModelForm):
 
         return self.user
 
-class PlaceHolderAuthenticationForm(BootstrapFormMixin, PlaceHolderMixin, AuthenticationForm):
-    """Same as auth.forms.AuthenticationForm but adds a label as the placeholder in each field"""
+class PlaceHolderAuthenticationForm(
+                        BootstrapFormMixin,
+                        SROnlyLabelMixin,
+                        PlaceHolderMixin,
+                        AuthenticationForm,
+                        ):
+    """Same as auth.forms.AuthenticationForm but adds a label as the placeholder
+    in each field and marks labels as sr-only"""
     pass
 
 class PlaceHolderPasswordChangeForm(BootstrapFormMixin, PlaceHolderMixin, PasswordChangeForm):

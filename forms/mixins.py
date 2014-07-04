@@ -17,7 +17,27 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.forms import widgets
+from django.forms import forms, widgets
+
+class BoundField(forms.BoundField):
+    """A Field plus data
+
+    And a SR-only label"""
+    def label_tag(self, contents=None, attrs=None, label_suffix=None):
+        if attrs is None:
+            attrs = {}
+        attrs["class"] = "sr-only"
+        return super(BoundField, self).label_tag(contents, attrs, label_suffix)
+
+class SROnlyLabelMixin(object):
+    """Mark field labels as sr-only"""
+    def __getitem__(self, name):
+        "Returns our BoundField with the given name."
+        try:
+            field = self.fields[name]
+        except KeyError:
+            raise KeyError('Key %r not found in Form' % name)
+        return BoundField(self, field, name)
 
 class BootstrapFormMixin(object):
     """Mixin for add CSS classes to Django forms
