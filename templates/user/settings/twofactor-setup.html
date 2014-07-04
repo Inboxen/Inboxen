@@ -51,6 +51,7 @@
     {# hidden submit button to enable [enter] key #}
     <div style="margin-left: -500px"><input type="submit" value=""/></div>
 
-    {% include "two_factor/_wizard_actions.html" %}
+    <button type="submit" class="btn btn-primary">{% trans "Next" %}</button>
+    <a href="{% url 'user-twofactor' %}" class="btn btn-default">{% trans "Cancel" %}</a>
   </form>
 {% endblock %}
