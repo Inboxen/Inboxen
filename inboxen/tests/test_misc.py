@@ -44,7 +44,11 @@ class LoginTestCase(test.TestCase):
         response = self.client.get(urlresolvers.reverse("user-home"))
         self.assertEqual(response.status_code, 302)
 
-        params = {"username": "isdabizda", "password": "123456"}
+        params = {
+            "auth-username": "isdabizda",
+            "auth-password": "123456",
+            "login_view-current_step": "auth",
+            }
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 302)
 
@@ -53,7 +57,11 @@ class LoginTestCase(test.TestCase):
         self.assertEqual(response.context["request"].user.is_authenticated(), True)
 
     def test_ratelimit(self):
-        params = {"username": "isdabizda", "password": "bad password"}
+        params = {
+            "auth-username": "isdabizda",
+            "auth-password": "bad password",
+            "login_view-current_step": "auth",
+            }
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 200)
         for i in range(100):
@@ -63,7 +71,7 @@ class LoginTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
 
         # check we still get rejected even with a good password
-        params["password"] = "123456"
+        params["auth-password"] = "123456"
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 302)
 
