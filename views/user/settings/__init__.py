@@ -19,3 +19,4 @@
 
 from .delete import *
 from .liberate import *
+from .otp import *

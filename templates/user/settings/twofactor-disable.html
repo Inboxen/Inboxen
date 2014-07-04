@@ -1,0 +1,21 @@
+{% extends 'user/settings/index.html' %}
+{% load two_factor i18n %}
+
+{% block navpills %}
+    <li><a href="{% url 'user-settings' %}">{% trans "General" %}</a></li>
+    <li><a href="{% url 'user-password' %}">{% trans "Change Password" %}</a></li>
+    <li><a href="{% url 'user-liberate' %}">{% trans "Liberate Data" %}</a></li>
+    <li class="active"><a href="{% url 'user-twofactor' %}">{% trans "Two Factor Authentication" %}</a></li>
+    <li><a href="{% url 'user-delete' %}">{% trans "Delete Account" %}</a></li>
+{% endblock %}
+
+{% block form %}
+  <p>{% blocktrans %}You are about to disable two-factor authentication. This
+    compromises your account security, are you sure?{% endblocktrans %}</p>
+  <form method="post">
+    {% csrf_token %}
+    <table>{{ form }}</table>
+    <button class="btn btn-danger"
+            type="submit">{% trans "Disable" %}</button>
+  </form>
+{% endblock %}

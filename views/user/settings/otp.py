@@ -18,31 +18,40 @@
 ##
 
 from django import http
-from django.contrib import messages
-from django.core.urlresolvers import reverse_lazy
+from django.core import urlresolvers
+from django.forms import Form
 from django.utils.translation import ugettext as _
-from django.views import generic
 
-from django_otp.plugins.otp_totp.models import TOTPDevice
+from two_factor.forms import DeviceValidationForm, MethodForm, TOTPDeviceForm
+from two_factor.views import core, profile
 
 from website import forms
 from website.views import base
 
-__all__ = ["TwoFactorView"]
+__all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
 
-class TwoFactorView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
-    form_class = forms.TwoFactorForm
-    success_url = reverse_lazy('user-otp')
-    headline = _("")
-    template_name = "user/settings/otp.html"
+class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
+    template_name = "user/settings/twofactor.html"
+    headline = _("Two Factor Authenication")
 
-    def get_object(self, queryset=None):
-        try:
-            return self.request.user.totpdevice_set.get()
-        except TOTPDevice.DoesNotExist:
-            return None
+class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
+    template_name = "user/settings/twofactor-backup.html"
+    headline = _("Backup Tokens")
+    redirect_url = "user-twofactor"
 
-    def form_valid(self, form, *args, **kwargs):
-        output = super(TwoFactorView, self).form_valid(form, *args, **kwargs)
-        messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
-        return output
+class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
+    template_name = "user/settings/twofactor-disable.html"
+    headline = _("Disable Two Factor Authentication")
+    redirect_url = "user-twofactor"
+
+class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
+    template_name = "user/settings/twofactor-setup.html"
+    headline = _("Setup Two Factor Authentication")
+    form_list = (
+        ('welcome', Form),
+        ('method', MethodForm),
+        ('generator', TOTPDeviceForm),
+        ('validation', DeviceValidationForm),
+        )
+    redirect_url = "user-twofactor"
+    qrcode_url = "user-twofactor-qrcode"

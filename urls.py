@@ -21,6 +21,8 @@ from django.conf import settings, urls
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
+from two_factor.views import core as twofactor
+
 from website import views
 from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
 from website.views.blog.feed import RssFeed, AtomFeed
@@ -61,6 +63,13 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/(?P<q>.*)/', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/', views.SearchView.as_view(), name='user-search'),
+
+
+    urls.url(r'^user/settings/twofactor/setup', views.TwoFactorSetupView.as_view(), name='user-twofactor-setup'),
+    urls.url(r'^user/settings/twofactor/disable', views.TwoFactorDisableView.as_view(), name='user-twofactor-disable'),
+    urls.url(r'^user/settings/twofactor/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
+    urls.url(r'^user/settings/twofactor', views.TwoFactorView.as_view(), name='user-twofactor'),
+
     urls.url(r'^user/settings/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
     urls.url(r'^user/settings/liberate', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^user/settings/password', 'django.contrib.auth.views.password_change',
