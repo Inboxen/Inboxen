@@ -41,16 +41,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-from django.utils.translation import ugettext as _
 from django import forms
 from django.contrib import messages
+from django.forms.widgets import RadioFieldRenderer
+from django.utils.encoding import force_text
+from django.utils.html import format_html_join
+from django.utils.translation import ugettext as _
 
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from two_factor import forms as two_factor
 
 from inboxen import models
 from website.forms.mixins import BootstrapFormMixin
 
-
+__all__ = ["TwoFactorForm", "MethodForm"]
 
 class TwoFactorForm(BootstrapFormMixin, forms.Form):
     token = forms.CharField(required=True, label=_("Token"), widget=forms.TextInput(attrs={'placeholder': '123456...'}))
@@ -70,3 +74,17 @@ class TwoFactorForm(BootstrapFormMixin, forms.Form):
                                          tolerance=self.tolerance, t0=self.t0,
                                          step=self.step, drift=self.drift,
                                          name='default')
+
+
+class RadioField(RadioFieldRenderer):
+    def render(self):
+        return format_html_join(
+            '\n',
+            '<div class="radio">{0}</div>',
+            [(force_text(w), ) for w in self],
+        )
+
+class MethodForm(two_factor.MethodForm):
+    def __init__(self, **kwargs):
+        super(MethodForm, self).__init__(**kwargs)
+        self.fields['method'].widget.renderer = RadioField

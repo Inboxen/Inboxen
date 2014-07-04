@@ -1,10 +1,19 @@
 {% extends 'user/settings/index.html' %}
 {% load two_factor i18n %}
 {% block errors %}
-    {% for error in wizard.form.errors %}
-        <p class="alert error">
-            {{ error }}
+    {% if wizard.form.non_field_errors %}
+        <p class="alert alert-danger">
+            {{ wizard.form.non_field_errors }}
         </p>
+    {% endif %}
+    {% for field in wizard.form %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p class="alert alert-danger">
+                    <strong>{{ field.label }}:</strong> {{ error }}
+                </p>
+            {% endfor %}
+        {% endif %}
     {% endfor %}
 {% endblock %}
 {% block navpills %}
