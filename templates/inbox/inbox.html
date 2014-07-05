@@ -26,8 +26,8 @@
     <div class="table-responsive">
         <form action="{{ request.path }}" method="POST">
         {% csrf_token %}
-        <button class="btn btn-default" type="submit" name="read">{% trans "Mark as read" %}</button>
-        <button class="btn btn-default" type="submit" name="unread">{% trans "Mark as unread" %}</button>
+        <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
+        <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
         <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
             <table class="table table-hover table-honeydew">
             <thead>
@@ -55,6 +55,7 @@
                         {% endif %}
                             <td title="{{ email.received_date|date:"r" }}"><div>{{ email.received_date|timesince }} {% trans "ago" %}</div></td>
                         <td>
+                            <button title="{% trans "Toggle Importantance" %}" class="btn btn-link close" type="submit" name="important-single" value="{{ email.eid }}">&#9733;</button>
                             <button title="{% trans "Delete Email" %}" class="btn btn-link close" type="submit" name="delete-single" value="{{ email.eid }}">&times;</button>
                         </td>
                     </tr>

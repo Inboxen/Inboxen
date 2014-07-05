@@ -63,6 +63,12 @@ class InboxView(
             email = qs.get(id=email_id)
             email.delete()
             return HttpResponseRedirect(self.get_success_url())
+        elif "important-single" in self.request.POST:
+            email_id = int(self.request.POST["important-single"], 16)
+            email = qs.get(id=email_id)
+            email.flags.important = not email.flags.important
+            email.save()
+            return HttpResponseRedirect(self.get_success_url())
 
         emails = []
         for email in self.request.POST:
@@ -80,10 +86,10 @@ class InboxView(
         email_ids = list(emails.values_list('id', flat=True))
         emails = self.model.objects.filter(id__in=email_ids).only("id")
 
-        if "unread" in self.request.POST:
-            emails.update(flags=F('flags').bitand(~self.model.flags.read))
-        elif "read" in self.request.POST:
-            emails.update(flags=F('flags').bitor(self.model.flags.read))
+        if "unimportant" in self.request.POST:
+            emails.update(flags=F('flags').bitand(~self.model.flags.important))
+        elif "important" in self.request.POST:
+            emails.update(flags=F('flags').bitor(self.model.flags.important))
         elif "delete" in self.request.POST:
             emails.update(flags=F('flags').bitor(self.model.flags.deleted))
             for email in emails:
