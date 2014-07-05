@@ -11,29 +11,29 @@
 {% endblock %}
 
 {% block content %}
+{% if ask_images %}
+<p class="alert alert-warning">
+    <a class="alert-link" href="{{ request.path }}?imgDisplay=1">{% trans "Click here to view images" %}</a>
+</p>
+{% endif %}
+
 <div style="float: right">
     <form action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST" style="display:inline-block">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" value="{{ email.eid }}" name="delete-single">{% trans "Delete" %}</button>
     </form>
-{% comment "Flags" %}{#
     <form action="{{ request.path }}" method="POST" style="display:inline-block">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="important-toggle">
-        {% if email.flag.important %}
+        {% if object.flags.important %}{# email isn't actually the email object #}
             {% trans "Unmark as important" %}
         {% else %}
             {% trans "Mark as important" %}
         {% endif %}
         </button>
     </form>
-#}{% endcomment %}
 </div>
-{% if ask_images %}
-    <p class="alert alert-warning">
-        <a class="alert-link" href="{{ request.path }}?imgDisplay=1">{% trans "Click here to view images" %}</a>
-    </p>
-{% endif %}
+
 <strong>{% trans "From" %}</strong>: {{ email.from }} <br />
 <strong>{% trans "Received" %}</strong>: <span title="{{ email.date|date:"r" }}">{{ email.date|timesince }} {% trans "ago" %}</span>
 <br />
