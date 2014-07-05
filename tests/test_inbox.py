@@ -45,14 +45,17 @@ class InboxTestAbstract(object):
         emails = self.get_emails().order_by('-received_date').only("id")
         params = {"important": ""}
 
+        i = 0
         for email in emails[:12]:
             params[email.eid] = "email"
+            if email.flags.important:
+                i = i + 1
 
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
 
         important_count = emails.filter(flags=models.Email.flags.important).count()
-        self.assertEqual(important_count, 14)
+        self.assertEqual(important_count, 15-i)
 
     def test_get_read(self):
         emails = self.get_emails().order_by('-received_date').select_related("inbox", "inbox__domain")
