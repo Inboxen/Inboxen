@@ -56,4 +56,7 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
     qrcode_url = "user-twofactor-qrcode"
 
     def done(self, *args, **kwargs):
+        out = super(TwoFactorSetupView, self).done(*args, **kwargs)
         messages.success(self.request, _("Two factor authentication has been enabled on your account."))
+
+        return out
