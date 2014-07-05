@@ -49,11 +49,27 @@ class ModelTestCase(test.TestCase):
 
         self.assertEqual(inbox, inbox2)
 
+    def test_inbox_from_string_and_user(self):
+        user = models.User.objects.create(username="bizz")
+        domain = models.Domain.objects.get(id=1)
+        inbox = models.Inbox.objects.create(domain=domain, user=user)
+
+        with self.assertRaises(models.Inbox.DoesNotExist):
+            self.user.inbox_set.from_string(email="%s@%s" % (inbox.inbox, domain.domain))
+
+    def test_tag_create(self):
+        tag = "hello"
+        inbox = models.Inbox.objects.get(id=1)
+
+        tag_obj = inbox.tag_set.create(tags=tag)
+        self.assertEqual(tag_obj[0].tag, tag)
+        self.assertEqual(tag_obj[0].inbox, inbox)
+
     def test_tag_from_string(self):
         tags = "one, two, three, four, five"
         inbox = models.Inbox.objects.get(id=1)
 
-        tag_objs = inbox.tag_set.from_string(tags)
+        tag_objs = inbox.tag_set.create(tags=tags)
         tag_str = ", ".join([tag.tag for tag in tag_objs])
 
         self.assertEqual(tags, tag_str)
