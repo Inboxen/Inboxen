@@ -24,6 +24,15 @@ from django.core import urlresolvers
 from inboxen import models
 from queue import tasks
 
+class StatsTestCase(test.TestCase):
+    """Test flag tasks"""
+    # only testing that it doesn't raise an exception atm
+    fixtures = ['inboxen_testdata.json']
+
+    def test_no_exceptions(self):
+        tasks.statistics.delay()
+
+
 class FlagTestCase(test.TestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
