@@ -185,6 +185,8 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 TEMPLATE_DEBUG = DEBUG
 
+TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
+
 USE_I18N = True
 
 USE_L10N = True

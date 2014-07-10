@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import os
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
@@ -33,6 +34,8 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
+
+        self.salmon_bin = os.getenv('SALMON_BIN', 'salmon')
 
         # these need to be ordered from smtp in to database out
         self.salmon_options = [
@@ -65,7 +68,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                check_output(['salmon', 'start', '-pid', handler['pid'], '-boot', handler['boot']], cwd='router')
+                check_output([self.salmon_bin, 'start', '-pid', handler['pid'], '-boot', handler['boot']], cwd='router')
                 output.append(name % handler['boot'][7:])
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
@@ -76,7 +79,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                output.append(check_output(['salmon', 'stop', '-pid', handler['pid']], cwd='router'))
+                output.append(check_output([self.salmon_bin, 'stop', '-pid', handler['pid']], cwd='router'))
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 
@@ -86,7 +89,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                output.append(check_output(['salmon', 'status', '-pid', handler['pid']], cwd='router'))
+                output.append(check_output([self.salmon_bin, 'status', '-pid', handler['pid']], cwd='router'))
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 
