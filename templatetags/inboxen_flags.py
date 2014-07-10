@@ -46,6 +46,7 @@ FLAGS_TO_TAGS = {
 
 # alias certain flags
 FLAGS_TO_TAGS["unified_has_new_messages"] = FLAGS_TO_TAGS["new"]
+FLAGS_TO_TAGS["seen"] = FLAGS_TO_TAGS["new"]
 
 LABEL_STR = "<span class=\"label {class}\" title=\"{title}\">{str}</span>"
 
