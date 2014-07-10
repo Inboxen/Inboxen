@@ -30,8 +30,6 @@
                         {{ result.object.inbox }}@{{ result.meta.domain }}
                     </a>
                     {{ result.object.flags|render_flags }}
-                        <span class="label label-primary" title="{% trans "New messages" %}">{% trans "New" %}</span>
-                    {% endif %}
                 </td>
                 <td><span title="{{ result.object.created|date:"r" }}">{{ result.object.created|timesince }} {% trans "ago" %}</span></td>
                 <td>{{ result.title }}</td>
