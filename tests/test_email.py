@@ -23,11 +23,11 @@ from django.core import urlresolvers
 from inboxen import models
 
 @test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
-class HomeViewTestCase(test.TestCase):
+class EmailViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
     def setUp(self):
-        super(HomeViewTestCase, self).setUp()
+        super(EmailViewTestCase, self).setUp()
 
         self.email = models.Email.objects.filter(id=1).select_related("inbox", "inbox__domain", "inbox__user").get()
         self.user = self.email.inbox.user
@@ -47,5 +47,10 @@ class HomeViewTestCase(test.TestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
+
+        # check that delete button has correct value
+        button = "value=\"%s\" name=\"delete-single\""
+        button = button % self.email.eid
+        self.assertEqual(button in response.content, True)
 
     #TODO: test body choosing with multipart emails

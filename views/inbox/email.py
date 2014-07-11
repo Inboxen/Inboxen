@@ -109,6 +109,7 @@ class EmailView(
         email_dict["from"] = headers["From"]
         email_dict["date"] = self.object.received_date
         email_dict["inbox"] = self.object.inbox
+        email_dict["eid"] = self.object.eid
 
         # iterate over MIME parts
         html = None
