@@ -1,12 +1,8 @@
 {% extends 'user/settings/index.html' %}
-{% load i18n %}
+{% load i18n inboxen_settings %}
 
-{% block navpills %}
-    <li><a href="{% url 'user-settings' %}">{% trans "General" %}</a></li>
-    <li><a href="{% url 'user-password' %}">{% trans "Change Password" %}</a></li>
-    <li class="active"><a href="{% url 'user-liberate' %}">{% trans "Liberate Data" %}</a></li>
-    <li><a href="{% url 'user-twofactor' %}">{% trans "Two Factor Authentication" %}</a></li>
-    <li><a href="{% url 'user-delete' %}">{% trans "Delete Account" %}</a></li>
+{% block navigation %}
+    {% settings_menu 'user-liberate' %}
 {% endblock %}
 
 {% block form %}

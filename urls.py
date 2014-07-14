@@ -65,10 +65,10 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/search/', views.SearchView.as_view(), name='user-search'),
 
 
-    urls.url(r'^user/settings/twofactor/setup', views.TwoFactorSetupView.as_view(), name='user-twofactor-setup'),
-    urls.url(r'^user/settings/twofactor/disable', views.TwoFactorDisableView.as_view(), name='user-twofactor-disable'),
-    urls.url(r'^user/settings/twofactor/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
-    urls.url(r'^user/settings/twofactor', views.TwoFactorView.as_view(), name='user-twofactor'),
+    urls.url(r'^user/settings/security/setup', views.TwoFactorSetupView.as_view(), name='user-twofactor-setup'),
+    urls.url(r'^user/settings/security/disable', views.TwoFactorDisableView.as_view(), name='user-twofactor-disable'),
+    urls.url(r'^user/settings/security/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
+    urls.url(r'^user/settings/security', views.TwoFactorView.as_view(), name='user-twofactor'),
 
     urls.url(r'^user/settings/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
     urls.url(r'^user/settings/liberate', views.LiberationView.as_view(), name='user-liberate'),
