@@ -23,7 +23,6 @@ from django.conf import settings as dj_settings
 
 from inboxen import models
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class HomeViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 

@@ -22,7 +22,6 @@ from django.core import urlresolvers
 
 from inboxen import models
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class EmailViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 

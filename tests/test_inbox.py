@@ -107,7 +107,6 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 404)
 
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
     """Test Inbox specific views"""
     def setUp(self):
@@ -121,7 +120,6 @@ class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
         return models.Email.objects.filter(inbox=self.inbox)
 
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
     """Test Inbox specific views"""
     def get_url(self):
@@ -130,7 +128,6 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
     def get_emails(self):
         return models.Email.objects.filter(inbox__user=self.user)
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class InboxAddTestCase(test.TestCase):
     """Test the add inbox page"""
     fixtures = ['inboxen_testdata.json']
@@ -165,7 +162,6 @@ class InboxAddTestCase(test.TestCase):
         inbox_count_2nd = models.Inbox.objects.count()
         self.assertEqual(inbox_count_1st, inbox_count_2nd-1)
 
-@test.utils.override_settings(CELERY_ALWAYS_EAGER=True)
 class InboxEditTestCase(test.TestCase):
     """Test the add inbox page"""
     fixtures = ['inboxen_testdata.json']
