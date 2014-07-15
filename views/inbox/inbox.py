@@ -99,7 +99,7 @@ class InboxView(
 
     def get_context_data(self, *args, **kwargs):
         context = super(InboxView, self).get_context_data(*args, **kwargs)
-        object_list = [email for email in context["page_obj"].object_list]
+        object_list = context["page_obj"].object_list
 
         # TODO: start caching
         headers = models.Header.objects.filter(part__parent=None, part__email__in=object_list)
@@ -114,7 +114,7 @@ class InboxView(
         if inbox is not None:
             inbox = inbox.id
 
-        deal_with_flags.delay([email.id for email in object_list], self.request.user.id, inbox)
+        deal_with_flags.delay(object_list.values_list("id", flat=True), self.request.user.id, inbox)
         return context
 
 class UnifiedInboxView(InboxView):
@@ -129,10 +129,8 @@ class UnifiedInboxView(InboxView):
 
     def get_context_data(self, *args, **kwargs):
         self.headline = _("Inbox")
-        profile = self.request.user.userprofile
-        if profile.flags.unified_has_new_messages:
-            profile.flags.unified_has_new_messages = False
-            profile.save()
+        profile = models.UserProfile.objects.filter(user=self.request.user)
+        profile.update(flags=F("flags").bitand(~models.UserProfile.flags.unified_has_new_messages))
 
         return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
 
@@ -157,6 +155,6 @@ class SingleInboxView(InboxView):
 
         if self.inbox_obj.flags.new:
             self.inbox_obj.flags.new = False
-            self.inbox_obj.save()
+            self.inbox_obj.save(update_fields=["flags"])
 
         return context
