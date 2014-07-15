@@ -41,10 +41,9 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
 
     def get_tags(self, inboxes):
         """Get tags in one shot"""
-        if len(inboxes) == 0:
+        if not inboxes.exists():
             return
 
-        inboxes = list(inboxes)
         tag_set = {}
         tag_list = models.Tag.objects.filter(inbox__in=inboxes).values_list("inbox_id", "tag")
         for id, tag in tag_list:
