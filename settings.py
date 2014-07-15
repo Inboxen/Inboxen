@@ -183,6 +183,8 @@ COLUMN_HASHER = "sha1"
 
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
 TEMPLATE_DEBUG = DEBUG
 
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
