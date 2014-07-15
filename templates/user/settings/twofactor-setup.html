@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block navigation %}
-    {% settings_menu 'user-twofactor' %}
+    {% settings_menu 'user-security' %}
 {% endblock %}
 
 {% block form %}
@@ -50,6 +50,6 @@
     </div>
 
     <button type="submit" class="btn btn-primary">{% trans "Next" %}</button>
-    <a href="{% url 'user-twofactor' %}" class="btn btn-default">{% trans "Cancel" %}</a>
+    <a href="{% url 'user-security' %}" class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
 {% endblock %}

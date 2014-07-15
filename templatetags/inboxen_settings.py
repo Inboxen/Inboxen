@@ -36,7 +36,7 @@ class SettingsMenuNode(template.Node):
     menu = (
         ("user-settings", _("General")),
         ("user-liberate", _("Liberate Data")),
-        ("user-twofactor", _("Security")),
+        ("user-security", _("Security")),
         ("user-delete", _("Delete Account")),
         )
 

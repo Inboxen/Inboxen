@@ -68,7 +68,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/settings/security/password', 'django.contrib.auth.views.password_change',
         {
             'template_name': 'user/settings/password.html',
-            'post_change_redirect': reverse_lazy('user-twofactor'),
+            'post_change_redirect': reverse_lazy('user-security'),
             'password_change_form': PlaceHolderPasswordChangeForm,
             'extra_context': {
                 'headline': _('Change Password'),
@@ -79,7 +79,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/settings/security/setup', views.TwoFactorSetupView.as_view(), name='user-twofactor-setup'),
     urls.url(r'^user/settings/security/disable', views.TwoFactorDisableView.as_view(), name='user-twofactor-disable'),
     urls.url(r'^user/settings/security/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
-    urls.url(r'^user/settings/security', views.TwoFactorView.as_view(), name='user-twofactor'),
+    urls.url(r'^user/settings/security', views.TwoFactorView.as_view(), name='user-security'),
 
     urls.url(r'^user/settings/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
     urls.url(r'^user/settings/liberate', views.LiberationView.as_view(), name='user-liberate'),

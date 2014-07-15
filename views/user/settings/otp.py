@@ -31,18 +31,18 @@ from website.views import base
 __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
 
 class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
-    template_name = "user/settings/twofactor.html"
+    template_name = "user/settings/security.html"
     headline = _("Two Factor Authenication")
 
 class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
     template_name = "user/settings/twofactor-backup.html"
     headline = _("Backup Tokens")
-    redirect_url = "user-twofactor"
+    redirect_url = "user-security"
 
 class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
     template_name = "user/settings/twofactor-disable.html"
     headline = _("Disable Two Factor Authentication")
-    redirect_url = "user-twofactor"
+    redirect_url = "user-security"
 
 class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
     template_name = "user/settings/twofactor-setup.html"
@@ -52,7 +52,7 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
         ('method', inboxen_forms.MethodForm),
         ('generator', two_forms.TOTPDeviceForm),
         )
-    redirect_url = "user-twofactor"
+    redirect_url = "user-security"
     qrcode_url = "user-twofactor-qrcode"
 
     def done(self, *args, **kwargs):
