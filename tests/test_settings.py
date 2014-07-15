@@ -22,9 +22,11 @@ from django.core import urlresolvers
 from django.conf import settings as dj_settings
 
 from inboxen import models
+from website import forms
 
 class SettingsTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
+    form = None
 
     def setUp(self):
         super(SettingsTestCase, self).setUp()
@@ -41,3 +43,18 @@ class SettingsTestCase(test.TestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
+        if self.form is not None:
+            form = response.context["form"]
+            self.assertEqual(isinstance(form, self.form), True)
+
+class LiberateTestCase(SettingsTestCase):
+    form = forms.LiberationForm
+
+    def get_url(self):
+        return urlresolvers.reverse("user-liberate")
+
+class DeleteTestCase(SettingsTestCase):
+    form = forms.DeleteAccountForm
+
+    def get_url(self):
+        return urlresolvers.reverse("user-delete")
