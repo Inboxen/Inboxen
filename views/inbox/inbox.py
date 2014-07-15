@@ -114,7 +114,7 @@ class InboxView(
         if inbox is not None:
             inbox = inbox.id
 
-        deal_with_flags.delay(object_list.values_list("id", flat=True), self.request.user.id, inbox)
+        deal_with_flags.delay([email.id for email in object_list], self.request.user.id, inbox)
         return context
 
 class UnifiedInboxView(InboxView):
