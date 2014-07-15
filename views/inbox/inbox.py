@@ -101,6 +101,9 @@ class InboxView(
         context = super(InboxView, self).get_context_data(*args, **kwargs)
         object_list = context["page_obj"].object_list
 
+        if not object_list.exists():
+            return context
+
         # TODO: start caching
         headers = models.Header.objects.filter(part__parent=None, part__email__in=object_list)
         headers = headers.get_many("Subject", "From", group_by="part__email_id")
