@@ -35,7 +35,6 @@ class SettingsMenuNode(template.Node):
     # tuple of (url_name, title)
     menu = (
         ("user-settings", _("General")),
-        ("user-password", _("Change Password")),
         ("user-liberate", _("Liberate Data")),
         ("user-twofactor", _("Security")),
         ("user-delete", _("Delete Account")),
