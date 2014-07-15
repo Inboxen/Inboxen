@@ -27,7 +27,7 @@ class DeleteAccountTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
     def test_delete(self):
-        tasks.delete_account.delay()
+        tasks.delete_account.delay(user_id=1)
 
         self.assertEqual(models.User.objects.count(), 0)
         self.assertEqual(models.Email.objects.count(), 0)
