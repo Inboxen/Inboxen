@@ -1,5 +1,5 @@
 {% extends 'user/settings/index.html' %}
-{% load two_factor i18n %}
+{% load two_factor i18n inboxen_settings %}
 {% block errors %}
     {% if wizard.form.non_field_errors %}
         <p class="alert alert-danger">
