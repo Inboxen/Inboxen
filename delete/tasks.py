@@ -8,7 +8,7 @@ from pytz import utc
 from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, transaction
 
-from inboxen.models import Email, Inbox, Tag, User
+from inboxen.models import Email, Inbox, User
 
 log = logging.getLogger(__name__)
 
@@ -28,13 +28,10 @@ def delete_inbox(inbox_id, user_id=None):
     # delete emails in another task(s)
     batch_delete_items.delay("email", kwargs={'inbox__id': inbox.pk})
 
-    # delete tags
-    tags = Tag.objects.filter(inbox__id=inbox_id).only('id')
-    tags.delete()
-
     # okay now mark the inbox as deleted
     inbox.created = datetime.fromtimestamp(0, utc)
     inbox.flags.deleted = True
+    inbox.tags = ""
     inbox.save()
 
     return True

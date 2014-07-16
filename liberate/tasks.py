@@ -20,7 +20,7 @@ from celery import task, chain, group, chord
 from pytz import utc
 from async_messages import message_user
 
-from inboxen.models import Body, Domain, Email, Header, Inbox, Liberation, PartList, Tag, User
+from inboxen.models import Body, Domain, Email, Header, Inbox, Liberation, PartList, User
 from queue.liberate import utils
 
 log = logging.getLogger(__name__)
@@ -261,12 +261,11 @@ def liberate_inbox_tags(user_id):
 
     inboxes = Inbox.objects.filter(user__id=user_id)
     for inbox in inboxes:
-        email = "%s@%s" % (inbox.inbox, inbox.domain)
-        tags = [tag.tag for tag in Tag.objects.filter(inbox=inbox)]
-        data[email] = {
+        address = "%s@%s" % (inbox.inbox, inbox.domain)
+        data[address] = {
             "created": inbox.created.isoformat(),
             "flags": dict(inbox.flags.items()),
-            "tags": tags,
+            "tags": inbox.tags,
         }
 
     return json.dumps(data)
