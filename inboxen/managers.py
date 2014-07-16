@@ -88,22 +88,6 @@ class InboxQuerySet(QuerySet):
 
         return inbox
 
-
-class TagQuerySet(QuerySet):
-    def create(self, tags, **kwargs):
-        """Create Tag objects from string"""
-        if "," in tags:
-            tags = tags.split(",")
-        else:
-            tags = tags.split(" ")
-
-        for i, tag in enumerate(tags):
-            tag = tag.strip()
-            tag = super(TagQuerySet, self).create(tag=tag, **kwargs)
-            tags[i] = tag
-
-        return tags
-
 ##
 # Email managers
 ##

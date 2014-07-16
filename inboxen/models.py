@@ -34,7 +34,7 @@ from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 import watson
 
-from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet, TagQuerySet
+from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
@@ -168,6 +168,7 @@ class Inbox(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted","new","exclude_from_unified"), default=0)
+    tags = models.CharField(max_length=256, null=True, blank=True)
 
     objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
 
@@ -186,20 +187,6 @@ class Inbox(models.Model):
     class Meta:
         verbose_name_plural = "Inboxes"
         unique_together = (('inbox', 'domain'),)
-
-class Tag(models.Model):
-    """Tag model
-
-    Object manager has a from_string() method that returns Tag objects from a
-    string.
-    """
-    tag = models.CharField(max_length=256, db_index=True)
-    inbox = models.ForeignKey(Inbox, on_delete=models.CASCADE)
-
-    objects = PassThroughManager.for_queryset_class(TagQuerySet)()
-
-    def __unicode__(self):
-        return self.tag
 
 class Request(models.Model):
     """Inbox allocation request model"""
