@@ -99,17 +99,17 @@ class InboxView(
 
     def get_context_data(self, *args, **kwargs):
         context = super(InboxView, self).get_context_data(*args, **kwargs)
-        object_list = [email.id for email in context["page_obj"].object_list]
+        object_list = [email for email in context["page_obj"].object_list]
 
-        if not object_list:
+        if len(object_list) == 0:
             return context
 
         # TODO: start caching
-        headers = models.Header.objects.filter(part__parent=None, part__email_id__in=object_list)
+        headers = models.Header.objects.filter(part__parent=None, part__email__in=object_list)
         headers = headers.get_many("Subject", "From", group_by="part__email_id")
 
-        for email_id in object_list:
-            header_set = headers[email_id]
+        for email in object_list:
+            header_set = headers[email.id]
             email.subject = header_set.get("Subject")
             email.sender = header_set["From"]
 
@@ -117,7 +117,7 @@ class InboxView(
         if inbox is not None:
             inbox = inbox.id
 
-        deal_with_flags.delay(object_list, self.request.user.id, inbox)
+        deal_with_flags.delay([email.id for email in object_list], self.request.user.id, inbox)
         return context
 
 class UnifiedInboxView(InboxView):
