@@ -30,7 +30,6 @@ from website.forms.mixins import BootstrapFormMixin
 
 class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
-    tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     def __init__(self, request, initial=None, *args, **kwargs):
@@ -48,7 +47,10 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
     class Meta:
         model = models.Inbox
-        fields = ["domain"]
+        fields = ["domain", "tags"]
+        widgets = {
+            "tags": forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
+            }
 
     def save(self, commit=False):
         # We want this instance created by .create() so we will ignore self.instance
@@ -59,38 +61,34 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
         with watson.update_index():
             self.instance = self.request.user.inbox_set.create(**data)
+            self.instance.tags = tags
             self.instance.flags.exclude_from_unified = excludes
             self.instance.save()
 
-            self.instance.tag_set.create(tags=tags)
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
 class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
-    tags = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'}))
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     class Meta:
         model = models.Inbox
-        fields = []
-
-    def __init__(self, initial=None, instance=None, *args, **kwargs):
-        if not initial:
-            initial = {
-                "tags": ", ".join([str(tag) for tag in models.Tag.objects.filter(inbox=instance)]),
-                "exclude_from_unified": bool(instance.flags.exclude_from_unified),
+        fields = ["tags"]
+        widgets = {
+            "tags": forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
-        return super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
+    def __init__(self, initial=None, instance=None, *args, **kwargs):
+        super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
+        self.fields["exclude_from_unified"].initial = bool(instance.flags.exclude_from_unified),
+
 
     def save(self, commit=True):
         if not commit:
             return
 
         with watson.update_index():
-            self.instance.tag_set.all().delete()
-            self.instance.tag_set.create(tags=self.cleaned_data.get("tags"))
             data = self.cleaned_data.copy()
             self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
             self.instance.save()

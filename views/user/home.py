@@ -39,22 +39,6 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
         queryset = queryset.select_related("domain")
         return queryset.order_by("-created").distinct()
 
-    def get_tags(self, inboxes):
-        """Get tags in one shot"""
-        if not inboxes.exists():
-            return
-
-        tag_set = {}
-        tag_list = models.Tag.objects.filter(inbox__in=inboxes).values_list("inbox_id", "tag")
-        for id, tag in tag_list:
-            tags = tag_set.get(id, [])
-            tags.append(tag)
-            tag_set[id] = tags
-
-        for inbox in inboxes:
-            inbox.tags = ", ".join(tag_set.get(inbox.id, []))
-
     def get_context_data(self, *args, **kwargs):
         context = super(UserHomeView, self).get_context_data(*args, **kwargs)
-        self.get_tags(context["page_obj"].object_list)
         return context

@@ -193,6 +193,4 @@ class InboxEditTestCase(test.TestCase):
         response = self.client.post(self.get_url(), {"tags":"no tags"})
         self.assertEqual(response.status_code, 302)
 
-        tags = [tag.tag for tag in self.inbox.tag_set.all()]
-        tags.sort() # tags not always returned in the same order?
-        self.assertEqual(tags, ["no", "tags"])
+        self.assertEqual(models.Inbox.filter(tags="no tags").exists(), True)
