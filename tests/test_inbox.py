@@ -193,4 +193,4 @@ class InboxEditTestCase(test.TestCase):
         response = self.client.post(self.get_url(), {"tags":"no tags"})
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(models.Inbox.filter(tags="no tags").exists(), True)
+        self.assertEqual(models.Inbox.objects.filter(tags="no tags").exists(), True)

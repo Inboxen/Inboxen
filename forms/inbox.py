@@ -49,7 +49,7 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
         model = models.Inbox
         fields = ["domain", "tags"]
         widgets = {
-            "tags": forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
+            "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
     def save(self, commit=False):
@@ -76,7 +76,7 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
         model = models.Inbox
         fields = ["tags"]
         widgets = {
-            "tags": forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
+            "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
     def __init__(self, initial=None, instance=None, *args, **kwargs):
