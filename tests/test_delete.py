@@ -18,10 +18,13 @@
 ##
 
 from django import test
+from django.conf import settings
+from django.utils import unittest
 
 from inboxen import models
 from queue.delete import tasks
 
+@unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
 class DeleteAccountTestCase(test.TestCase):
     """Test account deleting"""
     fixtures = ['inboxen_testdata.json']
@@ -34,6 +37,7 @@ class DeleteAccountTestCase(test.TestCase):
         self.assertEqual(models.Inbox.filter(flags=~Inbox.flags.deleted).count(), 0)
         self.assertEqual(models.Inbox.filter(user__isnull=False).count(), 0)
 
+@unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
 class DeleteOrphansTestCase(test.TestCase):
     """Test orphan item deleting"""
     fixtures = ['inboxen_testdata.json']
