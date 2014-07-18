@@ -55,12 +55,13 @@ def inbox_new_flag(user_id, inbox_id=None):
         inbox.save()
 
 @task(ignore_result=True)
-@transaction.atomic()
 def deal_with_flags(email_id_list, user_id, inbox_id=None):
     """Set seen flags on a list of email IDs and then send off tasks to update
     "new" flags on affected Inbox objects"""
-    # update seen flags
-    Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
+    with transaction.atomic():
+        # update seen flags
+        Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
+
     if inbox_id is None:
         # grab affected inboxes
         inbox_list = Inbox.objects.filter(user__id=user_id, email__id__in=email_id_list)
