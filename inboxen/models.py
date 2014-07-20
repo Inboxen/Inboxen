@@ -37,6 +37,8 @@ import watson
 from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet, TagQuerySet
 from inboxen import fields, search
 
+HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
+
 # South fix for djorm_pgbytea
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ['^djorm_pgbytea\.lobject\.LargeObjectField'])
@@ -234,6 +236,39 @@ class Email(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.eid)
+
+    def get_parts(self):
+        """Return a list of (<part>, <content headers>)"""
+        attachments = []
+        for part in self.object.parts.all():
+            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
+            part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
+
+            if part_head["content_type"][0].startswith("multipart") or part_head["content_type"][0].startswith("message"):
+                continue
+
+            dispos = part_head.pop("Content-Disposition", "")
+
+            try:
+                params = dict(HEADER_PARAMS.findall(part_head["content_type"][1]))
+            except IndexError:
+                params = {}
+            params.update(dict(HEADER_PARAMS.findall(dispos)))
+
+            # find filename, could be anywhere
+            if "filename" in params:
+                part_head["filename"] = params["filename"]
+            elif "name" in params:
+                part_head["filename"] = params["name"]
+            else:
+                part_head["filename"] = ""
+
+            # grab charset
+            part.charset = params.get("charset", "utf-8")
+
+            attachments.append((part, part_head))
+
+        return attachments
 
 class Body(models.Model):
     """Body model
