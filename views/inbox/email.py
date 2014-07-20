@@ -115,7 +115,7 @@ class EmailView(
         html = None
         plain = None
         attachments = []
-        for part in self.object.parts.select_related("body"):
+        for part in self.object.parts.all():
             part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
             part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
             dispos = part_head.pop("Content-Disposition", "")
