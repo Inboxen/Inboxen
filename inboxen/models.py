@@ -226,13 +226,10 @@ class Email(models.Model):
     flags = BitField(flags=("deleted","read","seen","important"), default=0)
     received_date = models.DateTimeField()
 
-    def get_eid(self):
-        return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
-
-    def set_eid(self, data):
-        pass # should not be used
-
-    eid = property(get_eid, set_eid)
+    @property
+    def eid(self):
+        """Return a hexidecimal version of ID"""
+        return hex(self.id)[2:].rstrip("L")
 
     def __unicode__(self):
         return u"{0}".format(self.eid)
