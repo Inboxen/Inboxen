@@ -46,8 +46,17 @@ db_dict = {
             "postgresql": "django.db.backends.postgresql_psycopg2",
             "mysql": "django.db.backends.mysql",
             "oracle": "django.db.backends.oracle",
-            "sqlite": "django.db.backends.sqlite3"
+            "sqlite": "django.db.backends.sqlite3",
             }
+
+# Shorthand for Django's default database backends
+cache_dict = {
+                "database": "django.core.cache.backends.db.DatabaseCache",
+                "dummy": "django.core.cache.backends.dummy.DummyCache",
+                "file": "django.core.cache.backends.filebased.FileBasedCache",
+                "localmem": "django.core.cache.backends.locmem.LocMemCache",
+                "memcached": "django.core.cache.backends.memcached.PyLibMCCache",
+                }
 
 is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
 
@@ -150,6 +159,24 @@ if config["database"]["engine"] == "sqlite":
 else:
     DATABASES["default"]["NAME"] = config["database"]["name"]
 
+# Caches!
+CACHES = {
+    'default': {
+        'BACKEND': cache_dict[config["cache"]["backend"]],
+        'TIMEOUT': config["cache"]["timeout"],
+    }
+}
+
+if config["cache"]["backend"] == "file":
+    if config["cache"]["location"] == "":
+        CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, config["cache"]["location"])
+    else:
+        # sane default for minimum configuration
+        CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, "inboxen_cache")
+else:
+    CACHES["default"]["LOCATION"] = config["cache"]["location"]
+
+
 ##
 # To override the following settings, create a separate settings module.
 # Import this module, override what you need to and set the environment
@@ -205,13 +232,6 @@ STATICFILES_FINDERS = (
 AUTHENTICATION_BACKENDS = (
     'website.backends.RateLimitWithSettings',
 )
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'inboxen_cache'),
-    }
-}
 
 # Make sure all custom template tags are thread safe
 # https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/#template-tag-thread-safety
