@@ -8,7 +8,7 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         for inbox in orm.Inbox.objects.all():
-            tags = ", ".join(inbox.tag_set.all())
+            tags = ", ".join(inbox.tag_set.values_list("tag", flat=True))
             inbox.tags = tags
             inbox.save(update_fields=["tags"])
 
