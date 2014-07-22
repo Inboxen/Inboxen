@@ -19,6 +19,7 @@
 
 from datetime import datetime
 import markdown
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -34,8 +35,10 @@ from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
 from pytz import utc
 import watson
 
-from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet, TagQuerySet
+from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import fields, search
+
+HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 # South fix for djorm_pgbytea
 from south.modelsinspector import add_introspection_rules
@@ -166,6 +169,7 @@ class Inbox(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted","new","exclude_from_unified"), default=0)
+    tags = models.CharField(max_length=256, null=True, blank=True)
 
     objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
 
@@ -184,20 +188,6 @@ class Inbox(models.Model):
     class Meta:
         verbose_name_plural = "Inboxes"
         unique_together = (('inbox', 'domain'),)
-
-class Tag(models.Model):
-    """Tag model
-
-    Object manager has a from_string() method that returns Tag objects from a
-    string.
-    """
-    tag = models.CharField(max_length=256, db_index=True)
-    inbox = models.ForeignKey(Inbox, on_delete=models.CASCADE)
-
-    objects = PassThroughManager.for_queryset_class(TagQuerySet)()
-
-    def __unicode__(self):
-        return self.tag
 
 class Request(models.Model):
     """Inbox allocation request model"""
@@ -224,16 +214,46 @@ class Email(models.Model):
     flags = BitField(flags=("deleted","read","seen","important"), default=0)
     received_date = models.DateTimeField()
 
-    def get_eid(self):
-        return hex(self.id)[2:].rstrip("L") # the [2:] is to strip 0x from the start
-
-    def set_eid(self, data):
-        pass # should not be used
-
-    eid = property(get_eid, set_eid)
+    @property
+    def eid(self):
+        """Return a hexidecimal version of ID"""
+        return hex(self.id)[2:].rstrip("L")
 
     def __unicode__(self):
         return u"{0}".format(self.eid)
+
+    def get_parts(self):
+        """Return a list of (<part>, <content headers>)"""
+        attachments = []
+        for part in self.object.parts.all():
+            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
+            part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
+
+            if part_head["content_type"][0].startswith("multipart") or part_head["content_type"][0].startswith("message"):
+                continue
+
+            dispos = part_head.pop("Content-Disposition", "")
+
+            try:
+                params = dict(HEADER_PARAMS.findall(part_head["content_type"][1]))
+            except IndexError:
+                params = {}
+            params.update(dict(HEADER_PARAMS.findall(dispos)))
+
+            # find filename, could be anywhere
+            if "filename" in params:
+                part_head["filename"] = params["filename"]
+            elif "name" in params:
+                part_head["filename"] = params["name"]
+            else:
+                part_head["filename"] = ""
+
+            # grab charset
+            part.charset = params.get("charset", "utf-8")
+
+            attachments.append((part, part_head))
+
+        return attachments
 
 class Body(models.Model):
     """Body model
