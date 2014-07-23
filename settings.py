@@ -169,10 +169,10 @@ CACHES = {
 
 if config["cache"]["backend"] == "file":
     if config["cache"]["location"] == "":
-        CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, config["cache"]["location"])
-    else:
         # sane default for minimum configuration
         CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, "inboxen_cache")
+    else:
+        CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, config["cache"]["location"])
 else:
     CACHES["default"]["LOCATION"] = config["cache"]["location"]
 
