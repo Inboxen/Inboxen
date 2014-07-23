@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect, Http404
@@ -99,14 +100,24 @@ class InboxView(
 
     def get_context_data(self, *args, **kwargs):
         context = super(InboxView, self).get_context_data(*args, **kwargs)
-        object_list = [email for email in context["page_obj"].object_list]
 
-        if len(object_list) == 0:
+        object_list = []
+        object_id_list = []
+        for email in context["page_obj"].object_list:
+            object_list.append(email)
+            object_id_list.append(email.id)
+
+        if len(object_id_list) == 0:
             return context
 
-        # TODO: start caching
-        headers = models.Header.objects.filter(part__parent=None, part__email__in=object_list)
-        headers = headers.get_many("Subject", "From", group_by="part__email_id")
+        headers = cache.get_many(object_id_list, version="email")
+
+        missing_list = set(object_id_list) - set(headers.keys())
+        if len(missing_list) > 0:
+            missing_headers = models.Header.objects.filter(part__parent=None, part__email__in=missing_list)
+            missing_headers = missing_headers.get_many("Subject", "From", group_by="part__email_id")
+            headers.update(missing_headers)
+            cache.set_many(missing_headers, version="email")
 
         for email in object_list:
             header_set = headers[email.id]
@@ -117,7 +128,7 @@ class InboxView(
         if inbox is not None:
             inbox = inbox.id
 
-        deal_with_flags.delay([email.id for email in object_list], self.request.user.id, inbox)
+        deal_with_flags.delay(object_id_list, self.request.user.id, inbox)
         return context
 
 class UnifiedInboxView(InboxView):
