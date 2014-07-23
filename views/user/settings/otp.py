@@ -60,3 +60,10 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
         messages.success(self.request, _("Two factor authentication has been enabled on your account."))
 
         return out
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TwoFactorSetupView, self).get_context_data(*args, **kwargs)
+        if self.steps.current == 'generator':
+            context["secret"] = self.request.session[self.session_key_name]
+
+        return context

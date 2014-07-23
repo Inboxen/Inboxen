@@ -34,10 +34,14 @@
 {% elif wizard.steps.current == 'generator' %}
     <p>{% blocktrans %}
         To start using a token generator you will need an application that read
-        TOTP QR codes. Google AUthenticator is a good example of this. Scan in
+        TOTP QR codes. Google Authenticator is a good example of this. Scan in
         the image below and enter the number your applications displays.
     {% endblocktrans %}</p>
     <p><img src="{{ QR_URL }}" alt="QR Code" /></p>
+    <p class="sr-only">{% blocktrans %}
+        Alternatively, if you're using a screen reader you can use the following
+        code with your token generator: {{ secret }}
+    {% endblocktrans %}</p>
 {% endif %}
 
 <form action="{% url 'user-twofactor-setup' %}" method="post">
