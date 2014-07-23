@@ -55,6 +55,7 @@ FLAGS_TO_TAGS["unified_has_new_messages"] = FLAGS_TO_TAGS["new"]
 
 LABEL_STR = "<span class=\"label {class}\" title=\"{title}\">{str}</span>"
 
+# TODO: caching
 @register.filter()
 def render_flags(flags_obj):
     """Takes a Bitfield BitHandler from an object and outputs Bootstrap labels"""
