@@ -4,6 +4,12 @@ import os
 os.environ['INBOX_TESTING'] = '1'
 from settings import *
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache"
+    }
+}
+
 db = os.environ.get('DB')
 
 SECRET_KEY = "This is a test, you don't need secrets"
