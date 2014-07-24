@@ -117,7 +117,7 @@ class InboxView(
             missing_headers = models.Header.objects.filter(part__parent=None, part__email__in=missing_list)
             missing_headers = missing_headers.get_many("Subject", "From", group_by="part__email_id")
             headers.update(missing_headers)
-            cache.set_many(missing_headers, version="email")
+            cache.set_many(missing_headers, version="email", timeout=None)
 
         for email in object_list:
             header_set = headers[email.id]
