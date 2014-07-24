@@ -48,19 +48,21 @@ def inbox_new_flag(user_id, inbox_id=None):
     if inbox_id is None:
         profile = User.objects.select_related("userprofile").get(id=user_id).userprofile
         profile.flags.unified_has_new_messages = False
-        profile.save()
+        profile.save(update_fields=["flags"])
     else:
-        inbox = Inbox.objects.get(user__id=user_id, id=inbox_id)
-        inbox.flags.new = False
-        inbox.save()
+        with watson.skip_index_update():
+            inbox = Inbox.objects.get(user__id=user_id, id=inbox_id)
+            inbox.flags.new = False
+            inbox.save(update_fields=["flags"])
 
 @task(ignore_result=True)
 def deal_with_flags(email_id_list, user_id, inbox_id=None):
     """Set seen flags on a list of email IDs and then send off tasks to update
     "new" flags on affected Inbox objects"""
     with transaction.atomic():
-        # update seen flags
-        Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
+        with watson.skip_index_update():
+            # update seen flags
+            Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
 
     if inbox_id is None:
         # grab affected inboxes
