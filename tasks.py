@@ -1,11 +1,12 @@
 import logging
 from datetime import datetime, timedelta
 
-from celery import task
-from pytz import utc
-
 from django.db import transaction
 from django.db.models import F
+
+from celery import task
+from pytz import utc
+import watson
 
 from inboxen.models import Email, Inbox, User, Statistic
 
