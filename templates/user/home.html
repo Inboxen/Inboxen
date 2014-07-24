@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n cache %}
+{% load i18n %}
 {% load inboxen_flags %}
 
 {% block breadcumbs %}
@@ -44,9 +44,7 @@
                         </a>
                         {{ inbox.flags|render_flags }}
                     </td>
-                    {% cache 300 emaildate email.eid %}
                     <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
-                    {% endcache %}
                     {% if inbox.tags %}
                         <td>{{ inbox.tags }}</td>
                     {% else %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n cache %}
+{% load i18n %}
 {% load inboxen_flags %}
 
 {% block breadcumbs %}
@@ -53,9 +53,7 @@
                         {% else %}
                             <td><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
                         {% endif %}
-                        {% cache 300 emaildate email.eid %}
                             <td title="{{ email.received_date|date:"r" }}"><div>{{ email.received_date|timesince }} {% trans "ago" %}</div></td>
-                        {% endcache %}
                         <td>
                             <button title="{% trans "Toggle Importantance" %}" class="btn btn-link close" type="submit" name="important-single" value="{{ email.eid }}">&#9733;</button>
                             <button title="{% trans "Delete Email" %}" class="btn btn-link close" type="submit" name="delete-single" value="{{ email.eid }}">&times;</button>
