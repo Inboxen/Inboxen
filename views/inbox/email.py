@@ -27,6 +27,7 @@ from django.http import HttpResponseRedirect
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
 from premailer.premailer import Premailer
+import watson
 
 from inboxen import models
 from website.views import base
@@ -45,10 +46,11 @@ class EmailView(
     template_name = 'inbox/email.html'
 
     def get(self, *args, **kwargs):
-        out = super(EmailView, self).get(*args, **kwargs)
-        self.object.flags.read = True
-        self.object.flags.seen = True
-        self.object.save()
+        with watson.skip_index_update():
+            out = super(EmailView, self).get(*args, **kwargs)
+            self.object.flags.read = True
+            self.object.flags.seen = True
+            self.object.save(update_fields=["flags"])
         return out
 
     def get_object(self, *args, **kwargs):
@@ -73,8 +75,9 @@ class EmailView(
         obj = self.get_object()
 
         if "important-toggle" in self.request.POST:
-            obj.flags.important = not bool(obj.flags.important)
-            obj.save()
+            with watson.skip_index_update():
+                obj.flags.important = not bool(obj.flags.important)
+                obj.save(update_fields=["flags"])
 
         return HttpResponseRedirect(self.get_success_url())
 

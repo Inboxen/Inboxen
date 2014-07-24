@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from aggregate_if import Count as ConditionalCount
+import watson
 
 from inboxen import models
 from queue.delete.tasks import delete_email
@@ -59,17 +60,18 @@ class InboxView(
         qs = self.get_queryset()
 
         # this is kinda bad, but nested forms aren't supported in all browsers
-        if "delete-single" in self.request.POST:
-            email_id = int(self.request.POST["delete-single"], 16)
-            email = qs.get(id=email_id)
-            email.delete()
-            return HttpResponseRedirect(self.get_success_url())
-        elif "important-single" in self.request.POST:
-            email_id = int(self.request.POST["important-single"], 16)
-            email = qs.get(id=email_id)
-            email.flags.important = not email.flags.important
-            email.save()
-            return HttpResponseRedirect(self.get_success_url())
+        with watson.skip_index_update():
+            if "delete-single" in self.request.POST:
+                email_id = int(self.request.POST["delete-single"], 16)
+                email = qs.get(id=email_id)
+                email.delete()
+                return HttpResponseRedirect(self.get_success_url())
+            elif "important-single" in self.request.POST:
+                email_id = int(self.request.POST["important-single"], 16)
+                email = qs.get(id=email_id)
+                email.flags.important = not email.flags.important
+                email.save()
+                return HttpResponseRedirect(self.get_success_url())
 
         emails = []
         for email in self.request.POST:
@@ -87,14 +89,15 @@ class InboxView(
         email_ids = list(emails.values_list('id', flat=True))
         emails = self.model.objects.filter(id__in=email_ids).only("id")
 
-        if "unimportant" in self.request.POST:
-            emails.update(flags=F('flags').bitand(~self.model.flags.important))
-        elif "important" in self.request.POST:
-            emails.update(flags=F('flags').bitor(self.model.flags.important))
-        elif "delete" in self.request.POST:
-            emails.update(flags=F('flags').bitor(self.model.flags.deleted))
-            for email in emails:
-                delete_email.delay(email.id)
+        with watson.skip_index_update():
+            if "unimportant" in self.request.POST:
+                emails.update(flags=F('flags').bitand(~self.model.flags.important))
+            elif "important" in self.request.POST:
+                emails.update(flags=F('flags').bitor(self.model.flags.important))
+            elif "delete" in self.request.POST:
+                emails.update(flags=F('flags').bitor(self.model.flags.deleted))
+                for email in emails:
+                    delete_email.delay(email.id)
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -170,7 +173,8 @@ class SingleInboxView(InboxView):
         context.update({"inbox":self.kwargs["inbox"], "domain":self.kwargs["domain"]})
 
         if self.inbox_obj.flags.new:
-            self.inbox_obj.flags.new = False
-            self.inbox_obj.save(update_fields=["flags"])
+            with watson.skip_index_update():
+                self.inbox_obj.flags.new = False
+                self.inbox_obj.save(update_fields=["flags"])
 
         return context
