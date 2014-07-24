@@ -14,7 +14,7 @@ django-two-factor-auth
 djorm-ext-pgbytea
 psycopg2
 pytz
--e git+https://github.com/moggers87/django-watson.git@view-mixin-kwargs#egg=django-watson
+-e git+https://github.com/moggers87/django-watson.git@block-search#egg=django-watson
 -r queue/requirements.txt
 -r router/requirements.txt
 -r website/requirements.txt
