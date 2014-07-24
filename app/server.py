@@ -23,6 +23,7 @@ from salmon.routing import nolocking, route, stateless
 from salmon.server import SMTPError
 
 from django.db import DatabaseError, transaction
+import watson
 
 from app.helpers import make_email
 from inboxen.models import Inbox
@@ -44,13 +45,14 @@ def START(message, inbox=None, domain=None):
 
         make_email(message, inbox)
 
-        inbox.flags.new = True
-        inbox.save()
+        with watson.skip_index_update():
+            inbox.flags.new = True
+            inbox.save(update_fields=["flags"])
 
         if not inbox.flags.exclude_from_unified:
             profile = inbox.user.userprofile
             profile.flags.unified_has_new_messages = True
-            profile.save()
+            profile.save(update_fields=["flags"])
 
     except DatabaseError, e:
         log.debug("DB error: %s", e)
