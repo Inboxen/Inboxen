@@ -20,9 +20,10 @@
 import re
 
 from django.contrib import messages
+from django.core.cache import cache
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
-from django.http import HttpResponseRedirect
 
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
@@ -104,8 +105,10 @@ class EmailView(
             return True
 
     def get_context_data(self, **kwargs):
-        headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
-        headers = headers.get_many("Subject", "From")
+        headers = cache.get(self.object.id, version="email-header")
+        if len(headers.keys()) == 0:
+            headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
+            headers = headers.get_many("Subject", "From")
 
         email_dict = {}
         email_dict["subject"] = headers.get("Subject", '(No subject)')
