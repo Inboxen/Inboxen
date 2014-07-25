@@ -22,6 +22,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
+from django.utils.timesince import timesince
 from django.views import generic
 
 from aggregate_if import Count as ConditionalCount
@@ -113,19 +114,32 @@ class InboxView(
         if len(object_id_list) == 0:
             return context
 
-        headers = cache.get_many(object_id_list, version="email")
+        headers = cache.get_many(object_id_list, version="email-header")
 
         missing_list = set(object_id_list) - set(headers.keys())
         if len(missing_list) > 0:
             missing_headers = models.Header.objects.filter(part__parent=None, part__email__in=missing_list)
             missing_headers = missing_headers.get_many("Subject", "From", group_by="part__email_id")
             headers.update(missing_headers)
-            cache.set_many(missing_headers, version="email", timeout=None)
+            cache.set_many(missing_headers, version="email-header", timeout=None)
+
+        timesinces = cache.get_many(object_id_list, version="email-timesince")
+        timesince_cache_miss = {}
 
         for email in object_list:
             header_set = headers[email.id]
             email.subject = header_set.get("Subject")
             email.sender = header_set["From"]
+
+            if email.id in timesinces:
+                email.timesince = timesinces[email.id]
+            else:
+                # cache miss
+                since = timesince(email.received_date)
+                email.timesince = since
+                timesince_cache_miss[email.id] = since
+
+        cache.set_many(timesince_cache_miss, version="email-timesince", timeout=300)
 
         inbox = getattr(self, 'inbox_obj', None)
         if inbox is not None:
