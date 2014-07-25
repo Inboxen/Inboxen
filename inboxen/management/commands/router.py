@@ -21,7 +21,6 @@ import os
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
-from inboxen.models import User, Email, Inbox, Tag
 
 try:
     from subprocess import check_output, CalledProcessError

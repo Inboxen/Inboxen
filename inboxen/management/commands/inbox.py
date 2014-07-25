@@ -20,7 +20,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from inboxen.models import User, Email, Inbox, Tag
+from inboxen.models import User, Inbox
 from queue.delete.tasks import delete_inbox
 
 class Command(BaseCommand):
@@ -69,50 +69,41 @@ class Command(BaseCommand):
                 raise CommandError("You need to enter an inbox")
             return
         # look for commands
-        if "tags" == args[0] and len(args) <= 2:
+        if args[0] == "tags" and len(args) <= 2:
             # wants a list of tags
             tags = []
             for tag in Tag.objects.filter(inbox=inbox):
                 tags.append(str(tag))
             self.stdout.write("%s: %s" % (inbox, ", ".join(tags)))
         
-        elif "tags" == args[0]:
-            if "--delete-current" in args:
-                Tags.objects.filter(inbox=inbox).delete()
-
-            # wants to set them.
-            tags = [tag for tag in args[2:]]
-
-            with transaction.atomic():
-                for i, tag in enumerate(tags):
-                    tags[i] = Tag(tag=tag, inbox=inbox)
-                    tags[i].save()
-
+        elif args[0] == "tags":
+            inbox.tags = ", ".join(args[2:])
+            inbox.save()
             self.stdout.write("Tags have been saved for %s" % inbox)
 
-        elif "delete" == args[0]:
+        elif args[0] == "delete":
             inbox.flags.deleted = True
             inbox.save()
             delete_inbox.delay(inbox)
             self.stdout.write("%s has been queued for deletion" % inbox)
-        elif "resurrect" == args[0]:
+        elif args[0] == "resurrect":
             if inbox.flags.deleted:
                 inbox.flags.deleted = False
                 inbox.save()
                 self.stdout.write("%s has been resurrected" % inbox)
             else:
                 raise CommandError("%s has not been deleted" % inbox)
-        elif "info" == args[0]:
+        elif args[0] == "info":
             self.stdout.write("This information could be potentially sensative, please do not share it with anyone.")
             self.stdout.write("[%s] -" % inbox)
             self.stdout.write("User: %s" % inbox.user.username)
             self.stdout.write("Created: %s" % inbox.created)
-            tags = Tag.objects.filter(inbox=inbox)
+            tags = inbox.tags
             if tags:
                 self.stdout.write("Tags: %s" % ", ".join(tags))
             else:
                 self.stdout.write("Tags: No tags")
-            email_count = Email.objects.filter(inbox=inbox).count()
+            email_count = inbox.email_set.count()
             self.stdout.write("Emails: %s" % email_count)
         else:
             raise CommandError("%s not found" % args[0])
