@@ -61,17 +61,17 @@ class InboxView(
         qs = self.get_queryset()
 
         # this is kinda bad, but nested forms aren't supported in all browsers
-        with watson.skip_index_update():
-            if "delete-single" in self.request.POST:
-                email_id = int(self.request.POST["delete-single"], 16)
-                email = qs.get(id=email_id)
-                email.delete()
-                return HttpResponseRedirect(self.get_success_url())
-            elif "important-single" in self.request.POST:
+        if "delete-single" in self.request.POST:
+            email_id = int(self.request.POST["delete-single"], 16)
+            email = qs.get(id=email_id)
+            email.delete()
+            return HttpResponseRedirect(self.get_success_url())
+        elif "important-single" in self.request.POST:
+            with watson.skip_index_update():
                 email_id = int(self.request.POST["important-single"], 16)
                 email = qs.get(id=email_id)
                 email.flags.important = not email.flags.important
-                email.save()
+                email.save(update_fields=["flags"])
                 return HttpResponseRedirect(self.get_success_url())
 
         emails = []
@@ -81,12 +81,14 @@ class InboxView(
                     email_id = int(email, 16)
                     emails.append(email_id)
                 except ValueError:
-                    return
+                    return HttpResponseRedirect(self.get_success_url())
 
-        # update() & delete() like to do a select first for some reason :s
+        if len(emails) == 0:
+            # nothing was selected, return early
+            return HttpResponseRedirect(self.get_success_url())
+
+        # Something between Bitfield and Django's ORM doesn't like out complex queries
         emails = qs.filter(id__in=emails).order_by("id").only("id")
-
-        # TODO: fix bug in django-bitfield that causes the invalid reference bug
         email_ids = list(emails.values_list('id', flat=True))
         emails = self.model.objects.filter(id__in=email_ids).only("id")
 
