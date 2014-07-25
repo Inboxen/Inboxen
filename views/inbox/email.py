@@ -106,7 +106,7 @@ class EmailView(
 
     def get_context_data(self, **kwargs):
         headers = cache.get(self.object.id, version="email-header")
-        if len(headers.keys()) == 0:
+        if headers is None:
             headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
             headers = headers.get_many("Subject", "From")
 
