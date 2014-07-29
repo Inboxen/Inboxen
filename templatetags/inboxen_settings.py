@@ -37,6 +37,7 @@ class SettingsMenuNode(template.Node):
         ("user-settings", _("General")),
         ("user-security", _("Security")),
         ("user-liberate", _("Liberate Data")),
+        ("user-resurrect", _("Resurrect An Inbox")),
         ("user-delete", _("Delete Account")),
         )
 

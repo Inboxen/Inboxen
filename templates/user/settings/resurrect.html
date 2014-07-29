@@ -1,0 +1,16 @@
+{% extends 'user/settings/index.html' %}
+{% load i18n inboxen_settings %}
+
+{% block navigation %}
+    {% settings_menu 'user-resurrect' %}
+{% endblock %}
+
+{% block form %}
+    <form method="POST" action="{% url 'user-resurrect' %}" class="form">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button class="btn btn-primary">{% trans "Resurrect Inbox" %}</button>
+    </form>
+{% endblock %}

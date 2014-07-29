@@ -17,16 +17,20 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime
 import random
 
 from django.utils.translation import ugettext as _
 from django import forms
 from django.contrib import messages
 
+from pytz import utc
 import watson
 
 from inboxen import models
 from website.forms.mixins import BootstrapFormMixin
+
+__all__ = ["InboxAddForm", "InboxEditForm", "InboxResurrectionForm"]
 
 class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
@@ -93,3 +97,9 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
         self.instance.save()
 
         return self.instance
+
+class InboxResurrectionForm(InboxEditForm):
+    def save(self, commit=True):
+        self.instance.flags.deleted = False
+        self.instance.created = datetime.now(utc)
+        return super(InboxResurrectionForm, self).save(commit)

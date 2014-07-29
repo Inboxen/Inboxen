@@ -117,3 +117,28 @@ class PlaceHolderAuthenticationForm(
 class PlaceHolderPasswordChangeForm(BootstrapFormMixin, PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
     pass
+
+class ResurrectSelectForm(BootstrapFormMixin, forms.Form):
+
+    address = forms.CharField(
+        label=_("Enter a deleted Inbox address"),
+        widget=forms.TextInput(attrs={'placeholder': _('Inbox Address (e.g. hello@example.com)')})
+    )
+
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        return super(ResurrectSelectForm, self).__init__(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super(ResurrectSelectForm, self).clean(*args, **kwargs)
+        address = cleaned_data.get("address", "").strip()
+
+        try:
+            self.inbox = self.request.user.inbox_set.select_related("domain").from_string(email=address, deleted=True)
+        except (models.Inbox.DoesNotExist, ValueError):
+            raise exceptions.ValidationError(_("The given address does not exist!"))
+
+        return cleaned_data
+
+    def save(self, *args, **kwargs):
+        return self.inbox
