@@ -52,18 +52,18 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
             "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
-    def save(self, commit=False):
+    def save(self, commit=True):
+        # We're ignoring commit, should we?
         # We want this instance created by .create() so we will ignore self.instance
         # which is created just by model(**data)
         data = self.cleaned_data.copy()
         tags = data.pop("tags")
         excludes = data.pop("exclude_from_unified", False)
 
-        with watson.update_index():
-            self.instance = self.request.user.inbox_set.create(**data)
-            self.instance.tags = tags
-            self.instance.flags.exclude_from_unified = excludes
-            self.instance.save()
+        self.instance = self.request.user.inbox_set.create(**data)
+        self.instance.tags = tags
+        self.instance.flags.exclude_from_unified = excludes
+        self.instance.save()
 
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
@@ -88,9 +88,8 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
         if not commit:
             return
 
-        with watson.update_index():
-            data = self.cleaned_data.copy()
-            self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
-            self.instance.save()
+        data = self.cleaned_data.copy()
+        self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
+        self.instance.save()
 
         return self.instance
