@@ -45,7 +45,7 @@ class SettingsTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         if self.form is not None:
             form = response.context["form"]
-            self.assertEqual(isinstance(form, self.form), True)
+            self.assertIsInstance(form, self.form)
 
 class LiberateTestCase(SettingsTestCase):
     form = forms.LiberationForm

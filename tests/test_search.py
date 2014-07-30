@@ -39,12 +39,12 @@ class SearchViewTestCase(test.TestCase):
 
     def test_context(self):
         response = self.client.get(self.get_url())
-        self.assertEqual("inboxes" in response.context, True)
-        self.assertEqual("emails" in response.context, True)
+        self.assertIn("inboxes", response.context)
+        self.assertIn("emails", response.context)
 
     def test_content(self):
         response = self.client.get(self.get_url())
-        self.assertEqual("I'm afraid we're fresh out of <em>cheddar</em>" in response.content, True)
+        self.assertIn("I'm afraid we're fresh out of <em>cheddar</em>", response.content)
 
     def test_get(self):
         response = self.client.get(self.get_url())

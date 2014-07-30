@@ -148,11 +148,11 @@ class InboxAddTestCase(test.TestCase):
     def test_inbox_add_form(self):
         response = self.client.get(self.get_url())
         form = response.context["form"]
-        self.assertEqual(isinstance(form, inboxen_forms.InboxAddForm), True)
+        self.assertIsInstance(form, inboxen_forms.InboxAddForm)
 
-        self.assertEqual("inbox" in form.fields, False)
-        self.assertEqual("domain" in form.fields, True)
-        self.assertEqual("tags" in form.fields, True)
+        self.assertNotIn("inbox", form.fields)
+        self.assertIn("domain", form.fields)
+        self.assertIn("tags", form.fields)
 
     def test_inbox_add(self):
         inbox_count_1st = models.Inbox.objects.count()
@@ -180,17 +180,17 @@ class InboxEditTestCase(test.TestCase):
     def get_url(self):
         return urlresolvers.reverse("inbox-edit", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
-    def test_inbox_add_form(self):
+    def test_inbox_form(self):
         response = self.client.get(self.get_url())
         form = response.context["form"]
-        self.assertEqual(isinstance(form, inboxen_forms.InboxEditForm), True)
+        self.assertIsInstance(form, inboxen_forms.InboxEditForm)
 
-        self.assertEqual("inbox" in form.fields, False)
-        self.assertEqual("domain" in form.fields, False)
-        self.assertEqual("tags" in form.fields, True)
+        self.assertNotIn("inbox", form.fields)
+        self.assertNotIn("domain", form.fields)
+        self.assertIn("tags", form.fields)
 
     def test_inbox_add(self):
         response = self.client.post(self.get_url(), {"tags":"no tags"})
         self.assertEqual(response.status_code, 302)
 
-        self.assertEqual(models.Inbox.objects.filter(tags="no tags").exists(), True)
+        self.assertTrue(models.Inbox.objects.filter(tags="no tags").exists())

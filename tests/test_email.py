@@ -50,6 +50,6 @@ class EmailViewTestCase(test.TestCase):
         # check that delete button has correct value
         button = "value=\"%s\" name=\"delete-single\""
         button = button % self.email.eid
-        self.assertEqual(button in response.content, True)
+        self.assertIn(button, response.content)
 
     #TODO: test body choosing with multipart emails

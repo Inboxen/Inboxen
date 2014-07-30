@@ -46,8 +46,8 @@ class HomeViewTestCase(test.TestCase):
         self.assertEqual(dj_settings.SITE_NAME, context_settings["SITE_NAME"])
 
         # Please add any settings that may contain passwords or secrets:
-        self.assertEqual("SECRET_KEY" in context_settings, False)
-        self.assertEqual("DATABASES" in context_settings, False)
+        self.assertNotIn("SECRET_KEY", context_settings)
+        self.assertNotIn("DATABASES", context_settings)
 
     def test_get(self):
         response = self.client.get(self.get_url())
