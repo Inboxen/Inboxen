@@ -151,7 +151,7 @@
     "fields": {
         "domain": 1, 
         "created": "2014-06-20T12:23:50.105Z", 
-        "flags": "0", 
+        "flags": "1", 
         "inbox": "quhaq", 
         "user": 1
     }
