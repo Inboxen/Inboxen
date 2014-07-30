@@ -67,8 +67,8 @@ class ModelTestCase(test.TestCase):
 
         self.assertEqual(header1[0].name_id, header2[0].name_id)
         self.assertEqual(header1[0].data_id, header2[0].data_id)
-        self.assertEqual(header1[1], True)
-        self.assertEqual(header2[1], False)
+        self.assertTrue(header1[1])
+        self.assertFalse(header2[1])
 
     def test_body_get_or_create(self):
         body_data = "Hello"
@@ -77,5 +77,5 @@ class ModelTestCase(test.TestCase):
         body2 = models.Body.objects.get_or_create(data=body_data)
 
         self.assertEqual(body1[0].id, body2[0].id)
-        self.assertEqual(body1[1], True)
-        self.assertEqual(body2[1], False)
+        self.assertTrue(body1[1])
+        self.assertFalse(body2[1])

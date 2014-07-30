@@ -54,7 +54,7 @@ class LoginTestCase(test.TestCase):
 
         response = self.client.get(urlresolvers.reverse("user-home"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["request"].user.is_authenticated(), True)
+        self.assertTrue(response.context["request"].user.is_authenticated())
 
     def test_ratelimit(self):
         params = {
@@ -79,4 +79,4 @@ class LoginTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
 
         response = self.client.get(urlresolvers.reverse("index"))
-        self.assertEqual(response.context["request"].user.is_authenticated(), False)
+        self.assertFalse(response.context["request"].user.is_authenticated())
