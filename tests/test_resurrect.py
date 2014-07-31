@@ -26,6 +26,7 @@ from pytz import utc
 
 from inboxen import models
 from website import forms
+from website.tests import utils
 
 class ResurrectSelectTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
@@ -66,8 +67,8 @@ class ResurrectSelectTestCase(test.TestCase):
 
     def test_invalid_address(self):
         params = {"address": "not a valid address"}
-        response = self.client.post(self.get_url(), params)
-        form = response.context["form"]
+        request = utils.MockRequest(self.user)
+        form = forms.ResurrectSelectForm(request, data=params)
 
         self.assertFalse(form.is_valid())
 
@@ -76,8 +77,8 @@ class ResurrectSelectTestCase(test.TestCase):
         self.inbox.save()
 
         params = {"address": "{0}@{1}".format(self.inbox.inbox, self.inbox.domain.domain)}
-        response = self.client.post(self.get_url(), params)
-        form = response.context["form"]
+        request = utils.MockRequest(self.user)
+        form = forms.ResurrectSelectForm(request, data=params)
 
         self.assertFalse(form.is_valid())
 

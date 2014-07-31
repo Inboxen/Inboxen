@@ -23,6 +23,7 @@ from django.conf import settings as dj_settings
 
 from inboxen import models
 from website import forms
+from website.tests import utils
 
 class SettingsTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
@@ -53,8 +54,34 @@ class LiberateTestCase(SettingsTestCase):
     def get_url(self):
         return urlresolvers.reverse("user-liberate")
 
+    def test_form_bad_data(self):
+        params = {"storage_type": 180, "compression_type": 180}
+        form = self.form(user=self.user, data=params)
+
+        self.assertFalse(form.is_valid())
+
+    def test_form_good_data(self):
+        params = {"storage_type": 1, "compression_type": 1}
+        form = self.form(user=self.user, data=params)
+
+        self.assertTrue(form.is_valid())
+
 class DeleteTestCase(SettingsTestCase):
     form = forms.DeleteAccountForm
 
     def get_url(self):
         return urlresolvers.reverse("user-delete")
+
+    def test_form_good_data(self):
+        params = {"username": self.user.username}
+        request = utils.MockRequest(self.user)
+        form = self.form(request, data=params)
+
+        self.assertTrue(form.is_valid())
+
+    def test_form_bad_data(self):
+        params = {"username": "derp" + self.user.username}
+        request = utils.MockRequest(self.user)
+        form = self.form(request, data=params)
+
+        self.assertFalse(form.is_valid())
