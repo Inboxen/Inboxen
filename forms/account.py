@@ -37,7 +37,8 @@ class DeleteAccountForm(BootstrapFormMixin, forms.Form):
 
     username = forms.CharField(
         label=_("Please type your username to confirm"),
-        widget=forms.TextInput(attrs={'placeholder': _('Username')})
+        widget=forms.TextInput(attrs={'placeholder': _('Username')}),
+        required=False,
     )
 
     def __init__(self, request, *args, **kwargs):
@@ -122,7 +123,8 @@ class ResurrectSelectForm(BootstrapFormMixin, forms.Form):
 
     address = forms.CharField(
         label=_("Enter a deleted Inbox address"),
-        widget=forms.TextInput(attrs={'placeholder': _('Inbox Address (e.g. hello@example.com)')})
+        widget=forms.TextInput(attrs={'placeholder': _('Inbox Address (e.g. hello@example.com)')}),
+        required=False,
     )
 
     def __init__(self, request, *args, **kwargs):
@@ -136,7 +138,7 @@ class ResurrectSelectForm(BootstrapFormMixin, forms.Form):
         try:
             self.inbox = self.request.user.inbox_set.select_related("domain").from_string(email=address, deleted=True)
         except (models.Inbox.DoesNotExist, ValueError):
-            raise exceptions.ValidationError(_("The given address does not exist!"))
+            raise exceptions.ValidationError(_("The given address does not exist or was not deleted!"))
 
         return cleaned_data
 

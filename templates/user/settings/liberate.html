@@ -5,6 +5,23 @@
     {% settings_menu 'user-liberate' %}
 {% endblock %}
 
+{% block errors %}
+    {% for error in form.non_field_errors %}
+        <p class="alert alert-danger">
+            {{ error }}
+        </p>
+    {% endfor %}
+    {% for field in form %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p class="alert alert-danger">
+                    <strong>{{ field.label }}:</strong> {{ error }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
 {% block form %}
 {% if object.flags.running %}
     <h4>{% trans "Data liberation is currently running" %}</h4>
@@ -32,7 +49,10 @@
     <form class="form" action="{% url 'user-liberate' %}" method="POST">
         {% csrf_token %}
         <div class="form-group">
-            {{ form.as_p }}
+            <label>{{ form.storage_type.label }}</label>
+            {{ form.storage_type }}
+            <label>{{ form.compression_type.label }}</label>
+            {{ form.compression_type }}
         </div>
         <button class="btn btn-primary">{% trans "Liberate!" %}</button>
     </form>
