@@ -18,6 +18,7 @@
 ##
 
 from django import test
+from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
 from inboxen import models
@@ -30,7 +31,7 @@ class InboxTestAbstract(object):
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxTestAbstract, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -135,7 +136,7 @@ class InboxAddTestCase(test.TestCase):
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxAddTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -169,7 +170,7 @@ class InboxEditTestCase(test.TestCase):
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxEditTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
         self.inbox = self.user.inbox_set.select_related("domain")[0]
 
         login = self.client.login(username=self.user.username, password="123456")

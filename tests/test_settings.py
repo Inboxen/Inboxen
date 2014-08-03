@@ -16,10 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-
 from django import test
-from django.core import urlresolvers
 from django.conf import settings as dj_settings
+from django.contrib.auth import get_user_model
+from django.core import urlresolvers
 
 from inboxen import models
 from website import forms
@@ -31,7 +31,7 @@ class SettingsTestCase(test.TestCase):
 
     def setUp(self):
         super(SettingsTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
 

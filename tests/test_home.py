@@ -18,8 +18,9 @@
 ##
 
 from django import test
-from django.core import urlresolvers
 from django.conf import settings as dj_settings
+from django.contrib.auth import get_user_model
+from django.core import urlresolvers
 
 from inboxen import models
 
@@ -28,7 +29,7 @@ class HomeViewTestCase(test.TestCase):
 
     def setUp(self):
         super(HomeViewTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
 

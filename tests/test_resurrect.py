@@ -20,6 +20,7 @@
 import datetime
 
 from django import test
+from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
 from pytz import utc
@@ -33,7 +34,7 @@ class ResurrectSelectTestCase(test.TestCase):
 
     def setUp(self):
         super(ResurrectSelectTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -87,7 +88,7 @@ class ResurrectInboxTestCase(test.TestCase):
 
     def setUp(self):
         super(ResurrectInboxTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
 
