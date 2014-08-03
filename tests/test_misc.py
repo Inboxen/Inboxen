@@ -19,6 +19,7 @@
 
 from django import test
 from django.conf import settings as dj_settings
+from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
 from inboxen import models
@@ -41,7 +42,7 @@ class FlagTestCase(test.TestCase):
 
     def setUp(self):
         super(FlagTestCase, self).setUp()
-        self.user = models.User.objects.get(username="isdabizda")
+        self.user = get_user_model().objects.get(username="isdabizda")
         self.emails = [email.id for email in models.Email.objects.filter(inbox__user=self.user)[:10]]
 
     def test_flags_from_unified(self):

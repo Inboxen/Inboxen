@@ -5,10 +5,11 @@ from itertools import izip_longest
 from celery import chain, chord, group, task
 from pytz import utc
 
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, transaction
 
-from inboxen.models import Email, Inbox, User
+from inboxen.models import Email, Inbox
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ def disown_inbox(result, inbox_id):
 @transaction.atomic()
 def finish_delete_user(result, user_id):
     inbox = Inbox.objects.filter(user__id=user_id).only('id').exists()
-    user = User.objects.get(id=user_id)
+    user = get_user_model().objects.get(id=user_id)
     if inbox:
         raise Exception("User {0} still has inboxes!".format(user.username))
     else:
@@ -64,7 +65,7 @@ def finish_delete_user(result, user_id):
 @transaction.atomic()
 def delete_account(user_id):
     # first we need to make sure the user can't login
-    user = User.objects.get(id=user_id)
+    user = get_user_model().objects.get(id=user_id)
     user.set_unusable_password()
     user.is_active = False
     user.save()

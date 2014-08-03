@@ -11,16 +11,17 @@ from datetime import datetime
 from shutil import rmtree
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.db import transaction
-from django.utils.translation import ugettext as _
 from django.utils import safestring
+from django.utils.translation import ugettext as _
 
 from celery import task, chain, group, chord
 from pytz import utc
 from async_messages import message_user
 
-from inboxen.models import Body, Domain, Email, Header, Inbox, Liberation, PartList, User
+from inboxen.models import Body, Domain, Email, Header, Inbox, Liberation, PartList
 from queue.liberate import utils
 
 log = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ def liberate(user_id, options=None):
         options = {}
 
     options['user'] = user_id
-    user =  User.objects.get(id=user_id)
+    user =  get_user_model().objects.get(id=user_id)
 
     rstr = ""
     for i in range(7):
@@ -124,7 +125,7 @@ def liberate_collect_emails(results, mail_path, options):
 
     async_result = msg_tasks.apply_async()
 
-    lib_status = User.objects.get(id=options["user"]).liberation
+    lib_status = get_user_model().objects.get(id=options["user"]).liberation
     lib_status.async_result = async_result.id
     lib_status.save()
 
@@ -192,7 +193,7 @@ def liberate_tarball(result, options):
         log.debug("Couldn't open tarfile at %s", tar_name)
         raise liberate_tarball.retry(exc=error)
 
-    user =  User.objects.get(id=options['user'])
+    user =  get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
 
     date = str(lib_status.started)
@@ -211,7 +212,7 @@ def liberate_tarball(result, options):
 @transaction.atomic()
 def liberation_finish(result, options):
     """ Create email to send to user """
-    user =  User.objects.get(id=options['user'])
+    user =  get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
     lib_status.flags.running = False
     lib_status.payload = open(result, "r").read()
@@ -232,7 +233,7 @@ def liberate_user_profile(user_id, email_results):
     data = {
         'preferences': {}
     }
-    user = User.objects.get(id=user_id)
+    user = get_user_model().objects.get(id=user_id)
 
     # user's preferences
     profile = user.userprofile

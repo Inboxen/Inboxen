@@ -19,6 +19,7 @@
 
 from django import test
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils import unittest
 
 from inboxen import models
@@ -32,7 +33,7 @@ class DeleteAccountTestCase(test.TestCase):
     def test_delete(self):
         tasks.delete_account.delay(user_id=1)
 
-        self.assertEqual(models.User.objects.count(), 0)
+        self.assertEqual(get_user_model().objects.count(), 0)
         self.assertEqual(models.Email.objects.count(), 0)
         self.assertEqual(models.Inbox.filter(flags=~Inbox.flags.deleted).count(), 0)
         self.assertEqual(models.Inbox.filter(user__isnull=False).count(), 0)

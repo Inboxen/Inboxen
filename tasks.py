@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import F
 
@@ -8,7 +9,7 @@ from celery import task
 from pytz import utc
 import watson
 
-from inboxen.models import Email, Inbox, User, Statistic
+from inboxen.models import Email, Inbox, Statistic
 
 log = logging.getLogger(__name__)
 
@@ -16,9 +17,9 @@ log = logging.getLogger(__name__)
 @transaction.atomic()
 def statistics():
     # get user statistics
-    user_count = User.objects.all().count()
-    new_count =  User.objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
-    active_count = User.objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=7)).count()
+    user_count = get_user_model().objects.all().count()
+    new_count =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
+    active_count = get_user_model().objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=7)).count()
 
     stat = Statistic(
         user_count=user_count,
@@ -47,7 +48,7 @@ def inbox_new_flag(user_id, inbox_id=None):
         return
 
     if inbox_id is None:
-        profile = User.objects.select_related("userprofile").get(id=user_id).userprofile
+        profile = get_user_model().objects.select_related("userprofile").get(id=user_id).userprofile
         profile.flags.unified_has_new_messages = False
         profile.save(update_fields=["flags"])
     else:
