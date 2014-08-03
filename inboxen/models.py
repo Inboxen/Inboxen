@@ -22,7 +22,6 @@ import markdown
 import re
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.utils.encoding import smart_str
 
@@ -50,7 +49,7 @@ class BlogPost(models.Model):
     body = models.TextField()
     date = models.DateTimeField('posted')
     modified = models.DateTimeField('modified')
-    author = models.ForeignKey(User, on_delete=models.PROTECT)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)
 
     @property
@@ -74,7 +73,7 @@ class UserProfile(models.Model):
     ask_images - should we offer to enable image display for HTML emails?
     display_images - should we display images in HTML emails by default? Implies we should never ask
     """
-    user = AutoOneToOneField(User, primary_key=True)
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
     pool_amount = models.IntegerField(default=500)
     flags = BitField(flags=("prefer_html_email","unified_has_new_messages","ask_images","display_images"), default=5)
 
@@ -111,7 +110,7 @@ class Liberation(models.Model):
     `payload` is the compressed archive - it is not base64 encoded
     `async_result` is the UUID of Celery result object, which may or may not be valid
     """
-    user = fields.DeferAutoOneToOneField(User, primary_key=True, defer_fields=["data"])
+    user = fields.DeferAutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, defer_fields=["data"])
     flags = BitField(flags=("running", "errored"), default=0)
     data = LargeObjectField(null=True)
     content_type = models.PositiveSmallIntegerField(default=0)
@@ -166,7 +165,7 @@ class Inbox(models.Model):
     """
     inbox = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted","new","exclude_from_unified"), default=0)
     tags = models.CharField(max_length=256, null=True, blank=True)
@@ -194,8 +193,8 @@ class Request(models.Model):
     amount = models.IntegerField()
     succeeded = models.NullBooleanField(default=None)
     date = models.DateTimeField('requested')
-    authorizer = models.ForeignKey(User, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL)
-    requester = models.ForeignKey(User, related_name="requester")
+    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL)
+    requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
     result = models.CharField(max_length=1024, blank=True, null=True)
 
 ##
