@@ -20,6 +20,7 @@
 import datetime
 
 from django import test
+from django.contrib.auth import get_user_model
 
 from inboxen import models
 
@@ -29,7 +30,7 @@ class ModelTestCase(test.TestCase):
 
     def setUp(self):
         super(ModelTestCase, self).setUp()
-        self.user = models.User.objects.get(id=1)
+        self.user = get_user_model().objects.get(id=1)
 
     def test_inbox_create(self):
         with self.assertRaises(models.Domain.DoesNotExist):
@@ -50,7 +51,7 @@ class ModelTestCase(test.TestCase):
         self.assertEqual(inbox, inbox2)
 
     def test_inbox_from_string_and_user(self):
-        user = models.User.objects.create(username="bizz")
+        user = get_user_model().objects.create(username="bizz")
         domain = models.Domain.objects.get(id=1)
         inbox = models.Inbox.objects.create(domain=domain, user=user)
 

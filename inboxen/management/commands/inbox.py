@@ -17,10 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from inboxen.models import User, Inbox
+from inboxen.models import Inbox
 from queue.delete.tasks import delete_inbox
 
 class Command(BaseCommand):
@@ -51,7 +52,7 @@ class Command(BaseCommand):
                 self.stdout.write("Searching for %s (could take a while):" % args[1])
                 term = args[1].lower()
                 # args[1] is a search term
-                for user in User.objects.all():
+                for user in get_user_model().objects.all():
                     if term in user.username.lower():
                         for inbox in Inbox.objects.filter(user=user):
                             written = True

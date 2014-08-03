@@ -19,6 +19,7 @@
 
 from django import test
 from django.conf import settings as dj_settings
+from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
 
@@ -37,7 +38,7 @@ class LoginTestCase(test.TestCase):
         login = self.client.login(username="isdabizda", password="123456")
         self.assertEqual(login, True)
 
-        user = models.User.objects.get(username="isdabizda")
+        user = get_user_model().objects.get(username="isdabizda")
         self.assertEqual(user.last_login, user.date_joined)
 
     def test_normal_login(self):
