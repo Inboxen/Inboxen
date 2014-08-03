@@ -85,7 +85,7 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
     def __init__(self, initial=None, instance=None, *args, **kwargs):
         super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
-        self.fields["exclude_from_unified"].initial = bool(instance.flags.exclude_from_unified),
+        self.fields["exclude_from_unified"].initial = bool(instance.flags.exclude_from_unified)
 
 
     def save(self, commit=True):
