@@ -24,3 +24,10 @@ body {
 .inherit-colour {
     color: inherit;
 }
+
+@media (min-width:768px){
+    .navbar-form .input-group-btn,
+    .navbar-form .input-group-addon {
+        width: auto;
+    }
+}
