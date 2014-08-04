@@ -20,7 +20,7 @@
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
-                        <li><a href="{% url 'user-settings' %}">{% trans "Settings" %}</a></li>
+                        <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
                     {% else %}
                         <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
                         {% if settings.ENABLE_REGISTRATION %}
