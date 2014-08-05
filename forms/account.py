@@ -33,6 +33,11 @@ from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
 from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin
 
+__all__ = ["DeleteAccountForm", "LiberationForm",
+            "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
+            "RestoreSelectForm"
+            ]
+
 class DeleteAccountForm(BootstrapFormMixin, forms.Form):
 
     username = forms.CharField(
@@ -119,8 +124,8 @@ class PlaceHolderPasswordChangeForm(BootstrapFormMixin, PlaceHolderMixin, Passwo
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
     pass
 
-class ResurrectSelectForm(BootstrapFormMixin, forms.Form):
-
+class RestoreSelectForm(BootstrapFormMixin, forms.Form):
+    """Select a deleted Inbox to restore"""
     address = forms.CharField(
         label=_("Enter a deleted Inbox address"),
         widget=forms.TextInput(attrs={'placeholder': _('Inbox Address (e.g. hello@example.com)')}),
@@ -129,10 +134,10 @@ class ResurrectSelectForm(BootstrapFormMixin, forms.Form):
 
     def __init__(self, request, *args, **kwargs):
         self.request = request
-        return super(ResurrectSelectForm, self).__init__(*args, **kwargs)
+        return super(RestoreSelectForm, self).__init__(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
-        cleaned_data = super(ResurrectSelectForm, self).clean(*args, **kwargs)
+        cleaned_data = super(RestoreSelectForm, self).clean(*args, **kwargs)
         address = cleaned_data.get("address", "").strip()
 
         try:

@@ -2,7 +2,7 @@
 {% load i18n inboxen_settings %}
 
 {% block navigation %}
-    {% settings_menu 'user-resurrect' %}
+    {% settings_menu 'user-restore' %}
 {% endblock %}
 
 {% block errors %}
@@ -23,12 +23,12 @@
 {% endblock %}
 
 {% block form %}
-    <form method="POST" action="{% url 'user-resurrect' %}" class="form">
+    <form method="POST" action="{% url 'user-restore' %}" class="form">
         {% csrf_token %}
         <div class="form-group">
             <label>{{ form.address.label }}</label>
             {{ form.address }}
         </div>
-        <button class="btn btn-primary">{% trans "Resurrect Inbox" %}</button>
+        <button class="btn btn-primary">{% trans "Restore Inbox" %}</button>
     </form>
 {% endblock %}

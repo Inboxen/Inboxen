@@ -27,21 +27,21 @@ from inboxen import models
 from website import forms
 from website.views import base
 
-__all__ = ["ResurrectionSelectView"]
+__all__ = ["RestoreSelectView"]
 
-class ResurrectionSelectView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
-    form_class = forms.ResurrectSelectForm
-    headline = _("Choose An Inbox To Resurrect")
-    template_name = "user/settings/resurrect.html"
+class RestoreSelectView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
+    form_class = forms.RestoreSelectForm
+    headline = _("Choose An Inbox To Restore")
+    template_name = "user/settings/restore.html"
 
     def get_success_url(self):
-        return urlresolvers.reverse("user-resurrect", kwargs={"inbox":self.inbox.inbox, "domain":self.inbox.domain.domain})
+        return urlresolvers.reverse("user-restore", kwargs={"inbox":self.inbox.inbox, "domain":self.inbox.domain.domain})
 
     def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(ResurrectionSelectView, self).get_form_kwargs(*args, **kwargs)
+        kwargs = super(RestoreSelectView, self).get_form_kwargs(*args, **kwargs)
         kwargs.setdefault("request", self.request)
         return kwargs
 
     def form_valid(self, form, *args, **kwargs):
         self.inbox = form.save()
-        return super(ResurrectionSelectView, self).form_valid(form=form, *args, **kwargs)
+        return super(RestoreSelectView, self).form_valid(form=form, *args, **kwargs)

@@ -13,7 +13,7 @@
     {% endblocktrans %}</p>
     <p>{% blocktrans %}
         You can restore this inbox at a later date if you wish, we'll keep it safe for you in the meantime.
-        You can do so from your <a href="{% url 'user-resurrect' %}">Account page</a>
+        You can do so from your <a href="{% url 'user-restore' %}">Account page</a>
     {% endblocktrans %}</p>
     <br />
     <form action="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">

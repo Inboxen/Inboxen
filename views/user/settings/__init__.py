@@ -20,4 +20,4 @@
 from .delete import *
 from .liberate import *
 from .otp import *
-from .resurrect import *
+from .restore import *

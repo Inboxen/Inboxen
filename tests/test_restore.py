@@ -29,11 +29,11 @@ from inboxen import models
 from website import forms
 from website.tests import utils
 
-class ResurrectSelectTestCase(test.TestCase):
+class RestoreSelectTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
     def setUp(self):
-        super(ResurrectSelectTestCase, self).setUp()
+        super(RestoreSelectTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
@@ -45,11 +45,11 @@ class ResurrectSelectTestCase(test.TestCase):
         self.inbox = self.inbox.select_related("domain")[0]
 
     def get_url(self):
-        return urlresolvers.reverse("user-resurrect")
+        return urlresolvers.reverse("user-restore")
 
     def get_success_url(self):
         return urlresolvers.reverse(
-                    "user-resurrect",
+                    "user-restore",
                     kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain},
                     )
 
@@ -58,7 +58,7 @@ class ResurrectSelectTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context["form"]
 
-        self.assertIsInstance(form, forms.ResurrectSelectForm)
+        self.assertIsInstance(form, forms.RestoreSelectForm)
 
     def test_post(self):
         params = {"address": "{0}@{1}".format(self.inbox.inbox, self.inbox.domain.domain)}
@@ -69,7 +69,7 @@ class ResurrectSelectTestCase(test.TestCase):
     def test_invalid_address(self):
         params = {"address": "not a valid address"}
         request = utils.MockRequest(self.user)
-        form = forms.ResurrectSelectForm(request, data=params)
+        form = forms.RestoreSelectForm(request, data=params)
 
         self.assertFalse(form.is_valid())
 
@@ -79,15 +79,15 @@ class ResurrectSelectTestCase(test.TestCase):
 
         params = {"address": "{0}@{1}".format(self.inbox.inbox, self.inbox.domain.domain)}
         request = utils.MockRequest(self.user)
-        form = forms.ResurrectSelectForm(request, data=params)
+        form = forms.RestoreSelectForm(request, data=params)
 
         self.assertFalse(form.is_valid())
 
-class ResurrectInboxTestCase(test.TestCase):
+class RestoreInboxTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
     def setUp(self):
-        super(ResurrectInboxTestCase, self).setUp()
+        super(RestoreInboxTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)
 
         login = self.client.login(username=self.user.username, password="123456")
@@ -100,7 +100,7 @@ class ResurrectInboxTestCase(test.TestCase):
 
     def get_url(self):
         return urlresolvers.reverse(
-                    "user-resurrect",
+                    "user-restore",
                     kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain},
                     )
 

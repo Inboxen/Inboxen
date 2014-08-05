@@ -30,7 +30,7 @@ import watson
 from inboxen import models
 from website.forms.mixins import BootstrapFormMixin
 
-__all__ = ["InboxAddForm", "InboxEditForm", "InboxResurrectionForm"]
+__all__ = ["InboxAddForm", "InboxEditForm", "InboxRestoreForm"]
 
 class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
 
@@ -98,8 +98,8 @@ class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
 
         return self.instance
 
-class InboxResurrectionForm(InboxEditForm):
+class InboxRestoreForm(InboxEditForm):
     def save(self, commit=True):
         self.instance.flags.deleted = False
         self.instance.created = datetime.now(utc)
-        return super(InboxResurrectionForm, self).save(commit)
+        return super(InboxRestoreForm, self).save(commit)
