@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import re
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
