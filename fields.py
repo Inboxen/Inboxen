@@ -19,5 +19,16 @@
 
 from django import forms
 
-class LimitedPasswordField(forms.Field):
-    pass
+from website import validators
+
+class PasswordCheckField(forms.CharField):
+    """Field that makes sure a password is safe(ish) and not too too long"""
+    default_validators = [validators.ComplexityValidation, validators.CharClassValidation]
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 4096)
+        kwargs.setdefault("min_length", 12)
+        kwargs.setdefault("widget", forms.PasswordInput
+
+
+        super(LimitedPasswordField, self).__init__(*args, **kwargs)
