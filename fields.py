@@ -23,7 +23,7 @@ from website import validators
 
 class PasswordCheckField(forms.CharField):
     """Field that makes sure a password is safe(ish) and not too too long"""
-    default_validators = [validators.ComplexityValidation, validators.CharClassValidation]
+    default_validators = [validators.EntropyValidation(), validators.CharClassValidation()]
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("max_length", 4096)

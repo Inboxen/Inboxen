@@ -20,10 +20,11 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-class ComplexityValidation(object):
-    """Guess the complexity of a string"""
+class EntropyValidation(object):
+    """Guess the entropy of a string"""
     def __call__(self, value):
-        if len(set(value)) < self.min_complex:
+        entropy = len(set(value))/float(len(value))
+        if entropy < self.min_entropy:
             raise ValidationError(_("Your password is not complex enough"))
 
 class CharClassValidation(object):
