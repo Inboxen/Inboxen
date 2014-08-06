@@ -18,4 +18,4 @@ from .home import *
 from .login import *
 from .register import *
 from .search import *
-from .settings import *
+from .account import *
