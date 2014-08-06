@@ -18,10 +18,14 @@
 ##
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
+
+__all__ = ["EntropyValidation", "CharClassValidation"]
 
 class EntropyValidation(object):
     """Guess the entropy of a string"""
+    min_entropy = 0.7
+
     def __call__(self, value):
         entropy = len(set(value))/float(len(value))
         if entropy < self.min_entropy:

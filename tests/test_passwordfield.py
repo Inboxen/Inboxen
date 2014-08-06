@@ -16,7 +16,28 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
 from django import test
+from django.core.exceptions import ValidationError
+
+from website import validators
+
+BAD_PASSWORD = "aaaaaaaaaa"
+GOOD_PASSWORD = "abcdef!!!!" # for smaller values of "good"
 
 class PasswordFieldTestCase(test.TestCase):
-    pass
+    def test_entropy(self):
+        validator = validators.EntropyValidation()
+
+        good = validator(GOOD_PASSWORD)
+
+        with self.assertRaises(ValidationError):
+            bad = validator(BAD_PASSWORD)
+
+    def test_charclass(self):
+        validator = validators.CharClassValidation()
+
+        good = validator(GOOD_PASSWORD)
+
+        with self.assertRaises(ValidationError):
+            bad = validator(BAD_PASSWORD)
