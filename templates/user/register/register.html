@@ -23,14 +23,13 @@
             <form action="{% url 'user-registration' %}" class="form" method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label class="sr-only">{% trans "Username" %}</label>
-                    <input id="id_username" class="form-control" maxlength="30" name="username" type="text" placeholder="{% trans "Username" %}" />
-                    <label class="sr-only">{% trans "Password" %}</label>
-                    <input id="id_password1" class="form-control" name="password1" type="password" placeholder="{% trans "Password" %}" />
-                    <label class="sr-only">{% trans "Repeat Password" %}</label>
-                    <input id="id_password2" class="form-control" name="password2" type="password" placeholder="{% trans "Repeat Password" %}" />
+                <label class="sr-only">{{ form.username.label }}</label>
+                {{ form.username }}
+                <label class="sr-only">{{ form.password1.label }}</label>
+                {{ form.password1 }}
+                <label class="sr-only">{{ form.password2.label }}</label>
+                {{ form.password2 }}
                 </div>
-
                 <button class="btn btn-primary">Sign up!</button>
             </form>
         </div>

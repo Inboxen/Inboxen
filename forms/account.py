@@ -21,7 +21,7 @@ from datetime import datetime
 
 from django import forms
 from django.contrib import auth
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.core import exceptions
 from django.utils.translation import ugettext as _
 
@@ -31,11 +31,12 @@ from pytz import utc
 from inboxen import models
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
+from website import fields
 from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin
 
 __all__ = ["DeleteAccountForm", "LiberationForm",
             "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
-            "RestoreSelectForm"
+            "PlaceHolderUserCreationForm", "RestoreSelectForm",
             ]
 
 class DeleteAccountForm(BootstrapFormMixin, forms.Form):
@@ -122,7 +123,11 @@ class PlaceHolderAuthenticationForm(
 
 class PlaceHolderPasswordChangeForm(BootstrapFormMixin, PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
-    pass
+    new_password1 = fields.PasswordCheckField(label=_("New password"))
+
+class PlaceHolderUserCreationForm(BootstrapFormMixin, PlaceHolderMixin, UserCreationForm):
+    """Same as auth.forms.UserCreationForm but adds a label as the placeholder in each field"""
+    password1 = fields.PasswordCheckField(label=_("Password"))
 
 class RestoreSelectForm(BootstrapFormMixin, forms.Form):
     """Select a deleted Inbox to restore"""
