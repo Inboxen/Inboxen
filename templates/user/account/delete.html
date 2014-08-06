@@ -1,8 +1,8 @@
-{% extends 'user/settings/index.html' %}
-{% load i18n inboxen_settings %}
+{% extends 'user/account/index.html' %}
+{% load i18n inboxen_account %}
 
 {% block navigation %}
-    {% settings_menu 'user-delete' %}
+    {% account_menu 'user-delete' %}
 {% endblock %}
 
 {% block errors %}

@@ -63,4 +63,4 @@ def settings(request):
         "display_images": profile.flags.display_images,
         }
 
-    return render(request, "user/settings/index.html", context)
+    return render(request, "user/account/index.html", context)

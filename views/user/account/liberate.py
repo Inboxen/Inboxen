@@ -34,7 +34,7 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
     form_class = forms.LiberationForm
     success_url = reverse_lazy('user-home')
     headline = _("Liberate your data")
-    template_name = "user/settings/liberate.html"
+    template_name = "user/account/liberate.html"
 
     def get_object(self, queryset=None):
         return self.request.user.liberation

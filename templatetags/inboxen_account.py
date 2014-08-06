@@ -23,8 +23,8 @@ from django.utils.translation import ugettext as _
 from django.core import urlresolvers
 
 
-class SettingsMenuNode(template.Node):
-    """Render the menu on a settings page, highlighting the current item"""
+class AccountMenuNode(template.Node):
+    """Render the menu on a account page, highlighting the current item"""
     container_class = "nav nav-pills"
     container_tag = "ul"
     item_active_class = "active"
@@ -69,7 +69,7 @@ class SettingsMenuNode(template.Node):
 register = template.Library()
 
 @register.tag
-def settings_menu(parser, token):
+def account_menu(parser, token):
     try:
         tag_name, url_name = token.split_contents()
     except ValueError:
@@ -79,4 +79,4 @@ def settings_menu(parser, token):
         raise template.TemplateSyntaxError("%r tag's argument should be in quotes" % tag_name)
 
     url_name = url_name[1:-1].strip()
-    return SettingsMenuNode(url_name)
+    return AccountMenuNode(url_name)

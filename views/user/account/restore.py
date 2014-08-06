@@ -32,7 +32,7 @@ __all__ = ["RestoreSelectView"]
 class RestoreSelectView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     form_class = forms.RestoreSelectForm
     headline = _("Choose An Inbox To Restore")
-    template_name = "user/settings/restore.html"
+    template_name = "user/account/restore.html"
 
     def get_success_url(self):
         return urlresolvers.reverse("user-restore", kwargs={"inbox":self.inbox.inbox, "domain":self.inbox.domain.domain})

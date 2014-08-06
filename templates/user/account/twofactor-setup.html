@@ -1,5 +1,5 @@
-{% extends 'user/settings/index.html' %}
-{% load two_factor i18n inboxen_settings %}
+{% extends 'user/account/index.html' %}
+{% load two_factor i18n inboxen_account %}
 {% block errors %}
     {% if wizard.form.non_field_errors %}
         <p class="alert alert-danger">
@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% block navigation %}
-    {% settings_menu 'user-security' %}
+    {% account_menu 'user-security' %}
 {% endblock %}
 
 {% block form %}

@@ -31,21 +31,21 @@ from website.views import base
 __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
 
 class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
-    template_name = "user/settings/security.html"
+    template_name = "user/account/security.html"
     headline = _("Two Factor Authenication")
 
 class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
-    template_name = "user/settings/twofactor-backup.html"
+    template_name = "user/account/twofactor-backup.html"
     headline = _("Backup Tokens")
     redirect_url = "user-security"
 
 class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
-    template_name = "user/settings/twofactor-disable.html"
+    template_name = "user/account/twofactor-disable.html"
     headline = _("Disable Two Factor Authentication")
     redirect_url = "user-security"
 
 class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
-    template_name = "user/settings/twofactor-setup.html"
+    template_name = "user/account/twofactor-setup.html"
     headline = _("Setup Two Factor Authentication")
     form_list = (
         ('welcome', forms.Form),
