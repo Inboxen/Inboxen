@@ -26,7 +26,7 @@ __all__ = ["EntropyValidation", "CharClassValidation"]
 
 class EntropyValidation(object):
     """Guess the entropy of a string"""
-    min_entropy = 0.7
+    min_entropy = 0.5
     message = _("Your password has too many repeating characters, try something more random.")
 
     def __call__(self, value):
