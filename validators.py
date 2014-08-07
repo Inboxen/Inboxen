@@ -46,7 +46,7 @@ class CharClassValidation(object):
                 re.compile(r"(?=(\W))(?=\S)", re.UNICODE),  # punctuation
                 ]
     min_classes = 2
-    message = _("You password should contain at least {0} of the following: letters, numbers, spaces, punctuation")
+    message = _("You password should contain at least {0} of the following: letters, numbers, spaces, punctuation.")
 
     def __call__(self, value):
         found = 0

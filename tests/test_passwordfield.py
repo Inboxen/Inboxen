@@ -20,12 +20,65 @@
 from django import test
 from django.core.exceptions import ValidationError
 
-from website import validators
+from website import fields, validators
 
-BAD_PASSWORD = "aaaaaaaaaa"
-GOOD_PASSWORD = "abcdef!!!!" # for smaller values of "good"
+BAD_PASSWORD = "aaaaaaaaaaaaa"
+GOOD_PASSWORD = "abcdefgh!!!!!" # for smaller values of "good"
 
 class PasswordFieldTestCase(test.TestCase):
+    def setUp(self):
+        self.field = fields.PasswordCheckField()
+
+    def test_field(self):
+        value = self.field.clean(GOOD_PASSWORD)
+        self.assertEqual(GOOD_PASSWORD, value)
+
+    def test_field_errors(self):
+        try:
+            value = self.field.clean(BAD_PASSWORD)
+        except ValidationError as error:
+            errors = error.messages
+
+        self.assertEqual(len(errors), 2)
+
+        validation_errors = [u'Your password has too many repeating characters, try something more random.',
+                u'You password should contain at least 2 of the following: letters, numbers, spaces, punctuation.'
+                ]
+
+        self.assertItemsEqual(validation_errors, errors)
+
+    def test_field_min(self):
+        password = "a !"
+
+        try:
+            self.field.clean(password)
+        except ValidationError as error:
+            errors = "".join(error.messages)
+
+        self.assertEqual(errors, "Ensure this value has at least 12 characters (it has 3).")
+
+    def test_field_max(self):
+        password = "a" * 5000
+
+        try:
+            self.field.clean(password)
+        except ValidationError as error:
+            errors = error.messages
+
+        self.assertIn("Ensure this value has at most 4096 characters (it has 5000).", errors)
+
+    def test_field_empty(self):
+        password = ""
+
+        try:
+            self.field.clean(password)
+        except ValidationError as error:
+            errors = error.messages
+
+        self.assertIn("This field is required.", errors)
+
+
+class ValidatorTestCase(test.TestCase):
     def test_entropy(self):
         validator = validators.EntropyValidation()
 
