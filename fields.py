@@ -30,4 +30,4 @@ class PasswordCheckField(forms.CharField):
         kwargs.setdefault("min_length", 12)
         kwargs.setdefault("widget", forms.PasswordInput)
 
-        super(LimitedPasswordField, self).__init__(*args, **kwargs)
+        super(PasswordCheckField, self).__init__(*args, **kwargs)
