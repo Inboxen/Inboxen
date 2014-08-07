@@ -23,12 +23,9 @@
             <form action="{% url 'user-registration' %}" class="form" method="post">
                 {% csrf_token %}
                 <div class="form-group">
-                <label class="sr-only">{{ form.username.label }}</label>
-                {{ form.username }}
-                <label class="sr-only">{{ form.password1.label }}</label>
-                {{ form.password1 }}
-                <label class="sr-only">{{ form.password2.label }}</label>
-                {{ form.password2 }}
+                    {{ form.username.label_tag }} {{ form.username }}
+                    {{ form.password1.label_tag }} {{ form.password1 }}
+                    {{ form.password2.label_tag }} {{ form.password2 }}
                 </div>
                 <button class="btn btn-primary">Sign up!</button>
             </form>

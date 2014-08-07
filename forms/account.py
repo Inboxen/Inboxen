@@ -111,21 +111,19 @@ class LiberationForm(BootstrapFormMixin, forms.ModelForm):
 
         return self.user
 
-class PlaceHolderAuthenticationForm(
-                        BootstrapFormMixin,
-                        SROnlyLabelMixin,
-                        PlaceHolderMixin,
-                        AuthenticationForm,
-                        ):
+class PlaceHolderAuthenticationForm(BootstrapFormMixin, SROnlyLabelMixin,
+                        PlaceHolderMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder
     in each field and marks labels as sr-only"""
     pass
 
-class PlaceHolderPasswordChangeForm(BootstrapFormMixin, PlaceHolderMixin, PasswordChangeForm):
+class PlaceHolderPasswordChangeForm(BootstrapFormMixin, SROnlyLabelMixin,
+                        PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
     new_password1 = fields.PasswordCheckField(label=_("New password"))
 
-class PlaceHolderUserCreationForm(BootstrapFormMixin, PlaceHolderMixin, UserCreationForm):
+class PlaceHolderUserCreationForm(BootstrapFormMixin, SROnlyLabelMixin,
+                        PlaceHolderMixin, UserCreationForm):
     """Same as auth.forms.UserCreationForm but adds a label as the placeholder in each field"""
     password1 = fields.PasswordCheckField(label=_("Password"))
 
