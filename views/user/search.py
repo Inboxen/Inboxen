@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.core.cache import cache
 from django.db.models import F
 from django.views import generic
 from django.utils.translation import ugettext as _
@@ -37,10 +38,18 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
-        context.update({
+
+        cache_key = "{0}-{1}".format(self.request.user.username, self.query)
+        cached_results = cache.get(cache_key)
+        if cached_results is None:
+            cached_results = {
                     "emails": context["object_list"].filter(content_type__model="email")[:self.filter_limit],
                     "inboxes": context["object_list"].filter(content_type__model="inbox")[:self.filter_limit],
-                    })
+                    }
+            cache.set(cache_key, cached_results, timeout=300)
+
+        context.update(cached_results)
+
         return context
 
     def get_headline(self):
