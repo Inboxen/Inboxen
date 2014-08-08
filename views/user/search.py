@@ -46,7 +46,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
                     "emails": context["object_list"].filter(content_type__model="email")[:self.filter_limit],
                     "inboxes": context["object_list"].filter(content_type__model="inbox")[:self.filter_limit],
                     }
-            cache.set(cache_key, cached_results, timeout=300)
+            cache.set(cache_key, cached_results)
 
         context.update(cached_results)
 

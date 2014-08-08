@@ -141,7 +141,7 @@ class InboxView(
                 email.timesince = since
                 timesince_cache_miss[email.id] = since
 
-        cache.set_many(timesince_cache_miss, version="email-timesince", timeout=300)
+        cache.set_many(timesince_cache_miss, version="email-timesince")
 
         inbox = getattr(self, 'inbox_obj', None)
         if inbox is not None:
