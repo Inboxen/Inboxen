@@ -18,9 +18,7 @@
 ##
 
 from django import test
-from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers
 
 from inboxen import models
 from queue import tasks
@@ -51,3 +49,10 @@ class FlagTestCase(test.TestCase):
     def test_flags_from_single_inbox(self):
         inbox = models.Inbox.objects.filter(email__id=self.emails[0]).only("id").get()
         tasks.deal_with_flags.delay(self.emails, user_id=self.user.id, inbox_id=inbox.id)
+
+class SearchTestCase(test.TestCase):
+    fixtures = ['inboxen_testdata.json']
+
+    def test_search(self):
+        result = tasks.search.delay(1, "bizz").get()
+        self.assertItemsEqual(result.keys(), ["emails", "inboxes"])

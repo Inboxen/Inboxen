@@ -60,7 +60,8 @@ def inbox_new_flag(user_id, inbox_id=None):
 @task(ignore_result=True)
 def deal_with_flags(email_id_list, user_id, inbox_id=None):
     """Set seen flags on a list of email IDs and then send off tasks to update
-    "new" flags on affected Inbox objects"""
+    "new" flags on affected Inbox objects
+    """
     with transaction.atomic():
         with watson.skip_index_update():
             # update seen flags
@@ -76,3 +77,22 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     else:
         # we only need to update
         inbox_new_flag.delay(user_id)
+
+@task(rate_limit="100/s")
+def search(user_id, search_term, offset=0, limit=10):
+    """Offload the expensive part of search to avoid blocking the web interface"""
+    email_subquery = Email.objects.filter(
+                        flags=F("flags").bitand(~Email.flags.deleted),
+                        inbox__flags=F("inbox__flags").bitand(~Inbox.flags.deleted),
+                        inbox__user_id=user_id,
+                        )
+    inbox_subquery = Inbox.objects.filter(flags=F("flags").bitand(~Inbox.flags.deleted), user_id=user_id)
+    search_qs = watson.search(search_term, models=(email_subquery, inbox_subquery))
+    limit = offset + limit
+
+    results = {
+            "emails": search_qs.filter(content_type__model="email").values_list("id", flat=True)[offset:limit],
+            "inboxes": search_qs.filter(content_type__model="inbox").values_list("id", flat=True)[offset:limit],
+            }
+
+    return results
