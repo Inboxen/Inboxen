@@ -1,5 +1,6 @@
-import logging
 from datetime import datetime, timedelta
+import gc
+import logging
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -96,3 +97,13 @@ def search(user_id, search_term, offset=0, limit=10):
             }
 
     return results
+
+@task(rate_limit="1/h", ignore_result=True)
+def force_garbage_collection():
+    """Call the garbage collector.
+
+    This task expects to be sent to a broadcast queue
+    """
+    collected = gc.collect()
+
+    log.info("GC collected {0} objects.".format(collected))

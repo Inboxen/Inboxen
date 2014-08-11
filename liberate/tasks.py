@@ -23,6 +23,7 @@ from async_messages import message_user
 
 from inboxen.models import Body, Domain, Email, Header, Inbox, Liberation, PartList
 from queue.liberate import utils
+from queue import tasks
 
 log = logging.getLogger(__name__)
 
@@ -227,6 +228,9 @@ def liberation_finish(result, options):
     message_user(user, safestring.mark_safe(message % urlresolvers.reverse("user-liberate-get")))
 
     log.info("Finished liberation for %s", options['user'])
+
+    # run a garbage collection on all workers - liberation is leaky
+    tasks.force_garbage_collection.delay()
 
 def liberate_user_profile(user_id, email_results):
     """User profile data"""
