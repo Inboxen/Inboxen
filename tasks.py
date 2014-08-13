@@ -92,13 +92,13 @@ def search(user_id, search_term, offset=0, limit=10):
     limit = offset + limit
 
     results = {
-            "emails": search_qs.filter(content_type__model="email").values_list("id", flat=True)[offset:limit],
-            "inboxes": search_qs.filter(content_type__model="inbox").values_list("id", flat=True)[offset:limit],
+            "emails": list(search_qs.filter(content_type__model="email").values_list("id", flat=True)[offset:limit]),
+            "inboxes": list(search_qs.filter(content_type__model="inbox").values_list("id", flat=True)[offset:limit]),
             }
 
     return results
 
-@task(rate_limit="1/h", ignore_result=True)
+@task(ignore_result=True)
 def force_garbage_collection():
     """Call the garbage collector.
 
