@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 from inboxen import models
 from website.views import base
 
-from watson import views
+from watson import models as watson_models, views
 
 __all__ = ["SearchView"]
 
@@ -38,10 +38,23 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
-        search_results = {
-                    "emails": context["object_list"].filter(content_type__model="email")[:self.filter_limit],
-                    "inboxes": context["object_list"].filter(content_type__model="inbox")[:self.filter_limit],
+
+        cache_key = "{0}-{1}".format(self.request.user.username, self.query)
+        cached_results = cache.get(cache_key)
+        # TODO: use search task instead
+        if cached_results is None:
+            cached_results = {
+                    "emails": list(context["object_list"].filter(content_type__model="email").values_list("id", flat=True)[:self.filter_limit]),
+                    "inboxes": list(context["object_list"].filter(content_type__model="inbox").values_list("id", flat=True)[:self.filter_limit]),
                     }
+            cache.set(cache_key, cached_results)
+
+        # convert IDs to objects - we can't send pickled objects via celery
+        search_results = {
+                "emails": watson_models.SearchEntry.objects.filter(id__in=cached_results["emails"]).prefetch_related("object"),
+                "inboxes": watson_models.SearchEntry.objects.filter(id__in=cached_results["inboxes"]).prefetch_related("object"),
+                }
+
         context.update(search_results)
 
         return context
@@ -64,9 +77,6 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         get_query = super(SearchView, self).get_query(request)
         kwarg_query = self.kwargs.get(self.get_query_param(), "").strip()
         return kwarg_query or get_query
-
-    def get_queryset(self):
-        return super(SearchView, self).get_queryset().prefetch_related("object")
 
     def get(self, request, *args, **kwargs):
         response = super(SearchView, self).get(request, *args, **kwargs)
