@@ -38,23 +38,10 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
-
-        cache_key = "{0}-{1}".format(self.request.user.username, self.query)
-        cached_results = cache.get(cache_key)
-        # TODO: use search task instead
-        if cached_results is None:
-            cached_results = {
-                    "emails": context["object_list"].filter(content_type__model="email").values_list("id", flat=True)[:self.filter_limit],
-                    "inboxes": context["object_list"].filter(content_type__model="inbox").values_list("id", flat=True)[:self.filter_limit],
-                    }
-            cache.set(cache_key, cached_results)
-
-        # convert IDs to objects - we can't send pickled objects via celery
         search_results = {
-                "emails": models.Email.objects.filter(id__in=cached_results["emails"]),
-                "inboxes": models.Inbox.objects.filter(id__in=cached_results["inboxes"]),
-                }
-
+                    "emails": context["object_list"].filter(content_type__model="email")[:self.filter_limit],
+                    "inboxes": context["object_list"].filter(content_type__model="inbox")[:self.filter_limit],
+                    }
         context.update(search_results)
 
         return context
