@@ -24,7 +24,7 @@ import warnings
 from django.contrib.messages import constants as message_constants
 from django.core import exceptions, urlresolvers
 
-from kombu.common import Broadcast
+from kombu.common import Broadcast, Exchange, Queue
 import configobj
 import validate
 
@@ -196,8 +196,15 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
-CELERY_QUEUES = (Broadcast('broadcast_tasks'), )
+CELERY_QUEUES = (
+        Queue('default', Exchange('default'), routing_key='default'),
+        Broadcast('broadcast_tasks'),
+        )
 CELERY_ROUTES = {'queue.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
+
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE = 'default'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
 
 CELERYBEAT_SCHEDULE = {
     'statistics':{
