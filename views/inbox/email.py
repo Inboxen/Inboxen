@@ -157,15 +157,18 @@ class EmailView(
         plain_message = self.find_body(html, plain)
         if plain_message is None:
             if len(attachments) == 1:
-                charset = attachments[0][0].charset
-                email_dict["body"] = unicode(str(attachments[0][0].body.data), charset)
+                email_dict["body"] = str(attachments[0][0].body.data
+                email_dict["charset"] = attachments[0][0].charset
             else:
                 email_dict["body"] = ""
+                email_dict["charset"] = "utf-8"
             plain_message = True
         elif plain_message:
-            email_dict["body"] = unicode(str(plain.body.data), plain.charset)
+            email_dict["body"] = str(plain.body.data)
+            email_dict["charset"] = plain.charset
         else:
-            email_dict["body"] = unicode(str(html.body.data), html.charset)
+            email_dict["body"] = str(html.body.data)
+            email_dict["charset"] = html.charset
 
         if not plain_message:
             # Mail Pile uses this, give back if you come up with something better
@@ -182,11 +185,13 @@ class EmailView(
 
             try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
-            except etree.LxmlError:
+            except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = unicode(str(plain.body.data), plain.charset)
+                    email_dict["body"] = str(plain.body.data)
+                    email_dict["charset"] = plain.charset
                 else:
                     email_dict["body"] = ""
+                    email_dict["charset"] = "utf-8"
 
                 plain_message = True
                 messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
@@ -210,13 +215,24 @@ class EmailView(
 
         # filter images if we need to
         if not img_display:
-            tree = lxml_html.fromstring(email_dict["body"])
-            for img in tree.findall(".//img"):
-                try:
-                    del img.attrib["src"]
-                except KeyError:
-                    pass
-            email_dict["body"] = etree.tostring(tree)
+            try:
+                tree = lxml_html.fromstring(email_dict["body"])
+                for img in tree.findall(".//img"):
+                    try:
+                        del img.attrib["src"]
+                    except KeyError:
+                        pass
+                email_dict["body"] = etree.tostring(tree)
+            except (etree.LxmlError, ValueError):
+                if plain is not None and len(plain.body.data) > 0:
+                    email_dict["body"] = str(plain.body.data)
+                    email_dict["charset"] = plain.charset
+                else:
+                    email_dict["body"] = ""
+                    email_dict["charset"] = "utf-8"
+
+        # convert to unicode as late as possible
+        email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
