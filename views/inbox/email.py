@@ -157,7 +157,7 @@ class EmailView(
         plain_message = self.find_body(html, plain)
         if plain_message is None:
             if len(attachments) == 1:
-                email_dict["body"] = str(attachments[0][0].body.data
+                email_dict["body"] = str(attachments[0][0].body.data)
                 email_dict["charset"] = attachments[0][0].charset
             else:
                 email_dict["body"] = ""
