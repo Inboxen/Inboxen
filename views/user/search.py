@@ -18,69 +18,99 @@
 ##
 
 from django.core.cache import cache
-from django.db.models import F
 from django.views import generic
 from django.utils.translation import ugettext as _
 
-from inboxen import models
 from website.views import base
+from queue import tasks
 
-from watson import models as watson_models, views
+from celery import exceptions
+from celery.result import AsyncResult
+from watson import models as watson_models
 
 __all__ = ["SearchView"]
 
 class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
-                                    views.SearchMixin, generic.ListView):
+                                    generic.ListView):
     """A specialised search view that splits results by model"""
     paginate_by = None
     template_name = "user/search.html"
     filter_limit = 10
+    timeout = 10 # time to wait for results
+    model = None # will be useful later, honest!
+
+    query_param = "q"
+    context_object_name = "search_results"
+
+    def get_cache_key(self):
+        return "{0}-{1}".format(self.request.user.username, self.query)
+
+    def get_results(self):
+        """Fetch result from either the cache or the queue
+
+        Raises TimeoutError if results aren't ready by self.timeout"""
+        result = cache.get(self.get_cache_key())
+        if result is None:
+            search_task = tasks.search.apply_async(args=[self.request.user.id, self.query], countdown=100)
+            result = {"task": search_task.id}
+        elif "task" in result:
+            search_task = AsyncResult(result["task"])
+        else:
+            return result
+
+        try:
+            result = search_task.get(self.timeout)
+        finally:
+            # always update the cache at this point
+            cache.set(self.get_cache_key(), result)
+
+        return result
+
+    def get_queryset(self):
+        if self.query == "":
+            return {}
+
+        try:
+            results = self.get_results()
+        except exceptions.TimeoutError:
+            # we're still waiting for results
+            return {}
+
+        queryset = {}
+
+        # some rubbish about not liking empty sets during IN statements :\
+        if len(results["emails"]) > 0:
+            queryset["emails"] = watson_models.SearchEntry.objects.filter(id__in=results["emails"]).prefetch_related("object")
+        else:
+            queryset["emails"] = []
+
+        if len(results["inboxes"]) > 0:
+            queryset["inboxes"] = watson_models.SearchEntry.objects.filter(id__in=results["inboxes"]).prefetch_related("object")
+        else:
+            queryset["inboxes"] = []
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
+        context["query"] = self.query
 
-        cache_key = "{0}-{1}".format(self.request.user.username, self.query)
-        cached_results = cache.get(cache_key)
-        # TODO: use search task instead
-        if cached_results is None:
-            cached_results = {
-                    "emails": list(context["object_list"].filter(content_type__model="email").values_list("id", flat=True)[:self.filter_limit]),
-                    "inboxes": list(context["object_list"].filter(content_type__model="inbox").values_list("id", flat=True)[:self.filter_limit]),
-                    }
-            cache.set(cache_key, cached_results)
-
-        # convert IDs to objects - we can't send pickled objects via celery
-        search_results = {
-                "emails": watson_models.SearchEntry.objects.filter(id__in=cached_results["emails"]).prefetch_related("object"),
-                "inboxes": watson_models.SearchEntry.objects.filter(id__in=cached_results["inboxes"]).prefetch_related("object"),
-                }
-
-        context.update(search_results)
+        # are we still waiting for results?
+        context["waiting"] = len(context[self.context_object_name]) == 0
 
         return context
 
     def get_headline(self):
         return "%s: %s" % (_("Search"), self.query)
 
-    def get_models(self):
-        ## Use F expressions here because these are actually subqueries
-        ## https://github.com/disqus/django-bitfield/issues/31
-        inboxes = models.Inbox.objects.filter(flags=F("flags").bitand(~models.Inbox.flags.deleted), user=self.request.user)
-        emails = models.Email.objects.filter(
-                                        flags=F("flags").bitand(~models.Email.flags.deleted),
-                                        inbox__flags=F("inbox__flags").bitand(~models.Inbox.flags.deleted),
-                                        inbox__user=self.request.user,
-                                        )
-        return (inboxes, emails)
+    def get_query_param(self):
+        return self.query_param
 
     def get_query(self, request):
-        get_query = super(SearchView, self).get_query(request)
+        get_query = request.GET.get(self.get_query_param(), "").strip()
         kwarg_query = self.kwargs.get(self.get_query_param(), "").strip()
         return kwarg_query or get_query
 
     def get(self, request, *args, **kwargs):
-        response = super(SearchView, self).get(request, *args, **kwargs)
-        if self.query == "":
-            self.query = self.get_query(request)
-
-        return response
+        self.query = self.get_query(request)
+        return super(SearchView, self).get(request, *args, **kwargs)

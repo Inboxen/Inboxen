@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block content %}
-{% if inboxes %}
+{% if search_results.inboxes %}
 <h3>{% trans "Inboxes" %}</h3>
 <div class="table-responsive">
     <table class="table table-hover table-honeydew">
@@ -23,7 +23,7 @@
             <th>&nbsp;</th>
         </tr>
         </thead>
-        {% for result in inboxes %}
+        {% for result in search_results.inboxes %}
             <tr>
                 <td>
                     <a href="{% url 'single-inbox' inbox=result.object.inbox domain=result.meta.domain %}">
@@ -44,7 +44,7 @@
     </table>
 </div>
 {% endif %}
-{% if emails %}
+{% if search_results.emails %}
 <h3>{% trans "Emails" %}</h3>
 <div class="table-responsive">
     <table class="table table-hover table-honeydew">
@@ -57,7 +57,7 @@
             <th>{% trans "Inbox" %}</th>
         </tr>
         </thead>
-        {% for result in emails %}
+        {% for result in search_results.emails %}
             <tr>
                 <td>
                     {{ result.object.flags|render_flags }}
@@ -77,11 +77,14 @@
     </table>
 </div>
 {% endif %}
-{% if not inboxes and not emails %}
-{% if query %}
-    <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>{% endblocktrans %}</p>
-{% else %}
-    <p>{% trans "Well, we don't get much call for that around here." %}</p>
-{% endif %}
+{% if not search_results.inboxes and not search_results.emails %}
+    {% if query and not waiting %}
+        <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>.{% endblocktrans %}</p>
+    {% elif waiting %}
+        <p>{% blocktrans %}I'm just looking to see if we've got any <em>{{query}}</em>.{% endblocktrans %}</p>
+        <p><i>(Refesh the page to see if you're getting impatient)</i></p>
+    {% else %}
+        <p>{% trans "Well, we don't get much call for that around here." %}</p>
+    {% endif %}
 {% endif %}
 {% endblock %}
