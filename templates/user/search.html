@@ -81,10 +81,10 @@
     {% if query and not waiting %}
         <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>.{% endblocktrans %}</p>
     {% elif waiting %}
-        <p>{% blocktrans %}I'm just looking to see if we've got any <em>{{query}}</em>.{% endblocktrans %}</p>
-        <p><i id="refreshnote">({% trans "Refesh the page to see if you're getting impatient" %})</i></p>
+        <p>{% blocktrans %}Hold on, this search is taking longer than expected.{% endblocktrans %}</p>
+        <p><i id="refreshnote">{% trans "Please refesh the page to see if you're search is ready" %}</i></p>
         <script>
-            var things_to_say = [ "Oh, I thought you were complaining about the bazouki player!", "Ah! It's been on order, sir, for two weeks. Was expecting it this morning.", "Never at the end of the week, we get it fresh on Monday." ];
+            var things_to_say = {{ funny }};
             function SaySomethingFunny() {
                 var randomInt = Math.floor(Math.random() * things_to_say.length);
                 var randomString = things_to_say[randomInt];

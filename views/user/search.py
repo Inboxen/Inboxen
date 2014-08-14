@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import json
+
 from django import http
 from django.core.cache import cache
 from django.utils.translation import ugettext as _
@@ -43,12 +45,23 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     query_param = "q"
     context_object_name = "search_results"
 
+    quotes = [
+        _("It'll be done soon, I'm sure."),
+        _("Nearly there!"),
+        _("Just a bit longer."),
+        _("A biiiit longer."),
+        ]
+
     def get(self, request, *args, **kwargs):
         self.query = self.get_query(request)
         return super(SearchView, self).get(request, *args, **kwargs)
 
     def get_cache_key(self):
         return "{0}-{1}".format(self.request.user.username, self.query)
+
+    def get_funny_quotes()
+        """Concatenate quotes to be parsed as a JS array"""
+        return json.dumps(self.quotes)
 
     def get_results(self):
         """Fetch result from either the cache or the queue
@@ -99,6 +112,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
         context["query"] = self.query
+        context["funny"] = self.get_funny_quotes()
 
         # are we still waiting for results?
         context["waiting"] = len(context[self.context_object_name]) == 0
