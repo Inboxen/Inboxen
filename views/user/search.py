@@ -37,7 +37,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     paginate_by = None
     template_name = "user/search.html"
     filter_limit = 10
-    timeout = 10 # time to wait for results
+    timeout = 5 # time to wait for results
     model = None # will be useful later, honest!
 
     query_param = "q"
