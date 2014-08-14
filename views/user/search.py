@@ -117,6 +117,8 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         return kwarg_query or get_query
 
     def head(self, request, *args, **kwargs):
+        """Check to see if a search is running or not"""
+        self.query = self.get_query(request)
         result = cache.get(self.get_cache_key())
         if result is not None and "task" in result:
             search_task = AsyncResult(result["task"])
