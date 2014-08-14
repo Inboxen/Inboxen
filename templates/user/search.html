@@ -82,7 +82,43 @@
         <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>.{% endblocktrans %}</p>
     {% elif waiting %}
         <p>{% blocktrans %}I'm just looking to see if we've got any <em>{{query}}</em>.{% endblocktrans %}</p>
-        <p><i>(Refesh the page to see if you're getting impatient)</i></p>
+        <p><i id="refreshnote">({% trans "Refesh the page to see if you're getting impatient" %})</i></p>
+        <script>
+            var things_to_say = [ "Oh, I thought you were complaining about the bazouki player!", "Ah! It's been on order, sir, for two weeks. Was expecting it this morning.", "Never at the end of the week, we get it fresh on Monday." ];
+            function SaySomethingFunny() {
+                var randomInt = Math.floor(Math.random() * things_to_say.length);
+                var randomString = things_to_say[randomInt];
+                document.getElementById("refreshnote").innerHTML = randomString;
+            }
+
+            function AreWeReadyYet() {
+                var http = new XMLHttpRequest();
+                http.open("HEAD", "{{ request.path }}", true);
+                http.onload = function (e) {
+                    if (http.readyState > 2) {
+                        if (http.status == 202) {
+                            // not done
+                            SaySomethingFunny();
+                        } else if (http.status == 201) {
+                            // done!
+                            clearInterval(timer);
+                            location.reload(true);
+                        } else if (http.status == 400) {
+                            clearInterval(timer);
+                            console.error("{% trans "Server says there is no such search" %}");
+                        } else {
+                            clearInterval(timer);
+                            console.error("{% trans "Unexpected return code" %}");
+                        }
+                    }
+                };
+                http.send(null);
+            }
+
+            SaySomethingFunny();
+            // poll the server every 7000 ms
+            var timer = setInterval(function(){AreWeReadyYet();}, 7000);
+        </script>
     {% else %}
         <p>{% trans "Well, we don't get much call for that around here." %}</p>
     {% endif %}
