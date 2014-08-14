@@ -17,9 +17,10 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django import http
 from django.core.cache import cache
-from django.views import generic
 from django.utils.translation import ugettext as _
+from django.views import generic
 
 from website.views import base
 from queue import tasks
@@ -41,6 +42,10 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     query_param = "q"
     context_object_name = "search_results"
+
+    def get(self, request, *args, **kwargs):
+        self.query = self.get_query(request)
+        return super(SearchView, self).get(request, *args, **kwargs)
 
     def get_cache_key(self):
         return "{0}-{1}".format(self.request.user.username, self.query)
@@ -111,6 +116,14 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         kwarg_query = self.kwargs.get(self.get_query_param(), "").strip()
         return kwarg_query or get_query
 
-    def get(self, request, *args, **kwargs):
-        self.query = self.get_query(request)
-        return super(SearchView, self).get(request, *args, **kwargs)
+    def head(self, request, *args, **kwargs):
+        result = cache.get(self.get_cache_key())
+        if result is not None and "task" in result:
+            search_task = AsyncResult(result["task"])
+            try:
+                search_task.get(1)
+            except exceptions.TimeoutError:
+               return http.HttpResponseNotModified()
+            return http.HttpResponse()
+        else:
+            return http.HttpResponseBadRequest()
