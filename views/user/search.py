@@ -51,7 +51,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         Raises TimeoutError if results aren't ready by self.timeout"""
         result = cache.get(self.get_cache_key())
         if result is None:
-            search_task = tasks.search.apply_async(args=[self.request.user.id, self.query], countdown=100)
+            search_task = tasks.search.apply_async(args=[self.request.user.id, self.query])
             result = {"task": search_task.id}
         elif "task" in result:
             search_task = AsyncResult(result["task"])
