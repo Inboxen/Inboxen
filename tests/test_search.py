@@ -40,8 +40,8 @@ class SearchViewTestCase(test.TestCase):
 
     def test_context(self):
         response = self.client.get(self.get_url())
-        self.assertIn("inboxes", response.context)
-        self.assertIn("emails", response.context)
+        self.assertIn("search_results", response.context)
+        self.assertItemsEqual(response.context["search_results"], ["emails", "inboxes"])
 
     def test_content(self):
         response = self.client.get(self.get_url())
