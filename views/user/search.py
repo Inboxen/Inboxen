@@ -59,7 +59,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     def get_cache_key(self):
         return "{0}-{1}".format(self.request.user.username, self.query)
 
-    def get_funny_quotes()
+    def get_funny_quotes(self):
         """Concatenate quotes to be parsed as a JS array"""
         return json.dumps(self.quotes)
 
