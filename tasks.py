@@ -10,7 +10,7 @@ from celery import task
 from pytz import utc
 import watson
 
-from inboxen.models import Email, Inbox, Statistic
+from inboxen import models
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def statistics():
     new_count =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
     active_count = get_user_model().objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=7)).count()
 
-    stat = Statistic(
+    stat = models.Statistic(
         user_count=user_count,
         new_count=new_count,
         active_count=active_count,
@@ -37,12 +37,12 @@ def statistics():
 @task(ignore_result=True)
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
-    emails = Email.objects.order_by("-received_date").only('id')
-    emails = emails.filter(inbox__user__id=user_id, inbox__flags=~Inbox.flags.exclude_from_unified)
+    emails = models.Email.objects.order_by("-received_date").only('id')
+    emails = emails.filter(inbox__user__id=user_id, inbox__flags=~models.Inbox.flags.exclude_from_unified)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
     emails = [email.id for email in emails[:100]] # number of emails on page
-    emails = Email.objects.filter(id__in=emails, flags=~Email.flags.seen)
+    emails = models.Email.objects.filter(id__in=emails, flags=~models.Email.flags.seen)
 
     # if some emails haven't been seen yet, we have nothing else to do
     if emails.count() > 0:
@@ -54,7 +54,7 @@ def inbox_new_flag(user_id, inbox_id=None):
         profile.save(update_fields=["flags"])
     else:
         with watson.skip_index_update():
-            inbox = Inbox.objects.get(user__id=user_id, id=inbox_id)
+            inbox = models.Inbox.objects.get(user__id=user_id, id=inbox_id)
             inbox.flags.new = False
             inbox.save(update_fields=["flags"])
 
@@ -66,11 +66,11 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     with transaction.atomic():
         with watson.skip_index_update():
             # update seen flags
-            Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(Email.flags.seen))
+            models.Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(models.Email.flags.seen))
 
     if inbox_id is None:
         # grab affected inboxes
-        inbox_list = Inbox.objects.filter(user__id=user_id, email__id__in=email_id_list)
+        inbox_list = models.Inbox.objects.filter(user__id=user_id, email__id__in=email_id_list)
         inbox_list = inbox_list.distinct()
 
         for inbox in inbox_list:
@@ -82,12 +82,12 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
 @task(rate_limit="100/s")
 def search(user_id, search_term, offset=0, limit=10):
     """Offload the expensive part of search to avoid blocking the web interface"""
-    email_subquery = Email.objects.filter(
-                        flags=F("flags").bitand(~Email.flags.deleted),
-                        inbox__flags=F("inbox__flags").bitand(~Inbox.flags.deleted),
+    email_subquery = models.Email.objects.filter(
+                        flags=F("flags").bitand(~models.Email.flags.deleted),
+                        inbox__flags=F("inbox__flags").bitand(~models.Inbox.flags.deleted),
                         inbox__user_id=user_id,
                         )
-    inbox_subquery = Inbox.objects.filter(flags=F("flags").bitand(~Inbox.flags.deleted), user_id=user_id)
+    inbox_subquery = models.Inbox.objects.filter(flags=F("flags").bitand(~models.Inbox.flags.deleted), user_id=user_id)
     search_qs = watson.search(search_term, models=(email_subquery, inbox_subquery))
     limit = offset + limit
 
