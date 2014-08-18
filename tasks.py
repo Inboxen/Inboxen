@@ -3,6 +3,7 @@ import gc
 import logging
 
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.db import transaction
 from django.db.models import F
 
@@ -78,6 +79,37 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     else:
         # we only need to update
         inbox_new_flag.delay(user_id)
+
+@task(serializer='json_date')
+def requests_fetch():
+    """Check for unresolved Inbox allocation requests"""
+    requests = models.Request.objects.filter(succeeded__isnull=True)
+    requests = requests.select_related("requester").order_by("-date")
+    requests = requests.values("amount", "date", "requester__username", "requester__userprofile__pool_amount")
+    return list(requests)
+
+@task(ignore_result=True)
+def requests_report(requests):
+    """Send an email to admins if there are any still pending"""
+    if len(requests) == 0:
+        return
+
+    output = []
+
+    item_format = "User: {username}\n      Date: {date}\n    Amount: {amount}\n   Current: {current}\n"
+
+    for request in requests:
+        item = item_format.format(
+                username=request["requester__username"],
+                date=request["date"],
+                amount=request["amount"],
+                current=request["requester__userprofile__pool_amount"]
+                )
+        output.append(item)
+
+    output = "\n\n".join(output)
+
+    mail.mail_admins("Inbox Allocation Requests", output)
 
 @task(rate_limit="100/s")
 def search(user_id, search_term, offset=0, limit=10):
