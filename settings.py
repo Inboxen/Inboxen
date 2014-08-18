@@ -25,10 +25,12 @@ from django.contrib.messages import constants as message_constants
 from django.core import exceptions, urlresolvers
 
 from kombu.common import Broadcast, Exchange, Queue
+from kombu.serialization import registry
 import configobj
+import djcelery
+import jsondate
 import validate
 
-import djcelery
 djcelery.setup_loader()
 
 ##
@@ -177,6 +179,9 @@ if config["cache"]["backend"] == "file":
 else:
     CACHES["default"]["LOCATION"] = config["cache"]["location"]
 
+# Hash used to store uniqueness of certain models
+# if you change this, you'll need to do a datamigration to change the rest
+COLUMN_HASHER = "sha1"
 
 ##
 # To override the following settings, create a separate settings module.
@@ -189,10 +194,11 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
+## Celery options
 
 CELERY_SEND_TASK_ERROR_EMAILS = True
 CELERY_RESULT_BACKEND = BROKER_URL
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['json', 'json_date']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
@@ -217,8 +223,14 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-# if you change this, you'll need to do a datamigration to change the rest
-COLUMN_HASHER = "sha1"
+# load custom kombu encoder
+registry.register('json_date', jsondate.dumps, jsondate.loads,
+        content_type='application/json+date',
+        content_encoding='utf-8',
+        )
+
+
+## Django options
 
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 

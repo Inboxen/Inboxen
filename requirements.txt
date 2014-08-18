@@ -12,6 +12,7 @@ django-otp
 django-ratelimit-backend
 django-two-factor-auth
 djorm-ext-pgbytea
+jsondate
 psycopg2
 pytz
 -e git+https://github.com/moggers87/django-watson.git@block-search#egg=django-watson
