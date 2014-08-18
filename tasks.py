@@ -85,7 +85,7 @@ def requests_fetch():
     """Check for unresolved Inbox allocation requests"""
     requests = models.Request.objects.filter(succeeded__isnull=True)
     requests = requests.select_related("requester").order_by("-date")
-    requests = requests.values("amount", "date", "requester__username", "requester__userprofile__pool_amount")
+    requests = requests.values("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount")
     return list(requests)
 
 @task(ignore_result=True)

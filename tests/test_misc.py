@@ -17,8 +17,14 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime
+
 from django import test
 from django.contrib.auth import get_user_model
+from django.core import mail
+
+from celery import chain
+from pytz import utc
 
 from inboxen import models
 from queue import tasks
@@ -56,3 +62,38 @@ class SearchTestCase(test.TestCase):
     def test_search(self):
         result = tasks.search.delay(1, "bizz").get()
         self.assertItemsEqual(result.keys(), ["emails", "inboxes"])
+
+@test.utils.override_settings(
+        EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+        ADMINS=(("Travis", "ci@example.com"),),
+        )
+class RequestReportTestCase(test.TestCase):
+    fixtures = ['inboxen_testdata.json']
+
+    def setUp(self):
+        self.user = get_user_model().objects.get(username="isdabizda")
+        self.user.userprofile # autocreate a profile
+
+        now = datetime.now(utc)
+
+        models.Request.objects.create(amount=200, date=now, succeeded=True, requester=self.user)
+        self.waiting = models.Request.objects.create(amount=200, date=now, requester=self.user)
+
+    def test_fetch(self):
+        results = tasks.requests_fetch.delay().get()
+
+        self.assertEqual(len(results), 1)
+        self.assertItemsEqual(
+                results[0],
+                ("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount"),
+                )
+        self.assertEqual(results[0]["id"], self.waiting.id)
+
+    def test_report(self):
+        chain(tasks.requests_fetch.s(), tasks.requests_report.s()).delay()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Amount: 200", mail.outbox[0].body)
+        self.assertIn("User: %s" % (self.user.username), mail.outbox[0].body)
+        self.assertIn("Date:", mail.outbox[0].body)
+        self.assertIn("Current: %s" % (self.user.userprofile.pool_amount,), mail.outbox[0].body)
