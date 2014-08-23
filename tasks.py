@@ -80,7 +80,7 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
         # we only need to update
         inbox_new_flag.delay(user_id)
 
-@task(serializer='json_date')
+@task()
 def requests_fetch():
     """Check for unresolved Inbox allocation requests"""
     requests = models.Request.objects.filter(succeeded__isnull=True)
@@ -110,6 +110,12 @@ def requests_report(requests):
     output = "\n\n".join(output)
 
     mail.mail_admins("Inbox Allocation Requests", output)
+
+@task(ignore_result=True)
+def requests():
+    """Send out an email to admins if there are waiting Inbox allocation requests"""
+    request = requests_fetch.s() | requests_report.s()
+    request.delay()
 
 @task(rate_limit="100/s")
 def search(user_id, search_term, offset=0, limit=10):
