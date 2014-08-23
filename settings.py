@@ -196,11 +196,17 @@ if not DEBUG:
 
 ## Celery options
 
+# load custom kombu encoder
+registry.register('json_date', jsondate.dumps, jsondate.loads,
+        content_type='application/json+date',
+        content_encoding='utf-8',
+        )
+
 CELERY_SEND_TASK_ERROR_EMAILS = True
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_ACCEPT_CONTENT = ['json', 'json_date']
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json_date"
+CELERY_RESULT_SERIALIZER = "json_date"
 
 CELERY_QUEUES = (
         Queue('default', Exchange('default'), routing_key='default'),
@@ -221,14 +227,11 @@ CELERYBEAT_SCHEDULE = {
         'task':'queue.delete.tasks.clean_orphan_models',
         'schedule':datetime.timedelta(hours=2),
     },
+    'requests':{
+        'task':'queue.tasks.requests',
+        'schedule':datetime.timedelta(days=1),
+    },
 }
-
-# load custom kombu encoder
-registry.register('json_date', jsondate.dumps, jsondate.loads,
-        content_type='application/json+date',
-        content_encoding='utf-8',
-        )
-
 
 ## Django options
 
