@@ -55,6 +55,10 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     def get(self, request, *args, **kwargs):
         self.query = self.get_query(request)
+
+        if "ping" in request.GET:
+            return self.head(request, *args, **kwargs)
+
         return super(SearchView, self).get(request, *args, **kwargs)
 
     def get_cache_key(self):
