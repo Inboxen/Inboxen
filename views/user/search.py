@@ -23,6 +23,7 @@ from django import http
 from django.core.cache import cache
 from django.utils.translation import ugettext as _
 from django.views import generic
+from django.utils import safestring
 
 from website.views import base
 from queue import tasks
@@ -61,7 +62,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     def get_funny_quotes(self):
         """Concatenate quotes to be parsed as a JS array"""
-        return json.dumps(self.quotes)
+        return safestring.mark_safe(json.dumps(self.quotes))
 
     def get_results(self):
         """Fetch result from either the cache or the queue
