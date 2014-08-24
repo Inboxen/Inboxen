@@ -93,7 +93,7 @@
 
             function AreWeReadyYet() {
                 var http = new XMLHttpRequest();
-                http.open("HEAD", "{{ request.path }}?ping=1", true);
+                http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
                 http.onload = function (e) {
                     if (http.readyState > 2) {
                         if (http.status == 202) {

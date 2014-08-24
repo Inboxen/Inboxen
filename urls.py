@@ -63,6 +63,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/(?P<q>.*)/', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/', views.SearchView.as_view(), name='user-search'),
+    urls.url(r'^user/searchapi/(?P<q>.*)/', views.SearchApiView.as_view(), name='user-searchapi'),
 
 
     urls.url(r'^user/account/security/password', 'django.contrib.auth.views.password_change',

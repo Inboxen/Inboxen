@@ -18,6 +18,7 @@
 ##
 
 import json
+import urllib
 
 from django import http
 from django.core.cache import cache
@@ -32,7 +33,7 @@ from celery import exceptions
 from celery.result import AsyncResult
 from watson import models as watson_models
 
-__all__ = ["SearchView"]
+__all__ = ["SearchView", "SearchApiView"]
 
 class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
                                     generic.ListView):
@@ -55,14 +56,11 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
     def get(self, request, *args, **kwargs):
         self.query = self.get_query(request)
-
-        if "ping" in request.GET:
-            return self.head(request, *args, **kwargs)
-
         return super(SearchView, self).get(request, *args, **kwargs)
 
     def get_cache_key(self):
-        return "{0}-{1}".format(self.request.user.username, self.query)
+        key = "{0}-{1}".format(self.request.user.username, self.query)
+        return urllib.quote(key)
 
     def get_funny_quotes(self):
         """Concatenate quotes to be parsed as a JS array"""
@@ -135,8 +133,14 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         kwarg_query = self.kwargs.get(self.get_query_param(), "").strip()
         return kwarg_query or get_query
 
-    def head(self, request, *args, **kwargs):
-        """Check to see if a search is running or not"""
+
+class SearchApiView(SearchView):
+    """Check to see if a search is running or not"""
+    def get(self, request, *args, **kwargs):
+        """Some WSGI implementations convert HEAD requests to GET requests.
+
+        It's very annoying
+        """
         self.query = self.get_query(request)
         result = cache.get(self.get_cache_key())
         if result is not None and "task" in result:
