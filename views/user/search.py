@@ -148,7 +148,7 @@ class SearchApiView(SearchView):
             try:
                 search_task.get(1)
             except exceptions.TimeoutError:
-               return http.HttpResponse(status=202) # 202: still waiting for task
+                return http.HttpResponse(status=202) # 202: still waiting for task
             return http.HttpResponse(status=201) # 201: search results ready
         else:
             return http.HttpResponseBadRequest() # 400: no search is being performed
