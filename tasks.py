@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 import gc
 import logging
+import urllib
 
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.cache import cache
 from django.db import transaction
 from django.db.models import F
 
@@ -126,6 +128,8 @@ def search(user_id, search_term, offset=0, limit=10):
                         inbox__user_id=user_id,
                         )
     inbox_subquery = models.Inbox.objects.filter(flags=F("flags").bitand(~models.Inbox.flags.deleted), user_id=user_id)
+    user = get_user_model().objects.get(id=user_id)
+
     search_qs = watson.search(search_term, models=(email_subquery, inbox_subquery))
     limit = offset + limit
 
@@ -133,6 +137,11 @@ def search(user_id, search_term, offset=0, limit=10):
             "emails": list(search_qs.filter(content_type__model="email").values_list("id", flat=True)[offset:limit]),
             "inboxes": list(search_qs.filter(content_type__model="inbox").values_list("id", flat=True)[offset:limit]),
             }
+
+    key = "{0}-{1}".format(user.username, search_term)
+    key = urllib.quote(key)
+
+    cache.set(key, results)
 
     return results
 
