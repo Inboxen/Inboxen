@@ -146,9 +146,11 @@ class SearchApiView(SearchView):
         if result is not None and "task" in result:
             search_task = AsyncResult(result["task"])
             try:
-                search_task.get(1)
+                search_task.get(self.timeout)
             except exceptions.TimeoutError:
                 return http.HttpResponse(status=202) # 202: still waiting for task
+            return http.HttpResponse(status=201) # 201: search results ready
+        elif result is not None:
             return http.HttpResponse(status=201) # 201: search results ready
         else:
             return http.HttpResponseBadRequest() # 400: no search is being performed
