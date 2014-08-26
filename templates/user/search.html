@@ -2,6 +2,46 @@
 {% load i18n %}
 {% load inboxen_flags %}
 
+{% block header %}
+{% if waiting %}
+<script>
+    var things_to_say = {{ funny }};
+    function SaySomethingFunny() {
+        var randomInt = Math.floor(Math.random() * things_to_say.length);
+        var randomString = things_to_say[randomInt];
+        document.getElementById("refreshnote").innerHTML = randomString;
+    }
+
+    function AreWeReadyYet() {
+        var http = new XMLHttpRequest();
+        http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
+        http.onload = function (e) {
+            if (http.readyState > 2) {
+                if (http.status == 202) {
+                    // not done
+                    SaySomethingFunny();
+                } else if (http.status == 201) {
+                    // done!
+                    clearInterval(timer);
+                    location.reload(true);
+                } else if (http.status == 400) {
+                    clearInterval(timer);
+                    console.error("{% trans "Server says there is no such search" %}");
+                } else {
+                    clearInterval(timer);
+                    console.error("{% trans "Unexpected return code" %}");
+                }
+            }
+        };
+        http.send(null);
+    }
+</script>
+<noscript>
+    <meta http-equiv="refresh" content="5">
+</noscript>
+{% endif %}
+{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
@@ -81,40 +121,11 @@
     {% if query and not waiting %}
         <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>.{% endblocktrans %}</p>
     {% elif waiting %}
-        <p>{% blocktrans %}Hold on, this search is taking longer than expected.{% endblocktrans %}</p>
-        <p><i id="refreshnote">{% trans "Please refesh the page to see if you're search is ready" %}</i></p>
+        <p>{% blocktrans %}Searching{% endblocktrans %}…</p>
+        <p><i id="refreshnote">{% blocktrans %}
+            If this page doesn't refresh automatically after 5 seconds, <a href="{{ request.path }}">click here</a>
+        {% endblocktrans %}</i></p>
         <script>
-            var things_to_say = {{ funny }};
-            function SaySomethingFunny() {
-                var randomInt = Math.floor(Math.random() * things_to_say.length);
-                var randomString = things_to_say[randomInt];
-                document.getElementById("refreshnote").innerHTML = randomString;
-            }
-
-            function AreWeReadyYet() {
-                var http = new XMLHttpRequest();
-                http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
-                http.onload = function (e) {
-                    if (http.readyState > 2) {
-                        if (http.status == 202) {
-                            // not done
-                            SaySomethingFunny();
-                        } else if (http.status == 201) {
-                            // done!
-                            clearInterval(timer);
-                            location.reload(true);
-                        } else if (http.status == 400) {
-                            clearInterval(timer);
-                            console.error("{% trans "Server says there is no such search" %}");
-                        } else {
-                            clearInterval(timer);
-                            console.error("{% trans "Unexpected return code" %}");
-                        }
-                    }
-                };
-                http.send(null);
-            }
-
             SaySomethingFunny();
             // poll the server every 7000 ms
             var timer = setInterval(function(){AreWeReadyYet();}, 7000);
