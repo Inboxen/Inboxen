@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Count, Avg
 
 from celery import task
 from pytz import utc
@@ -23,12 +23,16 @@ def statistics():
     # get user statistics
     user_count = get_user_model().objects.all().count()
     new_count =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
-    active_count = get_user_model().objects.filter(last_login__gte=datetime.now(utc) - timedelta(days=7)).count()
+
+    emails = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted)
+    emails = emails.annotate(email_count=Count("email__id")).aggregate(Avg("email_count"))
+    inboxes = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(Avg("inbox_count"))
 
     stat = models.Statistic(
         user_count=user_count,
         new_count=new_count,
-        active_count=active_count,
+        emails=emails,
+        inboxes=inboxes,
         date=datetime.now(utc),
     )
 
