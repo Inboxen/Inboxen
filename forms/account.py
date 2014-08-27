@@ -36,7 +36,8 @@ from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin, SROnlyLab
 
 __all__ = ["DeleteAccountForm", "LiberationForm",
             "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
-            "PlaceHolderUserCreationForm", "RestoreSelectForm",
+            "PlaceHolderUserCreationForm", "RestoreSelectForm", "SettingsForm",
+            "UsernameChangeForm",
             ]
 
 class DeleteAccountForm(BootstrapFormMixin, forms.Form):
@@ -152,3 +153,68 @@ class RestoreSelectForm(BootstrapFormMixin, forms.Form):
 
     def save(self, *args, **kwargs):
         return self.inbox
+
+class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
+    """A form for general settings"""
+    IMAGE_OPTIONS = (
+        (0, _("Always ask to display images")),
+        (1, _("Always display images")),
+        (2, _("Never display images")),
+        )
+    prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
+    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect)
+
+    def __init__(self, request, *args, **kwargs):
+        self.profile = self.request.user.userprofile
+
+        initial = kwargs.get("initial", {})
+
+        initial["prefer_html"] = self.profile.flags.prefer_html_email
+
+        if self.profile.flags.ask_images:
+            initial["images"] = "0"
+        elif profile.flags.display_images:
+            initial["images"] = "1"
+        else:
+            initial["images"] = "2"
+
+        kwargs.setdefault("initial", initial)
+        super(SettingsForm, self).__init__(*args, **kwargs)
+
+    def save(self)
+        if "prefer_html" in self.cleaned_data and self.cleaned_data["prefer_html"]:
+            self.profile.flags.prefer_html_email = True
+        else:
+            self.profile.flags.prefer_html_email = False
+
+        if "images" in self.cleaned_data:
+            if self.cleaned_data["images"] == "0":
+                profile.flags.ask_images = True
+            elif self.cleaned_data["images"] == "1":
+                profile.flags.display_images = True
+                profile.flags.ask_images = False
+            elif self.cleaned_data["images"] == "2":
+                profile.flags.display_images = False
+                profile.flags.ask_images = False
+
+        self.profile.save(fields=["flags"])
+
+class UsernameChangeForm(BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin, forms.Form):
+    """Change username"""
+    new_username1 = forms.CharField(label=_("New username"))
+    new_username2 = forms.CharField(label=_("Repeat new username"))
+
+    def clean_new_username1(self):
+        username = self.cleaned_data.get('new_username1')
+        if get_user_model().objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError(_("This username is already taken"))
+
+        return username
+
+    def clean_new_username2(self):
+        username1 = self.cleaned_data.get('new_username1')
+        username2 = self.cleaned_data.get('new_username2')
+        if username1 and username2:
+            if username1 != username2:
+                raise forms.ValidationError(_("The two username fields don't match."))
+        return username2

@@ -41,5 +41,14 @@ class LowerCaseUsernameTestCase(test.TestCase):
 
         self.assertFalse(form.is_valid())
 
-    def test_change(self):
-        raise NotImplementedError("The settings view is still function based and doesn't use forms either")
+    def test_change_fail(self):
+        params = {"new_username1": "ISDABIZZDA", "new_username2": "ISDABIZZDA"}
+        form = forms.UsernameChangeForm(data=params)
+
+        self.assertFalse(form.is_valid())
+
+    def test_change_pass(self):
+        params = {"new_username1": "hello1", "new_username2": "hello1"}
+        form = forms.UsernameChangeForm(data=params)
+
+        self.assertTrue(form.is_valid())
