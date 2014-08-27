@@ -25,7 +25,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils.encoding import smart_str
 
-from annoying.fields import AutoOneToOneField
+from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
 from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
@@ -99,10 +99,13 @@ class UserProfile(models.Model):
 
 class Statistic(models.Model):
     """Statistics about users"""
-    user_count = models.IntegerField()
-    active_count = models.IntegerField()
-    new_count = models.IntegerField()
     date = models.DateTimeField('date')
+
+    user_count = models.IntegerField()
+    new_count = models.IntegerField()
+
+    emails = JSONField()
+    inboxes = JSONField()
 
 class Liberation(models.Model):
     """Liberation data
