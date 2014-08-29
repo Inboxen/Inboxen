@@ -27,7 +27,7 @@ from website.tests import utils
 
 class SettingsTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
-    form = None
+    form = forms.SettingsForm
 
     def setUp(self):
         super(SettingsTestCase, self).setUp()
@@ -44,9 +44,42 @@ class SettingsTestCase(test.TestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
-        if self.form is not None:
-            form = response.context["form"]
-            self.assertIsInstance(form, self.form)
+        form = response.context["form"]
+        self.assertIsInstance(form, self.form)
+
+    def test_form_bad_data(self):
+        params = {"images": "12213"}
+        request = utils.MockRequest(self.user)
+        form = self.form(request, data=params)
+
+        self.assertFalse(form.is_valid())
+
+    def test_form_good_data(self):
+        params = {"images": "1"}
+        request = utils.MockRequest(self.user)
+        form = self.form(request, data=params)
+
+        self.assertTrue(form.is_valid())
+
+class UsernameChangeTestCase(SettingsTestCase):
+    form = forms.UsernameChangeForm
+
+    def get_url(self):
+        return urlresolvers.reverse("user-username")
+
+    def test_form_bad_data(self):
+        params = {"new_username1": self.user.username, "new_username2": self.user.username}
+        request = utils.MockRequest(self.user)
+        form = self.form(request, data=params)
+
+        self.assertFalse(form.is_valid())
+
+    def test_form_good_data(self):
+        params = {"new_username1": self.user.username + "1", "new_username2": self.user.username + "1"}
+        request = utils.MockRequest(self.user)
+        form = self.form(request, data=params)
+
+        self.assertTrue(form.is_valid())
 
 class LiberateTestCase(SettingsTestCase):
     form = forms.LiberationForm
