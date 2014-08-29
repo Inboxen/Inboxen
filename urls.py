@@ -87,7 +87,8 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
     urls.url(r'^user/account/liberate', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^user/account/delete', views.AccountDeletionView.as_view(), name='user-delete'),
-    urls.url(r'^user/account/', 'website.views.user.account.settings.settings', name='user-settings'),
+    urls.url(r'^user/account/username', views.UsernameChangeView.as_view(), name='user-username'),
+    urls.url(r'^user/account/', views.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
 )
 

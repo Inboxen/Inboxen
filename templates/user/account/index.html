@@ -2,12 +2,20 @@
 {% load i18n inboxen_account %}
 {% block content %}
     {% block errors %}
-        {% if error %}
+        {% for error in form.non_field_errors %}
             <p class="alert alert-danger">
-                <strong>{% trans "Error" %}:</strong>
                 {{ error }}
             </p>
-        {% endif %}
+        {% endfor %}
+        {% for field in form %}
+            {% if field.errors %}
+                {% for error in field.errors %}
+                    <p class="alert alert-danger">
+                        <strong>{{ field.label }}:</strong> {{ error }}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
     {% endblock %}
     {% block navigation %}
         {% account_menu 'user-settings' %}
@@ -20,34 +28,19 @@
             {% csrf_token %}
             <div class="form-group">
                 <div class="checkbox"><label>
-                <input type="checkbox" id="html-preference" name="html-preference" value="html" {%if htmlpreference %}checked{% endif %}/>
-                {% trans "Prefer HTML emails" %}
+                    {{ form.prefer_html }} {{ form.prefer_html.label }}
                 </label></div>
             </div>
             <div class="form-group">
-                <div class="radio"><label>
-                    <input type="radio" name="images" id="ask" value="ask" {% if ask_images %}checked{% endif %}>
-                    {% trans "Always ask to display images" %}
-                </label></div>
-                <div class="radio"><label>
-                    <input type="radio" name="images" id="always" value="always" {% if not ask_images and display_images %}checked{% endif %}>
-                    {% trans "Always display images" %}
-                </label></div>
-                <div class="radio"><label>
-                    <input type="radio" name="images" id="never" value="never" {% if not ask_images and not display_images%}checked{% endif %}>
-                    {% trans "Never display images" %}
-                </label></div>
-            </div>
-            <div class="form-group">
-                <p>{% trans "Your current username is" %} <strong>{{ user.username }}</strong></p>
-                <label class="sr-only" for="username0">{% trans "New Username" %}</label>
-                <input class="form-control" id="username0" name="username0" type="text" placeholder="{% trans "New Username" %}" />
-                <label class="sr-only" for="username1">{% trans "Confirm Username" %}</label>
-                <input class="form-control" id="username1" name="username1" type="text" placeholder="{% trans "Confirm Username" %}" />
+                {% for choice in form.images %}
+                    <div class="radio">{{ choice }}</div>
+                {% endfor %}
             </div>
             <button class="btn btn-primary">{% trans "Save" %}</button>
-            <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Cancel" %}</a>
         </form>
+        <hr>
+        <p>{% blocktrans with name=request.user.username %}You can change your username here. You current username is <b>{{ name }}</b>.{% endblocktrans %}</p>
+        <p><a class="btn btn-default" href="{% url 'user-username' %}">{% trans "Change username" %}</a></p>
     {% endblock %}
     </div>
     </div>

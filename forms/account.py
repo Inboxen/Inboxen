@@ -21,6 +21,7 @@ from datetime import datetime
 
 from django import forms
 from django.contrib import auth
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.core import exceptions
 from django.utils.translation import ugettext as _
@@ -154,7 +155,7 @@ class RestoreSelectForm(BootstrapFormMixin, forms.Form):
     def save(self, *args, **kwargs):
         return self.inbox
 
-class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
+class SettingsForm(BootstrapFormMixin, PlaceHolderMixin, forms.Form):
     """A form for general settings"""
     IMAGE_OPTIONS = (
         (0, _("Always ask to display images")),
@@ -162,10 +163,10 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
         (2, _("Never display images")),
         )
     prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
-    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect)
+    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect, label=_("Image display options"))
 
     def __init__(self, request, *args, **kwargs):
-        self.profile = self.request.user.userprofile
+        self.profile = request.user.userprofile
 
         initial = kwargs.get("initial", {})
 
@@ -173,7 +174,7 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
 
         if self.profile.flags.ask_images:
             initial["images"] = "0"
-        elif profile.flags.display_images:
+        elif self.profile.flags.display_images:
             initial["images"] = "1"
         else:
             initial["images"] = "2"
@@ -189,13 +190,13 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
 
         if "images" in self.cleaned_data:
             if self.cleaned_data["images"] == "0":
-                profile.flags.ask_images = True
+                self.profile.flags.ask_images = True
             elif self.cleaned_data["images"] == "1":
-                profile.flags.display_images = True
-                profile.flags.ask_images = False
+                self.profile.flags.display_images = True
+                self.profile.flags.ask_images = False
             elif self.cleaned_data["images"] == "2":
-                profile.flags.display_images = False
-                profile.flags.ask_images = False
+                self.profile.flags.display_images = False
+                self.profile.flags.ask_images = False
 
         self.profile.save(update_fields=["flags"])
 
@@ -205,7 +206,8 @@ class UsernameChangeForm(BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin,
     new_username2 = forms.CharField(label=_("Repeat new username"))
 
     def __init__(self, request, *args, **kwargs):
-        self.user = self.request.user
+        self.user = request.user
+        super(UsernameChangeForm, self).__init__(*args, **kwargs)
 
     def clean_new_username1(self):
         username = self.cleaned_data.get('new_username1')
@@ -223,6 +225,6 @@ class UsernameChangeForm(BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin,
         return username2
 
     def save(self):
-        username = self.cleaned_data["username1"]
+        username = self.cleaned_data["new_username1"]
         self.user.username = username
-        self.save(update_fields=["username"])
+        self.user.save(update_fields=["username"])

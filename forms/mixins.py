@@ -47,7 +47,8 @@ class BootstrapFormMixin(object):
     def __init__(self, *args, **kwargs):
         output = super(BootstrapFormMixin, self).__init__(*args, **kwargs)
         for field in self.fields.values():
-            if not isinstance(field.widget, widgets.CheckboxInput):
+            if not isinstance(field.widget, widgets.CheckboxInput) and \
+                not isinstance(field.widget, widgets.RadioSelect):
                 field.widget.attrs.update({"class": "form-control"})
         return output
 

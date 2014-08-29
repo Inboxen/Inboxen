@@ -26,6 +26,8 @@ from website.views import base
 
 from queue.delete.tasks import delete_account
 
+__all__ = ["AccountDeletionView"]
+
 class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     """ View to delete an account """
 

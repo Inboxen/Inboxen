@@ -1,0 +1,18 @@
+{% extends 'user/account/index.html' %}
+{% load i18n inboxen_account %}
+
+{% block navigation %}
+    {% account_menu 'user-settings' %}
+{% endblock %}
+
+{% block form %}
+    <form method="POST" action="{% url 'user-username' %}" class="form">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.new_username1.label_tag }} {{ form.new_username1 }}
+            {{ form.new_username2.label_tag }} {{ form.new_username2 }}
+        </div>
+        <button class="btn btn-primary">{% trans "Change username" %}</button>
+        <a href="{% url 'user-settings' %}" class="btn btn-default">{% trans "Cancel" %}</a>
+    </form>
+{% endblock %}

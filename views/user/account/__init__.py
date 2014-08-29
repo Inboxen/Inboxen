@@ -21,3 +21,4 @@ from .delete import *
 from .liberate import *
 from .otp import *
 from .restore import *
+from .settings import *

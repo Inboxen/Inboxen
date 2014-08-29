@@ -17,50 +17,43 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.views import generic
 
-@login_required
-def settings(request):
-    error = ""
+from website import forms
+from website.views import base
 
-    # check their html preferences
-    profile = request.user.userprofile
+__all__ = ["GeneralSettingsView", "UsernameChangeView"]
 
-    # they submitting it?
-    if request.method == "POST":
-        if request.POST.get("html-preference", "") == "html":
-            profile.flags.prefer_html_email = True
-        else:
-            profile.flags.prefer_html_email = False
+class GeneralSettingsView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
+    """General settings view"""
+    form_class = forms.SettingsForm
+    success_url = reverse_lazy("user-settings")
+    template_name = "user/account/index.html"
+    headline = _("Settings")
 
-        if "images" in request.POST:
-            if request.POST["images"] == "ask":
-                profile.flags.ask_images = True
-            elif request.POST["images"] == "always":
-                profile.flags.display_images = True
-                profile.flags.ask_images = False
-            elif request.POST["images"] == "never":
-                profile.flags.display_images = False
-                profile.flags.ask_images = False
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(GeneralSettingsView, self).get_form_kwargs(*args, **kwargs)
+        kwargs.setdefault("request", self.request)
+        return kwargs
 
-        profile.save()
+    def form_valid(self, form, *args, **kwargs):
+        form.save()
+        return super(GeneralSettingsView, self).form_valid(form=form, *args, **kwargs)
 
-        if len(request.POST["username0"]):
-            if request.POST["username0"] == request.POST["username1"]:
-                request.user.username = request.POST["username0"]
-                request.user.save()
-            else:
-                error = _("Please enter your new username twice.")
+class UsernameChangeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
+    """Allow users to change their username"""
+    form_class = forms.UsernameChangeForm
+    success_url = reverse_lazy("user-settings")
+    template_name = "user/account/username.html"
+    headline = _("Change Username")
 
-    context = {
-        "headline":_("Settings"),
-        "error": error,
-        "htmlpreference": profile.flags.prefer_html_email,
-        "ask_images": profile.flags.ask_images,
-        "display_images": profile.flags.display_images,
-        }
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(UsernameChangeView, self).get_form_kwargs(*args, **kwargs)
+        kwargs.setdefault("request", self.request)
+        return kwargs
 
-    return render(request, "user/account/index.html", context)
+    def form_valid(self, form, *args, **kwargs):
+        form.save()
+        return super(UsernameChangeView, self).form_valid(form=form, *args, **kwargs)
