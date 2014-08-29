@@ -181,7 +181,7 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
         kwargs.setdefault("initial", initial)
         super(SettingsForm, self).__init__(*args, **kwargs)
 
-    def save(self)
+    def save(self):
         if "prefer_html" in self.cleaned_data and self.cleaned_data["prefer_html"]:
             self.profile.flags.prefer_html_email = True
         else:
@@ -197,12 +197,15 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin,forms.Form):
                 profile.flags.display_images = False
                 profile.flags.ask_images = False
 
-        self.profile.save(fields=["flags"])
+        self.profile.save(update_fields=["flags"])
 
 class UsernameChangeForm(BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin, forms.Form):
     """Change username"""
     new_username1 = forms.CharField(label=_("New username"))
     new_username2 = forms.CharField(label=_("Repeat new username"))
+
+    def __init__(self, request, *args, **kwargs):
+        self.user = self.request.user
 
     def clean_new_username1(self):
         username = self.cleaned_data.get('new_username1')
@@ -218,3 +221,8 @@ class UsernameChangeForm(BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin,
             if username1 != username2:
                 raise forms.ValidationError(_("The two username fields don't match."))
         return username2
+
+    def save(self):
+        username = self.cleaned_data["username1"]
+        self.user.username = username
+        self.save(update_fields=["username"])
