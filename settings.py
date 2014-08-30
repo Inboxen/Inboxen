@@ -19,6 +19,7 @@
 
 import datetime
 import os
+import stat
 import warnings
 
 from django.contrib.messages import constants as message_constants
@@ -75,6 +76,15 @@ elif is_testing:
     CONFIG_PATH=""
 else:
     raise exceptions.ImproperlyConfigured("You must provide a settings.ini file")
+
+# Check that our chosen settings file cannot be interacted with by other users
+try:
+    mode = os.stat(CONFIG_PATH).st_mode
+except OSError:
+    warnings.warn("Couldn't find settings.ini", ImportWarning)
+else:
+    if mode & stat.S_IRWXO != 0:
+        warnings.warn("Other users could be able to interact with your settings file. Please check file permissions on %s" % CONFIG_PATH)
 
 config_spec = os.path.join(BASE_DIR, "inboxen/config_spec.ini")
 
