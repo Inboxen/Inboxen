@@ -179,7 +179,7 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin, forms.Form):
 
         initial = kwargs.get("initial", {})
 
-        initial["prefer_html"] = self.profile.flags.prefer_html_email
+        initial["prefer_html"] = bool(self.profile.flags.prefer_html_email)
 
         if self.profile.flags.ask_images:
             initial["images"] = "0"
