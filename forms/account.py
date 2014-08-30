@@ -136,6 +136,7 @@ class PlaceHolderUserCreationForm(BootstrapFormMixin, SROnlyLabelMixin,
                 self.error_messages['duplicate_username'],
                 code='duplicate_username',
                 )
+        return username
 
 class RestoreSelectForm(BootstrapFormMixin, forms.Form):
     """Select a deleted Inbox to restore"""
