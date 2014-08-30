@@ -18,9 +18,26 @@
 ##
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
 
-from ratelimitbackend.backends import RateLimitModelBackend
+from ratelimitbackend.backends import RateLimitMixin
 
-class RateLimitWithSettings(RateLimitModelBackend):
+class CaseInsensitiveMixin(object):
+    def authenticate(self, username=None, password=None, **kwargs):
+        # we're also case insensitive
+        user_model = get_user_model()
+        username_field = user_model.USERNAME_FIELD
+        if username is None:
+            username = kwargs.get(username_field)
+        try:
+            user = user_model.objects.get(**{"{0}__iexact".format(username_field): username})
+            if user.check_password(password):
+                return user
+        except user_model.DoesNotExist:
+            # do like the default backend does, slow down return on non-existence
+            user_model.set_password(password)
+
+class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
     minutes = settings.LOGIN_ATTEMPT_COOLOFF
     requests = settings.LOGIN_ATTEMPT_LIMIT

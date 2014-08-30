@@ -19,36 +19,44 @@
 
 from django import test
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers
-from django.utils import unittest
 
-from inboxen import models
 from website import forms
+from website.tests import utils
 
-@unittest.skip("Username checking is still case sensitive")
 class LowerCaseUsernameTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
+    def setUp(self):
+        self.user = get_user_model().objects.get(username="isdabizda")
+
     def test_login(self):
-        params = {"username": "ISdaBIZZda", "password": "123456"}
+        params = {"username": "ISdaBIZda", "password": "123456"}
         form = forms.PlaceHolderAuthenticationForm(data=params)
 
         self.assertTrue(form.is_valid())
 
-    def test_create(self):
-        params = {"username": "ISdaBIZZda", "password1": "123456qwerty", "password2": "123456qwerty"}
+    def test_create_fail(self):
+        params = {"username": "ISdaBIZda", "password1": "123456qwerty", "password2": "123456qwerty"}
         form = forms.PlaceHolderUserCreationForm(data=params)
 
         self.assertFalse(form.is_valid())
 
+    def test_create_pass(self):
+        params = {"username": "hewwo", "password1": "123456qwerty", "password2": "123456qwerty"}
+        form = forms.PlaceHolderUserCreationForm(data=params)
+
+        self.assertTrue(form.is_valid())
+
     def test_change_fail(self):
-        params = {"new_username1": "ISDABIZZDA", "new_username2": "ISDABIZZDA"}
-        form = forms.UsernameChangeForm(data=params)
+        params = {"new_username1": "ISDABIZDA", "new_username2": "ISDABIZDA"}
+        request = utils.MockRequest(self.user)
+        form = forms.UsernameChangeForm(request, data=params)
 
         self.assertFalse(form.is_valid())
 
     def test_change_pass(self):
         params = {"new_username1": "hello1", "new_username2": "hello1"}
-        form = forms.UsernameChangeForm(data=params)
+        request = utils.MockRequest(self.user)
+        form = forms.UsernameChangeForm(request, data=params)
 
         self.assertTrue(form.is_valid())
