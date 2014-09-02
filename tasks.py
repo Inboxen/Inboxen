@@ -22,8 +22,8 @@ log = logging.getLogger(__name__)
 def statistics():
     # get user statistics
     users = {}
-    user["count"] = get_user_model().objects.all().count()
-    user["new"] =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
+    users["count"] = get_user_model().objects.all().count()
+    users["new"] =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
 
     emails = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted)
     emails = emails.annotate(email_count=Count("email__id")).aggregate(Avg("email_count"))
