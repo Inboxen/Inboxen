@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'Statistic.users'
         db.add_column(u'inboxen_statistic', 'users',
-                      self.gf('annoying.fields.JSONField')(default=''),
+                      self.gf('annoying.fields.JSONField')(default={}),
                       keep_default=False)
 
 
