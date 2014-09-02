@@ -101,9 +101,7 @@ class Statistic(models.Model):
     """Statistics about users"""
     date = models.DateTimeField('date')
 
-    user_count = models.IntegerField()
-    new_count = models.IntegerField()
-
+    users = JSONField()
     emails = JSONField()
     inboxes = JSONField()
 
