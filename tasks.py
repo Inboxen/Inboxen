@@ -21,16 +21,16 @@ log = logging.getLogger(__name__)
 @transaction.atomic()
 def statistics():
     # get user statistics
-    user_count = get_user_model().objects.all().count()
-    new_count =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
+    users = {}
+    user["count"] = get_user_model().objects.all().count()
+    user["new"] =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
 
     emails = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted)
     emails = emails.annotate(email_count=Count("email__id")).aggregate(Avg("email_count"))
     inboxes = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(Avg("inbox_count"))
 
     stat = models.Statistic(
-        user_count=user_count,
-        new_count=new_count,
+        users=users,
         emails=emails,
         inboxes=inboxes,
         date=datetime.now(utc),
