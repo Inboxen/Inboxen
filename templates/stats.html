@@ -20,11 +20,11 @@
         </tr>
         <tr>
             <th>{% trans "User count" %}</th>
-            <td>{{ object.user_count }}</td>
+            <td>{{ object.users.count }}</td>
         </tr>
         <tr>
             <th>{% trans "New users in last 7 days" %}</th>
-            <td>{{ object.new_count }}</td>
+            <td>{{ object.users.new }}</td>
         </tr>
         <tr class="active">
             <th colspan="2">{% trans "Inboxes" %}</th>
