@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matthew Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matthew Molyneaux
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -15,8 +15,22 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .base import *
-from .index import *
-from .user import *
-from .inbox import *
-from .stats import *
+from django.core.urlresolvers import reverse_lazy
+from django.utils.translation import ugettext as _
+from django.views import generic
+
+from inboxen import models
+from website.views import base
+
+class StatsView(base.CommonContextMixin, generic.DetailView):
+    template_name = "stats.html"
+    headline = _("Server Statistics")
+    model = models.Statistic
+
+    def get_object(self, queryset=None):
+        queryset = queryset or self.get_queryset()
+
+        try:
+            return queryset.latest("date")
+        except models.Statistic.DoesNotExist:
+            return None
