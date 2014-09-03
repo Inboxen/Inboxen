@@ -37,7 +37,7 @@ def statistics():
             }
 
     if not "sqlite" in settings.DATABASES["default"]["ENGINE"]:
-        user_aggregate["inbox_count___stddev"] = StdDev("inbox_count")
+        user_aggregate["inbox_count__stddev"] = StdDev("inbox_count")
         inbox_aggregate["email_count__stddev"] = StdDev("email_count")
     else:
         log.info("Can't get standard deviation, use a proper database")
