@@ -4,7 +4,7 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block content %}
-{% cache 600 stats LANGUAGE_CODE %}
+{% cache 1800 stats LANGUAGE_CODE %}
 <!-- Stats gathered at: {{ object.date|date:"r" }} -->
 <!-- Page cached since: {% now "r" %} -->
 {% if object %}
@@ -23,23 +23,47 @@
             <td>{{ object.users.count }}</td>
         </tr>
         <tr>
-            <th>{% trans "New users in today" %}</th>
+            <th>{% trans "New users today" %}</th>
             <td>{{ object.users.new }}</td>
         </tr>
         <tr class="active">
             <th colspan="2">{% trans "Inboxes" %}</th>
         </tr>
+    {% if object.inboxes.inbox_count__sum %}
+        <tr>
+            <th>{% trans "Total number of inboxes" %}</th>
+            <td>{{ object.inboxes.inbox_count__sum }}</td>
+        </tr>
+    {% endif %}
         <tr>
             <th>{% trans "Average number of inboxes per user" %}</th>
             <td>{{ object.inboxes.inbox_count__avg|floatformat:3 }}</td>
         </tr>
+    {% if object.inboxes.inbox_count__stddev %}
+        <tr>
+            <th>{% trans "Standard deviation of inboxes per user" %}</th>
+            <td>{{ object.inboxes.inbox_count__stddev|floatformat:3 }}</td>
+        </tr>
+    {% endif %}
         <tr class="active">
             <th colspan="2">{% trans "Emails" %}</th>
         </tr>
+    {% if object.emails.email_count__sum %}
+        <tr>
+            <th>{% trans "Total number of emails" %}</th>
+            <td>{{ object.emails.email_count__sum }}</td>
+        </tr>
+    {% endif %}
         <tr>
             <th>{% trans "Average number of emails per inbox" %}</th>
             <td>{{ object.emails.email_count__avg|floatformat:3 }}</td>
         </tr>
+    {% if object.inboxes.emails_count__stddev %}
+        <tr>
+            <th>{% trans "Standard deviation of emails per inbox" %}</th>
+            <td>{{ object.emails.email_count__stddev|floatformat:3 }}</td>
+        </tr>
+    {% endif %}
     </table>
 </div>
 {% else %}
