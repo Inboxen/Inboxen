@@ -3,11 +3,12 @@ import gc
 import logging
 import urllib
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import transaction
-from django.db.models import F, Count, Avg
+from django.db.models import Avg, Count, F, Q, StdDev, Sum
 
 from celery import task
 from pytz import utc
@@ -20,14 +21,42 @@ log = logging.getLogger(__name__)
 @task(ignore_result=True)
 @transaction.atomic()
 def statistics():
-    # get user statistics
-    users = {}
-    users["count"] = get_user_model().objects.all().count()
-    users["new"] =  get_user_model().objects.filter(date_joined__gte=datetime.now(utc) - timedelta(days=1)).count()
+    """Gather statistics about users and their inboxes"""
+    # the keys of these dictionaries have awful names for historical reasons
+    # don't change them unless you want to do a data migration
+
+    user_aggregate = {
+            "count": Count("id"),
+            "inbox_count__avg": Avg("inbox_count"),
+            "inbox_count__sum": Sum("inbox_count"),
+            }
+
+    inbox_aggregate = {
+            "email_count__avg": Avg("email_count"),
+            "email_count__sum": Sum("email_count"),
+            }
+
+    if not "sqlite" in settings.DATABASES["default"]["ENGINE"]:
+        user_aggregate["inbox_count___stddev"] = StdDev("inbox_count")
+        inbox_aggregate["email_count__stddev"] = StdDev("email_count")
+    else:
+        log.info("Can't get standard deviation, use a proper database")
+
+    users =  get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
+
+    # aggregate-if doesn't like JOINs - see https://github.com/henriquebastos/django-aggregate-if/issues/1
+    # so we'll just do a manual query
+    one_day_ago = datetime.now(utc) - timedelta(days=1)
+    users["new"] = get_user_model().objects.filter(date_joined__gte=one_day_ago).count()
+
+    inboxes = {}
+    for key in list(users.keys()):
+        if key.startswith("inbox"):
+            inboxes[key] = users[key]
+            del users[key]
 
     emails = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted)
-    emails = emails.annotate(email_count=Count("email__id")).aggregate(Avg("email_count"))
-    inboxes = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(Avg("inbox_count"))
+    emails = emails.annotate(email_count=Count("email__id")).aggregate(**inbox_aggregate)
 
     stat = models.Statistic(
         users=users,
