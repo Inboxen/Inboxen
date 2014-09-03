@@ -37,12 +37,12 @@
     {% endif %}
         <tr>
             <th>{% trans "Average number of inboxes per user" %}</th>
-            <td>{{ object.inboxes.inbox_count__avg|floatformat:3 }}</td>
+            <td>{{ object.inboxes.inbox_count__avg|floatformat:2 }}</td>
         </tr>
     {% if object.inboxes.inbox_count__stddev %}
         <tr>
             <th>{% trans "Standard deviation of inboxes per user" %}</th>
-            <td>{{ object.inboxes.inbox_count__stddev|floatformat:3 }}</td>
+            <td>{{ object.inboxes.inbox_count__stddev|floatformat:2 }}</td>
         </tr>
     {% endif %}
         <tr class="active">
@@ -56,12 +56,12 @@
     {% endif %}
         <tr>
             <th>{% trans "Average number of emails per inbox" %}</th>
-            <td>{{ object.emails.email_count__avg|floatformat:3 }}</td>
+            <td>{{ object.emails.email_count__avg|floatformat:2 }}</td>
         </tr>
-    {% if object.inboxes.emails_count__stddev %}
+    {% if object.emails.email_count__stddev %}
         <tr>
             <th>{% trans "Standard deviation of emails per inbox" %}</th>
-            <td>{{ object.emails.email_count__stddev|floatformat:3 }}</td>
+            <td>{{ object.emails.email_count__stddev|floatformat:2 }}</td>
         </tr>
     {% endif %}
     </table>
