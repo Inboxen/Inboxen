@@ -175,7 +175,10 @@ class EmailView(
             cleaner = Cleaner(page_structure=True, meta=True, links=True,
                        javascript=True, scripts=True, frames=True,
                        embedded=True, safe_attrs_only=True)
-            cleaner.kill_tags = ["style"] # remove style tags, not attrs
+            cleaner.kill_tags = [
+                        "style", # remove style tags, not attrs
+                        "base",
+                        ]
 
             try:
                 email_dict["body"] = Premailer(email_dict["body"]).transform()
