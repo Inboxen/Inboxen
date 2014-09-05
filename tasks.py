@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import transaction
-from django.db.models import Avg, Count, F, Q, StdDev, Sum
+from django.db.models import Avg, Count, F, Max, Min, Q, StdDev, Sum
 
 from celery import task
 from pytz import utc
@@ -29,11 +29,15 @@ def statistics():
             "count": Count("id"),
             "inbox_count__avg": Avg("inbox_count"),
             "inbox_count__sum": Sum("inbox_count"),
+            "inbox_count__min": Min("inbox_count"),
+            "inbox_count__max": Max("inbox_count"),
             }
 
     inbox_aggregate = {
             "email_count__avg": Avg("email_count"),
             "email_count__sum": Sum("email_count"),
+            "email_count__min": Min("email_count"),
+            "email_count__max": Max("email_count"),
             }
 
     if not "sqlite" in settings.DATABASES["default"]["ENGINE"]:
