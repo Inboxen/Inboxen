@@ -17,4 +17,44 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.db import models, transaction
+from django.conf import settings
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
+
+class Question(models.Model):
+    # status contants
+    NEW = 0
+    IN_PROGRESS = 1
+    NEED_INFO = 2
+    RESOLVED = 3
+
+    # status choices
+    STATUS_CHOICES = (
+        (NEW, _("New")),
+        (IN_PROGRESS, _("In progress")),
+        (NEED_INFO, _("Need more info")),
+        (RESOLVED, _("Resolved")),
+    )
+
+    asker = models.ForeignKey(settings.AUTH_USER_MODEL)
+    date = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    subject = models.CharField(max_length=512)
+    body = models.TextField()
+
+    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=NEW, db_index=True)
+
+    class Meta:
+        ordering = ["-date"]
+
+class Response(models.Model):
+    question = models.ForeignKey()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    date = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    body = models.TextField()
+
+    class Meta:
+        ordering = ["-date"]
