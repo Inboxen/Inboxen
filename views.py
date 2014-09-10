@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.db.models import Count
 from django.views import generic
 from django.utils.translation import ugettext as _
 
@@ -28,8 +29,8 @@ class QuestionListView(LoginRequiredMixin, CommonContextMixin, generic.ListView)
     headline = _("Tickets")
 
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset()
-        return qs.select_related("asker")
+        qs = super(QuestionListView, self).get_queryset().filter(asker=self.request.user)
+        return qs.select_related("asker").annotate(response_count=Count("response__id"))
 
 class QuestionDetailView(LoginRequiredMixin, CommonContextMixin, generic.DetailView):
     model = models.Question
@@ -39,5 +40,5 @@ class QuestionDetailView(LoginRequiredMixin, CommonContextMixin, generic.DetailV
         return "{0}: {1}".format(ticket, self.object.subject
 
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset()
+        qs = super(QuestionListView, self).get_queryset().filter(asker=self.request.user)
         return qs.select_related("asker")
