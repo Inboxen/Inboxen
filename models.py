@@ -52,7 +52,6 @@ class Response(models.Model):
     question = models.ForeignKey()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
     date = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
 
     body = models.TextField()
 
