@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h3>{{ object.subject }}</h3>
+<p><b>{% trans "Asked by" %}</b> {{ object.asker.username }}</p>
+<p><b>{% trans "Asked" %}</b> {{ object.date|timesince }} {% trans "ago" %}</p>
+<p><b>{% trans "Last modified" %}</b> {{ object.last_modified|timesince }} {% trans "ago" %}</p>
+<p><b>{% trans "Status" %}:</b> {{ object.status }}</p>
+<p>{{ object.body }}</p>
+
+{% for response in responses %}
+    <p>{{ response.asker.username }} {% trans "says" %}:</p>
+    <p>{{ response.body }}</p>
+{% endfor %}
+{% endblock %}

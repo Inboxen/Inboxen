@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<table>
+    <thead>
+        <tr>
+            <th>{% trans "Subject" %}</th>
+            <th>{% trans "Responses" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>{% trans "Last Activity" %}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for question in object_list %}
+        <tr>
+            <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
+            <td>{{ question.response_count }}</td>
+            <td>{{ question.status }}</td>
+            <td title="{{ question.last_modified|date:"r" }}">{{ question.last_modified|timesince }} {% trans "ago" %}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
