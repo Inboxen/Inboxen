@@ -17,4 +17,27 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.db import models, transaction
+from django.views import generic
+from django.utils.translation import ugettext as _
+
+from tickets import models
+from website.views import base
+
+class QuestionListView(LoginRequiredMixin, CommonContextMixin, generic.ListView):
+    model = models.Question
+    headline = _("Tickets")
+
+    def get_queryset(self):
+        qs = super(QuestionListView, self).get_queryset()
+        return qs.select_related("asker")
+
+class QuestionDetailView(LoginRequiredMixin, CommonContextMixin, generic.DetailView):
+    model = models.Question
+
+    def get_headline(self):
+        ticket = _("Ticket")
+        return "{0}: {1}".format(ticket, self.object.subject
+
+    def get_queryset(self):
+        qs = super(QuestionListView, self).get_queryset()
+        return qs.select_related("asker")
