@@ -18,7 +18,7 @@
         <tr>
             <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
             <td>{{ question.response_count }}</td>
-            <td>{{ question.status }}</td>
+            <td>{{ question.get_status_display }}</td>
             <td title="{{ question.last_modified|date:"r" }}">{{ question.last_modified|timesince }} {% trans "ago" %}</td>
         </tr>
     {% empty %}

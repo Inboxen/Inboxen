@@ -6,7 +6,7 @@
 <p><b>{% trans "Asked by" %}</b> {{ object.author.username }}</p>
 <p><b>{% trans "Asked" %}</b> {{ object.date|timesince }} {% trans "ago" %}</p>
 <p><b>{% trans "Last modified" %}</b> {{ object.last_modified|timesince }} {% trans "ago" %}</p>
-<p><b>{% trans "Status" %}:</b> {{ object.status }}</p>
+<p><b>{% trans "Status" %}:</b> {{ object.get_status_display }}</p>
 <p>{{ object.body }}</p>
 
 <span class="sr-only"><a href="#response-form">{% trans "Go to Response form" %}</a></span>
