@@ -49,8 +49,8 @@ class Question(models.Model):
         ordering = ["-date"]
 
 class Response(models.Model):
-    question = models.ForeignKey()
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    question = models.ForeignKey(Question)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField(auto_now_add=True)
 
     body = models.TextField()

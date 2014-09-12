@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.core import urlresolvers
 from django.db.models import Count
 from django.utils.translation import ugettext as _
 from django.views import generic
@@ -37,10 +38,11 @@ class FormMixin(generic.edit.FormMixin):
     def get_inital(self):
         initial = super(FormMixin, self).get_initial()
         initial.update({"author": self.request.user})
+        return initial
 
     def get_form_kwargs(self):
         kwargs = super(FormMixin, self).get_form_kwargs()
-        kwargs.setdefault(request=self.request)
+        kwargs.setdefault("request", self.request)
         return kwargs
 
     def post(self, request, *args, **kwargs):
@@ -56,19 +58,27 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, FormMix
     paginate_by = 50
     model = models.Question
     headline = _("Tickets")
-    form = forms.QuestionForm
+    form_class = forms.QuestionForm
 
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset().filter(asker=self.request.user)
-        return qs.select_related("asker").annotate(response_count=Count("response__id"))
+        qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
+        return qs.select_related("author").annotate(response_count=Count("response__id"))
+
+    def get_success_url(self):
+        urlresolvers.reverse("ticket-detail", pk=self.object.pk)
 
 class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, FormMixin, generic.DetailView):
     model = models.Question
-    form = forms.ResponseForm
+    form_class = forms.ResponseForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return super(QuestionDetailView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
-        kwargs.setdefault(responses=self.get_responses())
+        kwargs.setdefault("responses", self.get_responses())
+        return kwargs
 
     def get_headline(self):
         ticket = _("Ticket")
@@ -80,8 +90,11 @@ class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, FormM
         return initial
 
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset().filter(asker=self.request.user)
-        return qs.select_related("asker")
+        qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
+        return qs.select_related("author")
+
+    def get_success_url(self):
+        urlresolvers.reverse("ticket-detail", pk=self.object.pk)
 
     def get_responses(self):
         return self.object.response_set.all()
