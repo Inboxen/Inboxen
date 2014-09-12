@@ -21,10 +21,16 @@
             <td>{{ question.status }}</td>
             <td title="{{ question.last_modified|date:"r" }}">{{ question.last_modified|timesince }} {% trans "ago" %}</td>
         </tr>
+    {% empty %}
+        <tr>
+            <td colspan=4>{% trans "There are no questions." %}</td>
+        </tr>
     {% endfor %}
     </tbody>
 </table>
-<div id="question-form">
+<form id="question-form" class="form" method="post" action="{% url 'tickets-index' %}">
+    {% csrf_token %}
     {{ form.as_p }}
-</div>
+    <button class="btn btn-primary">{% trans "Submit" %}</button>
+</form>
 {% endblock %}

@@ -23,17 +23,12 @@ from django.utils.translation import ugettext_lazy as _
 from tickets import models
 from website.forms import mixins
 
-class RequestFormMixin(object):
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop("request")
-        return super(RequestFormMixin, self).__init__(*args, **kwargs)
-
-class QuestionForm(RequestFormMixin, mixins.BootstrapFormMixin, forms.ModelForm):
+class QuestionForm(mixins.BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = models.Question
         fields = ["subject", "body"]
 
-class ResponseForm(RequestFormMixin, mixins.BootstrapFormMixin, forms.ModelForm):
+class ResponseForm(mixins.BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = models.Response
         fields = ["body"]

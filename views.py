@@ -35,16 +35,6 @@ class FormMixin(generic.edit.FormMixin):
 
         return kwargs
 
-    def get_inital(self):
-        initial = super(FormMixin, self).get_initial()
-        initial.update({"author": self.request.user})
-        return initial
-
-    def get_form_kwargs(self):
-        kwargs = super(FormMixin, self).get_form_kwargs()
-        kwargs.setdefault("request", self.request)
-        return kwargs
-
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -54,25 +44,80 @@ class FormMixin(generic.edit.FormMixin):
         else:
             return self.form_invalid(form)
 
-class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, FormMixin, generic.ListView):
+class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView, FormMixin):
     paginate_by = 50
     model = models.Question
     headline = _("Tickets")
     form_class = forms.QuestionForm
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.author = self.request.user
+        self.object.save()
+        return super(QuestionListView, self).form_valid(form)
 
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
         return qs.select_related("author").annotate(response_count=Count("response__id"))
 
     def get_success_url(self):
-        urlresolvers.reverse("ticket-detail", pk=self.object.pk)
+        return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
 
-class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, FormMixin, generic.DetailView):
+    def post(self, *args, **kwargs):
+        # taken from Django 1.6.7: django/views/generic/list.py
+        # Copyright (c) Django Software Foundation and individual contributors.
+        # All rights reserved.
+        # Redistribution and use in source and binary forms, with or without modification,
+        # are permitted provided that the following conditions are met:
+        #
+        #     1. Redistributions of source code must retain the above copyright notice,
+        #        this list of conditions and the following disclaimer.
+        #
+        #     2. Redistributions in binary form must reproduce the above copyright
+        #        notice, this list of conditions and the following disclaimer in the
+        #        documentation and/or other materials provided with the distribution.
+        #
+        #     3. Neither the name of Django nor the names of its contributors may be used
+        #        to endorse or promote products derived from this software without
+        #        specific prior written permission.
+        #
+        # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+        # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+        # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+        # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+        # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+        # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+        # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+        # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+        # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+        # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+        self.object_list = self.get_queryset()
+        allow_empty = self.get_allow_empty()
+
+        if not allow_empty:
+            # When pagination is enabled and object_list is a queryset,
+            # it's better to do a cheap query than to load the unpaginated
+            # queryset in memory.
+            if (self.get_paginate_by(self.object_list) is not None
+                and hasattr(self.object_list, 'exists')):
+                is_empty = not self.object_list.exists()
+            else:
+                is_empty = len(self.object_list) == 0
+            if is_empty:
+                raise Http404(_("Empty list and '%(class_name)s.allow_empty' is False.")
+                        % {'class_name': self.__class__.__name__})
+        return super(QuestionListView, self).post(*args, **kwargs)
+
+class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, generic.DetailView, FormMixin):
     model = models.Question
     form_class = forms.ResponseForm
 
     def form_valid(self, form):
-        self.object = form.save()
+        response = form.save(commit=False)
+        response.author = self.request.user
+        response.question = self.object
+        response.save()
         return super(QuestionDetailView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -84,17 +129,16 @@ class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, FormM
         ticket = _("Ticket")
         return "{0}: {1}".format(ticket, self.object.subject)
 
-    def get_initial(self):
-        initial = super(QuestionDetailView, self).get_initial()
-        initial.update({"question": self.object})
-        return initial
-
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
+        qs = super(QuestionDetailView, self).get_queryset().filter(author=self.request.user)
         return qs.select_related("author")
 
     def get_success_url(self):
-        urlresolvers.reverse("ticket-detail", pk=self.object.pk)
+        return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
 
     def get_responses(self):
         return self.object.response_set.all()
+
+    def post(self, *args, **kwargs):
+        self.object = self.get_object()
+        return super(QuestionDetailView, self).post(*args, **kwargs)

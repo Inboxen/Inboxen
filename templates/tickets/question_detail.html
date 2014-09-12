@@ -15,7 +15,9 @@
     <p>{{ response.author.username }} {% trans "says" %}:</p>
     <p>{{ response.body }}</p>
 {% endfor %}
-<div id="response-form">
+<form id="response-form" class="form" method="post" action="{% url 'tickets-detail' pk=object.pk %}">
+    {% csrf_token %}
     {{ form.as_p }}
-</div>
+    <button class="btn btn-primary">{% trans "Submit" %}</button>
+</form>
 {% endblock %}
