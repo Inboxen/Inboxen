@@ -36,7 +36,7 @@ class Question(models.Model):
         (RESOLVED, _("Resolved")),
     )
 
-    asker = models.ForeignKey(settings.AUTH_USER_MODEL)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 

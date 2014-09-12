@@ -2,6 +2,8 @@
 {% load i18n %}
 
 {% block content %}
+<span class="sr-only"><a href="#question-form">{% trans "Go to Question form" %}</a></span>
+
 <table>
     <thead>
         <tr>
@@ -22,4 +24,7 @@
     {% endfor %}
     </tbody>
 </table>
+<div id="question-form">
+    {{ form.as_p }}
+</div>
 {% endblock %}

@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings
+from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from inboxen import models

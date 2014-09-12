@@ -18,27 +18,70 @@
 ##
 
 from django.db.models import Count
-from django.views import generic
 from django.utils.translation import ugettext as _
+from django.views import generic
 
-from tickets import models
+from tickets import forms, models
 from website.views import base
 
-class QuestionListView(LoginRequiredMixin, CommonContextMixin, generic.ListView):
+class FormMixin(generic.edit.FormMixin):
+    """FormMixin specific to Tickets"""
+    def get_context_data(self, **kwargs):
+        kwargs = super(FormMixin, self).get_context_data(**kwargs)
+
+        form_class = self.get_form_class()
+        kwargs["form"] = self.get_form(form_class)
+
+        return kwargs
+
+    def get_inital(self):
+        initial = super(FormMixin, self).get_initial()
+        initial.update({"author": self.request.user})
+
+    def get_form_kwargs(self):
+        kwargs = super(FormMixin, self).get_form_kwargs()
+        kwargs.setdefault(request=self.request)
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, FormMixin, generic.ListView):
+    paginate_by = 50
     model = models.Question
     headline = _("Tickets")
+    form = forms.QuestionForm
 
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset().filter(asker=self.request.user)
         return qs.select_related("asker").annotate(response_count=Count("response__id"))
 
-class QuestionDetailView(LoginRequiredMixin, CommonContextMixin, generic.DetailView):
+class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, FormMixin, generic.DetailView):
     model = models.Question
+    form = forms.ResponseForm
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
+        kwargs.setdefault(responses=self.get_responses())
 
     def get_headline(self):
         ticket = _("Ticket")
-        return "{0}: {1}".format(ticket, self.object.subject
+        return "{0}: {1}".format(ticket, self.object.subject)
+
+    def get_initial(self):
+        initial = super(QuestionDetailView, self).get_initial()
+        initial.update({"question": self.object})
+        return initial
 
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset().filter(asker=self.request.user)
         return qs.select_related("asker")
+
+    def get_responses(self):
+        return self.object.response_set.all()

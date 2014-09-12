@@ -3,14 +3,19 @@
 
 {% block content %}
 <h3>{{ object.subject }}</h3>
-<p><b>{% trans "Asked by" %}</b> {{ object.asker.username }}</p>
+<p><b>{% trans "Asked by" %}</b> {{ object.author.username }}</p>
 <p><b>{% trans "Asked" %}</b> {{ object.date|timesince }} {% trans "ago" %}</p>
 <p><b>{% trans "Last modified" %}</b> {{ object.last_modified|timesince }} {% trans "ago" %}</p>
 <p><b>{% trans "Status" %}:</b> {{ object.status }}</p>
 <p>{{ object.body }}</p>
 
+<span class="sr-only"><a href="#response-form">{% trans "Go to Response form" %}</a></span>
+
 {% for response in responses %}
-    <p>{{ response.asker.username }} {% trans "says" %}:</p>
+    <p>{{ response.author.username }} {% trans "says" %}:</p>
     <p>{{ response.body }}</p>
 {% endfor %}
+<div id="response-form">
+    {{ form.as_p }}
+</div>
 {% endblock %}
