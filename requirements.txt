@@ -1,9 +1,13 @@
 Django>=1.6,<1.7
 Markdown
 South
+celery
 configobj
+django-aggregate-if
 django-annoying
+django-async-messages
 django-bitfield
+django-braces
 django-celery
 django-extensions
 django-model-utils
@@ -13,9 +17,9 @@ django-ratelimit-backend
 django-two-factor-auth
 djorm-ext-pgbytea
 jsondate
+lxml
+premailer
 psycopg2
 pytz
+salmon-mail>=2
 -e git+https://github.com/moggers87/django-watson.git@block-search#egg=django-watson
--r queue/requirements.txt
--r router/requirements.txt
--r website/requirements.txt
