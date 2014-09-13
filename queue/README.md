@@ -1,4 +1,0 @@
-queue
-=====
-
-Celery tasks
