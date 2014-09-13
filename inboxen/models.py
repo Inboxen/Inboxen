@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -23,6 +23,7 @@ import re
 
 from django.conf import settings
 from django.db import models, transaction
+from django.utils import safestring
 from django.utils.encoding import smart_str
 
 from annoying.fields import AutoOneToOneField, JSONField
@@ -55,7 +56,7 @@ class BlogPost(models.Model):
     @property
     def rendered_body(self):
         """Render MarkDown to HTML"""
-        return markdown.markdown(self.body)
+        return safestring.mark_safe(markdown.markdown(self.body))
 
     def __unicode__(self):
         draft = ""

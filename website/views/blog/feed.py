@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2014 Jessica Tallon & Matt Molyneaux
 #   
 #    This file is part of Inboxen.
 #
@@ -16,8 +16,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-
-from markdown import markdown
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
@@ -40,7 +38,7 @@ class RssFeed(Feed):
         return item.subject
 
     def item_description(self, item):
-        return markdown(item.body)
+        return item.rendered_body()
 
     def item_link(self, item):
         return reverse('blog-post', kwargs={"postid": item.id})
