@@ -1,5 +1,5 @@
 Django>=1.6,<1.7
-Markdown
+Markdown<2.5
 South
 celery
 configobj
