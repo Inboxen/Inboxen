@@ -1,0 +1,77 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="{{ STATIC_URL }}css/inboxen.min.css" rel="stylesheet" type="text/css" />
+        <link rel="icon" type="image/png" href="{{ STATIC_URL }}megmelon-icon.png" />
+        <title>{{ settings.SITE_NAME }} - {{ headline }}</title>
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {% block header %}{% endblock %}
+    </head>
+    <body>
+        <div class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
+                        <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
+                        <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
+                    {% else %}
+                        <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
+                        {% if settings.ENABLE_REGISTRATION %}
+                            <li><a href="{% url 'user-status' %}">{% trans "Register" %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
+                    {% endif %}
+                </ul>
+                {% if user.is_authenticated %}
+                <p class="navbar-text"><a class="inherit-colour" href="{% url 'user-logout' %}">{% trans "Logout" %}</a></p>
+                <form
+                    class="navbar-form navbar-right"
+                    method="GET"
+                    action="{% url 'user-search' %}"
+                    onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
+                >
+                    <div class="input-group">
+                        <label class="sr-only">{% trans "Search emails and tags" %}</label>
+                        <input type="text" class="form-control" name="q" value="{{ query }}">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default">{% trans 'Search' %}</button>
+                        </span>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        <div class="container-fluid">
+            {% block breadcumbs %}
+            {% endblock %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    <div id="footer">
+        <div class="container">
+            <p class="text-muted text-center">
+                <a href="https://github.com/Inboxen/">{% trans "Inboxen" %}</a> 
+                {% trans "is licensed under the" %} <a href="https://www.gnu.org/licenses/agpl.txt">AGPL v3</a> |  
+                <a href="http://getbootstrap.com/">{% trans "Bootstrap" %}</a> 
+                {% trans "is licensed under the" %} <a href="https://raw.githubusercontent.com/twbs/bootstrap/v3.1.1/LICENSE">MIT License (MIT)</a> |
+            <a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a>
+            </p>
+        </div>
+    </div>
+    </body>
+</html>

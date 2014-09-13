@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load i18n cache %}
+
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block content %}
+{% cache 1800 stats LANGUAGE_CODE %}
+<!-- Stats gathered at: {{ object.date|date:"r" }} -->
+<!-- Page cached since: {% now "r" %} -->
+{% if object %}
+<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <colgroup>
+            <col class="col-xs-2">
+            <col class="col-xs-5">
+        </colgroup>
+        <tr class="active">
+            <th colspan="2">{% trans "Users" %}</th>
+        </tr>
+        <tr>
+            <th>{% trans "User count" %}</th>
+            <td>{{ object.users.count }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "New users today" %}</th>
+            <td>{{ object.users.new }}</td>
+        </tr>
+        <tr class="active">
+            <th colspan="2">{% trans "Inboxes" %}</th>
+        </tr>
+    {% if object.inboxes.inbox_count__sum %}
+        <tr>
+            <th>{% trans "Total number of inboxes" %}</th>
+            <td>{{ object.inboxes.inbox_count__sum }}</td>
+        </tr>
+    {% endif %}
+        <tr>
+            <th>{% trans "Average number of inboxes per user" %}</th>
+            <td>{{ object.inboxes.inbox_count__avg|floatformat:2 }}</td>
+        </tr>
+    {% if object.inboxes.inbox_count__stddev %}
+        <tr>
+            <th>{% trans "Standard deviation of inboxes per user" %}</th>
+            <td>{{ object.inboxes.inbox_count__stddev|floatformat:2 }}</td>
+        </tr>
+    {% endif %}
+        <tr class="active">
+            <th colspan="2">{% trans "Emails" %}</th>
+        </tr>
+    {% if object.emails.email_count__sum %}
+        <tr>
+            <th>{% trans "Total number of emails" %}</th>
+            <td>{{ object.emails.email_count__sum }}</td>
+        </tr>
+    {% endif %}
+        <tr>
+            <th>{% trans "Average number of emails per inbox" %}</th>
+            <td>{{ object.emails.email_count__avg|floatformat:2 }}</td>
+        </tr>
+    {% if object.emails.email_count__stddev %}
+        <tr>
+            <th>{% trans "Standard deviation of emails per inbox" %}</th>
+            <td>{{ object.emails.email_count__stddev|floatformat:2 }}</td>
+        </tr>
+    {% endif %}
+    </table>
+</div>
+{% else %}
+<p class="alert alert-info">{% trans "Sorry, we don't seem to have any statistics." %}</p>
+{% endif %}
+</div>
+{% endcache %}
+{% endblock %}

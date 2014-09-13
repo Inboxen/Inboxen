@@ -1,0 +1,65 @@
+{% extends 'user/account/index.html' %}
+{% load two_factor i18n inboxen_account %}
+{% block errors %}
+    {% if wizard.form.non_field_errors %}
+        <p class="alert alert-danger">
+            {{ wizard.form.non_field_errors }}
+        </p>
+    {% endif %}
+    {% for field in wizard.form %}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <p class="alert alert-danger">
+                    <strong>{{ field.label }}:</strong> {{ error }}
+                </p>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block navigation %}
+    {% account_menu 'user-security' %}
+{% endblock %}
+
+{% block form %}
+{% if wizard.steps.current == 'welcome' %}
+    <p>{% blocktrans %}
+        You are about to take your account security to the next level. Follow
+        the steps in this wizard to enable two-factor authentication.
+    {% endblocktrans %}</p>
+{% elif wizard.steps.current == 'method' %}
+    <p>{% blocktrans %}
+        Please select which authentication method you would like to use.
+    {% endblocktrans %}</p>
+{% elif wizard.steps.current == 'generator' and qr %}
+    <p>{% blocktrans %}
+        To start using a token generator you will need an application that read
+        TOTP QR codes. Google Authenticator is a good example of this. Scan in
+        the image below and enter the number your applications displays.
+    {% endblocktrans %}</p>
+    <p><img src="{{ QR_URL }}" alt="QR Code" /></p>
+    <p>{% blocktrans %}
+        Alternatively, if you're unable to use QR codes,
+        <a href="{{ request.path }}?qr=0">click here</a> to view the code as
+        letters and numbers.
+    {% endblocktrans %}</p>
+{% elif wizard.steps.current == 'generator' and not qr %}
+    <p>{% blocktrans %}
+        Manually type this code into your token generator (or copy and paste it if you prefer):
+    {% endblocktrans %}</p>
+    <pre>{{ secret }}</pre>
+{% endif %}
+
+<form action="{% url 'user-twofactor-setup' %}" method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <div class="form-group">
+        {% for field in wizard.form %}
+            {{ field.label_tag }}{{ field }}
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{% trans "Next" %}</button>
+    <a href="{% url 'user-security' %}" class="btn btn-default">{% trans "Cancel" %}</a>
+</form>
+{% endblock %}

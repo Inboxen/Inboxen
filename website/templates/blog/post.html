@@ -1,0 +1,20 @@
+{% extends 'blog/blog.html' %}
+
+{% load i18n %}
+
+{% block content %}
+<div class="panel panel-default col-xs-12"><div class="panel-body">
+    <h2>
+        <a href="{% url 'blog-post' postid=post.id %}" class="inherit-colour">{{ post.subject }}</a>
+        {% if post.draft %}<span class="label label-warning">{% trans "Draft" %}</span>{% endif %}
+    </h2>
+    <p title="{{ post.date|date:"r" }}"><i>{{ post.date|date:"jS F Y" }}</i></p>
+    <p> {{ post.rendered_body|safe }}</p><br />
+    <br />
+    {% if user.is_staff %}
+        <p>    <a href="{% url 'blog-post-edit' postid=post.id %}" class="btn btn-default">{% trans "Edit" %}</a>
+            <a href="{% url 'blog-post-delete' postid=post.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
+        </p>
+    {% endif %}
+</div></div>
+{% endblock %}

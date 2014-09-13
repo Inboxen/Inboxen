@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+    <div style="text-align: center; font-size:75px; line-height:75px">
+        <b><div>Emails identify you.</div><div style="font-size: 50px; line-height: 50px;">They're used to sell your data.</div></b>
+
+        <div style="padding-top: 50px; font-size: 50px; line-height: 50px;">We can help fix that...</div>
+        {% if settings.ENABLE_REGISTRATION %}
+            <a href="{% url 'user-status' %}" class="btn btn-lg btn-primary">Join</a>
+        {% endif%}
+        <a href="{% url 'huh' %}" class="btn btn-info btn-lg">Huh?</a>
+    </div>
+    <div class="text-center row">
+        <div class="col-sm-3 col-sm-offset-3">
+            <h1>P</h1>
+            <h3>Privacy</h3>
+            <h5>Create anonymous addresses.</h5>
+        </div>
+        <div class="col-sm-3">
+            <h1>m</h1>
+            <h3>Data minimal</h3>
+            <h5>We don't ask for or keep unneeded data.</h5>
+        </div>
+    </div>
+    <div class="text-center row">
+        <div class="col-sm-3 col-sm-offset-3">
+            <h1>L</h1>
+            <h3>Data liberation</h3>
+            <h5>Export your data in a usable format.</h5>
+        </div>
+        <div class="col-sm-3">
+            <h1>!</h1>
+            <h3>Freedom</h3>
+            <h5>Our software is licensed under AGPLv3.</h5>
+        </div>
+    </div>
+{% endblock %}

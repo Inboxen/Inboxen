@@ -1,0 +1,18 @@
+{% extends 'user/account/index.html' %}
+{% load two_factor i18n inboxen_account %}
+
+{% block navigation %}
+    {% account_menu 'user-security' %}
+{% endblock %}
+
+{% block form %}
+<p>{% blocktrans %}
+    You are about to disable two-factor authentication. You can re-enalbe it at
+    any time.
+{% endblocktrans %}</p>
+<form method="post">
+    {% csrf_token %}
+    <table>{{ form }}</table>
+<button class="btn btn-danger" type="submit">{% trans "Disable" %}</button>
+</form>
+{% endblock %}
