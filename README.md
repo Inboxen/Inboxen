@@ -1,14 +1,11 @@
-Inboxen - infrastructure
-==============
+Inboxen
+=======
 
-[![Build Status](https://travis-ci.org/Inboxen/infrastructure.svg?branch=master)](https://travis-ci.org/Inboxen/infrastructure)
+[![Build Status](https://travis-ci.org/Inboxen/Inboxen.svg?branch=master)](https://travis-ci.org/Inboxen/Inboxen)
 
-A place to bring together the project as a whole.
-
-Also, a repo to make the whole thing easier to deploy :)
-
-`website`, `router`, and `queue` are submodules, they all expect to find the `inboxen`
-package in `PYTHONPATH`.
+This is the complete system with everything you need to set up Inboxen. Please
+use the "deploy" branch if you wish to use this in production - "master"
+sometimes breaks!
 
 Join us in our IRC channel! We're in the #inboxen channel on [MegNet](https://www.megworld.co.uk/irc/)
 
@@ -20,10 +17,10 @@ Deploying
 Set yourself up with a virtual environment and run the following:
 
 ```
-git clone https://github.com/Inboxen/infrastructure.git inboxen
-cd inboxen
-git submodule init
-git submodule update
+git clone https://github.com/Inboxen/Inboxen.git
+cd Inboxen
+# optional step
+#git checkout deploy
 pip install -r requirements.txt
 ```
 
