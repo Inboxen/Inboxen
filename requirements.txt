@@ -1,5 +1,5 @@
 Django>=1.6,<1.7
-Markdown<2.5
+Markdown
 South
 celery
 configobj
@@ -16,6 +16,7 @@ django-otp
 django-ratelimit-backend
 django-two-factor-auth
 djorm-ext-pgbytea
+importlib
 jsondate
 lxml
 premailer
