@@ -50,14 +50,37 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
     headline = _("Tickets")
     form_class = forms.QuestionForm
 
+    # ugly
+    # same order as in models.py
+    choices = ("NEW", "IN_PROGRESS", "NEED_INFO", "RESOLVED")
+
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
         return super(QuestionListView, self).form_valid(form)
 
+    def get(self, *args, **kwargs):
+        if not "status" in self.kwargs:
+            self.kwargs["status"] = "!resolved"
+
+        return super(QuestionListView, self).get(*args, **kwargs)
+
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
+
+        # filter statuses
+        try:
+            if self.kwargs["status"].startswith("!"):
+                status = self.choices.index(self.kwargs["status"][1:].upper())
+                qs = qs.exclude(status=status)
+            else:
+                status = self.choices.index(self.kwargs["status"].upper())
+                qs = qs.filter(status=status)
+        except ValueError:
+            # or not
+            pass
+
         return qs.select_related("author").annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
     def get_success_url(self):
