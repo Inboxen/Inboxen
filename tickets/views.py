@@ -60,11 +60,11 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
         self.object.save()
         return super(QuestionListView, self).form_valid(form)
 
-    def get(self, *args, **kwargs):
+    def dispatch(self, *args, **kwargs):
         if not "status" in self.kwargs:
             self.kwargs["status"] = "!resolved"
 
-        return super(QuestionListView, self).get(*args, **kwargs)
+        return super(QuestionListView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)

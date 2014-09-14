@@ -51,7 +51,7 @@ class Question(models.Model):
 
         Expects the attribute "last_response_date" to be annotated
         """
-        if self.last_response_date > self.last_modified:
+        if not self.last_response_date is None and self.last_response_date > self.last_modified:
             return self.last_response_date
         else:
             return self.last_modified
