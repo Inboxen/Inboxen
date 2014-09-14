@@ -45,6 +45,17 @@ class Question(models.Model):
 
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=NEW, db_index=True)
 
+    @property
+    def last_activity(self):
+        """Return the lastest activity of this Question
+
+        Expects the attribute "last_response_date" to be annotated
+        """
+        if self.last_response_date > self.last_modified:
+            return self.last_response_date
+        else:
+            return self.last_modified
+
     class Meta:
         ordering = ["-date"]
 

@@ -18,7 +18,7 @@
 ##
 
 from django.core import urlresolvers
-from django.db.models import Count
+from django.db.models import Count, Max
 from django.utils.translation import ugettext as _
 from django.views import generic
 
@@ -58,7 +58,7 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
 
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
-        return qs.select_related("author").annotate(response_count=Count("response__id"))
+        return qs.select_related("author").annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
     def get_success_url(self):
         return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
