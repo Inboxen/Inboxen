@@ -91,6 +91,8 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/username', views.UsernameChangeView.as_view(), name='user-username'),
     urls.url(r'^user/account/', views.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
+
+    urls.url(r'^tickets/', urls.include("tickets.urls")),
 )
 
 if settings.ENABLE_REGISTRATION:

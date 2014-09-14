@@ -321,6 +321,7 @@ INSTALLED_APPS = (
     'queue',
     'queue.delete',
     'queue.liberate',
+    'tickets',
 )
 
 if DEBUG:
