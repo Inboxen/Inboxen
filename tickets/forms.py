@@ -27,8 +27,10 @@ class QuestionForm(mixins.BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = models.Question
         fields = ["subject", "body"]
+        labels = {"body": _("Question")}
 
 class ResponseForm(mixins.BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = models.Response
         fields = ["body"]
+        labels = {"body": _("Reply")}
