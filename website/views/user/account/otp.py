@@ -37,7 +37,7 @@ class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
 class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
     template_name = "user/account/twofactor-backup.html"
     headline = _("Backup Tokens")
-    redirect_url = "user-security"
+    redirect_url = "user-twofactor-backup"
 
 class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
     template_name = "user/account/twofactor-disable.html"
