@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<h3>{{ object.subject }}</h3>
+<p>
+        <b>{% trans "Asked by" %}</b> {{ object.author.username }}
+    <br />
+        <b>{% trans "Asked" %}</b> {{ object.date|timesince }} {% trans "ago" %}
+    <br />
+        <b>{% trans "Last modified" %}</b> {{ object.last_modified|timesince }} {% trans "ago" %}
+    <br />
+        <b>{% trans "Status" %}:</b> {{ object.get_status_display }}
+</p>
+<p>{{ object.body }}</p>
+
+<span class="sr-only"><a href="#response-form">{% trans "Go to Response form" %}</a></span>
+
+<hr>
+{% for response in responses %}
+    <p>{{ response.author.username }} {% trans "says" %}:</p>
+    <p>{{ response.body }}</p>
+    <hr>
+{% endfor %}
+
+<div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+    <div class="panel-body">
+        <form class="form" method="post" action="{% url 'tickets-admin-detail' pk=object.pk %}">
+            {% csrf_token %}
+            {{ status_form.as_p }}
+            <button class="btn btn-primary">{% trans "Update" %}</button>
+        </form>
+        <hr>
+        <form id="response-form" class="form" method="post" action="{% url 'tickets-admin-detail' pk=object.pk %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary">{% trans "Submit" %}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
