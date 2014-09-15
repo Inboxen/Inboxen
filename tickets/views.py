@@ -22,6 +22,8 @@ from django.db.models import Count, Max
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import StaffuserRequiredMixin
+
 from tickets import forms, models
 from website.views import base
 
@@ -44,7 +46,10 @@ class FormMixin(generic.edit.FormMixin):
         else:
             return self.form_invalid(form)
 
-class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView, FormMixin):
+class QuestionListBaseView(base.CommonContextMixin, generic.ListView, FormMixin):
+    """Base list view of questions. Subclass it to restrict to a single user's
+    questions or admins view.
+    """
     paginate_by = 50
     model = models.Question
     headline = _("Tickets")
@@ -58,16 +63,16 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
-        return super(QuestionListView, self).form_valid(form)
+        return super(QuestionListBaseView, self).form_valid(form)
 
     def dispatch(self, *args, **kwargs):
         if not "status" in self.kwargs:
             self.kwargs["status"] = "!resolved"
 
-        return super(QuestionListView, self).dispatch(*args, **kwargs)
+        return super(QuestionListBaseView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset().filter(author=self.request.user)
+        qs = super(QuestionListBaseView, self).get_queryset()
 
         # filter statuses
         try:
@@ -130,9 +135,12 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
             if is_empty:
                 raise Http404(_("Empty list and '%(class_name)s.allow_empty' is False.")
                         % {'class_name': self.__class__.__name__})
-        return super(QuestionListView, self).post(*args, **kwargs)
+        return super(QuestionListBaseView, self).post(*args, **kwargs)
 
-class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, generic.DetailView, FormMixin):
+class QuestionDetailBaseView(base.CommonContextMixin, generic.DetailView, FormMixin):
+    """Base detail view of a question. Subclass it to restrict to restrict to
+    author or admins view.
+    """
     model = models.Question
     form_class = forms.ResponseForm
 
@@ -141,10 +149,10 @@ class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, gener
         response.author = self.request.user
         response.question = self.object
         response.save()
-        return super(QuestionDetailView, self).form_valid(form)
+        return super(QuestionDetailBaseView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
+        kwargs = super(QuestionDetailBaseView, self).get_context_data(**kwargs)
         kwargs.setdefault("responses", self.get_responses())
         return kwargs
 
@@ -153,7 +161,7 @@ class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, gener
         return "{0}: {1}".format(ticket, self.object.subject)
 
     def get_queryset(self):
-        qs = super(QuestionDetailView, self).get_queryset().filter(author=self.request.user)
+        qs = super(QuestionDetailBaseView, self).get_queryset()
         return qs.select_related("author")
 
     def get_success_url(self):
@@ -164,4 +172,24 @@ class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, gener
 
     def post(self, *args, **kwargs):
         self.object = self.get_object()
-        return super(QuestionDetailView, self).post(*args, **kwargs)
+        return super(QuestionDetailBaseView, self).post(*args, **kwargs)
+
+class QuestionListView(base.LoginRequiredMixin, QuestionListBaseView):
+    """Question list, restricted to the current user"""
+    def get_queryset(self):
+        qs = super(QuestionListView, self).get_queryset()
+        return qs.filter(author=self.request.user)
+
+class QuestionDetailView(base.LoginRequiredMixin, QuestionDetailBaseView):
+    """Question detail, restricted to the current user"""
+    def get_queryset(self):
+        qs = super(QuestionDetailView, self).get_queryset()
+        return qs.filter(author=self.request.user)
+
+class QuestionListAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, QuestionListBaseView):
+    """Admin's view of Questions"""
+    pass
+
+class QuestionDetailAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, QuestionDetailBaseView):
+    """Admin's view of a single Question"""
+    pass
