@@ -188,8 +188,8 @@ class QuestionDetailView(base.LoginRequiredMixin, QuestionDetailBaseView):
 
 class QuestionListAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, QuestionListBaseView):
     """Admin's view of Questions"""
-    pass
+    raise_exception = True
 
 class QuestionDetailAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, QuestionDetailBaseView):
     """Admin's view of a single Question"""
-    pass
+    raise_exception = True
