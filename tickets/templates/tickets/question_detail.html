@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n bootstrap %}
 
 {% block content %}
 <h3>{{ object.subject }}</h3>
@@ -27,7 +27,7 @@
     <div class="panel-body">
         <form id="response-form" class="form" method="post" action="{% url 'tickets-detail' pk=object.pk %}">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form|bootstrap }}
             <button class="btn btn-primary">{% trans "Submit" %}</button>
         </form>
     </div>
