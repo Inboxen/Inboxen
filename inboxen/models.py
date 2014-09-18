@@ -40,10 +40,6 @@ from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
-# South fix for djorm_pgbytea
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ['^djorm_pgbytea\.lobject\.LargeObjectField'])
-
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512)

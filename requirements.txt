@@ -15,7 +15,7 @@ django-mptt
 django-otp
 django-ratelimit-backend
 django-two-factor-auth
-djorm-ext-pgbytea
+djorm-ext-pgbytea>=0.6.0
 jsondate
 lxml
 premailer
