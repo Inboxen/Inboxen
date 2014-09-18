@@ -43,7 +43,7 @@ class QuestionStatusUpdateForm(mixins.BootstrapFormMixin, forms.Form):
         return super(QuestionStatusUpdateForm, self).__init__(*args, **kwargs)
 
     def clean(self, *args, **kwargs):
-        cleaned_data = super(QuestionStatusUpdateForm).clean(*args, **kwargs)
+        cleaned_data = super(QuestionStatusUpdateForm, self).clean(*args, **kwargs)
         self.question.status = cleaned_data["status"]
 
         return cleaned_data

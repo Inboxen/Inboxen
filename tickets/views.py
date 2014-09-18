@@ -220,10 +220,9 @@ class QuestionDetailAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, Q
     def post(self, request, *args, **kwargs):
         if 'status' in request.POST:
             self.object = self.get_object()
-            form = self.second_form(question=self.object)
+            form = self.second_form(question=self.object, data=request.POST)
 
             if form.is_valid():
-                raise Exception("bizz")
                 return self.form_valid(form)
             else:
                 return self.form_invalid(form=form)
