@@ -19,6 +19,7 @@
 
 from django.core import urlresolvers
 from django.db.models import Count, Max
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
@@ -189,7 +190,42 @@ class QuestionDetailView(base.LoginRequiredMixin, QuestionDetailBaseView):
 class QuestionListAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, QuestionListBaseView):
     """Admin's view of Questions"""
     raise_exception = True
+    template_name_suffix = "_adminlist"
+
+    def get_success_url(self):
+        return urlresolvers.reverse("tickets-admin-detail", kwargs={"pk": self.object.pk})
 
 class QuestionDetailAdminView(base.LoginRequiredMixin, StaffuserRequiredMixin, QuestionDetailBaseView):
     """Admin's view of a single Question"""
     raise_exception = True
+    template_name_suffix = "_admindetail"
+    second_form = forms.QuestionStatusUpdateForm
+
+    def get_context_data(self, **kwargs):
+        context = super(QuestionDetailAdminView, self).get_context_data(**kwargs)
+        context["status_form"] = self.second_form(question=self.object)
+
+        return context
+
+    def get_success_url(self):
+        return urlresolvers.reverse("tickets-admin-detail", kwargs={"pk": self.object.pk})
+
+    def form_valid(self, form):
+        if isinstance(form, self.second_form):
+            form.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return super(QuestionDetailAdminView, self).form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        if 'status' in request.POST:
+            self.object = self.get_object()
+            form = self.second_form(question=self.object, data=request.POST)
+
+            if form.is_valid():
+                return self.form_valid(form)
+            else:
+                return self.form_invalid(form=form)
+
+        else:
+            return super(QuestionDetailAdminView, self).post(request, *args, **kwargs)

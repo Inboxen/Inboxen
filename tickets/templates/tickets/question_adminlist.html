@@ -9,6 +9,7 @@
         <thead>
             <tr>
                 <th>{% trans "Subject" %}</th>
+                <th>{% trans "User" %}</th>
                 <th>{% trans "Responses" %}</th>
                 <th>{% trans "Status" %}</th>
                 <th>{% trans "Last Activity" %}</th>
@@ -17,7 +18,8 @@
         <tbody>
         {% for question in object_list %}
             <tr>
-                <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
+                <td><a href="{% url 'tickets-admin-detail' pk=question.pk %}">{{ question.subject }}</a></td>
+                <td>{{ question.author }}</td>
                 <td>{{ question.response_count }}</td>
                 <td>{{ question.get_status_display }}</td>
                 <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|timesince }} {% trans "ago" %}</td>
@@ -32,7 +34,7 @@
 </div>
 <div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
     <div class="panel-body">
-        <form id="question-form" class="form" method="post" action="{% url 'tickets-index' %}">
+        <form id="question-form" class="form" method="post" action="{% url 'tickets-admin-index' %}">
             {% csrf_token %}
             {{ form|bootstrap }}
             <button class="btn btn-primary">{% trans "Submit" %}</button>
