@@ -17,6 +17,14 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+"""
+This file is for use with mod_wsgi's WSGIImportScript directive.
+
+It undoes a lot of the lazy-loading that Django will normally do and makes the
+first request after a reload (whether that be via Apache or `touch`ing wsgi.py)
+much less painful for end-users.
+"""
+
 import sys
 import os
 
