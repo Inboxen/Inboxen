@@ -21,7 +21,7 @@ from django import test
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
-from inboxen import models
+from blog import models
 
 BODY = """
 Hey there!
