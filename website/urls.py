@@ -25,7 +25,6 @@ from two_factor.views import core as twofactor
 
 from website import views
 from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
-from website.views.blog.feed import RssFeed, AtomFeed
 
 # error views
 urls.handler500 = 'website.views.error.internal_server'
@@ -37,15 +36,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', headline=_('Huh?')), name='huh'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
-    
-    urls.url(r'^blog/add/', 'website.views.blog.add.add', name='blog-post-add'),
-    urls.url(r'^blog/post/(?P<postid>\d+)', 'website.views.blog.view.post', name='blog-post'),
-    urls.url(r'^blog/delete/(?P<postid>\d+)', 'website.views.blog.delete.delete', name='blog-post-delete'),
-    urls.url(r'^blog/edit/(?P<postid>\d+)', 'website.views.blog.edit.edit', name='blog-post-edit'),
-    urls.url(r'^blog/feed/atom', AtomFeed(), name='blog-feed-atom'),
-    urls.url(r'^blog/feed/(rss)?', RssFeed(), name='blog-feed-rss'),
-    urls.url(r'^blog/(?P<page>\d*)', 'website.views.blog.view.view', name='blog'),
-    urls.url(r'^blog/', 'website.views.blog.view.view', name='blog'),
 
     urls.url(r'^inbox/add/', views.InboxAddView.as_view(), name='inbox-add'),
     urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxEditView.as_view(), name='inbox-edit'),
@@ -93,6 +83,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/', views.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
 
+    urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^tickets/', urls.include("tickets.urls")),
 )
 
