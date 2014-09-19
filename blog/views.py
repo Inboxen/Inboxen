@@ -32,7 +32,7 @@ from django.utils.translation import ugettext as _
 
 from pytz import utc
 
-from inboxen.models import BlogPost
+from blog.models import BlogPost
 
 @staff_member_required
 def add(request):
