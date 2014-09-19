@@ -72,7 +72,7 @@ class UserProfile(models.Model):
     """
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
     pool_amount = models.IntegerField(default=500)
-    flags = BitField(flags=("prefer_html_email","unified_has_new_messages","ask_images","display_images"), default=5)
+    flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
 
     def available_inboxes(self):
         used = self.user.inbox_set.count()
@@ -165,7 +165,7 @@ class Inbox(models.Model):
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    flags = BitField(flags=("deleted","new","exclude_from_unified"), default=0)
+    flags = BitField(flags=("deleted", "new", "exclude_from_unified"), default=0)
     tags = models.CharField(max_length=256, null=True, blank=True)
 
     objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
@@ -208,7 +208,7 @@ class Email(models.Model):
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
     inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=("deleted","read","seen","important"), default=0)
+    flags = BitField(flags=("deleted", "read", "seen", "important"), default=0)
     received_date = models.DateTimeField()
 
     @property

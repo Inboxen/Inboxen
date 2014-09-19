@@ -28,7 +28,7 @@ import watson
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 class EmailSearchAdapter(watson.SearchAdapter):
-    trunc_to_size = 2**20 # 1MB. Or two copies of 1984
+    trunc_to_size = 2**20  # 1MB. Or two copies of 1984
 
     # We can't import our models at module load time nor at object
     # initialisation due to circular imports (this class is initialised via
@@ -46,10 +46,11 @@ class EmailSearchAdapter(watson.SearchAdapter):
         """Return a queryset of text/* bodies for given obj"""
         Body = self.get_model("body")
         data = Body.objects.filter(
-                                partlist__email__id=obj.id,
-                                partlist__header__name__name="Content-Type",
-                                partlist__header__data__data__startswith="text/",
-                                )
+            partlist__email__id=obj.id,
+            partlist__header__name__name="Content-Type",
+            partlist__header__data__data__startswith="text/",
+            )
+
         if len(data) == 0:
             data = Body.objects.filter(partlist__email__id=obj.id)
             data = data.exclude(partlist__header__name__name="Content-Type")
@@ -78,10 +79,10 @@ class EmailSearchAdapter(watson.SearchAdapter):
         HeaderData = self.get_model("headerdata")
         try:
             subject = HeaderData.objects.filter(
-                                header__part__parent__isnull=True,
-                                header__name__name="Subject",
-                                header__part__email__id=obj.id,
-                                )
+                header__part__parent__isnull=True,
+                header__name__name="Subject",
+                header__part__email__id=obj.id,
+                )
             subject = subject[0]
             return encoding.smart_text(subject.data, errors='replace')
         except IndexError:
@@ -120,10 +121,10 @@ class EmailSearchAdapter(watson.SearchAdapter):
         HeaderData = self.get_model("headerdata")
         try:
             from_header = HeaderData.objects.filter(
-                                    header__part__parent__isnull=True,
-                                    header__name__name="From",
-                                    header__part__email__id=obj.id,
-                                    )[0]
+                header__part__parent__isnull=True,
+                header__name__name="From",
+                header__part__email__id=obj.id,
+                )[0]
             from_header = encoding.smart_text(from_header.data, errors='replace')
         except IndexError:
             from_header = u""
@@ -139,10 +140,10 @@ class InboxSearchAdapter(watson.SearchAdapter):
         return obj.tags or ""
 
     def get_description(self, obj):
-        return u"" # no point in repeating what's in get_title
+        return u""  # no point in repeating what's in get_title
 
     def get_content(self, obj):
-        return u"" # ditto
+        return u""  # ditto
 
     def get_meta(self, obj):
         return {

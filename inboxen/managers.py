@@ -20,7 +20,6 @@
 import hashlib
 import random
 import string
-from types import StringTypes
 from datetime import datetime
 
 try:
@@ -131,4 +130,4 @@ class BodyQuerySet(HashedQuerySet):
         if hashed is None:
             hashed = self.hash_it(data)
 
-        return super(BodyQuerySet, self).get_or_create(hashed=hashed, defaults={'data':data}, **kwargs)
+        return super(BodyQuerySet, self).get_or_create(hashed=hashed, defaults={'data': data}, **kwargs)
