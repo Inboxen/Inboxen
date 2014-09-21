@@ -18,7 +18,6 @@
 ##
 
 from datetime import datetime
-import markdown
 import re
 
 from django.conf import settings
@@ -39,26 +38,6 @@ from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
-
-class BlogPost(models.Model):
-    """Basic blog post, body stored as MarkDown"""
-    subject = models.CharField(max_length=512)
-    body = models.TextField()
-    date = models.DateTimeField('posted')
-    modified = models.DateTimeField('modified')
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    draft = models.BooleanField(default=True)
-
-    @property
-    def rendered_body(self):
-        """Render MarkDown to HTML"""
-        return safestring.mark_safe(markdown.markdown(self.body))
-
-    def __unicode__(self):
-        draft = ""
-        if self.draft:
-            draft = " (draft)"
-        return u"%s%s" % (self.date, draft)
 
 class UserProfile(models.Model):
     """This is auto-created when accessed via a RelatedManager
