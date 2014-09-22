@@ -125,14 +125,17 @@ LOGIN_ATTEMPT_LIMIT = config["general"]["login_attempt_limit"]
 # Language code, e.g. en-gb
 LANGUAGE_CODE = config["general"]["language_code"]
 
+# Where `manage.py collectstatic` puts static files
+STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
+
 # Email the server uses when sending emails
 SERVER_EMAIL = config["general"]["server_email"]
 
 # Site name used in page titles
 SITE_NAME = config["general"]["site_name"]
 
-# Where `manage.py collectstatic` puts static files
-STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
+# Link to source code
+SOURCE_LINK = config["general"]["source_link"]
 
 # Time zone
 TIME_ZONE = config["general"]["time_zone"]
