@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import os
+
 from django.conf import settings
 
 def reduced_settings_context(request):
@@ -31,5 +33,6 @@ def reduced_settings_context(request):
     reduced_settings = {
         "SITE_NAME": settings.SITE_NAME,
         "ENABLE_REGISTRATION": settings.ENABLE_REGISTRATION,
+        "INBOXEN_COMMIT_ID": os.environ["INBOXEN_COMMIT_ID"]
     }
     return {"settings": reduced_settings}

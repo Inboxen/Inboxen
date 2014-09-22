@@ -46,6 +46,14 @@ class HomeViewTestCase(test.TestCase):
         # test that something is getting set
         self.assertEqual(dj_settings.SITE_NAME, context_settings["SITE_NAME"])
 
+        # test that INBOXEN_COMMIT_ID is actually working
+        self.assertNotEqual("UNKNOWN", context_settings["INBOXEN_COMMIT_ID"])
+
+        try:
+            int(context_settings["INBOXEN_COMMIT_ID"], 16)
+        except ValueError:
+            self.fail("context_settings[\"INBOXEN_COMMIT_ID\"] is not a valid commit ID")
+
         # Please add any settings that may contain passwords or secrets:
         self.assertNotIn("SECRET_KEY", context_settings)
         self.assertNotIn("DATABASES", context_settings)
