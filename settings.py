@@ -47,20 +47,20 @@ djcelery.setup_loader()
 
 # Shorthand for Django's default database backends
 db_dict = {
-            "postgresql": "django.db.backends.postgresql_psycopg2",
-            "mysql": "django.db.backends.mysql",
-            "oracle": "django.db.backends.oracle",
-            "sqlite": "django.db.backends.sqlite3",
-            }
+    "postgresql": "django.db.backends.postgresql_psycopg2",
+    "mysql": "django.db.backends.mysql",
+    "oracle": "django.db.backends.oracle",
+    "sqlite": "django.db.backends.sqlite3",
+    }
 
 # Shorthand for Django's default database backends
 cache_dict = {
-                "database": "django.core.cache.backends.db.DatabaseCache",
-                "dummy": "django.core.cache.backends.dummy.DummyCache",
-                "file": "django.core.cache.backends.filebased.FileBasedCache",
-                "localmem": "django.core.cache.backends.locmem.LocMemCache",
-                "memcached": "django.core.cache.backends.memcached.PyLibMCCache",
-                }
+    "database": "django.core.cache.backends.db.DatabaseCache",
+    "dummy": "django.core.cache.backends.dummy.DummyCache",
+    "file": "django.core.cache.backends.filebased.FileBasedCache",
+    "localmem": "django.core.cache.backends.locmem.LocMemCache",
+    "memcached": "django.core.cache.backends.memcached.PyLibMCCache",
+    }
 
 is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
 
@@ -73,7 +73,7 @@ elif os.path.exists(os.path.expanduser("~/.config/inboxen/settings.ini")):
 elif os.path.exists(os.path.join(BASE_DIR, "settings.ini")):
     CONFIG_PATH = os.path.join(BASE_DIR, "settings.ini")
 elif is_testing:
-    CONFIG_PATH=""
+    CONFIG_PATH = ""
 else:
     raise exceptions.ImproperlyConfigured("You must provide a settings.ini file")
 
@@ -204,13 +204,13 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
-## Celery options
+##
+# Celery options
+##
 
 # load custom kombu encoder
 registry.register('json_date', jsondate.dumps, jsondate.loads,
-        content_type='application/json+date',
-        content_encoding='utf-8',
-        )
+                content_type='application/json+date', content_encoding='utf-8')
 
 CELERY_SEND_TASK_ERROR_EMAILS = True
 CELERY_RESULT_BACKEND = BROKER_URL
@@ -219,9 +219,9 @@ CELERY_TASK_SERIALIZER = "json_date"
 CELERY_RESULT_SERIALIZER = "json_date"
 
 CELERY_QUEUES = (
-        Queue('default', Exchange('default'), routing_key='default'),
-        Broadcast('broadcast_tasks'),
-        )
+    Queue('default', Exchange('default'), routing_key='default'),
+    Broadcast('broadcast_tasks'),
+    )
 CELERY_ROUTES = {'queue.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
 
 CELERY_DEFAULT_QUEUE = 'default'
@@ -229,21 +229,23 @@ CELERY_DEFAULT_EXCHANGE = 'default'
 CELERY_DEFAULT_ROUTING_KEY = 'default'
 
 CELERYBEAT_SCHEDULE = {
-    'statistics':{
-        'task':'queue.tasks.statistics',
-        'schedule':datetime.timedelta(hours=6),
+    'statistics': {
+        'task': 'queue.tasks.statistics',
+        'schedule': datetime.timedelta(hours=6),
     },
-    'cleanup':{
-        'task':'queue.delete.tasks.clean_orphan_models',
-        'schedule':datetime.timedelta(hours=2),
+    'cleanup': {
+        'task': 'queue.delete.tasks.clean_orphan_models',
+        'schedule': datetime.timedelta(hours=2),
     },
-    'requests':{
-        'task':'queue.tasks.requests',
-        'schedule':datetime.timedelta(days=1),
+    'requests': {
+        'task': 'queue.tasks.requests',
+        'schedule': datetime.timedelta(days=1),
     },
 }
 
-## Django options
+##
+# Django options
+##
 
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
@@ -308,6 +310,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrapform',
     'south',
     'django_extensions',
     'watson',
@@ -317,10 +320,12 @@ INSTALLED_APPS = (
     'django_otp.plugins.otp_totp',
     'two_factor',
     'inboxen',
+    'blog',
     'website',
     'queue',
     'queue.delete',
     'queue.liberate',
+    'tickets',
 )
 
 if DEBUG:

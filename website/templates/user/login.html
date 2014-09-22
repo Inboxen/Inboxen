@@ -29,6 +29,15 @@
         <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
         <a href="{% url 'index' %}" class="btn btn-default">{% trans "Cancel" %}</a>
 
+            {% if backup_tokens %}
+                <hr>
+                <p>{% trans "As a last resort, you can use a backup token:" %}</p>
+                <p>
+                    <button name="wizard_goto_step" type="submit" value="backup"
+                class="btn btn-default">{% trans "Use Backup Token" %}</button>
+                </p>
+            {% endif %}
+
         </form>
     </div>
     </div>

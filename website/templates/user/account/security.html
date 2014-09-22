@@ -21,6 +21,22 @@
     {% endblocktrans %}</p>
     <p><a class="btn btn-danger" href="{% url 'user-twofactor-disable' %}">
         {% trans "Disable Two Factor Authentication" %}</a></p>
+    <hr>
+    <p>
+        {% trans "If you don't have you device with you, you can access your account using backup tokens." %}
+        <p>{% if backup_tokens %}
+            {% blocktrans count counter=backup_tokens %}
+                You have only one backup token remaining.
+            {% plural %}
+                You have {{ counter }} backup tokens remaining.
+            {% endblocktrans %}
+        {% else %}
+            {% trans "You do not have any backup tokens" %}
+        {% endif %}</p>
+    </p>
+    <p>
+        <a href="{% url 'user-twofactor-backup' %}" class="btn btn-primary">{% trans "Backup Tokens" %}</a>
+    </p>
 {% else %}
     <p>{% blocktrans %}
         Two-factor authentication is not enabled for your account. Enable
@@ -32,6 +48,6 @@
 {% endif %}
 <hr>
 <p>{% trans "You can change your password here." %}</p>
-    <p><a class="btn btn-default" href="{% url 'user-password' %}">
+    <p><a class="btn btn-primary" href="{% url 'user-password' %}">
         {% trans "Change password" %}</a></p>
 {% endblock %}

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -18,11 +18,11 @@
 ##
 
 from datetime import datetime
-import markdown
 import re
 
 from django.conf import settings
 from django.db import models, transaction
+from django.utils import safestring
 from django.utils.encoding import smart_str
 
 from annoying.fields import AutoOneToOneField, JSONField
@@ -39,30 +39,6 @@ from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
-# South fix for djorm_pgbytea
-from south.modelsinspector import add_introspection_rules
-add_introspection_rules([], ['^djorm_pgbytea\.lobject\.LargeObjectField'])
-
-class BlogPost(models.Model):
-    """Basic blog post, body stored as MarkDown"""
-    subject = models.CharField(max_length=512)
-    body = models.TextField()
-    date = models.DateTimeField('posted')
-    modified = models.DateTimeField('modified')
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    draft = models.BooleanField(default=True)
-
-    @property
-    def rendered_body(self):
-        """Render MarkDown to HTML"""
-        return markdown.markdown(self.body)
-
-    def __unicode__(self):
-        draft = ""
-        if self.draft:
-            draft = " (draft)"
-        return u"%s%s" % (self.date, draft)
-
 class UserProfile(models.Model):
     """This is auto-created when accessed via a RelatedManager
 
@@ -75,7 +51,7 @@ class UserProfile(models.Model):
     """
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
     pool_amount = models.IntegerField(default=500)
-    flags = BitField(flags=("prefer_html_email","unified_has_new_messages","ask_images","display_images"), default=5)
+    flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
 
     def available_inboxes(self):
         used = self.user.inbox_set.count()
@@ -168,7 +144,7 @@ class Inbox(models.Model):
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    flags = BitField(flags=("deleted","new","exclude_from_unified"), default=0)
+    flags = BitField(flags=("deleted", "new", "exclude_from_unified"), default=0)
     tags = models.CharField(max_length=256, null=True, blank=True)
 
     objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
@@ -211,7 +187,7 @@ class Email(models.Model):
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
     inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=("deleted","read","seen","important"), default=0)
+    flags = BitField(flags=("deleted", "read", "seen", "important"), default=0)
     received_date = models.DateTimeField()
 
     @property

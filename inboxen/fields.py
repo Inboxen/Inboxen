@@ -43,16 +43,17 @@ class DeferAutoOneToOneField(fields.AutoOneToOneField):
         setattr(cls, related.get_accessor_name(), DeferAutoSingleRelatedObjectDescriptor(self.defer_fields, related))
 
 if SOUTH:
-    add_introspection_rules([
-        (
-            (DeferAutoOneToOneField,),
-            [],
-            {
-                "to": ["rel.to", {}],
-                "to_field": ["rel.field_name", {"default_attr": "rel.to._meta.pk.name"}],
-                "related_name": ["rel.related_name", {"default": None}],
-                "db_index": ["db_index", {"default": True}],
-            },
-        )
-    ],
-    ["^inboxen\.fields\.DeferAutoOneToOneField"])
+    add_introspection_rules(
+        [
+            (
+                (DeferAutoOneToOneField,),
+                [],
+                {
+                    "to": ["rel.to", {}],
+                    "to_field": ["rel.field_name", {"default_attr": "rel.to._meta.pk.name"}],
+                    "related_name": ["rel.related_name", {"default": None}],
+                    "db_index": ["db_index", {"default": True}],
+                },
+            )
+        ],
+        ["^inboxen\.fields\.DeferAutoOneToOneField"])

@@ -17,13 +17,27 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+import os
+
+from django.conf import settings, urls
 
 from tickets import views
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.QuestionListView.as_view(), name='tickets-index'),
+    urls.url(r'^status/(?P<status>[!]?\w+)/$', views.QuestionListView.as_view(), name='tickets-index'),
     urls.url(r'^(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
+    urls.url(r'^status/(?P<status>[!]?\w+)/(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
     urls.url(r'^ticket/(?P<pk>\d+)/$', views.QuestionDetailView.as_view(), name='tickets-detail'),
     )
+
+if ("INBOXEN_ADMIN_ACCESS" in os.environ and os.environ["INBOXEN_ADMIN_ACCESS"]) or settings.DEBUG:
+    # Only expose the admin features when we need to
+    urlpatterns += urls.patterns('',
+        urls.url(r'^admin/$', views.QuestionListAdminView.as_view(), name='tickets-admin-index'),
+        urls.url(r'^admin/status/(?P<status>[!]?\w+)/$', views.QuestionListAdminView.as_view(), name='tickets-admin-index'),
+        urls.url(r'^admin/(?P<page>)/$', views.QuestionListAdminView.as_view(), name='tickets-admin-index'),
+        urls.url(r'^admin/status/(?P<status>[!]?\w+)/(?P<page>)/$', views.QuestionListAdminView.as_view(), name='tickets-admin-index'),
+        urls.url(r'^admin/ticket/(?P<pk>\d+)/$', views.QuestionDetailAdminView.as_view(), name='tickets-admin-detail'),
+        )
