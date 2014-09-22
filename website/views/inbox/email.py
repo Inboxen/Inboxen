@@ -114,7 +114,7 @@ class EmailView(
             headers_fetch_all = bool(int(self.request.GET["all-headers"]))
         else:
             headers = cache.get(self.object.id, version="email-header")
-            headers_fetch_all = self.object.flags.view_all_headers
+            headers_fetch_all = bool(self.object.flags.view_all_headers)
 
         if headers is None:
             headers = models.Header.objects.filter(part__email=self.object, part__parent=None)

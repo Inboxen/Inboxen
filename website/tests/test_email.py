@@ -52,4 +52,17 @@ class EmailViewTestCase(test.TestCase):
         button = button % self.email.eid
         self.assertIn(button, response.content)
 
+    def test_get_with_headers(self):
+        response = self.client.get(self.get_url() + "?all-headers=1")
+        self.assertEqual(response.status_code, 200)
+
+        headersfetchall = response.context["headersfetchall"]
+        self.assertTrue(headersfetchall)
+
+        response = self.client.get(self.get_url() + "?all-headers=0")
+        self.assertEqual(response.status_code, 200)
+
+        headersfetchall = response.context["headersfetchall"]
+        self.assertFalse(headersfetchall)
+
     #TODO: test body choosing with multipart emails
