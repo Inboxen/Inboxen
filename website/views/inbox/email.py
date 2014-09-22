@@ -47,8 +47,12 @@ class EmailView(
     template_name = 'inbox/email.html'
 
     def get(self, *args, **kwargs):
+
         with watson.skip_index_update():
             out = super(EmailView, self).get(*args, **kwargs)
+            if "all-headers" in self.request.GET:
+               self.object.flags.view_all_headers = bool(int(self.request.GET["all-headers"]))
+
             self.object.flags.read = True
             self.object.flags.seen = True
             self.object.save(update_fields=["flags"])
@@ -105,14 +109,22 @@ class EmailView(
             return True
 
     def get_context_data(self, **kwargs):
-        headers = cache.get(self.object.id, version="email-header")
+        if "all-headers" in self.request.GET:
+            headers = None
+            headers_fetch_all = bool(int(self.request.GET["all-headers"]))
+        else:
+            headers = cache.get(self.object.id, version="email-header")
+            headers_fetch_all = self.object.flags.view_all_headers
+
         if headers is None:
             headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
-            headers = headers.get_many("Subject", "From")
+            if headers_fetch_all:
+                headers = headers.get_many()
+            else:
+                headers = headers.get_many("Subject", "From")
 
         email_dict = {}
-        email_dict["subject"] = headers.get("Subject", '(No subject)')
-        email_dict["from"] = headers["From"]
+        email_dict["headers"] = headers
         email_dict["date"] = self.object.received_date
         email_dict["inbox"] = self.object.inbox
         email_dict["eid"] = self.object.eid
@@ -199,7 +211,7 @@ class EmailView(
                 plain_message = True
                 messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
 
-        self.headline = email_dict["subject"]
+        self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
         # GET params for users with `ask_image` set in their profile
         if plain_message:
@@ -243,6 +255,7 @@ class EmailView(
                         "plain_message": plain_message,
                         "attachments": attachments,
                         "ask_images": ask_images,
+                        "headersfetchall": headers_fetch_all,
                         })
 
         return context

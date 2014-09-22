@@ -6,7 +6,7 @@
     <ul class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
         <li><a href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox }}</a></li>
-        <li class="active">{{ email.subject }}</li>
+        <li class="active">{{ email.headers.Subject|default:_("No Subject") }}</li>
     </ul>
 {% endblock %}
 
@@ -32,13 +32,26 @@
         {% endif %}
         </button>
     </form>
+    {% if headersfetchall %}
+    <a class="btn btn-default" href="{{ request.path }}?all-headers=0">
+        {% trans "Hide headers" %}
+    {% else %}
+    <a class="btn btn-default" href="{{ request.path }}?all-headers=1">
+        {% trans "Show headers" %}
+    {% endif %}
+    </a>
 </div>
 
-<strong>{% trans "From" %}</strong>: {{ email.from }} <br />
-<strong>{% trans "Received" %}</strong>: <span title="{{ email.date|date:"r" }}">{{ email.date|timesince }} {% trans "ago" %}</span>
+<strong>{% trans "From" %}:</strong> {{ email.headers.From }} <br />
+<strong>{% trans "Received" %}:</strong> <span title="{{ email.date|date:"r" }}">{{ email.date|timesince }} {% trans "ago" %}</span>
 <br />
+{% if headersfetchall %}
+<strong>{% trans "Raw Headers" %}:</strong>
+<pre>{% for name, value in email.headers.items %}{{ name }}: {{ value }}
+{% endfor %}</pre>
+{% endif %}
 
-<strong>{% trans "Message" %}</strong>:<br />
+<strong>{% trans "Message" %}:</strong><br />
 {% if plain_message %}
     <pre>
 {% endif %}
