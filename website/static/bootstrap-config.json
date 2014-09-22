@@ -14,9 +14,9 @@
     "@text-color": "@gray-dark",
     "@link-color": "@brand-primary",
     "@link-hover-color": "darken(@link-color, 15%)",
-    "@font-family-sans-serif": "\"Helvetica Neue\", Helvetica, Arial, sans-serif",
-    "@font-family-serif": "Georgia, \"Times New Roman\", Times, serif",
-    "@font-family-monospace": "Menlo, Monaco, Consolas, \"Courier New\", monospace",
+    "@font-family-sans-serif": "sans-serif",
+    "@font-family-serif": "serif",
+    "@font-family-monospace": "monospace",
     "@font-family-base": "@font-family-sans-serif",
     "@font-size-base": "14px",
     "@font-size-large": "ceil((@font-size-base * 1.25))",
@@ -33,6 +33,9 @@
     "@headings-font-weight": "500",
     "@headings-line-height": "1.1",
     "@headings-color": "inherit",
+    "@icon-font-path": "\"../fonts/\"",
+    "@icon-font-name": "\"glyphicons-halflings-regular\"",
+    "@icon-font-svg-id": "\"glyphicons_halflingsregular\"",
     "@padding-base-vertical": "6px",
     "@padding-base-horizontal": "12px",
     "@padding-large-vertical": "10px",
@@ -284,10 +287,16 @@
     "@list-group-active-bg": "@component-active-bg",
     "@list-group-active-border": "@list-group-active-bg",
     "@list-group-active-text-color": "lighten(@list-group-active-bg, 40%)",
+    "@list-group-disabled-color": "@gray-light",
+    "@list-group-disabled-bg": "@gray-lighter",
+    "@list-group-disabled-text-color": "@list-group-disabled-color",
     "@list-group-link-color": "#555",
+    "@list-group-link-hover-color": "@list-group-link-color",
     "@list-group-link-heading-color": "#333",
     "@panel-bg": "#fff",
     "@panel-body-padding": "15px",
+    "@panel-heading-padding": "10px 15px",
+    "@panel-footer-padding": "@panel-heading-padding",
     "@panel-border-radius": "@border-radius-base",
     "@panel-inner-border": "#ddd",
     "@panel-footer-bg": "#f5f5f5",
@@ -349,6 +358,7 @@
     "@pre-color": "@gray-dark",
     "@pre-border-color": "#ccc",
     "@pre-scrollable-max-height": "340px",
+    "@component-offset-horizontal": "180px",
     "@text-muted": "@gray-light",
     "@abbr-border-color": "@gray-light",
     "@headings-small-color": "@gray-light",
@@ -356,8 +366,8 @@
     "@blockquote-font-size": "(@font-size-base * 1.25)",
     "@blockquote-border-color": "@gray-lighter",
     "@page-header-border-color": "@gray-lighter",
-    "@hr-border": "@gray-lighter",
-    "@component-offset-horizontal": "180px"
+    "@dl-horizontal-offset": "@component-offset-horizontal",
+    "@hr-border": "@gray-lighter"
   },
   "css": [
     "type.less",
@@ -366,6 +376,7 @@
     "tables.less",
     "forms.less",
     "buttons.less",
+    "responsive-utilities.less",
     "button-groups.less",
     "input-groups.less",
     "navs.less",
@@ -375,11 +386,10 @@
     "pager.less",
     "labels.less",
     "alerts.less",
-    "panels.less",
-    "utilities.less",
-    "responsive-utilities.less"
+    "panels.less"
   ],
   "js": [
     "alert.js"
-  ]
+  ],
+  "customizerUrl": "http://getbootstrap.com/customize/?id=b6007113515ce11edb69"
 }

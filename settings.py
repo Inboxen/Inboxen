@@ -17,6 +17,7 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from subprocess import Popen, PIPE
 import datetime
 import os
 import stat
@@ -124,14 +125,17 @@ LOGIN_ATTEMPT_LIMIT = config["general"]["login_attempt_limit"]
 # Language code, e.g. en-gb
 LANGUAGE_CODE = config["general"]["language_code"]
 
+# Where `manage.py collectstatic` puts static files
+STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
+
 # Email the server uses when sending emails
 SERVER_EMAIL = config["general"]["server_email"]
 
 # Site name used in page titles
 SITE_NAME = config["general"]["site_name"]
 
-# Where `manage.py collectstatic` puts static files
-STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
+# Link to source code
+SOURCE_LINK = config["general"]["source_link"]
 
 # Time zone
 TIME_ZONE = config["general"]["time_zone"]
@@ -339,3 +343,17 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'website.wsgi.application'
+
+##
+# Misc.
+##
+
+try:
+    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True)
+    output = process.communicate()[0].strip()
+    if not process.returncode:
+        os.environ["INBOXEN_COMMIT_ID"] = output
+    else:
+        os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
+except OSError:
+    os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
