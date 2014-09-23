@@ -55,8 +55,12 @@
                         {% endif %}
                             <td title="{{ email.received_date|date:"r" }}"><div>{{ email.timesince }} {% trans "ago" %}</div></td>
                         <td>
-                            <button title="{% trans "Toggle Importantance" %}" class="btn btn-link close" type="submit" name="important-single" value="{{ email.eid }}">&#9733;</button>
-                            <button title="{% trans "Delete Email" %}" class="btn btn-link close" type="submit" name="delete-single" value="{{ email.eid }}">&times;</button>
+                            <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">
+                                <span aria-hidden="true">&#9733;</span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
+                            </button>
+                            <button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ email.eid }}">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
+                            </button>
                         </td>
                     </tr>
             {% endfor %}
