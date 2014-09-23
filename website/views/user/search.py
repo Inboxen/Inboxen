@@ -69,13 +69,16 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
     def get_results(self):
         """Fetch result from either the cache or the queue
 
-        Raises TimeoutError if results aren't ready by self.timeout"""
+        Raises TimeoutError if results aren't ready by self.timeout
+        """
         result = cache.get(self.get_cache_key())
-        if result is None:
+        task_id = self.request.session.get("search_task", None)
+
+        if result is None and task_id is None:
             search_task = tasks.search.apply_async(args=[self.request.user.id, self.query])
-            result = {"task": search_task.id}
-        elif "task" in result:
-            search_task = AsyncResult(result["task"])
+            self.request.session["search_task"] = search_task.id
+        elif result is None:
+            search_task = AsyncResult(task_id)
         else:
             return result
 
@@ -142,7 +145,7 @@ class SearchApiView(SearchView):
         It's very annoying
         """
         self.query = self.get_query(request)
-        result = cache.get(self.get_cache_key())
+        result = self.request.session.get("search_task", None)
         if result is not None and "task" in result:
             search_task = AsyncResult(result["task"])
             try:
