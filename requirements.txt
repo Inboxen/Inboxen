@@ -20,6 +20,7 @@ djorm-ext-pgbytea>=0.6.0
 jsondate
 lxml
 premailer
+progress
 psycopg2
 pytz
 salmon-mail>=2

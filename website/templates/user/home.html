@@ -51,10 +51,14 @@
                         <td>&nbsp;</td>
                     {% endif %}
                     <td>
-                        <a class="close edit" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">&#9997;</a>
+                        <a title="{% trans "Edit" %} " class="close" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                            <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Edit" %}</span>
+                        </a>
                     </td>
                     <td>
-                        <a title="{% trans "Delete Inbox" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">&times;</a>
+                        <a title="{% trans "Delete" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
+                        </a>
                     </td>
                 </tr>
             {% endfor %}
@@ -62,11 +66,15 @@
         </div>
         <ul class="pager">
             {% if page_obj.has_previous %}
-                <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">&laquo;</a></li>
+                <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
+                    <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+                </a></li>
             {% endif %}
 
             {% if page_obj.has_next %}
-                <li class="next"><a href="{% url 'user-home' page=page_obj.next_page_number %}">&raquo;</a></li>
+                <li class="next"><a href="{% url 'user-home' page=page_obj.next_page_number %}">
+                    <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+                </a></li>
             {% endif %}
         </ul>
     {% endif %}

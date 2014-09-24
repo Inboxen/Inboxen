@@ -386,10 +386,11 @@
     "pager.less",
     "labels.less",
     "alerts.less",
-    "panels.less"
+    "panels.less",
+    "close.less"
   ],
   "js": [
     "alert.js"
   ],
-  "customizerUrl": "http://getbootstrap.com/customize/?id=b6007113515ce11edb69"
+  "customizerUrl": "http://getbootstrap.com/customize/?id=e98fdd53b818d5240c82"
 }

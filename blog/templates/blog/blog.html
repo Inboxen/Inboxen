@@ -32,14 +32,14 @@
 
 <ul class="pager">
     {% if posts.has_previous %}
-        <li class="previous">
-            <a href="{% url 'blog' page=posts.previous_page_number %}">{% trans "Previous" %}</a>
-        </li>
+        <li class="previous"><a href="{% url 'blog' page=posts.previous_page_number %}">
+            <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+        </a></li>
     {% endif %}
     {% if posts.has_next %}
-        <li class="next">
-            <a href="{% url 'blog' page=posts.next_page_number %}">{% trans "Next" %}</a>
-        </li>
+        <li class="next"><a href="{% url 'blog' page=posts.next_page_number %}">
+            <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+        </a></li>
     {% endif %}
 </ul>
 

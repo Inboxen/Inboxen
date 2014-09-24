@@ -19,6 +19,7 @@
 
 from subprocess import Popen, PIPE
 import datetime
+import inspect
 import os
 import stat
 import warnings
@@ -349,11 +350,12 @@ WSGI_APPLICATION = 'website.wsgi.application'
 ##
 
 try:
-    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True)
+    cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=cwd)
     output = process.communicate()[0].strip()
     if not process.returncode:
         os.environ["INBOXEN_COMMIT_ID"] = output
     else:
         os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
-except OSError:
+except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"

@@ -74,10 +74,14 @@
                 <td><span title="{{ result.object.created|date:"r" }}">{{ result.object.created|timesince }} {% trans "ago" %}</span></td>
                 <td>{{ result.title }}</td>
                 <td>
-                    <a class="close edit" href="{% url 'inbox-edit' inbox=result.object.inbox domain=result.meta.domain %}">&#9997;</a>
+                    <a title="{% trans "Edit" %}" class="close" href="{% url 'inbox-edit' inbox=result.object.inbox domain=result.meta.domain %}">
+                        <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Edit" %}</span>
+                    </a>
                 </td>
                 <td>
-                    <a title="{% trans "Delete Inbox" %}" class="close" href="{% url 'inbox-delete' inbox=result.object.inbox domain=result.meta.domain %}">&times;</a>
+                    <a title="{% trans "Delete" %}" class="close" href="{% url 'inbox-delete' inbox=result.object.inbox domain=result.meta.domain %}">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
+                    </a>
                 </td>
             </tr>
         {% endfor %}
