@@ -148,9 +148,13 @@ class SearchApiView(SearchView):
             try:
                 search_task.get(self.timeout)
             except exceptions.TimeoutError:
+                cache.set(self.get_cache_key(), result)
                 return http.HttpResponse(status=202) # 202: still waiting for task
             return http.HttpResponse(status=201) # 201: search results ready
         elif result is not None:
             return http.HttpResponse(status=201) # 201: search results ready
         else:
             return http.HttpResponseBadRequest() # 400: no search is being performed
+
+    def head(self, *args, **kwargs):
+        return self.get(*args, **kwargs)
