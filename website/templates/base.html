@@ -18,6 +18,7 @@
                 <div class="navbar-header">
                     <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
                 </div>
+                {% block navbar %}
                 <ul class="nav navbar-nav">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
@@ -49,6 +50,7 @@
                     </div>
                 </form>
                 {% endif %}
+                {% endblock %}
             </div>
         </div>
         <div class="container-fluid">

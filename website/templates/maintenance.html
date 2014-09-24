@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load i18n staticfiles %}
+
+{% block navbar %}&nbsp;{% endblock %}
+
+{% block content %}
+<div style="text-align: center;">
+    <h1>{% trans "We'll be back soon" %}</h1>
+    <p>{% trans "We're down for maintenance. But don't ask me the specifics - I'm just an elephant!" %}</p>
+    <img width="480" height="640" src="{% static "Buttons-Hearphones.jpg" %}">
+</div>
+{% endblock %}
