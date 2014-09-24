@@ -29,7 +29,7 @@
 
 from __future__ import unicode_literals
 import hashlib
-import json
+import simplejson as json
 import os
 import posixpath
 import re

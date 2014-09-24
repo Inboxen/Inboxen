@@ -24,4 +24,5 @@ progress
 psycopg2
 pytz
 salmon-mail>=2
+simplejson
 -e git+https://github.com/moggers87/django-watson.git@block-search#egg=django-watson
