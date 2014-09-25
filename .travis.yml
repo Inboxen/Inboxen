@@ -13,6 +13,7 @@ before_script:
 install:
     - if [[ $DB == postgres ]]; then pip install -q psycopg2; fi
     - pip install -q -r requirements.txt
+    - python manage.py collectstatic --settings=inboxen.tests.settings
 
 script: python manage.py test --settings=inboxen.tests.settings
 
