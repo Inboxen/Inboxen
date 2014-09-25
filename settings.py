@@ -19,7 +19,6 @@
 
 from subprocess import Popen, PIPE
 import datetime
-import inspect
 import os
 import stat
 import warnings
@@ -273,6 +272,8 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
+STATICFILES_STORAGE = 'inboxen.storage.ManifestStaticFilesStorage'
+
 AUTHENTICATION_BACKENDS = (
     'website.backends.RateLimitWithSettings',
 )
@@ -350,8 +351,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 ##
 
 try:
-    cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=cwd)
+    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=BASE_DIR)
     output = process.communicate()[0].strip()
     if not process.returncode:
         os.environ["INBOXEN_COMMIT_ID"] = output
