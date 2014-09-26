@@ -36,7 +36,7 @@ Bye!
 """
 
 class BlogTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
+    fixtures = ['inboxen_blog_testdata.json']
 
     def test_blog_index(self):
         url = urlresolvers.reverse("blog")
@@ -62,3 +62,11 @@ class BlogTestCase(test.TestCase):
         post = models.BlogPost.objects.latest("date")
         self.assertEqual(post.subject, "A Test Post")
         self.assertEqual(post.body, BODY)
+
+    def test_feeds(self):
+        response_rss = self.client.get(urlresolvers.reverse("blog-feed-rss"))
+        response_atom = self.client.get(urlresolvers.reverse("blog-feed-atom"))
+
+        self.assertEqual(response_rss.status_code, 200)
+        self.assertEqual(response_atom.status_code, 200)
+        self.assertNotEqual(response_rss.content, response_atom.content)

@@ -175,7 +175,7 @@ class RssFeed(Feed):
         return item.subject
 
     def item_description(self, item):
-        return item.rendered_body()
+        return item.rendered_body
 
     def item_link(self, item):
         return reverse('blog-post', kwargs={"postid": item.id})
