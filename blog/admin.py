@@ -23,7 +23,7 @@ from blog import models
 
 class BlogAdmin(admin.ModelAdmin):
     list_display = ("subject", "author", "date", "published")
-    readonly_fields = ("rendered_body",)
+    readonly_fields = ("rendered_body", "date", "modified")
 
     def published(self, obj):
         return not obj.draft
