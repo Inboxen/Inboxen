@@ -34,6 +34,7 @@ This is a test post:
 
 Bye!
 """
+SUBJECT = """A Test Post For You And Me"""
 
 class BlogTestCase(test.TestCase):
     fixtures = ['inboxen_blog_testdata.json']
@@ -54,13 +55,9 @@ class BlogTestCase(test.TestCase):
         if not login:
             raise Exception("Could not log in")
 
-        params = {"title": "A Test Post", "body": BODY}
-        response = self.client.post(urlresolvers.reverse("blog-post-add"), params)
-
-        self.assertRedirects(response, urlresolvers.reverse("blog"))
-
+        models.BlogPost.objects.create(author=user, subject=SUBJECT, draft=False, body=BODY)
         post = models.BlogPost.objects.latest("date")
-        self.assertEqual(post.subject, "A Test Post")
+        self.assertEqual(post.subject, SUBJECT)
         self.assertEqual(post.body, BODY)
 
     def test_feeds(self):
