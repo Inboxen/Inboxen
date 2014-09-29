@@ -18,6 +18,8 @@
 ##
 
 from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from blog import models
 
@@ -29,5 +31,13 @@ class BlogAdmin(admin.ModelAdmin):
         return not obj.draft
     published.short_description = "Published?"
     published.boolean = True
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'author':
+            kwargs["initial"] = request.user.id
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+
+        return super(BlogAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 admin.site.register(models.BlogPost, BlogAdmin)
