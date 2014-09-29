@@ -17,15 +17,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django.contrib import admin
 
-from blog.views import AtomFeed, RssFeed
+from blog import models
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
-    urls.url(r'^blog/post/(?P<postid>\d+)', 'blog.views.post', name='blog-post'),
-    urls.url(r'^blog/feed/atom', AtomFeed(), name='blog-feed-atom'),
-    urls.url(r'^blog/feed/(rss)?', RssFeed(), name='blog-feed-rss'),
-    urls.url(r'^blog/(?P<page>\d*)', 'blog.views.view', name='blog'),
-    urls.url(r'^$', 'blog.views.view', name='blog'),
-    )
+class BlogAdmin(admin.ModelAdmin):
+    list_display = ("subject", "author", "date", "published")
+    readonly_fields = ("rendered_body",)
+
+    def published(self, obj):
+        return not obj.draft
+    published.short_description = "Published?"
+    published.boolean = True
+
+admin.site.register(models.BlogPost, BlogAdmin)
