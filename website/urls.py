@@ -18,6 +18,7 @@
 ##
 
 from django.conf import settings, urls
+from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
@@ -25,6 +26,8 @@ from two_factor.views import core as twofactor
 
 from website import views
 from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
+
+admin.autodiscover()
 
 # error views
 urls.handler500 = 'website.views.error.internal_server'
@@ -85,6 +88,7 @@ urlpatterns = urls.patterns('',
 
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
+    urls.url(r'^admin/', urls.include(admin.site.urls)),
 )
 
 if settings.ENABLE_REGISTRATION:

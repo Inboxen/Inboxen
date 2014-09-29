@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,15 +17,20 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django.contrib import admin
+from django.conf import settings
+from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
-from tickets import views
+from tickets import models
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
-    urls.url(r'^$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^status/(?P<status>[!]?\w+)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^status/(?P<status>[!]?\w+)/(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^ticket/(?P<pk>\d+)/$', views.QuestionDetailView.as_view(), name='tickets-detail'),
-    )
+class ResponseInline(admin.TabularInline):
+    model = models.Response
+    extra = 0
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("subject", "author", "status")
+    inlines = (ResponseInline,)
+
+
+admin.site.register(models.Question, QuestionAdmin)
