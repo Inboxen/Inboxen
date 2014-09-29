@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import os
+
 from django.conf import settings, urls
 from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
@@ -88,7 +90,6 @@ urlpatterns = urls.patterns('',
 
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
-    urls.url(r'^admin/', urls.include(admin.site.urls)),
 )
 
 if settings.ENABLE_REGISTRATION:
@@ -96,4 +97,9 @@ if settings.ENABLE_REGISTRATION:
         urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/register/software-status.html', headline=_('We\'re not stable!')), name='user-status'),
         urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', headline=_('Welcome!')), name='user-success'),
         urls.url(r'^user/register/', views.UserRegistrationView.as_view(), name='user-registration'),
+    )
+
+if ("INBOXEN_ADMIN_ACCESS" in os.environ and os.environ["INBOXEN_ADMIN_ACCESS"]) or settings.DEBUG:
+    urlpatterns += urls.patterns('',
+        urls.url(r'^admin/', urls.include(admin.site.urls)),
     )
