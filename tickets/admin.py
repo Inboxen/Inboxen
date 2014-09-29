@@ -24,10 +24,11 @@ from tickets import models
 class ResponseInline(admin.TabularInline):
     model = models.Response
     extra = 0
+    readonly_fields = ("date",)
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("subject", "author", "status")
     inlines = (ResponseInline,)
-
+    readonly_fields = ("date", "last_modified")
 
 admin.site.register(models.Question, QuestionAdmin)
