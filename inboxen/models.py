@@ -66,7 +66,7 @@ class UserProfile(models.Model):
 
                 if last_request:
                     amount = self.pool_amont + settings.REQUEST_NUMBER
-                    request = Request(amount=amount, date=datetime.now(utc))
+                    Request.objects.create(amount=amount, requester=self.user)
 
         return left
 
@@ -169,7 +169,7 @@ class Request(models.Model):
     """Inbox allocation request model"""
     amount = models.IntegerField()
     succeeded = models.NullBooleanField(default=None)
-    date = models.DateTimeField('requested')
+    date = models.DateTimeField('requested', auto_now_add=True)
     authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL)
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
     result = models.CharField(max_length=1024, blank=True, null=True)
