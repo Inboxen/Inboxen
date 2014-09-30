@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.http import Http404
 from django.views import generic
 from django.utils.translation import ugettext as _
 
@@ -31,8 +32,10 @@ class TOSView(base.CommonContextMixin, generic.DetailView):
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
-
-        return queryset.filter(published=True).latest()
+        try:
+            return queryset.filter(published=True).latest()
+        except self.model.DoesNotExist:
+            raise Http404
 
 class WhoView(base.CommonContextMixin, generic.ListView):
     headline = _("The People Behind The Inbox")

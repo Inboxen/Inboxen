@@ -25,7 +25,7 @@ from termsofservice import models
 
 class TOSAdmin(admin.ModelAdmin):
     list_display = ("published", "last_modified")
-    readonly_fields = ("rendered_text", "last_modified")
+    readonly_fields = ("rendered_text", "last_modified", "diff")
     exclude = ("diff", )
 
     def get_readonly_fields(self, request, obj=None):
