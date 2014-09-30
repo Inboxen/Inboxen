@@ -44,4 +44,13 @@ class WhoView(base.CommonContextMixin, generic.ListView):
 
     def get_queryset(self):
         qs = super(WhoView, self).get_queryset()
-        return qs.select_related("user")
+        return qs.filter(user__is_staff=True).select_related("user")
+
+class HelpView(base.TemplateView):
+    headline = _("Help")
+    template_name = "termsofservice/index.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["tos_count"] = models.TOS.objects.filter(published=True).count()
+        kwargs["who_count"] = models.StaffProfile.objects.filter(user__is_staff=True).count()
+        return super(HelpView, self).get_context_data(**kwargs)

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<ul>
+{% if who_count %}
+    <li><a href="{% url 'termsofservice-who' %}">Who?</a></li>
+{% endif %}
+{% if tos_count %}
+    <li><a href="{% url 'termsofservice-tos' %}">Terms?</a></li>
+{% endif %}
+    <li><a href="{% url 'tickets-index' %}">Question?</a></li>
+</ul>
+{% endblock %}
