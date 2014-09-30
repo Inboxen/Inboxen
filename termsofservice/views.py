@@ -32,7 +32,7 @@ class TOSView(base.CommonContextMixin, generic.DetailView):
         if queryset is None:
             queryset = self.get_queryset()
 
-        return queryset.latest()
+        return queryset.filter(published=True).latest()
 
 class WhoView(base.CommonContextMixin, generic.ListView):
     headline = _("The People Behind The Inbox")

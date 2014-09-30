@@ -11,6 +11,10 @@ class Migration(SchemaMigration):
         # Adding model 'TOS'
         db.create_table(u'termsofservice_tos', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('published', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('text', self.gf('django.db.models.fields.TextField')()),
+            ('diff', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal(u'termsofservice', ['TOS'])
 
@@ -75,8 +79,12 @@ class Migration(SchemaMigration):
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True', 'primary_key': 'True'})
         },
         u'termsofservice.tos': {
-            'Meta': {'object_name': 'TOS'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'Meta': {'ordering': "['-last_modified']", 'object_name': 'TOS'},
+            'diff': ('django.db.models.fields.TextField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'published': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'text': ('django.db.models.fields.TextField', [], {})
         }
     }
 

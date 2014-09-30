@@ -27,14 +27,23 @@ import markdown
 class TOS(models.Model):
     """Terms of service history"""
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
+    text = models.TextField(help_text=_("Text of TOS, Rendered with Markdown"))
+    diff = models.TextField()
+
+    @property
+    def rendered_text(self):
+        """Render Markdown to HTML"""
+        return safestring.mark_safe(markdown.markdown(self.text))
 
     class Meta:
         get_latest_by = "last_modified"
+        ordering = ["-last_modified"]
 
 class StaffProfile(models.Model):
     """Profile of staff member for displaying on "who" page"""
     public_name = models.CharField(max_length=1024, help_text=_("Their name, as they're known to the public"))
-    bio = models.TextField(help_text=_("Tell us about this a member of staff"))
+    bio = models.TextField(help_text=_("Tell us about this a member of staff. Rendered with Markdown"))
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
 
