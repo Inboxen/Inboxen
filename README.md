@@ -50,6 +50,10 @@ If your WSGI daemon supports it (e.g. mod_wsgi), we provide an "import script"
 to improve performance for the first request after a reload. It can be found at
 `website/importscript.py`
 
+There is also `website/admin-wsgi.py` - this enables the admin interface on
+`/admin`. It is **highly** recommended that you protect from the outside world.
+Solutions such as a VPN are probably the easiest for your staff to use.
+
 Collecting Static Files
 -----------------------
 
