@@ -17,11 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.syndication.views import Feed
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -30,104 +26,10 @@ from django.shortcuts import render
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
 
-from pytz import utc
-
 from blog.models import BlogPost
 
-@staff_member_required
-def add(request):
-
-    error = ""
-
-    if request.method == "POST":
-        if not ("title" in request.POST or "body" in request.POST):
-            error = _("You need to have a title and the blog's body")
-        else:
-            if "draft" in request.POST and request.POST["draft"] == "melon":
-                draft = True
-            else:
-                draft = False
-
-            post = BlogPost(
-                subject=request.POST["title"],
-                body=request.POST["body"],
-                date=datetime.now(utc),
-                author=request.user,
-                modified=datetime.now(utc),
-                draft=draft
-            )
-
-            post.save()
-
-            return HttpResponseRedirect(reverse('blog'))
-
-
-    context = {
-        "error": error,
-        "headline": _("Add Post"),
-    }
-
-    return render(request, "blog/add.html", context)
-
-@staff_member_required
-def delete(request, postid):
-
-    try:
-        post = BlogPost.objects.filter(id=postid).only('id')
-    except BlogPost.DoesNotExist:
-        return HttpResponseRedirect(reverse('blog'))
-
-    post.delete()
-
-    return HttpResponseRedirect(reverse('blog'))
-
-@staff_member_required
-def edit(request, postid):
-
-    error = ""
-
-    try:
-        post = BlogPost.objects.get(id=postid)
-    except BlogPost.DoesNotExist:
-        return HttpResponseRedirect(reverse('blog'))
-
-    if request.method == "POST":
-        if "draft" in request.POST and request.POST["draft"] == "melon":
-            draft = True
-        else:
-            draft = False
-
-        if not ("subject" in request.POST or "body" in request.POST):
-            error = _("You need to specify the subject and body of the post")
-        elif draft and not post.draft:
-            error = _("You may not unpublish a post - please delete it instead.")
-        else:
-            post.subject = request.POST["subject"]
-            post.body = request.POST["body"]
-            post.modified = datetime.now(utc)
-
-            if post.draft and not draft:
-                post.date = post.modified
-                post.draft = draft
-
-            post.save()
-
-            return HttpResponseRedirect(reverse('blog'))
-
-    context = {
-        "error": error,
-        "headline": post.subject,
-        "post": post,
-    }
-
-    return render(request, "blog/edit.html", context)
-
 def view(request, page=1):
-    if request.user.is_staff:
-        posts = BlogPost.objects.all()
-    else:
-        posts = BlogPost.objects.filter(draft=False)
-
+    posts = BlogPost.objects.filter(draft=False)
     posts = posts.order_by("-date")
     paginator = Paginator(posts, 5)
 
@@ -146,13 +48,8 @@ def view(request, page=1):
     return render(request, "blog/blog.html", context)
 
 def post(request, postid):
-    if request.user.is_staff:
-        kwargs = {"id": postid}
-    else:
-        kwargs = {"id": postid, "draft": False}
-
     try:
-        p = BlogPost.objects.get(**kwargs)
+        p = BlogPost.objects.get(id=postid, draft=False)
     except BlogPost.DoesNotExist:
         return HttpResponseRedirect(reverse('blog'))
 

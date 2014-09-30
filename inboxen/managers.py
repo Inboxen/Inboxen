@@ -107,10 +107,12 @@ class HeaderQuerySet(HashedQuerySet):
     def get_many(self, *args, **kwargs):
         group_by = kwargs.pop("group_by", None)
         query = models.Q()
+
         for item in args:
             query = query | models.Q(name__name=item)
 
         values = self.filter(query)
+
         if group_by is None:
             values = values.values_list("name__name", "data__data")
             return OrderedDict(values)

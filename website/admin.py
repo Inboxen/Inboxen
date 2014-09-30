@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,15 +17,23 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 
-from tickets import views
+from inboxen import models
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
-    urls.url(r'^$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^status/(?P<status>[!]?\w+)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^status/(?P<status>[!]?\w+)/(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^ticket/(?P<pk>\d+)/$', views.QuestionDetailView.as_view(), name='tickets-detail'),
-    )
+class RequestAdmin(admin.ModelAdmin):
+    actions = None
+    list_display = ("requester", "date", "amount", "succeeded")
+    readonly_fields = ("requester", "amount", "date")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'authorizer':
+            kwargs["initial"] = request.user.id
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+
+        return super(RequestAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+admin.site.register(models.Request, RequestAdmin)

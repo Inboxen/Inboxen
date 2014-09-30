@@ -49,3 +49,8 @@ The WSGI script can be found at `website/wsgi.py`
 If your WSGI daemon supports it (e.g. mod_wsgi), we provide an "import script"
 to improve performance for the first request after a reload. It can be found at
 `website/importscript.py`
+
+Collecting Static Files
+-----------------------
+
+Remember to run `python manage.py collectstatic`!
