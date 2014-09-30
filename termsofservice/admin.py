@@ -17,13 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
-from django.utils.translation import ugettext as _
+from django.contrib import admin
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 
-from termsofservice import views
+from termsofservice import models
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
-    urls.url(r'^tos/$', views.TOSView.as_view(), name='termsofservice-tos'),
-    urls.url(r'^who/$', views.WhoView.as_view(), name='termsofservice-who'),
-    )
+class StaffProfileAdmin(admin.ModelAdmin):
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'user':
+            kwargs["initial"] = request.user.id
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+
+        return super(StaffProfileAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+admin.site.register(models.StaffProfile, StaffProfileAdmin)

@@ -17,13 +17,28 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django.views import generic
 from django.utils.translation import ugettext as _
 
-from termsofservice import views
+from termsofservice import models
+from website.views import base
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
-    urls.url(r'^tos/$', views.TOSView.as_view(), name='termsofservice-tos'),
-    urls.url(r'^who/$', views.WhoView.as_view(), name='termsofservice-who'),
-    )
+class TOSView(base.CommonContextMixin, generic.DetailView):
+    headline = _("Terms Of Service")
+    model = models.TOS
+    template_name = "termsofservice/tos.html"
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        return queryset.latest()
+
+class WhoView(base.CommonContextMixin, generic.ListView):
+    headline = _("The People Behind The Inbox")
+    model = models.StaffProfile
+    template_name = "termsofservice/who.html"
+
+    def get_queryset(self):
+        qs = super(WhoView, self).get_queryset()
+        return qs.select_related("user")
