@@ -29,8 +29,6 @@ from two_factor.views import core as twofactor
 from website import views
 from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
 
-admin.autodiscover()
-
 # error views
 urls.handler500 = 'website.views.error.internal_server'
 urls.handler404 = 'website.views.error.not_found'
@@ -101,6 +99,8 @@ if settings.ENABLE_REGISTRATION:
     )
 
 if ("INBOXEN_ADMIN_ACCESS" in os.environ and os.environ["INBOXEN_ADMIN_ACCESS"]) or settings.DEBUG:
+    admin.autodiscover()
+
     urlpatterns += urls.patterns('',
         urls.url(r'^admin/', urls.include(admin.site.urls)),
     )
