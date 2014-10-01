@@ -9,74 +9,73 @@
 {% endblock %}
 
 {% block content %}
-    {% url 'unified-inbox' as inbox_url %}
-    {% if not page_obj.object_list %}
-        <p>{% trans "You have not added any inboxes yet, this makes me a sad panda :(" %} </p>
-    {% else %}
-        <div class="table-responsive">
-        <table class="table table-hover table-honeydew">
-            <thead>
-            <tr>
-                <th>{% trans "Inbox" %}</th>
-                <th>{% trans "Created" %}</th>
-                <th>{% trans "Tags" %}</th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-            </tr>
-            </thead>
-            <tr class="warning">
-                <td>
-                    <a href="{{ inbox_url }}">{% trans "Unified Inbox" %}</a>
-                    {{ user.userprofile.flags|render_flags }}
-                </td>
-                <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
+{% url 'unified-inbox' as inbox_url %}
+<div class="table-responsive">
+<table class="table table-hover table-honeydew">
+    <thead>
+    <tr>
+        <th>{% trans "Inbox" %}</th>
+        <th>{% trans "Created" %}</th>
+        <th>{% trans "Tags" %}</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tr class="warning">
+        <td>
+            <a href="{{ inbox_url }}">{% trans "Unified Inbox" %}</a>
+            {{ user.userprofile.flags|render_flags }}
+        </td>
+        <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
 
-            {% for inbox in page_obj.object_list %}
+    {% for inbox in page_obj.object_list %}
 
-                <tr>
-                    <td>
-                        <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">
-                            {{ inbox.inbox }}@{{ inbox.domain.domain }}
-                        </a>
-                        {{ inbox.flags|render_flags }}
-                    </td>
-                    <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
-                    {% if inbox.tags %}
-                        <td>{{ inbox.tags }}</td>
-                    {% else %}
-                        <td>&nbsp;</td>
-                    {% endif %}
-                    <td>
-                        <a title="{% trans "Edit" %} " class="close" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
-                            <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Edit" %}</span>
-                        </a>
-                    </td>
-                    <td>
-                        <a title="{% trans "Delete" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">
-                            <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-        </div>
-        <ul class="pager">
-            {% if page_obj.has_previous %}
-                <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
-                    <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
-                </a></li>
+        <tr>
+            <td>
+                <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                    {{ inbox.inbox }}@{{ inbox.domain.domain }}
+                </a>
+                {{ inbox.flags|render_flags }}
+            </td>
+            <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
+            {% if inbox.tags %}
+                <td>{{ inbox.tags }}</td>
+            {% else %}
+                <td>&nbsp;</td>
             {% endif %}
-
-            {% if page_obj.has_next %}
-                <li class="next"><a href="{% url 'user-home' page=page_obj.next_page_number %}">
-                    <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
-                </a></li>
-            {% endif %}
-        </ul>
+            <td>
+                <a title="{% trans "Edit" %} " class="close" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                    <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Edit" %}</span>
+                </a>
+            </td>
+            <td>
+                <a title="{% trans "Delete" %}" class="close" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                    <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
+                </a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="5"><b><a href="{% url 'inbox-add' %}">{% trans "Click here to add an Inbox" %}</a></b></td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
+<ul class="pager">
+    {% if page_obj.has_previous %}
+        <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
+            <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+        </a></li>
     {% endif %}
 
+    {% if page_obj.has_next %}
+        <li class="next"><a href="{% url 'user-home' page=page_obj.next_page_number %}">
+            <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+        </a></li>
+    {% endif %}
+</ul>
 {% endblock %}
