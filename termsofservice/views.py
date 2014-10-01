@@ -51,6 +51,6 @@ class HelpView(base.TemplateView):
     template_name = "termsofservice/index.html"
 
     def get_context_data(self, **kwargs):
-        kwargs["tos_count"] = models.TOS.objects.filter(published=True).count()
-        kwargs["who_count"] = models.StaffProfile.objects.filter(user__is_staff=True).count()
+        kwargs["tos_exists"] = models.TOS.objects.filter(published=True).exists()
+        kwargs["who_exists"] = models.StaffProfile.objects.filter(user__is_staff=True).exists()
         return super(HelpView, self).get_context_data(**kwargs)
