@@ -1,6 +1,6 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,8 +17,8 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "adminsettings")
-os.environ.setdefault("INBOXEN_ADMIN_ACCESS", "True")
+from settings import *
 
-from website.wsgi import *
+ALLOWED_HOSTS = ALLOWED_HOSTS + ("localhost",)
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
