@@ -6,7 +6,7 @@ import os
 sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-receiver_config = {'host': 'localhost', 'port': 8823}
+receiver_config = {'host': 'localhost', 'port': 8823, "type": "smtp"}
 
 handlers = ['app.server']
 

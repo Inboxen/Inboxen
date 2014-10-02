@@ -5,7 +5,7 @@ import logging.config
 from config import settings
 from salmon import queue
 from salmon.routing import Router
-from salmon.server import SMTPReceiver
+from salmon.server import SMTPReceiver, LMTPReceiver
 
 logging.config.fileConfig("config/logging.conf.default")
 logging.config.fileConfig("config/logging.conf")
@@ -21,8 +21,11 @@ except OSError:
     pass
 
 # where to listen for incoming messages
-settings.receiver = SMTPReceiver(settings.receiver_config['host'],
-                                 settings.receiver_config['port'])
+if settings.receiver_config["type"] == "lmtp":
+    settings.receiver = LMTPReceiver(socket=settings.receiver_config['path'])
+elif settings.receiver_config["type"] == "smtp":
+    settings.receiver = SMTPReceiver(settings.receiver_config['host'],
+                                     settings.receiver_config['port'])
 
 Router.defaults(**settings.router_defaults)
 Router.load(settings.handlers)
