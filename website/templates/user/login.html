@@ -1,14 +1,6 @@
 {% extends 'base.html' %}
-{% load i18n two_factor %}
+{% load i18n bootstrap two_factor %}
 {% block content %}
-
-{% if wizard.form.errors %}
-    {% if wizard.steps.current == 'token' %}
-        <p class="alert alert-danger">{% trans "Sorry, that token wasn't valid." %}</p>
-    {% else %}
-        <p class="alert alert-danger">{% trans "Your username and password didn't match. Please try again." %}</p>
-    {% endif %}
-{% endif %}
 
 <div class="row">
     <div class="panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
@@ -20,12 +12,7 @@
         <form class="form" action="" method="post">
         {% csrf_token %}
         {{ wizard.management_form }}
-        <div class="form-group">
-        {% for field in wizard.form %}
-            {{ field.label_tag }}{{ field }}
-        {% endfor %}
-        </div>
-
+        {{ wizard.form|bootstrap }}
         <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
         <a href="{% url 'index' %}" class="btn btn-default">{% trans "Cancel" %}</a>
 

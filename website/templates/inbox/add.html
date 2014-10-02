@@ -1,46 +1,13 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n bootstrap %}
 {% block content %}
-
-{% for error in form.non_field_errors %}
-    <p class="alert alert-danger">
-        {{ error }}
-    </p>
-{% endfor %}
-{% for field in form %}
-    {% if field.errors %}
-        {% for error in field.errors %}
-            <p class="alert alert-danger">
-                <strong>{{ field.label }}:</strong> {{ error }}
-            </p>
-        {% endfor %}
-    {% endif %}
-{% endfor %}
 
 <div class="row">
     <div class="panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
         <div class="panel-body">
         <form action="{% url 'inbox-add' %}" class="form-horizontal" method="POST">
             {% csrf_token %}
-            <div class="form-group">
-                <label class="sr-only">{{ form.domain.label }}</label>
-                <div class="input-group">
-                    <span class="input-group-addon">@</span>
-                    {{ form.domain }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="sr-only">{{ form.tags.label }}</label>
-                {{ form.tags }}
-            </div>
-            <div class="form-group">
-                <div class="col-xs-10">
-                    <div class="checkbox"><label>
-                            {{ form.exclude_from_unified }}
-                            {{ form.exclude_from_unified.label }}
-                    </label></div>
-                </div>
-            </div>
+            {{ form|bootstrap }}
             <button class="btn btn-default">{% trans "Add" %}</button>
         </form>
         </div>

@@ -1,32 +1,13 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n bootstrap %}
 {% block content %}
-
-{% if form.non_field_errors %}
-    <p class="alert alert-danger">
-        {{ form.non_field_errors }}
-    </p>
-{% endif %}
-{% for field in form %}
-    {% if field.errors %}
-        {% for error in field.errors %}
-            <p class="alert alert-danger">
-                <strong>{{ field.label }}:</strong> {{ error }}
-            </p>
-        {% endfor %}
-    {% endif %}
-{% endfor %}
 
 <div class="row">
     <div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-2 col-lg-4 col-lg-offset-2">
         <div class="panel-body">
             <form action="{% url 'user-registration' %}" class="form" method="post">
                 {% csrf_token %}
-                <div class="form-group">
-                    {{ form.username.label_tag }} {{ form.username }}
-                    {{ form.password1.label_tag }} {{ form.password1 }}
-                    {{ form.password2.label_tag }} {{ form.password2 }}
-                </div>
+                {{ form|bootstrap }}
                 <button class="btn btn-primary">Sign up!</button>
             </form>
         </div>

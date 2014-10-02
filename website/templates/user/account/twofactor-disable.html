@@ -1,5 +1,5 @@
 {% extends 'user/account/index.html' %}
-{% load two_factor i18n inboxen_account %}
+{% load two_factor i18n inboxen_account bootstrap %}
 
 {% block navigation %}
     {% account_menu 'user-security' %}
@@ -12,7 +12,7 @@
 {% endblocktrans %}</p>
 <form method="post">
     {% csrf_token %}
-    <table>{{ form }}</table>
+    {{ form|bootstrap }}
 <button class="btn btn-danger" type="submit">{% trans "Disable" %}</button>
 </form>
 {% endblock %}

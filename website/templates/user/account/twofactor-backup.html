@@ -1,5 +1,5 @@
 {% extends 'user/account/index.html' %}
-{% load two_factor i18n inboxen_account %}
+{% load two_factor i18n inboxen_account bootstrap %}
 
 {% block navigation %}
     {% account_menu 'user-security' %}
@@ -22,7 +22,7 @@
     <p>{% blocktrans %}Keep these tokens somewhere safe.{% endblocktrans %}</p>
 <form method="post" action="{% url 'user-twofactor-backup' %}">
     {% csrf_token %}
-    {{ form }}
+    {{ form|bootstrap }}
     <a href="{% url 'user-security'%}" class="btn btn-default">{% trans "Back" %}</a>
     <button class="btn btn-primary" type="submit">{% trans "Generate Tokens" %}</button>
 </form>
