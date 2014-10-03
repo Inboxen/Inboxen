@@ -35,11 +35,6 @@ class ResponseInline(admin.TabularInline):
 
         return super(ResponseInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def get_readonly_fields(self, request, obj=None):
-        if obj is not None:
-            return self.readonly_fields + ("author", "body")
-        return self.readonly_fields
-
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("subject", "author", "status")
