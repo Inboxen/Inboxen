@@ -41,5 +41,10 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = (ResponseInline,)
     readonly_fields = ("date", "last_modified")
 
+    def get_readonly_fields(self, request, obj=None):
+        if obj is not None:
+            return self.readonly_fields + ("author", "body", "subject")
+        return self.readonly_fields
+
 
 admin.site.register(models.Question, QuestionAdmin)
