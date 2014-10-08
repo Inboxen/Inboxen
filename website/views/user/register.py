@@ -35,7 +35,7 @@ class UserRegistrationView(CommonContextMixin, generic.CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated():
-            return HttpResponseRedirect(reverse_lazy('user-name'))
+            return HttpResponseRedirect(reverse_lazy('user-home'))
 
         if not settings.ENABLE_REGISTRATION:
             # I think this should be a 403 
