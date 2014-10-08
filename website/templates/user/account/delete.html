@@ -1,34 +1,14 @@
 {% extends 'user/account/index.html' %}
-{% load i18n inboxen_account %}
+{% load i18n bootstrap inboxen_account %}
 
 {% block navigation %}
     {% account_menu 'user-delete' %}
 {% endblock %}
 
-{% block errors %}
-    {% for error in form.non_field_errors %}
-        <p class="alert alert-danger">
-            {{ error }}
-        </p>
-    {% endfor %}
-    {% for field in form %}
-        {% if field.errors %}
-            {% for error in field.errors %}
-                <p class="alert alert-danger">
-                    <strong>{{ field.label }}:</strong> {{ error }}
-                </p>
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
-{% endblock %}
-
 {% block form %}
     <form method="POST" action="{% url 'user-delete' %}" class="form">
         {% csrf_token %}
-        <div class="form-group">
-            <label>{{ form.username.label }}</label>
-            {{ form.username }}
-        </div>
+        {{ form|bootstrap }}
         <a href="{% url 'user-home' %}" class="btn btn-default">{% trans "Don't delete my account!" %}</a>
         <button class="btn btn-danger">{% trans "Delete my account" %}</button>
     </form>
