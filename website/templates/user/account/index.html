@@ -15,7 +15,7 @@
         </form>
         <hr>
         <p>{% blocktrans with name=request.user.username %}You can change your username here. You current username is <b>{{ name }}</b>.{% endblocktrans %}</p>
-        <p><a class="btn btn-default" href="{% url 'user-username' %}">{% trans "Change username" %}</a></p>
+        <p><a class="btn btn-primary" href="{% url 'user-username' %}">{% trans "Change username" %}</a></p>
     {% endblock %}
     </div>
     </div>
