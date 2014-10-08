@@ -25,7 +25,6 @@ from django.utils.translation import ugettext as _
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
 
-from website import forms as inboxen_forms
 from website.views import base
 
 __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
@@ -49,7 +48,7 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
     headline = _("Setup Two Factor Authentication")
     form_list = (
         ('welcome', forms.Form),
-        ('method', inboxen_forms.MethodForm),
+        ('method', two_forms.MethodForm),
         ('generator', two_forms.TOTPDeviceForm),
         )
     redirect_url = "user-security"
