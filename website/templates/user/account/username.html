@@ -8,7 +8,7 @@
 {% block form %}
     <form method="POST" action="{% url 'user-username' %}" class="form">
         {% csrf_token %}
-        {{ form|bootstrap }}
+        {{ form|bootstrap_inline }}
         <button class="btn btn-primary">{% trans "Change username" %}</button>
         <a href="{% url 'user-settings' %}" class="btn btn-default">{% trans "Cancel" %}</a>
     </form>

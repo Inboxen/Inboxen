@@ -12,7 +12,7 @@
         <form class="form" action="" method="post">
         {% csrf_token %}
         {{ wizard.management_form }}
-        {{ wizard.form|bootstrap }}
+        {{ wizard.form|bootstrap_inline }}
         <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
         <a href="{% url 'index' %}" class="btn btn-default">{% trans "Cancel" %}</a>
 
