@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
 {% load i18n bootstrap %}
-{% block content %}
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li>{% trans "Restore Inbox" %}</li>
+        <li class="active">{{ inbox.inbox }}@{{ inbox.domain.domain }}</li>
+    </ul>
+{% endblock %}
 
+{% block content %}
 <div class="row">
     <div class="panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
         <div class="panel-body">
-            <form class="form-horizontal" action="{% url 'user-restore' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+            <form class="form" action="{% url 'user-restore' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
                 {% csrf_token %}
                 {{ form|bootstrap }}
                 <button class="btn btn-primary">{% trans "Save" %}</button>
