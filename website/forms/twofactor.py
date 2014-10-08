@@ -52,11 +52,10 @@ from django_otp.plugins.otp_totp.models import TOTPDevice
 from two_factor import forms as two_factor
 
 from inboxen import models
-from website.forms.mixins import BootstrapFormMixin
 
 __all__ = ["TwoFactorForm", "MethodForm"]
 
-class TwoFactorForm(BootstrapFormMixin, forms.Form):
+class TwoFactorForm(forms.Form):
     token = forms.CharField(required=True, label=_("Token"), widget=forms.TextInput(attrs={'placeholder': '123456...'}))
 
     def __init__(self, request, initial=None, *args, **kwargs):

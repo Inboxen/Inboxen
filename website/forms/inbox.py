@@ -28,12 +28,10 @@ from pytz import utc
 import watson
 
 from inboxen import models
-from website.forms.mixins import BootstrapFormMixin
 
 __all__ = ["InboxAddForm", "InboxEditForm", "InboxRestoreForm"]
 
-class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
-
+class InboxAddForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     def __init__(self, request, initial=None, *args, **kwargs):
@@ -72,8 +70,7 @@ class InboxAddForm(BootstrapFormMixin, forms.ModelForm):
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
-class InboxEditForm(BootstrapFormMixin, forms.ModelForm):
-
+class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     class Meta:

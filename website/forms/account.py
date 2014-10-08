@@ -33,7 +33,7 @@ from inboxen import models
 from queue.delete.tasks import delete_account
 from queue.liberate.tasks import liberate as data_liberate
 from website import fields
-from website.forms.mixins import BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin
+from website.forms.mixins import PlaceHolderMixin
 
 __all__ = ["DeleteAccountForm", "LiberationForm",
             "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
@@ -41,7 +41,7 @@ __all__ = ["DeleteAccountForm", "LiberationForm",
             "UsernameChangeForm",
             ]
 
-class DeleteAccountForm(BootstrapFormMixin, forms.Form):
+class DeleteAccountForm(forms.Form):
 
     username = forms.CharField(
         label=_("Please type your username to confirm"),
@@ -67,7 +67,7 @@ class DeleteAccountForm(BootstrapFormMixin, forms.Form):
         auth.logout(self.request)
         return self.user
 
-class LiberationForm(BootstrapFormMixin, forms.ModelForm):
+class LiberationForm(forms.ModelForm):
     class Meta:
         model = models.Inbox
         fields = []
@@ -113,19 +113,16 @@ class LiberationForm(BootstrapFormMixin, forms.ModelForm):
 
         return self.user
 
-class PlaceHolderAuthenticationForm(BootstrapFormMixin, SROnlyLabelMixin,
-                        PlaceHolderMixin, AuthenticationForm):
+class PlaceHolderAuthenticationForm(PlaceHolderMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder
-    in each field and marks labels as sr-only"""
+    in each field"""
     pass
 
-class PlaceHolderPasswordChangeForm(BootstrapFormMixin, SROnlyLabelMixin,
-                        PlaceHolderMixin, PasswordChangeForm):
+class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
     new_password1 = fields.PasswordCheckField(label=_("New password"))
 
-class PlaceHolderUserCreationForm(BootstrapFormMixin, SROnlyLabelMixin,
-                        PlaceHolderMixin, UserCreationForm):
+class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
     """Same as auth.forms.UserCreationForm but adds a label as the placeholder in each field"""
     password1 = fields.PasswordCheckField(label=_("Password"))
 
@@ -138,7 +135,7 @@ class PlaceHolderUserCreationForm(BootstrapFormMixin, SROnlyLabelMixin,
                 )
         return username
 
-class RestoreSelectForm(BootstrapFormMixin, forms.Form):
+class RestoreSelectForm(forms.Form):
     """Select a deleted Inbox to restore"""
     address = forms.CharField(
         label=_("Enter a deleted Inbox address"),
@@ -164,7 +161,7 @@ class RestoreSelectForm(BootstrapFormMixin, forms.Form):
     def save(self, *args, **kwargs):
         return self.inbox
 
-class SettingsForm(BootstrapFormMixin, PlaceHolderMixin, forms.Form):
+class SettingsForm(PlaceHolderMixin, forms.Form):
     """A form for general settings"""
     IMAGE_OPTIONS = (
         (0, _("Always ask to display images")),
@@ -209,7 +206,7 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin, forms.Form):
 
         self.profile.save(update_fields=["flags"])
 
-class UsernameChangeForm(BootstrapFormMixin, PlaceHolderMixin, SROnlyLabelMixin, forms.Form):
+class UsernameChangeForm(PlaceHolderMixin, forms.Form):
     """Change username"""
     new_username1 = forms.CharField(label=_("New username"))
     new_username2 = forms.CharField(label=_("Repeat new username"))
