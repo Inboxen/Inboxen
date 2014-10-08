@@ -7,7 +7,7 @@
         <div class="panel-body">
             <form action="{% url 'user-registration' %}" class="form" method="post">
                 {% csrf_token %}
-                {{ form|bootstrap }}
+                {{ form|bootstrap_inline }}
                 <button class="btn btn-primary">Sign up!</button>
             </form>
         </div>
