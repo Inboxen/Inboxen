@@ -171,8 +171,8 @@ class SettingsForm(BootstrapFormMixin, PlaceHolderMixin, forms.Form):
         (1, _("Always display images")),
         (2, _("Never display images")),
         )
+    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect, label=_("Display options for HTML emails"))
     prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
-    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect, label=_("Image display options"))
 
     def __init__(self, request, *args, **kwargs):
         self.profile = request.user.userprofile
