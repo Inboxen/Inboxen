@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 {% load i18n bootstrap %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+        <li class="active">{% trans "Questions" %}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 <span class="sr-only"><a href="#question-form">{% trans "Go to Question form" %}</a></span>
 

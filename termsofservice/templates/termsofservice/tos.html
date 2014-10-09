@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block content %}
-<h2>{% blocktrans with site_name=settings.SITE_NAME %}
-    Terms Of Service For {{ site_name }}
-{% endblocktrans %}</h2>
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+        <li class="active">{% trans "Terms Of Service" %}</li>
+    </ul>
+{% endblock %}
 
+{% block content %}
 <p><i>{% blocktrans with updated=object.last_modified|timesince date=object.last_modified|date:"r" %}
     Last updated <span title="{{ date }}">{{ updated }} ago</span>
 {% endblocktrans %}</i></p>

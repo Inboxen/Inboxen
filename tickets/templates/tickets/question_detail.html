@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
 {% load i18n bootstrap %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+        <li><a href="{% url 'tickets-index' %}">{% trans "Questions" %}</a></li>
+        <li class="active">{{ object.subject }}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
-<h3>{{ object.subject }}</h3>
 <p>
         <b>{% trans "Asked by" %}:</b> {{ object.author.username }}
     <br />

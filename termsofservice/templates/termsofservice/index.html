@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li class="active">{% trans "Help" %}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 <div class="text-center row">
     <div class="col-sm-4 col-sm-offset-2 col-md-2 col-md-offset-2">
