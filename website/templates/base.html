@@ -31,6 +31,7 @@
                             <li><a href="{% url 'user-status' %}">{% trans "Register" %}</a></li>
                         {% endif %}
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
+                        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
                     {% endif %}
                 </ul>
                 {% if user.is_authenticated %}
