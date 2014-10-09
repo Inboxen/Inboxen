@@ -72,6 +72,7 @@ class InboxAddForm(forms.ModelForm):
 
 class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
+    clear_inbox = forms.BooleanField(required=False, label=_("Delete all emails in this Inbox"))
 
     class Meta:
         model = models.Inbox
@@ -91,6 +92,12 @@ class InboxEditForm(forms.ModelForm):
 
         data = self.cleaned_data.copy()
         self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
+        clear_inbox = data.pop("clear_inbox", False)
+
+        if clear_inbox:
+            batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
+            messages.warning(self.request, _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox, self.instance.domain.domain))
+
         self.instance.save()
 
         return self.instance
