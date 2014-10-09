@@ -20,10 +20,11 @@
 from django.conf import urls
 from django.utils.translation import ugettext as _
 
-from website.views import base as views
+from termsofservice import views
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
-    urls.url(r'^tos/$', views.TemplateView.as_view(template_name="termsofservice/tos.html", headline=_("Terms Of Service")), name='termsofservice-tos'),
-    urls.url(r'^who/$', views.TemplateView.as_view(template_name="termsofservice/who.html", headline=_("Who Are We?")), name='termsofservice-who'),
+    urls.url(r'^$', views.HelpView.as_view(), name='termsofservice-index'),
+    urls.url(r'^tos/$', views.TOSView.as_view(), name='termsofservice-tos'),
+    urls.url(r'^who/$', views.WhoView.as_view(), name='termsofservice-who'),
     )
