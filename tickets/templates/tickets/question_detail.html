@@ -4,21 +4,22 @@
 {% block content %}
 <h3>{{ object.subject }}</h3>
 <p>
-        <b>{% trans "Asked by" %}</b> {{ object.author.username }}
+        <b>{% trans "Asked by" %}:</b> {{ object.author.username }}
     <br />
-        <b>{% trans "Asked" %}</b> {{ object.date|timesince }} {% trans "ago" %}
+        <b>{% trans "Asked" %}:</b> {{ object.date|timesince }} {% trans "ago" %}
     <br />
-        <b>{% trans "Last modified" %}</b> {{ object.last_modified|timesince }} {% trans "ago" %}
+        <b>{% trans "Last activity" %}:</b> {{ object.last_activity|timesince }} {% trans "ago" %}
     <br />
         <b>{% trans "Status" %}:</b> {{ object.get_status_display }}
 </p>
 <p>{{ object.body }}</p>
 
-<span class="sr-only"><a href="#response-form">{% trans "Go to Response form" %}</a></span>
+<small><a href="#lastreply">{% trans "Latest reply" %} &raquo;</a><br />
+<a href="#response-form">{% trans "Reply form" %} &raquo;</a></small>
 
 <hr>
 {% for response in responses %}
-    <p>{{ response.author.username }} {% trans "says" %}:</p>
+    <p {% if forloop.last %}id="lastreply"{% endif %}>{{ response.author.username }} {% trans "says" %}:</p>
     <p>{{ response.body }}</p>
     <hr>
 {% endfor %}
