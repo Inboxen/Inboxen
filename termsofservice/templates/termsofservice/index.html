@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li class="active">{% trans "Help" %}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="text-center row">
+    <div class="col-sm-4 col-sm-offset-2 col-md-2 col-md-offset-2">
+    {% if tos_exists %}
+        <h3><a href="{% url 'termsofservice-tos' %}">
+            {% trans "Terms Of Service" %}
+        </a></h3>
+        <h5>{% trans "Where we explain what we do with your data." %}</h5>
+    {% else %}
+        <h3><a class="soon" href="#">
+            {% trans "Terms Of Service" %}
+        </a></h3>
+        <h5>{% trans "Soon." %}</h5>
+    {% endif %}
+    </div>
+    <div class="col-sm-4 col-md-2">
+    {% if who_exists %}
+        <h3><a href="{% url 'termsofservice-who' %}">
+            {% trans "The People Behind The Inbox" %}
+        </a></h3>
+        <h5>{% trans "Who runs this service?" %}</h5>
+    {% else %}
+        <h3><a class="soon" href="#">
+            {% trans "The People Behind The Inbox" %}
+        </a></h3>
+        <h5>{% trans "Soon." %}</h5>
+    {% endif %}
+    </div>
+    <div class="col-sm-4 col-sm-offset-2 col-md-2 col-md-offset-0">
+        <h3><a href="{% url 'tickets-index' %}">{% trans "Questions?" %}</a></h3>
+        <h5>{% trans "If you need assistance or want to speak to a human." %}</h5>
+    </div>
+    <div class="col-sm-4 col-md-2">
+        <h3><a class="soon" href="#">{% trans "Knowedge Base" %}</a></h3>
+        <h5>{% trans "Coming soon!" %}</h5>
+    </div>
+</div>
+{% endblock %}

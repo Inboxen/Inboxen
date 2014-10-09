@@ -67,4 +67,4 @@ class Response(models.Model):
     body = models.TextField()
 
     class Meta:
-        ordering = ["-date"]
+        ordering = ["date"]

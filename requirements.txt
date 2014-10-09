@@ -15,7 +15,7 @@ django-model-utils
 django-mptt
 django-otp
 django-ratelimit-backend
-django-two-factor-auth>=1.0.0-beta3
+django-two-factor-auth>=1.0.0
 djorm-ext-pgbytea>=0.6.0
 jsondate
 lxml

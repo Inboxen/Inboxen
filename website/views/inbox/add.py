@@ -43,9 +43,12 @@ class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Cre
     template_name = "inbox/add.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.userprofile.available_inboxes() <= 0:
-            messages.error(request, _("You have too many Inboxes."))
-            return HttpResponseRedirect(self.success_url)
+        try:
+            if request.user.userprofile.available_inboxes() <= 0:
+                messages.error(request, _("You have too many Inboxes."))
+                return HttpResponseRedirect(self.success_url)
+        except AttributeError:
+            pass
 
         return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)
 

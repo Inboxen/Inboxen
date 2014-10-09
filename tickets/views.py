@@ -169,7 +169,7 @@ class QuestionDetailBaseView(base.CommonContextMixin, generic.DetailView, FormMi
         return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
 
     def get_responses(self):
-        return self.object.response_set.all()
+        return self.object.response_set.select_related("author").all()
 
     def post(self, *args, **kwargs):
         self.object = self.get_object()

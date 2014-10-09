@@ -259,6 +259,8 @@ TEMPLATE_DEBUG = DEBUG
 
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
+TWO_FACTOR_PATCH_ADMIN = False
+
 USE_I18N = True
 
 USE_L10N = True
@@ -333,6 +335,7 @@ INSTALLED_APPS = (
     'queue.delete',
     'queue.liberate',
     'tickets',
+    'termsofservice',
 )
 
 if DEBUG:

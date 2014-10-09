@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+        <li class="active">{% trans "Terms Of Service" %}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2">
-        <h3></h3>
-        <p></p>
-    </div>
-    <div class="col-sm-5 col-md-4">
-        <h3></h3>
-        <p></p>
-    </div>
-</div>
+<p><i>{% blocktrans with updated=object.last_modified|timesince date=object.last_modified|date:"r" %}
+    Last updated <span title="{{ date }}">{{ updated }} ago</span>
+{% endblocktrans %}</i></p>
+
+{{ object.rendered_text }}
 {% endblock %}

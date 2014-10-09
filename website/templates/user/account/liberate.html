@@ -1,25 +1,8 @@
 {% extends 'user/account/index.html' %}
-{% load i18n inboxen_account %}
+{% load i18n inboxen_account bootstrap %}
 
 {% block navigation %}
     {% account_menu 'user-liberate' %}
-{% endblock %}
-
-{% block errors %}
-    {% for error in form.non_field_errors %}
-        <p class="alert alert-danger">
-            {{ error }}
-        </p>
-    {% endfor %}
-    {% for field in form %}
-        {% if field.errors %}
-            {% for error in field.errors %}
-                <p class="alert alert-danger">
-                    <strong>{{ field.label }}:</strong> {{ error }}
-                </p>
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
 {% endblock %}
 
 {% block form %}
@@ -48,12 +31,7 @@
     {% endif %}
     <form class="form" action="{% url 'user-liberate' %}" method="POST">
         {% csrf_token %}
-        <div class="form-group">
-            <label>{{ form.storage_type.label }}</label>
-            {{ form.storage_type }}
-            <label>{{ form.compression_type.label }}</label>
-            {{ form.compression_type }}
-        </div>
+        {{ form|bootstrap }}
         <button class="btn btn-primary">{% trans "Liberate!" %}</button>
     </form>
 {% endif %}

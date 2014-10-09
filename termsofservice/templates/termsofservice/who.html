@@ -1,29 +1,22 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+        <li class="active">{% trans "The People Behind The Inbox" %}</li>
+    </ul>
+{% endblock %}
+
 {% block content %}
 <div class="row">
-    <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
-        <p>Who are the people behind Inboxen.org?</p>
-    </div>
-    <div class="col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2">
-        <h3>Jessica Tallon</h3>
-
-        <p>Jessica is a Python developer from North Yorkshire, UK. Inboxen was
-        her brainchild and she led development during the first 6 months of the
-        project.</p>
-
-        <p>When she's not working, Jessica likes to ride her bike and take
-        photographs of the beautiful Yorkshire countyside.</p>
-    </div>
-    <div class="col-sm-5 col-md-4">
-        <h3>Matt "Moggers" Molyneaux</h3>
-
-        <p>Moggers is sysadmin and Python developer from Mid-Beds. He is the
-        current lead developer.</p>
-
-        <p>Moggers never stops working. If he did that, he'd have to get a real
-        job or something.</p>
-    </div>
+    {% for user in object_list %}
+        <div class="{% cycle "col-sm-5 col-sm-offset-1 col-md-4 col-md-offset-2" "col-sm-5 col-md-4" %}">
+            <h3>{{ user.public_name }}</h3>
+            <p>
+                {{ user.rendered_bio }}
+            </p>
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}
