@@ -73,6 +73,7 @@ class InboxAddForm(forms.ModelForm):
 class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
     clear_inbox = forms.BooleanField(required=False, label=_("Delete all emails in this Inbox"))
+    disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"))
 
     class Meta:
         model = models.Inbox

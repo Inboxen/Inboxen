@@ -42,6 +42,8 @@ def START(message, inbox=None, domain=None):
 
         if inbox.flags.deleted:
             raise SMTPError(550, "No such address")
+        elif inbox.flags.disabled:
+            raise SMTPError(450, "Address has been disabled")
 
         make_email(message, inbox)
 
