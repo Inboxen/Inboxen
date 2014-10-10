@@ -93,6 +93,7 @@ class InboxEditForm(forms.ModelForm):
 
         data = self.cleaned_data.copy()
         self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
+        self.instance.flags.disabled = data.pop("disabled", False)
         clear_inbox = data.pop("clear_inbox", False)
 
         if clear_inbox:
