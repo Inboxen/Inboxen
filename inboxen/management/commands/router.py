@@ -25,7 +25,7 @@ from django.core.management.base import BaseCommand, CommandError
 try:
     from subprocess import check_output, CalledProcessError
 except ImportError:
-    from inboxen.helper.subprocess import check_output, CalledProcessError
+    from inboxen.utils.subprocess import check_output, CalledProcessError
 
 class Command(BaseCommand):
     args = "<start/stop/status>"
