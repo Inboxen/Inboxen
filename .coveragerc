@@ -1,0 +1,12 @@
+[run]
+source =
+    blog
+    inboxen
+    queue
+    router
+    termsofservice
+    tickets
+    website
+omit =
+    */tests/*
+    */migrations/*

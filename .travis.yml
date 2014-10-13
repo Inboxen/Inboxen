@@ -13,9 +13,11 @@ before_script:
 install:
     - if [[ $DB == postgres ]]; then pip install -q psycopg2; fi
     - pip install -q -r requirements.txt
+    - pip install coveralls
     - python manage.py collectstatic --noinput --settings=inboxen.tests.settings
 
-script: python manage.py test --settings=inboxen.tests.settings
+script: coverage run manage.py test --settings=inboxen.tests.settings
+after_success: coveralls
 
 notifications:
     irc:
