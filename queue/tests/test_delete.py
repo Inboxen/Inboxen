@@ -76,3 +76,10 @@ class DeleteTestCase(test.TestCase):
 
         with self.assertRaises(get_user_model().DoesNotExist):
             get_user_model().objects.get(id=1)
+
+    def test_disown_inbox(self):
+        inbox = models.Inbox.objects.filter(user__isnull=False).only("id")[0]
+        tasks.disown_inbox.delay({}, inbox.id)
+
+        inbox = models.Inbox.objects.get(id=inbox.id)
+        self.assertEqual(inbox.user, None)
