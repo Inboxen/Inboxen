@@ -48,6 +48,12 @@ FLAGS_TO_TAGS = {
                     "class": "label-danger",
                     "inverse": False,
                     },
+                "disabled": {
+                    "title": _("Inbox has been disabled"),
+                    "str": _("Disabled"),
+                    "class": "label-default",
+                    "inverse": False,
+                    },
                 }
 
 # alias certain flags
@@ -58,6 +64,8 @@ LABEL_STR = "<span class=\"label {class}\" title=\"{title}\">{str}</span>"
 @register.filter()
 def render_flags(flags_obj):
     """Takes a Bitfield BitHandler from an object and outputs Bootstrap labels"""
+    if getattr(flags_obj, "disabled", False):
+        return safestring.mark_safe(LABEL_STR.format(**FLAGS_TO_TAGS["disabled"]))
     flags = []
     for name, value in flags_obj:
         if name not in FLAGS_TO_TAGS:

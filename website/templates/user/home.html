@@ -32,7 +32,7 @@
 
     {% for inbox in page_obj.object_list %}
 
-        <tr{% if inbox.flags.disabled %} style="font-style: italic; color: #555; background-color: #EEE;"{% endif %}>
+        <tr{% if inbox.flags.disabled %} class="inbox-disabled"{% endif %}>
             <td>
                 <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">
                     {{ inbox.inbox }}@{{ inbox.domain.domain }}
