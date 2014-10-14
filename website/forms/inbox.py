@@ -28,6 +28,7 @@ from pytz import utc
 import watson
 
 from inboxen import models
+from queue.delete import tasks
 
 __all__ = ["InboxAddForm", "InboxEditForm", "InboxRestoreForm"]
 
@@ -70,6 +71,17 @@ class InboxAddForm(forms.ModelForm):
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
+class InboxSecondaryEditForm(forms.Form):
+    """A subform to hold dangerous operations that will result in loss
+    of data.
+    """
+    clear_inbox = forms.BooleanField(required=False, label=_("Clear Inbox"), help_text=_("Delete all emails in this Inbox. Cannot be undone."))
+    disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"), help_text=_("This Inbox will no longer receive emails."))
+
+    def __init__(self, instance, *args, **kwargs):
+        super(InboxSecondaryEditForm, self).__init__(*args, **kwargs)
+        self.fields["disable_inbox"].initial = bool(instance.flags.disabled)
+
 class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
@@ -82,15 +94,25 @@ class InboxEditForm(forms.ModelForm):
 
     def __init__(self, initial=None, instance=None, *args, **kwargs):
         super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
-        self.fields["exclude_from_unified"].initial = bool(instance.flags.exclude_from_unified)
-
+        self.fields["exclude_from_unified"].initial = bool(self.instance.flags.exclude_from_unified)
+        self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
 
     def save(self, commit=True):
-        if not commit:
-            return
-
         data = self.cleaned_data.copy()
+        if self.subform.is_valid():
+            data.update(self.subform.cleaned_data.copy())
+
         self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
+        self.instance.flags.disabled = data.pop("disable_inbox", False)
+        clear_inbox = data.pop("clear_inbox", False)
+
+        if not commit:
+            return self.instance
+
+        if clear_inbox:
+            tasks.batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
+            messages.warning(self.request, _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox, self.instance.domain.domain))
+
         self.instance.save()
 
         return self.instance

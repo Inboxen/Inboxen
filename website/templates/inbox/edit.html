@@ -3,8 +3,9 @@
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
-        <li>{% trans "Edit Inbox" %}</li>
-        <li class="active">{{ inbox.inbox }}@{{ inbox.domain.domain }}</li>
+        <li class="active">{% blocktrans with inbox=inbox.inbox domain=inbox.domain.domain %}
+            Edit {{ inbox }}@{{ domain }}
+        {% endblocktrans %}</li>
     </ul>
 {% endblock %}
 
@@ -15,6 +16,19 @@
             <form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
                 {% csrf_token %}
                 {{ form|bootstrap }}
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        {% trans "Danger Area" %}&trade;
+                    </div>
+                    <div class="panel-body">
+                        {{ form.subform|bootstrap }}
+                        <hr>
+                        <p>{% trans "You can also delete this Inbox completely" %}:</p>
+                        <a class="btn btn-danger" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">
+                            {% trans "Delete Inbox" %}
+                        </a>
+                    </div>
+                </div>
                 <button class="btn btn-primary">{% trans "Save" %}</button>
                 <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Cancel" %}</a>
             </form>
