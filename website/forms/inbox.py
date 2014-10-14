@@ -92,7 +92,8 @@ class InboxEditForm(forms.ModelForm):
             "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
-    def __init__(self, initial=None, instance=None, *args, **kwargs):
+    def __init__(self, request, initial=None, instance=None, *args, **kwargs):
+        self.request = request
         super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
         self.fields["exclude_from_unified"].initial = bool(self.instance.flags.exclude_from_unified)
         self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
