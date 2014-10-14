@@ -33,8 +33,10 @@ __all__ = ["InboxDeletionView"]
 class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DeleteView):
     model = models.Inbox
     success_url = reverse_lazy('user-home')
-    headline = _("Delete Inbox")
     template_name = "inbox/delete.html"
+
+    def get_headline(self):
+        return _("Delete {inbox}@{domain}").format(inbox=self.kwargs["inbox"], domain=self.kwargs["domain"])
 
     def get_object(self, *args, **kwargs):
         return self.request.user.inbox_set.get(

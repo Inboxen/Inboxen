@@ -139,12 +139,13 @@ class Inbox(models.Model):
     * "deleted" is obvious (and should be used instead of deleting the model)
     * "new" should be set when an email is added to the inbox and unset when
       the inbox is viewed
+    * "disabled" is a bit like "deleted", but incoming mail will be deffered, not rejected
     """
     inbox = models.CharField(max_length=64)
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    flags = BitField(flags=("deleted", "new", "exclude_from_unified"), default=0)
+    flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled"), default=0)
     tags = models.CharField(max_length=256, null=True, blank=True)
 
     objects = PassThroughManager.for_queryset_class(InboxQuerySet)()

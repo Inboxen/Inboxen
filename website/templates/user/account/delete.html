@@ -6,6 +6,16 @@
 {% endblock %}
 
 {% block form %}
+    <p>{% blocktrans %}
+        Once you delete your account, you will be unable to access your Inboxes
+        ever again. Please make sure you no longer need them!
+    {% endblocktrans %}</p>
+    <p>{% blocktrans %}
+        Your emails and profile will deleted, as well as meta-data on your
+        Inboxes (e.g. tags and creation time). We keep a record of all Inbox
+        addresses that have been created but have no owner, this is to prevent
+        another user generating an Inbox address that has previously been used.
+    {% endblocktrans %}</p>
     <form method="POST" action="{% url 'user-delete' %}" class="form">
         {% csrf_token %}
         {{ form|bootstrap }}

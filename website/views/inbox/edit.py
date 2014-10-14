@@ -30,8 +30,15 @@ __all__ = ["InboxEditView", "InboxRestoreView"]
 class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.InboxEditForm
     template_name = "inbox/edit.html"
-    headline = _("Edit inbox")
     success_url = reverse_lazy('user-home')
+
+    def get_headline(self):
+        return _("{inbox}@{domain} Options").format(inbox=self.kwargs["inbox"], domain=self.kwargs["domain"])
+
+    def get_form_kwargs(self):
+        kwargs = super(InboxEditView, self).get_form_kwargs()
+        kwargs.setdefault("request", self.request)
+        return kwargs
 
     def get_object(self, *args, **kwargs):
         inbox = self.request.user.inbox_set.select_related("domain")
