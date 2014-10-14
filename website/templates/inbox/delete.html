@@ -5,7 +5,7 @@
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
         <li class="active"><a href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
         {% blocktrans with inbox=inbox.inbox domain=inbox.domain.domain %}
-            Edit {{ inbox }}@{{ domain }}
+            {{ inbox }}@{{ domain }} Options
         {% endblocktrans %}
         </a></li>
         <li class="active">{% trans "Delete Inbox" %}</li>
