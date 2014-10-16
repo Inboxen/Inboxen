@@ -37,12 +37,6 @@ def delete_inbox(inbox_id, user_id=None):
 
     return True
 
-@task(rate_limit=200)
-@transaction.atomic()
-def delete_email(email_id):
-    email = Email.objects.only('id').get(id=email_id)
-    email.delete()
-
 @task()
 @transaction.atomic()
 def disown_inbox(result, inbox_id):

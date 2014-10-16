@@ -48,13 +48,6 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(models.HeaderData.objects.count(), 0)
         self.assertEqual(models.HeaderName.objects.count(), 0)
 
-    def test_delete_email(self):
-        email = models.Email.objects.only("id").all()[0]
-        tasks.delete_email.delay(email.id)
-
-        with self.assertRaises(models.Email.DoesNotExist):
-            models.Email.objects.get(id=email.id)
-
     def test_delete_inboxen_item(self):
         email = models.Email.objects.only("id").all()[0]
         tasks.delete_inboxen_item.delay("email", email.id)
