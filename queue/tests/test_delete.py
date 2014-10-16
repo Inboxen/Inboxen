@@ -35,7 +35,7 @@ class DeleteTestCase(test.TestCase):
 
         self.assertEqual(get_user_model().objects.count(), 0)
         self.assertEqual(models.Email.objects.count(), 0)
-        self.assertEqual(models.Inbox.filter(flags=~Inbox.flags.deleted).count(), 0)
+        self.assertEqual(models.Inbox.filter(flags=~models.Inbox.flags.deleted).count(), 0)
         self.assertEqual(models.Inbox.filter(user__isnull=False).count(), 0)
 
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
