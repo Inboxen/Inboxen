@@ -72,7 +72,7 @@ def delete_account(user_id):
 
     log.info("Deletion tasks for %s sent off", user.username)
 
-@task(rate_limit=200)
+@task(rate_limit=500)
 @transaction.atomic()
 def delete_inboxen_item(model, item_pk):
     _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
@@ -110,7 +110,7 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
         return
 
     items = delete_inboxen_item.chunks(items, batch_number).group()
-    items.skew(step=batch_number/2.0)
+    items.skew(step=batch_number/10.0)
     items.apply_async()
 
 @task(rate_limit="1/h")
