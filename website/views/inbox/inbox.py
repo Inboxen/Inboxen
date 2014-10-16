@@ -29,7 +29,7 @@ from aggregate_if import Count as ConditionalCount
 import watson
 
 from inboxen import models
-from queue.delete.tasks import delete_email
+from queue.delete.tasks import delete_inboxen_item
 from queue.tasks import deal_with_flags
 from website.views import base
 
@@ -99,8 +99,10 @@ class InboxView(
                 emails.update(flags=F('flags').bitor(self.model.flags.important))
             elif "delete" in self.request.POST:
                 emails.update(flags=F('flags').bitor(self.model.flags.deleted))
-                for email in emails:
-                    delete_email.delay(email.id)
+                emails = [("email", email.id) for email in emails]
+                emails = delete_inboxen_item.chunks(emails, 500).group()
+                emails.skew(step=50)
+                emails.apply_async()
 
         return HttpResponseRedirect(self.get_success_url())
 
