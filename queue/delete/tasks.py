@@ -6,8 +6,8 @@ from celery import chain, chord, group, task
 from pytz import utc
 
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 from django.db import IntegrityError, transaction
+from django.db.models.loading import get_model
 
 from inboxen.models import Email, Inbox
 
@@ -75,7 +75,7 @@ def delete_account(user_id):
 @task(rate_limit=500)
 @transaction.atomic()
 def delete_inboxen_item(model, item_pk):
-    _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
+    _model = get_model("inboxen", model)
     try:
         item = _model.objects.only('pk').get(pk=item_pk)
         item.delete()
@@ -95,7 +95,7 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
     * args and kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
-    _model = ContentType.objects.get(app_label="inboxen", model=model).model_class()
+    _model = get_model("inboxen", model)
 
     if args is None and kwargs is None:
         raise Exception("You need to specify some filter options!")
