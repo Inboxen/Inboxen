@@ -99,6 +99,7 @@ class InboxView(
                 emails.update(flags=F('flags').bitor(self.model.flags.important))
             elif "delete" in self.request.POST:
                 emails.update(flags=F('flags').bitor(self.model.flags.deleted))
+                emails = [("email", email.id) for email in emails]
                 emails = delete_inboxen_item.chunks(emails, 500).group()
                 emails.skew(step=50)
                 emails.apply_async()

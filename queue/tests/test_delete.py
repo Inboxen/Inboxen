@@ -58,6 +58,9 @@ class DeleteTestCase(test.TestCase):
         # we can send off the same task, but it won't error if there's no object
         tasks.delete_inboxen_item.delay("email", email.id)
 
+        # test with an empty list
+        tasks.delete_inboxen_item.chunk([], 500)()
+
     def test_finish_delete_user(self):
         user = get_user_model().objects.get(id=1)
 
