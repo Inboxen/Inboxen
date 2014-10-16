@@ -235,11 +235,11 @@ CELERY_DEFAULT_ROUTING_KEY = 'default'
 CELERYBEAT_SCHEDULE = {
     'statistics': {
         'task': 'queue.tasks.statistics',
-        'schedule': datetime.timedelta(hours=6),
+        'schedule': datetime.timedelta(days=1),
     },
     'cleanup': {
         'task': 'queue.delete.tasks.clean_orphan_models',
-        'schedule': datetime.timedelta(hours=2),
+        'schedule': datetime.timedelta(days=1),
     },
     'requests': {
         'task': 'queue.tasks.requests',
