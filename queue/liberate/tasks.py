@@ -253,7 +253,7 @@ def liberate_user_profile(user_id, email_results):
     data['groups'] = [str(groups) for groups in user.groups.all()]
 
     data['errors'] = []
-    email_results = emails_results or []
+    email_results = email_results or []
     for results in email_results:
         results = results or []
         for result in results:
