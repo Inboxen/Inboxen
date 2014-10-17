@@ -111,6 +111,8 @@ class InboxEditForm(forms.ModelForm):
             return self.instance
 
         if clear_inbox:
+            emails = self.instance.email_set.all()
+            emails.update(flags=F('flags').bitor(self.model.flags.deleted))
             tasks.batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
             messages.warning(self.request, _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox, self.instance.domain.domain))
 
