@@ -193,13 +193,13 @@ class EmailView(
                         ]
 
             try:
-                email_dict["body"] = Premailer(email_dict["body"]).transform()
+                email_dict["body"] = Premailer(email_dict["body"]).transform(encoding=email_dict.get("charset", "utf-8"))
             except Exception:
                 # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
                 messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
             try:
-                email_dict["body"] = cleaner.clean_html(email_dict["body"], email_dict.get("charset", "utf-8"))
+                email_dict["body"] = cleaner.clean_html(email_dict["body"])
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
                     email_dict["body"] = str(plain.body.data)
