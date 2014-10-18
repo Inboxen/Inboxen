@@ -247,7 +247,7 @@ class EmailView(
                     email_dict["charset"] = "utf-8"
 
         # convert to unicode as late as possible, but sometimes we already have unicode
-        if not isinstance(unicode, email_dict["body"]):
+        if not isinstance(email_dict["body"], unicode):
             email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
 
         context = super(EmailView, self).get_context_data(**kwargs)
