@@ -193,7 +193,7 @@ class EmailView(
                         ]
 
             try:
-                email_dict["body"] = Premailer(email_dict["body"]).transform()
+                email_dict["body"] = Premailer(email_dict["body"]).transform(encoding=email_dict.get("charset", "utf-8"))
             except Exception:
                 # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
                 messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
@@ -246,8 +246,9 @@ class EmailView(
                     email_dict["body"] = ""
                     email_dict["charset"] = "utf-8"
 
-        # convert to unicode as late as possible
-        email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
+        # convert to unicode as late as possible, but sometimes we already have unicode
+        if not isinstance(email_dict["body"], unicode):
+            email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
