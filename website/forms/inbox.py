@@ -20,9 +20,10 @@
 from datetime import datetime
 import random
 
-from django.utils.translation import ugettext as _
 from django import forms
 from django.contrib import messages
+from django.db.models import F
+from django.utils.translation import ugettext as _
 
 from pytz import utc
 import watson
@@ -112,7 +113,7 @@ class InboxEditForm(forms.ModelForm):
 
         if clear_inbox:
             emails = self.instance.email_set.all()
-            emails.update(flags=F('flags').bitor(self.model.flags.deleted))
+            emails.update(flags=F('flags').bitor(models.Email.flags.deleted))
             tasks.batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
             messages.warning(self.request, _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox, self.instance.domain.domain))
 
