@@ -199,7 +199,7 @@ class EmailView(
                 messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
             try:
-                email_dict["body"] = cleaner.clean_html(email_dict["body"])
+                email_dict["body"] = cleaner.clean_html(email_dict["body"], email_dict.get("charset", "utf-8"))
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
                     email_dict["body"] = str(plain.body.data)
@@ -246,8 +246,9 @@ class EmailView(
                     email_dict["body"] = ""
                     email_dict["charset"] = "utf-8"
 
-        # convert to unicode as late as possible
-        email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
+        # convert to unicode as late as possible, but sometimes we already have unicode
+        if not isinstance(unicode, email_dict["body"]):
+            email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
