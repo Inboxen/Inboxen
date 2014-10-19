@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
-
 {% block content %}
-
-<h2> {{ page }} </h2>
-    <p class="alert alert-warning"> {{ error }} </p>
-
+    <h2> {{ headline }} </h2>
+    <p class="alert alert-{{ error_css_class }}"> {{ error_message }} </p>
 {% endblock %}
