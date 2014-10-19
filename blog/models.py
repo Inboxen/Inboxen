@@ -48,6 +48,9 @@ class BlogPost(models.Model):
             draft = " (draft)"
         return u"%s%s" % (self.date, draft)
 
+    class Meta:
+        ordering = ["-date"]
+
 @receiver(pre_save, sender=BlogPost, dispatch_uid="blog_date_draft_checker")
 def published_checker(sender, instance=None, **kwargs):
     if not instance.draft and instance.date is None:

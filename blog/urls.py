@@ -19,13 +19,13 @@
 
 from django.conf import urls
 
-from blog.views import AtomFeed, RssFeed
+from blog import views
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
-    urls.url(r'^blog/post/(?P<postid>\d+)', 'blog.views.post', name='blog-post'),
-    urls.url(r'^blog/feed/atom', AtomFeed(), name='blog-feed-atom'),
-    urls.url(r'^blog/feed/(rss)?', RssFeed(), name='blog-feed-rss'),
-    urls.url(r'^blog/(?P<page>\d*)', 'blog.views.view', name='blog'),
-    urls.url(r'^$', 'blog.views.view', name='blog'),
+    urls.url(r'^blog/post/(?P<postid>\d+)', views.BlogDetailView.as_view(), name='blog-post'),
+    urls.url(r'^blog/feed/atom', views.AtomFeed(), name='blog-feed-atom'),
+    urls.url(r'^blog/feed/(rss)?', views.RssFeed(), name='blog-feed-rss'),
+    urls.url(r'^blog/(?P<page>\d*)', views.BlogListView.as_view(), name='blog'),
+    urls.url(r'^$', views.BlogListView.as_view(), name='blog'),
     )
