@@ -27,12 +27,13 @@ from django.utils.translation import ugettext as _
 from two_factor.views import core as twofactor
 
 from website import views
+from website.views import error
 from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
 
-# error views
-urls.handler500 = 'website.views.error.internal_server'
-urls.handler404 = 'website.views.error.not_found'
-urls.handler403 = 'website.views.error.permission_denied'
+urls.handler400 = error.BadRequest.as_view()
+urls.handler403 = error.PermissionDenied.as_view()
+urls.handler404 = error.NotFound.as_view()
+urls.handler500 = error.ServerError.as_view()
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',

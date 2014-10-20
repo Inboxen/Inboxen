@@ -19,46 +19,35 @@
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
+from django.views import generic
 
 from blog.models import BlogPost
+from website.views import base
 
-def view(request, page=1):
-    posts = BlogPost.objects.filter(draft=False)
-    posts = posts.order_by("-date")
-    paginator = Paginator(posts, 5)
+class BlogListView(base.CommonContextMixin, generic.ListView):
+    context_object_name = "posts"
+    headline = _("Blog")
+    model = BlogPost
+    paginate_by = 5
+    template_name = "blog/blog.html"
 
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger: # sometimes it's None
-        posts = paginator.page(1)
-    except EmptyPage: # somestimes the user will try different numbers
-        posts = paginator.page(paginator.num_pages)
+    def get_queryset(self):
+        return super(BlogListView, self).get_queryset().filter(draft=False)
 
-    context = {
-        "headline": _("Blog"),
-        "posts": posts,
-    }
+class BlogDetailView(base.CommonContextMixin, generic.DetailView):
+    context_object_name = "post"
+    model = BlogPost
+    pk_url_kwarg = "postid"
+    template_name = "blog/post.html"
 
-    return render(request, "blog/blog.html", context)
+    def get_queryset(self):
+        return super(BlogDetailView, self).get_queryset().filter(draft=False)
 
-def post(request, postid):
-    try:
-        p = BlogPost.objects.get(id=postid, draft=False)
-    except BlogPost.DoesNotExist:
-        return HttpResponseRedirect(reverse('blog'))
-
-    context = {
-        "headline": p.subject,
-        "post": p,
-    }
-
-    return render(request, "blog/post.html", context)
+    def get_headline(self):
+        return self.object.subject
 
 class RssFeed(Feed):
     title = "{0} News Feed".format(settings.SITE_NAME)

@@ -1,4 +1,6 @@
 ##
+#    Copyright (C) 2013-2014 Jessica Tallon, Matt Molyneaux
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -15,43 +17,80 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext as _
-from django.conf import settings
-from django.shortcuts import render
 
-def error(request, error_message, status=500):
+from website.views import base
 
-    if "user" not in dir(request) or request.user.is_authenticated():
-        registration_enabled = False
-    elif settings.ENABLE_REGISTRATION:
-        registration_enabled = False
-    else:
-        registration_enabled = True
+__all__ = ["ErrorView", "NotFound", "PermissionDenied", "ServerError", "BadRequest"]
 
-    context = {
-        "page":_("Page not found"),
-        "error":error_message,
-        "registration_enabled":registration_enabled,
-    }
+class ErrorView(base.TemplateView):
+    error_message = None
+    error_css_class = "warning"
+    error_code = None
 
-    return render(request, "error.html", context, status=status)
+    headline = _("Some sort of error or something")
+    template_name = "error.html"
 
-def not_found(request):
-    error_message = _("""
-    The page you have requested has not been found.""")
+    def dispatch(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        output = self.render_to_response(context)
+        output.render()
+        return output
 
-    return error(request, error_message, status=404)
+    def get_context_data(self, **kwargs):
+        kwargs["error_message"] = self.get_error_message()
+        kwargs["error_css_class"] = self.get_error_css_class()
+        kwargs["error_code"] = self.get_error_code()
+        return super(ErrorView, self).get_context_data(**kwargs)
 
-def internal_server(request):
-    error_message = _("""
-    There has been a server problem. We're currently looking into this, please try again later.
-    """)
+    def get_error_message(self):
+        """Returns a short error message to be displayed to the user"""
+        if self.error_message is None:
+            raise ImproperlyConfigured("Set 'error_message' or override 'get_error_message'")
+        else:
+            return self.error_message
 
-    return error(request, error_message, status=500)
+    def get_error_css_class(self):
+        """Returns a CSS class to be used whatever template is being used"""
+        return self.error_css_class
 
-def permission_denied(request):
-    error_message = _("""
-    Permission denied, you're not authorized to view this page.
-    """)
+    def get_error_code(self):
+        """Returns the numeric HTTP status code"""
+        if self.error_code is None:
+            raise ImproperlyConfigured("Set 'error_code' or override 'get_error_code'")
+        else:
+            return self.error_code
 
-    return error(request, error_message, status=403)
+    def get_template_names(self):
+        templates = ["{0}.html".format(self.get_error_code())]
+        templates.extend(super(ErrorView, self).get_template_names())
+        return templates
+
+class NotFound(ErrorView):
+    error_message = _("The page you requested cannot be found.")
+    error_css_class = "info"
+    error_code = 404
+
+    headline = _("Not Found")
+
+class PermissionDenied(ErrorView):
+    error_message = _("You do not have permission to view this page.")
+    error_css_class = "warning"
+    error_code = 403
+
+    headline = _("Permission Denied")
+
+class ServerError(ErrorView):
+    error_message = _("There has been an error without software. Our administrators have been notified.")
+    error_css_class = "danger"
+    error_code = 500
+
+    headline = _("Error")
+
+class BadRequest(ErrorView):
+    error_message = _("I have no idea what you were trying to do, but you probably shouldn't be doing it!")
+    error_css_class = "info"
+    error_code = 400
+
+    headline = _("No Idea")
