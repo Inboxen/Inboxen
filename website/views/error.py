@@ -34,7 +34,7 @@ class ErrorView(base.TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        output = self.render_to_response(context)
+        output = self.render_to_response(context, status=self.error_code)
         output.render()
         return output
 
