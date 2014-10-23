@@ -106,7 +106,10 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         context["query"] = self.query
 
         # are we still waiting for results?
-        context["waiting"] = len(context[self.context_object_name]) == 0
+        if self.query == "":
+            context["waiting"] = False
+        else:
+            context["waiting"] = len(context[self.context_object_name]) == 0
 
         return context
 

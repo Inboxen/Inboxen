@@ -114,7 +114,7 @@
 {% endif %}
 {% if not search_results.inboxes and not search_results.emails %}
     {% if query and not waiting %}
-        <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>.{% endblocktrans %}</p>
+        <p class="alert alert-info">{% blocktrans %}There are no Inboxes or emails containing <em>{{query}}</em>.{% endblocktrans %}</p>
     {% elif waiting %}
     <div class="text-center" id="searchinfo">
         <p>{% blocktrans %}Searching…{% endblocktrans %}</p>
@@ -129,7 +129,7 @@
         <p><img src="{% static "throbber.gif" %}"></p>
     </div>
     {% else %}
-        <p>{% trans "Well, we don't get much call for that around here." %}</p>
+        <p class="alert alert-info">{% trans "If you search for nothing, you won't get anything." %}</p>
     {% endif %}
 {% endif %}
 {% endblock %}
