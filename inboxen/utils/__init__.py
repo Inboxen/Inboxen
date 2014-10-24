@@ -21,6 +21,7 @@ import os
 
 from django.conf import settings
 from django.template import loader, Context
+from django.utils.translation import ugettext as _
 
 from website.context_processors import reduced_settings_context
 
@@ -29,6 +30,7 @@ def generate_maintenance_page():
     template_name = "maintenance.html"
     template = loader.get_template(template_name)
     context = Context(reduced_settings_context(None))
+    context["headline"] = _("Back Soon!")
     rendered = template.render(context)
 
     output_dir = os.path.join(settings.STATIC_ROOT, "pages")
