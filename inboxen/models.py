@@ -22,8 +22,11 @@ import re
 
 from django.conf import settings
 from django.db import models, transaction
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import safestring
 from django.utils.encoding import smart_str
+from django.utils.translation import ugettext_lazy as _
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
@@ -168,12 +171,13 @@ class Inbox(models.Model):
 
 class Request(models.Model):
     """Inbox allocation request model"""
-    amount = models.IntegerField()
-    succeeded = models.NullBooleanField(default=None)
-    date = models.DateTimeField('requested', auto_now_add=True)
-    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL)
+    amount = models.IntegerField(help_text=_("Pool increase requested"))
+    succeeded = models.NullBooleanField("accepted", default=None, help_text=_("has the request been accepted?"))
+    date = models.DateTimeField("requested", auto_now_add=True, help_text=_("date requested"))
+    date_decided = models.DateTimeField(null=True, help_text=_("date staff accepted/rejected request"))
+    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
-    result = models.CharField(max_length=1024, blank=True, null=True)
+    result = models.CharField("comment", max_length=1024, blank=True, null=True)
 
 ##
 # Email models
@@ -319,3 +323,18 @@ user_logged_in.disconnect(update_last_login)
 # Search
 watson.register(Email, search.EmailSearchAdapter)
 watson.register(Inbox, search.InboxSearchAdapter)
+
+# signals
+@receiver(pre_save, sender=Request, dispatch_uid="request_decided_checker")
+def decided_checker(sender, instance=None, **kwargs):
+    if instance.date_decided is None and instance.succeeded is not None and instance.authorizer is not None:
+        instance.date_decided = datetime.now(utc)
+        if instance.succeeded is True:
+            profile = instance.requester.userprofile
+            profile.pool_amount = models.F("pool_amount") + instance.amount
+            profile.save(update_fields=["pool_amount"])
+    elif instance.authorizer is None or instance.succeeded is None:
+        # either authorizer or succeeded is missing, so we'll bug out
+        instance.authorizer = None
+        instance.succeeded = None
+        instance.date_decided = None
