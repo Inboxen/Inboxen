@@ -63,12 +63,12 @@ class UserProfile(models.Model):
         if left < settings.MIN_INBOX_FOR_REQUEST:
             with transaction.atomic():
                 try:
-                    last_request = self.user.request_set.orderby('-date').only('succeeded')[0].succeeded
+                    last_request = self.user.requester.order_by('-date').only('succeeded')[0].succeeded
                 except IndexError:
                     last_request = True
 
                 if last_request:
-                    amount = self.pool_amont + settings.REQUEST_NUMBER
+                    amount = self.pool_amount + settings.REQUEST_NUMBER
                     Request.objects.create(amount=amount, requester=self.user)
 
         return left
