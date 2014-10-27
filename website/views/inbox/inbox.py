@@ -46,8 +46,7 @@ class InboxView(
     template_name = 'inbox/inbox.html'
 
     def get_success_url(self):
-        """Override this method to return the URL to return the user to"""
-        raise NotImplementedError
+        return self.request.path
 
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs).distinct()
@@ -154,9 +153,6 @@ class InboxView(
 
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
-    def get_success_url(self):
-        return reverse('unified-inbox')
-
     def get_queryset(self, *args, **kwargs):
         qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
         qs = qs.filter(inbox__flags=~models.Inbox.flags.exclude_from_unified)
@@ -173,9 +169,6 @@ class UnifiedInboxView(InboxView):
 
 class SingleInboxView(InboxView):
     """View a single inbox"""
-    def get_success_url(self):
-        return reverse('single-inbox', kwargs={"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
-
     def get_queryset(self, *args, **kwargs):
         try:
             self.inbox_obj = models.Inbox.objects.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
