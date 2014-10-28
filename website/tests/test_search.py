@@ -45,7 +45,7 @@ class SearchViewTestCase(test.TestCase):
 
     def test_content(self):
         response = self.client.get(self.get_url())
-        self.assertIn("I'm afraid we're fresh out of <em>cheddar</em>", response.content)
+        self.assertIn("There are no Inboxes or emails containing <em>cheddar</em>", response.content)
 
     def test_get(self):
         response = self.client.get(self.get_url())

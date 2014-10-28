@@ -20,6 +20,7 @@
 import datetime
 
 from django import test
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from inboxen import models
@@ -80,3 +81,21 @@ class ModelTestCase(test.TestCase):
         self.assertEqual(body1[0].id, body2[0].id)
         self.assertTrue(body1[1])
         self.assertFalse(body2[1])
+
+    def test_requests_are_requested(self):
+        models.Request.objects.all().delete() # clear out all requests
+        inbox_count = self.user.inbox_set.count()
+        profile = self.user.userprofile
+        profile.pool_amount = inbox_count + settings.MIN_INBOX_FOR_REQUEST
+        profile.save()
+
+        profile.available_inboxes()
+        self.assertEqual(models.Request.objects.count(), 0)
+        models.Inbox.objects.create(user=self.user, domain=models.Domain.objects.get(id=1))
+
+        profile.available_inboxes()
+        self.assertEqual(models.Request.objects.count(), 1)
+        models.Inbox.objects.create(user=self.user, domain=models.Domain.objects.get(id=1))
+
+        profile.available_inboxes()
+        self.assertEqual(models.Request.objects.count(), 1)

@@ -76,7 +76,7 @@ class RequestReportTestCase(test.TestCase):
 
         now = datetime.now(utc)
 
-        models.Request.objects.create(amount=200, date=now, succeeded=True, requester=self.user)
+        models.Request.objects.create(amount=200, date=now, succeeded=True, requester=self.user, authorizer=self.user)
         self.waiting = models.Request.objects.create(amount=200, date=now, requester=self.user)
 
     def test_fetch(self):
@@ -90,10 +90,13 @@ class RequestReportTestCase(test.TestCase):
         self.assertEqual(results[0]["id"], self.waiting.id)
 
     def test_report(self):
-        chain(tasks.requests_fetch.s(), tasks.requests_report.s()).delay()
+        chain(tasks.requests_fetch.s(), tasks.requests_report.s()).delay().get()
+
+        #fetch a fresh copy of the profile
+        profile = models.UserProfile.objects.get(pk=self.user.userprofile.pk)
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("Amount: 200", mail.outbox[0].body)
         self.assertIn("User: %s" % (self.user.username), mail.outbox[0].body)
         self.assertIn("Date:", mail.outbox[0].body)
-        self.assertIn("Current: %s" % (self.user.userprofile.pool_amount,), mail.outbox[0].body)
+        self.assertIn("Current: %s" % (profile.pool_amount,), mail.outbox[0].body)

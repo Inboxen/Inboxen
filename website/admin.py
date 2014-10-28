@@ -30,7 +30,7 @@ from inboxen import models
 class RequestAdmin(admin.ModelAdmin):
     actions = None
     list_display = ("requester", "date", "amount", "succeeded")
-    readonly_fields = ("requester", "amount", "date")
+    readonly_fields = ("requester", "amount", "date", "date_decided")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'authorizer':

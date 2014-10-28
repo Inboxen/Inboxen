@@ -4,13 +4,6 @@
 {% block header %}
 {% if waiting %}
 <script>
-    var things_to_say = {{ funny }};
-    function SaySomethingFunny() {
-        var randomInt = Math.floor(Math.random() * things_to_say.length);
-        var randomString = things_to_say[randomInt];
-        document.getElementById("refreshnote").innerHTML = randomString;
-    }
-
     function AreWeReadyYet() {
         var http = new XMLHttpRequest();
         http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
@@ -18,17 +11,22 @@
             if (http.readyState > 2) {
                 if (http.status == 202) {
                     // not done
-                    SaySomethingFunny();
+                    document.getElementById("refreshnote").innerHTML = "";
                 } else if (http.status == 201) {
                     // done!
                     clearInterval(timer);
+                    document.getElementById("refreshnote").innerHTML = "{% trans "Loading results…" %}";
                     location.reload(true);
                 } else if (http.status == 400) {
                     clearInterval(timer);
+                    document.getElementById("searchinfo").innerHTML = "{% trans "The search timed out. Please try again." %}";
+                    document.getElementById("searchinfo").className = "alert alert-warning";
                     console.error("{% trans "Server says there is no such search" %}");
                 } else {
                     clearInterval(timer);
-                    console.error("{% trans "Unexpected return code" %}");
+                    document.getElementById("searchinfo").innerHTML = "{% trans "Something went wrong while searching. Please try again later." %}";
+                    document.getElementById("searchinfo").className = "alert alert-danger";
+                    console.error("{% trans "Unexpected response code" %}");
                 }
             }
         };
@@ -116,20 +114,22 @@
 {% endif %}
 {% if not search_results.inboxes and not search_results.emails %}
     {% if query and not waiting %}
-        <p>{% blocktrans %}I'm afraid we're fresh out of <em>{{query}}</em>.{% endblocktrans %}</p>
+        <p class="alert alert-info">{% blocktrans %}There are no Inboxes or emails containing <em>{{query}}</em>.{% endblocktrans %}</p>
     {% elif waiting %}
-        <p>{% blocktrans %}Searching{% endblocktrans %}…</p>
+    <div class="text-center" id="searchinfo">
+        <p>{% blocktrans %}Searching…{% endblocktrans %}</p>
         <p><i id="refreshnote">{% blocktrans %}
             If this page doesn't refresh automatically after 5 seconds, <a href="{{ request.path }}">click here</a>
         {% endblocktrans %}</i></p>
         <script>
-            SaySomethingFunny();
+            document.getElementById("refreshnote").innerHTML = "";
             // poll the server every 7000 ms
             var timer = setInterval(function(){AreWeReadyYet();}, 7000);
         </script>
-        <p><img src="{% static "globe-melon.gif" %}"></p>
+        <p><img src="{% static "throbber.gif" %}"></p>
+    </div>
     {% else %}
-        <p>{% trans "Well, we don't get much call for that around here." %}</p>
+        <p class="alert alert-info">{% trans "If you search for nothing, you won't get anything." %}</p>
     {% endif %}
 {% endif %}
 {% endblock %}
