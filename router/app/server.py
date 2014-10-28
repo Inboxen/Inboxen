@@ -40,10 +40,8 @@ def START(message, inbox=None, domain=None):
     try:
         inbox = Inbox.objects.select_related("user", "user__userprofile").get(inbox=inbox, domain__domain=domain)
 
-        if inbox.flags.deleted:
+        if inbox.flags.deleted and inbox.flags.disabled:
             raise SMTPError(550, "No such address")
-        elif inbox.flags.disabled:
-            raise SMTPError(450, "Address has been disabled")
 
         make_email(message, inbox)
 
