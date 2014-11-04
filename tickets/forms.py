@@ -22,17 +22,20 @@ from django.utils.translation import ugettext_lazy as _
 
 from tickets import models
 
+
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = models.Question
         fields = ["subject", "body"]
         labels = {"body": _("Question")}
 
+
 class ResponseForm(forms.ModelForm):
     class Meta:
         model = models.Response
         fields = ["body"]
         labels = {"body": _("Reply")}
+
 
 class QuestionStatusUpdateForm(forms.Form):
     status = forms.ChoiceField(required=True, choices=models.Question.STATUS_CHOICES)
@@ -41,8 +44,8 @@ class QuestionStatusUpdateForm(forms.Form):
         self.question = question
         return super(QuestionStatusUpdateForm, self).__init__(*args, **kwargs)
 
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(QuestionStatusUpdateForm, self).clean(*args, **kwargs)
+    def clean(self):
+        cleaned_data = super(QuestionStatusUpdateForm, self).clean()
         self.question.status = cleaned_data["status"]
 
         return cleaned_data

@@ -26,22 +26,22 @@ from django.db.models import F
 from django.utils.translation import ugettext as _
 
 from pytz import utc
-import watson
 
 from inboxen import models
 from queue.delete import tasks
 
 __all__ = ["InboxAddForm", "InboxEditForm", "InboxRestoreForm"]
 
+
 class InboxAddForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     def __init__(self, request, initial=None, *args, **kwargs):
-        self.request = request # needed to create the inbox
+        self.request = request  # needed to create the inbox
 
         if not initial:
             initial = {
-                "inbox": None, # This is filled in by the manager.create
+                "inbox": None,  # This is filled in by the manager.create
                 "domain": random.choice(models.Domain.objects.all()),
             }
 
@@ -56,8 +56,7 @@ class InboxAddForm(forms.ModelForm):
             "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
-    def save(self, commit=True):
-        # We're ignoring commit, should we?
+    def save(self):
         # We want this instance created by .create() so we will ignore self.instance
         # which is created just by model(**data)
         data = self.cleaned_data.copy()
@@ -72,6 +71,7 @@ class InboxAddForm(forms.ModelForm):
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
+
 class InboxSecondaryEditForm(forms.Form):
     """A subform to hold dangerous operations that will result in loss
     of data.
@@ -82,6 +82,7 @@ class InboxSecondaryEditForm(forms.Form):
     def __init__(self, instance, *args, **kwargs):
         super(InboxSecondaryEditForm, self).__init__(*args, **kwargs)
         self.fields["disable_inbox"].initial = bool(instance.flags.disabled)
+
 
 class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
@@ -99,7 +100,7 @@ class InboxEditForm(forms.ModelForm):
         self.fields["exclude_from_unified"].initial = bool(self.instance.flags.exclude_from_unified)
         self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
 
-    def save(self, commit=True):
+    def save(self):
         data = self.cleaned_data.copy()
         if self.subform.is_valid():
             data.update(self.subform.cleaned_data.copy())
@@ -108,8 +109,7 @@ class InboxEditForm(forms.ModelForm):
         self.instance.flags.disabled = data.pop("disable_inbox", False)
         clear_inbox = data.pop("clear_inbox", False)
 
-        if not commit:
-            return self.instance
+        return self.instance
 
         if clear_inbox:
             emails = self.instance.email_set.all()
@@ -121,8 +121,9 @@ class InboxEditForm(forms.ModelForm):
 
         return self.instance
 
+
 class InboxRestoreForm(InboxEditForm):
-    def save(self, commit=True):
+    def save(self):
         self.instance.flags.deleted = False
         self.instance.created = datetime.now(utc)
-        return super(InboxRestoreForm, self).save(commit)
+        return super(InboxRestoreForm, self).save()

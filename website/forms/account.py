@@ -35,11 +35,13 @@ from queue.liberate.tasks import liberate as data_liberate
 from website import fields
 from website.forms.mixins import PlaceHolderMixin
 
-__all__ = ["DeleteAccountForm", "LiberationForm",
-            "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
-            "PlaceHolderUserCreationForm", "RestoreSelectForm", "SettingsForm",
-            "UsernameChangeForm",
-            ]
+__all__ = [
+    "DeleteAccountForm", "LiberationForm",
+    "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
+    "PlaceHolderUserCreationForm", "RestoreSelectForm", "SettingsForm",
+    "UsernameChangeForm",
+]
+
 
 class DeleteAccountForm(forms.Form):
 
@@ -54,18 +56,19 @@ class DeleteAccountForm(forms.Form):
         self.request = request
         return super(DeleteAccountForm, self).__init__(*args, **kwargs)
 
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(DeleteAccountForm, self).clean(*args, **kwargs)
+    def clean(self):
+        cleaned_data = super(DeleteAccountForm, self).clean()
         if cleaned_data.get("username", "") != self.user.get_username():
             raise exceptions.ValidationError(_("The username entered does not match your username"))
 
         return cleaned_data
 
-    def save(self, *args, **kwargs):
+    def save(self):
         # Dispatch task and logout
         delete_account.delay(self.user.id)
         auth.logout(self.request)
         return self.user
+
 
 class LiberationForm(forms.ModelForm):
     class Meta:
@@ -104,23 +107,26 @@ class LiberationForm(forms.ModelForm):
             lib_status.started = datetime.now(utc)
 
             result = data_liberate.apply_async(
-                                    kwargs={"user_id": self.user.id, "options": self.cleaned_data},
-                                    countdown=10
-                                    )
+                kwargs={"user_id": self.user.id, "options": self.cleaned_data},
+                countdown=10
+            )
 
             lib_status.async_result = result.id
             lib_status.save()
 
         return self.user
 
+
 class PlaceHolderAuthenticationForm(PlaceHolderMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder
     in each field"""
     pass
 
+
 class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
     new_password1 = fields.PasswordCheckField(label=_("New password"))
+
 
 class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
     """Same as auth.forms.UserCreationForm but adds a label as the placeholder in each field"""
@@ -135,6 +141,7 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
                 )
         return username
 
+
 class RestoreSelectForm(forms.Form):
     """Select a deleted Inbox to restore"""
     address = forms.CharField(
@@ -147,8 +154,8 @@ class RestoreSelectForm(forms.Form):
         self.request = request
         return super(RestoreSelectForm, self).__init__(*args, **kwargs)
 
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(RestoreSelectForm, self).clean(*args, **kwargs)
+    def clean(self):
+        cleaned_data = super(RestoreSelectForm, self).clean()
         address = cleaned_data.get("address", "").strip()
 
         try:
@@ -158,8 +165,9 @@ class RestoreSelectForm(forms.Form):
 
         return cleaned_data
 
-    def save(self, *args, **kwargs):
+    def save(self):
         return self.inbox
+
 
 class SettingsForm(PlaceHolderMixin, forms.Form):
     """A form for general settings"""
@@ -205,6 +213,7 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
                 self.profile.flags.ask_images = False
 
         self.profile.save(update_fields=["flags"])
+
 
 class UsernameChangeForm(PlaceHolderMixin, forms.Form):
     """Change username"""
