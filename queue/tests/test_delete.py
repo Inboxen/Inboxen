@@ -25,6 +25,7 @@ from django.utils import unittest
 from inboxen import models
 from queue.delete import tasks
 
+
 class DeleteTestCase(test.TestCase):
     """Test account deleting"""
     fixtures = ['inboxen_testdata.json']

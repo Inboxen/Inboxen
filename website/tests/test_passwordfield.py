@@ -23,7 +23,8 @@ from django.core.exceptions import ValidationError
 from website import fields, validators
 
 BAD_PASSWORD = "aaaaaaaaaaaaa"
-GOOD_PASSWORD = "abcdefgh!!!!!" # for smaller values of "good"
+GOOD_PASSWORD = "abcdefgh!!!!!"  # for smaller values of "good"
+
 
 class PasswordFieldTestCase(test.TestCase):
     def setUp(self):
@@ -35,15 +36,16 @@ class PasswordFieldTestCase(test.TestCase):
 
     def test_field_errors(self):
         try:
-            value = self.field.clean(BAD_PASSWORD)
+            self.field.clean(BAD_PASSWORD)
         except ValidationError as error:
             errors = error.messages
 
         self.assertEqual(len(errors), 2)
 
-        validation_errors = [u'Your password has too many repeating characters, try something more random.',
-                u'You password should contain at least 2 of the following: letters, numbers, spaces, punctuation.'
-                ]
+        validation_errors = [
+            u'Your password has too many repeating characters, try something more random.',
+            u'You password should contain at least 2 of the following: letters, numbers, spaces, punctuation.',
+        ]
 
         self.assertItemsEqual(validation_errors, errors)
 
@@ -82,15 +84,15 @@ class ValidatorTestCase(test.TestCase):
     def test_entropy(self):
         validator = validators.EntropyValidation()
 
-        good = validator(GOOD_PASSWORD)
+        validator(GOOD_PASSWORD)
 
         with self.assertRaises(ValidationError):
-            bad = validator(BAD_PASSWORD)
+            validator(BAD_PASSWORD)
 
     def test_charclass(self):
         validator = validators.CharClassValidation()
 
-        good = validator(GOOD_PASSWORD)
+        validator(GOOD_PASSWORD)
 
         with self.assertRaises(ValidationError):
-            bad = validator(BAD_PASSWORD)
+            validator(BAD_PASSWORD)

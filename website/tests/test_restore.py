@@ -29,6 +29,7 @@ from inboxen import models
 from website import forms
 from website.tests import utils
 
+
 class RestoreSelectTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
@@ -49,9 +50,9 @@ class RestoreSelectTestCase(test.TestCase):
 
     def get_success_url(self):
         return urlresolvers.reverse(
-                    "user-restore",
-                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain},
-                    )
+            "user-restore",
+            kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain},
+        )
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -83,6 +84,7 @@ class RestoreSelectTestCase(test.TestCase):
 
         self.assertFalse(form.is_valid())
 
+
 class RestoreInboxTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
@@ -100,9 +102,9 @@ class RestoreInboxTestCase(test.TestCase):
 
     def get_url(self):
         return urlresolvers.reverse(
-                    "user-restore",
-                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain},
-                    )
+            "user-restore",
+            kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain},
+        )
 
     def test_get(self):
         response = self.client.get(self.get_url())

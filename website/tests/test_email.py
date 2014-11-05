@@ -22,6 +22,7 @@ from django.core import urlresolvers
 
 from inboxen import models
 
+
 class EmailViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
@@ -37,11 +38,12 @@ class EmailViewTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("email-view", kwargs={
-                "inbox": self.email.inbox.inbox,
-                "domain": self.email.inbox.domain.domain,
-                "id": self.email.eid,
-                })
+        kwargs = {
+            "inbox": self.email.inbox.inbox,
+            "domain": self.email.inbox.domain.domain,
+            "id": self.email.eid,
+        }
+        return urlresolvers.reverse("email-view", kwargs=kwargs)
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -65,4 +67,4 @@ class EmailViewTestCase(test.TestCase):
         headersfetchall = response.context["headersfetchall"]
         self.assertFalse(headersfetchall)
 
-    #TODO: test body choosing with multipart emails
+    # TODO: test body choosing with multipart emails

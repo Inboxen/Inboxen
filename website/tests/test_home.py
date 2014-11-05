@@ -22,7 +22,6 @@ from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
-from inboxen import models
 
 class HomeViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']

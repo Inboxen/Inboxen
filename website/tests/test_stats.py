@@ -18,14 +18,12 @@
 ##
 
 from django import test
-from django.conf import settings as dj_settings
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
-from inboxen import models
 
 class StatsViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
+
     def get_url(self):
         return urlresolvers.reverse("stats")
 

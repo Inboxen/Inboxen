@@ -36,6 +36,7 @@ Bye!
 """
 SUBJECT = """A Test Post For You And Me"""
 
+
 class BlogTestCase(test.TestCase):
     fixtures = ['inboxen_blog_testdata.json']
 

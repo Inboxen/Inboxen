@@ -17,13 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 from django import test
-from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
-from inboxen import models
 from website import forms
 from website.tests import utils
+
 
 class SettingsTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
@@ -61,6 +60,7 @@ class SettingsTestCase(test.TestCase):
 
         self.assertTrue(form.is_valid())
 
+
 class UsernameChangeTestCase(SettingsTestCase):
     form = forms.UsernameChangeForm
 
@@ -81,6 +81,7 @@ class UsernameChangeTestCase(SettingsTestCase):
 
         self.assertTrue(form.is_valid())
 
+
 class LiberateTestCase(SettingsTestCase):
     form = forms.LiberationForm
 
@@ -98,6 +99,7 @@ class LiberateTestCase(SettingsTestCase):
         form = self.form(user=self.user, data=params)
 
         self.assertTrue(form.is_valid())
+
 
 class DeleteTestCase(SettingsTestCase):
     form = forms.DeleteAccountForm

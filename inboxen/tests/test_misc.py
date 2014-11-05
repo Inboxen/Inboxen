@@ -23,7 +23,6 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
 
-from inboxen import models
 
 @test.utils.override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
@@ -49,7 +48,7 @@ class LoginTestCase(test.TestCase):
             "auth-username": "isdabizda",
             "auth-password": "123456",
             "login_view-current_step": "auth",
-            }
+        }
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 302)
 
@@ -62,7 +61,7 @@ class LoginTestCase(test.TestCase):
             "auth-username": "isdabizda",
             "auth-password": "bad password",
             "login_view-current_step": "auth",
-            }
+        }
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 200)
         for i in range(100):

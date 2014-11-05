@@ -23,6 +23,7 @@ from django.core import urlresolvers
 
 from tickets import models
 
+
 class QuestionViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 

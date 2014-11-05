@@ -17,8 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
-from django.core import urlresolvers
 
 class MockRequest(object):
     """Mock up a request object"""

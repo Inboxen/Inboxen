@@ -25,6 +25,7 @@ from django.contrib.auth import get_user_model
 
 from inboxen import models
 
+
 class ModelTestCase(test.TestCase):
     """Test our custom methods"""
     fixtures = ['inboxen_testdata.json']
@@ -83,7 +84,7 @@ class ModelTestCase(test.TestCase):
         self.assertFalse(body2[1])
 
     def test_requests_are_requested(self):
-        models.Request.objects.all().delete() # clear out all requests
+        models.Request.objects.all().delete()  # clear out all requests
         inbox_count = self.user.inbox_set.count()
         profile = self.user.userprofile
         profile.pool_amount = inbox_count + settings.MIN_INBOX_FOR_REQUEST

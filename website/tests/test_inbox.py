@@ -26,6 +26,7 @@ from django.utils import unittest
 from inboxen import models
 from website import forms as inboxen_forms
 
+
 class InboxTestAbstract(object):
     """An abstract TestCase that won't get picked up by Django's test finder"""
     fixtures = ['inboxen_testdata.json']
@@ -58,7 +59,7 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 302)
 
         important_count = emails.filter(flags=models.Email.flags.important).count()
-        self.assertEqual(important_count, 15-i)
+        self.assertEqual(important_count, 15 - i)
 
     def test_get_read(self):
         emails = self.get_emails().order_by('-received_date').select_related("inbox", "inbox__domain")
@@ -68,7 +69,7 @@ class InboxTestAbstract(object):
                 "inbox": email.inbox.inbox,
                 "domain": email.inbox.domain.domain,
                 "id": email.eid,
-                }
+            }
             self.client.get(urlresolvers.reverse("email-view", kwargs=kwargs))
 
         read_count = emails.filter(flags=models.Email.flags.read).count()
@@ -84,7 +85,7 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 302)
 
         count_2nd = self.get_emails().count()
-        self.assertEqual(count_1st-1, count_2nd)
+        self.assertEqual(count_1st - 1, count_2nd)
 
         params = dict([(email_id, "email") for email_id in email_ids])
         params["delete"] = ""
@@ -92,14 +93,14 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 302)
 
         count_3rd = self.get_emails().count()
-        self.assertEqual(count_2nd-4, count_3rd)
+        self.assertEqual(count_2nd - 4, count_3rd)
 
     def test_important_first(self):
         response = self.client.get(self.get_url())
         objs = response.context["page_obj"].object_list[:5]
         objs = [obj.important for obj in objs]
 
-        self.assertEqual(objs, [1,1,1,0,0])
+        self.assertEqual(objs, [1, 1, 1, 0, 0])
 
     def test_pagin(self):
         # there should be 150 emails in the test fixtures
@@ -132,6 +133,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
     def get_emails(self):
         return models.Email.objects.filter(inbox__user=self.user)
 
+
 class InboxAddTestCase(test.TestCase):
     """Test the add inbox page"""
     fixtures = ['inboxen_testdata.json']
@@ -160,11 +162,12 @@ class InboxAddTestCase(test.TestCase):
 
     def test_inbox_add(self):
         inbox_count_1st = models.Inbox.objects.count()
-        response = self.client.post(self.get_url(), {"domain":"1", "tags":"no tags"})
+        response = self.client.post(self.get_url(), {"domain": "1", "tags": "no tags"})
         self.assertEqual(response.status_code, 302)
 
         inbox_count_2nd = models.Inbox.objects.count()
-        self.assertEqual(inbox_count_1st, inbox_count_2nd-1)
+        self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
+
 
 class InboxEditTestCase(test.TestCase):
     """Test the edit inbox page"""
@@ -194,10 +197,11 @@ class InboxEditTestCase(test.TestCase):
         self.assertIn("tags", form.fields)
 
     def test_inbox_add(self):
-        response = self.client.post(self.get_url(), {"tags":"no tags"})
+        response = self.client.post(self.get_url(), {"tags": "no tags"})
         self.assertEqual(response.status_code, 302)
 
         self.assertTrue(models.Inbox.objects.filter(tags="no tags").exists())
+
 
 class InboxDeleteTestCase(test.TestCase):
     """Test the delete inbox page"""
@@ -218,7 +222,7 @@ class InboxDeleteTestCase(test.TestCase):
         return urlresolvers.reverse("inbox-delete", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
     def test_inbox_form(self):
-        self.client.get(self.get_url()) # we don't actually use a Form form here
+        self.client.get(self.get_url())  # we don't actually use a Form form here
 
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_inbox_delete(self):
