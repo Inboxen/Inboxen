@@ -17,37 +17,38 @@ from django.db import transaction
 from django.utils import safestring
 from django.utils.translation import ugettext as _
 
-from celery import task, chain, group, chord
+from celery import task, chain, chord
 from pytz import utc
 from async_messages import message_user
 
-from inboxen.models import Body, Domain, Email, Header, Inbox, Liberation, PartList
+from inboxen.models import Email, Inbox
 from queue.liberate import utils
 from queue import tasks
 
 log = logging.getLogger(__name__)
 
 TAR_TYPES = {
-        '0': {'ext': 'tar.gz', 'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
-        '1': {'ext': 'tar.bz2', 'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
-        '2': {'ext': 'tar', 'writer': 'w:', 'mime-type': 'application/x-tar'}
-    }
+    '0': {'ext': 'tar.gz', 'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
+    '1': {'ext': 'tar.bz2', 'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
+    '2': {'ext': 'tar', 'writer': 'w:', 'mime-type': 'application/x-tar'}
+}
+
 
 @task(rate_limit='4/h')
 def liberate(user_id, options=None):
     """ Get set for liberation, expects User object """
-    if options == None:
+    if options is None:
         options = {}
 
     options['user'] = user_id
-    user =  get_user_model().objects.get(id=user_id)
+    user = get_user_model().objects.get(id=user_id)
 
     rstr = ""
     for i in range(7):
         rstr += string.ascii_letters[random.randint(0, 50)]
     path = "%s/%s_%s_%s_%s" % (settings.LIBERATION_PATH, time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
 
-    ## Is this safe enough?
+    # Is this safe enough?
     try:
         os.mkdir(path, 0700)
     except (IOError, OSError), error:
@@ -81,6 +82,7 @@ def liberate(user_id, options=None):
     lib_status.async_result = async_result.id
     lib_status.save()
 
+
 @task(rate_limit='100/m')
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
@@ -89,9 +91,10 @@ def liberate_inbox(mail_path, inbox_id):
     maildir.add_folder(str(inbox))
 
     return {
-            'folder': str(inbox),
-            'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id').iterator()]
-            }
+        'folder': str(inbox),
+        'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id').iterator()]
+    }
+
 
 @task()
 def liberate_collect_emails(results, mail_path, options):
@@ -129,6 +132,7 @@ def liberate_collect_emails(results, mail_path, options):
     lib_status = get_user_model().objects.get(id=options["user"]).liberation
     lib_status.async_result = async_result.id
     lib_status.save()
+
 
 @task(rate_limit='1000/m')
 @transaction.atomic()
@@ -170,6 +174,7 @@ def liberate_convert_box(result, mail_path, options):
 
     return result
 
+
 @task()
 def liberate_fetch_info(result, options):
     """Fetch user info and dump json to files"""
@@ -180,6 +185,7 @@ def liberate_fetch_info(result, options):
         profile.write(profile_json)
     with open(os.path.join(options["path"], "tags.json"), "w") as tags:
         tags.write(tags_json)
+
 
 @task(default_retry_delay=600)
 def liberate_tarball(result, options):
@@ -194,7 +200,7 @@ def liberate_tarball(result, options):
         log.debug("Couldn't open tarfile at %s", tar_name)
         raise liberate_tarball.retry(exc=error)
 
-    user =  get_user_model().objects.get(id=options['user'])
+    user = get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
 
     date = str(lib_status.started)
@@ -209,11 +215,12 @@ def liberate_tarball(result, options):
 
     return tar_name
 
+
 @task(ignore_result=True)
 @transaction.atomic()
 def liberation_finish(result, options):
     """ Create email to send to user """
-    user =  get_user_model().objects.get(id=options['user'])
+    user = get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
     lib_status.flags.running = False
     lib_status.payload = open(result, "r").read()
@@ -231,6 +238,7 @@ def liberation_finish(result, options):
 
     # run a garbage collection on all workers - liberation is leaky
     tasks.force_garbage_collection.delay()
+
 
 def liberate_user_profile(user_id, email_results):
     """User profile data"""
@@ -261,6 +269,7 @@ def liberate_user_profile(user_id, email_results):
                 data['errors'].append(str(result))
 
     return json.dumps(data)
+
 
 def liberate_inbox_tags(user_id):
     """ Grab tags from inboxes """

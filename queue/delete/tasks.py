@@ -1,19 +1,19 @@
 import logging
 from datetime import datetime
-from itertools import izip_longest
 
-from celery import chain, chord, group, task
+from celery import chain, chord, task
 from pytz import utc
 
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
 from django.db.models.loading import get_model
 
-from inboxen.models import Email, Inbox
+from inboxen.models import Inbox
 
 log = logging.getLogger(__name__)
 
-@task(rate_limit="10/m", default_retry_delay=5*60) # 5 minutes
+
+@task(rate_limit="10/m", default_retry_delay=5*60)  # 5 minutes
 @transaction.atomic()
 def delete_inbox(inbox_id, user_id=None):
     inbox = Inbox.objects
@@ -37,12 +37,14 @@ def delete_inbox(inbox_id, user_id=None):
 
     return True
 
+
 @task()
 @transaction.atomic()
 def disown_inbox(result, inbox_id):
     inbox = Inbox.objects.get(id=inbox_id)
     inbox.user = None
     inbox.save()
+
 
 @task(ignore_result=True)
 @transaction.atomic()
@@ -55,6 +57,7 @@ def finish_delete_user(result, user_id):
         log.info("Deleting user %s", user.username)
         user.delete()
 
+
 @task(ignore_result=True)
 @transaction.atomic()
 def delete_account(user_id):
@@ -66,11 +69,12 @@ def delete_account(user_id):
 
     # get ready to delete all inboxes
     inboxes = user.inbox_set.only('id')
-    if len(inboxes): # pull in all the data
+    if len(inboxes):  # pull in all the data
         delete = chord([chain(delete_inbox.s(inbox.id), disown_inbox.s(inbox.id)) for inbox in inboxes], finish_delete_user.s(user_id))
         delete.apply_async()
 
     log.info("Deletion tasks for %s sent off", user.username)
+
 
 @task(rate_limit=500)
 @transaction.atomic()
@@ -81,6 +85,7 @@ def delete_inboxen_item(model, item_pk):
         item.delete()
     except (IntegrityError, _model.DoesNotExist):
         pass
+
 
 @task(rate_limit="1/m")
 @transaction.atomic()
@@ -112,6 +117,7 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
     items = delete_inboxen_item.chunks(items, batch_number).group()
     items.skew(step=batch_number/10.0)
     items.apply_async()
+
 
 @task(rate_limit="1/h")
 def clean_orphan_models():
