@@ -27,6 +27,7 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 __all__ = ["AttachmentDownloadView"]
 
+
 class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
     file_attachment = False
     file_status = 200

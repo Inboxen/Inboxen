@@ -20,6 +20,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse_lazy
 from . import TemplateView
 
+
 class Index(TemplateView):
     template_name = "index.html"
     headline = _("Welcome")

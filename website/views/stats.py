@@ -21,6 +21,7 @@ from django.views import generic
 from inboxen import models
 from website.views import base
 
+
 class StatsView(base.CommonContextMixin, generic.DetailView):
     template_name = "stats.html"
     headline = _("Server Statistics")
@@ -31,8 +32,8 @@ class StatsView(base.CommonContextMixin, generic.DetailView):
         "users": {
             "new_0": _("We've had no new users today."),
             "new<10": _("We've had a few new users today!"),
-            "new>=10":_("I think we've had a mention on a podcast - we've had a lot of new users today."),
-            "new>users/2":_("It's still early days - most of our users joined in the last 24 hours."),
+            "new>=10": _("I think we've had a mention on a podcast - we've had a lot of new users today."),
+            "new>users/2": _("It's still early days - most of our users joined in the last 24 hours."),
             "users>0": _("We have more users than people who've left the solar system."),
             "users>12": _("We have more users than people who've walked on the moon."),
             "users>24": _("We have more users than people who've travelled to the moon."),

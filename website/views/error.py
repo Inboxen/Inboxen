@@ -24,6 +24,7 @@ from website.views import base
 
 __all__ = ["ErrorView", "NotFound", "PermissionDenied", "ServerError", "BadRequest"]
 
+
 class ErrorView(base.TemplateView):
     error_message = None
     error_css_class = "warning"
@@ -67,12 +68,14 @@ class ErrorView(base.TemplateView):
         templates.extend(super(ErrorView, self).get_template_names())
         return templates
 
+
 class NotFound(ErrorView):
     error_message = _("The page you requested cannot be found.")
     error_css_class = "info"
     error_code = 404
 
     headline = _("Not Found")
+
 
 class PermissionDenied(ErrorView):
     error_message = _("You do not have permission to view this page.")
@@ -81,12 +84,14 @@ class PermissionDenied(ErrorView):
 
     headline = _("Permission Denied")
 
+
 class ServerError(ErrorView):
     error_message = _("There has been an error without software. Our administrators have been notified.")
     error_css_class = "danger"
     error_code = 500
 
     headline = _("Error")
+
 
 class BadRequest(ErrorView):
     error_message = _("I have no idea what you were trying to do, but you probably shouldn't be doing it!")

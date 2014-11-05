@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,9 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import http, forms
+from django import forms
 from django.contrib import messages
-from django.core import urlresolvers
 from django.utils.translation import ugettext as _
 
 from two_factor import forms as two_forms
@@ -29,19 +28,23 @@ from website.views import base
 
 __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
 
+
 class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
     template_name = "user/account/security.html"
     headline = _("Two Factor Authenication")
+
 
 class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
     template_name = "user/account/twofactor-backup.html"
     headline = _("Backup Tokens")
     redirect_url = "user-twofactor-backup"
 
+
 class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
     template_name = "user/account/twofactor-disable.html"
     headline = _("Disable Two Factor Authentication")
     redirect_url = "user-security"
+
 
 class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
     template_name = "user/account/twofactor-setup.html"
@@ -67,8 +70,8 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
         else:
             return super(TwoFactorSetupView, self).get(request, *args, **kwargs)
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(TwoFactorSetupView, self).get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super(TwoFactorSetupView, self).get_context_data(**kwargs)
         if self.steps.current == 'generator':
             context["secret"] = self.request.session[self.session_key_name]
             context["qr"] = int(self.request.GET.get("qr", "1"))

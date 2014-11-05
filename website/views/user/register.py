@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 ##
 
 from django.conf import settings
-from django.contrib.auth import forms as auth_forms
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
@@ -26,6 +25,7 @@ from django.views import generic
 
 from website import forms
 from website.views.base import CommonContextMixin
+
 
 class UserRegistrationView(CommonContextMixin, generic.CreateView):
     form_class = forms.PlaceHolderUserCreationForm
@@ -38,8 +38,7 @@ class UserRegistrationView(CommonContextMixin, generic.CreateView):
             return HttpResponseRedirect(reverse_lazy('user-home'))
 
         if not settings.ENABLE_REGISTRATION:
-            # I think this should be a 403 
+            # I think this should be a 403
             return HttpResponseRedirect(reverse_lazy("index"))
 
         return super(UserRegistrationView, self).dispatch(request=request, *args, **kwargs)
-

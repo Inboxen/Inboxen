@@ -18,7 +18,6 @@
 ##
 
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.db.models import F, Q
 from django.http import HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
@@ -34,6 +33,7 @@ from queue.tasks import deal_with_flags
 from website.views import base
 
 __all__ = ["UnifiedInboxView", "SingleInboxView"]
+
 
 class InboxView(
                 base.CommonContextMixin,
@@ -151,6 +151,7 @@ class InboxView(
         deal_with_flags.delay(object_id_list, self.request.user.id, inbox)
         return context
 
+
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
     def get_queryset(self, *args, **kwargs):
@@ -167,6 +168,7 @@ class UnifiedInboxView(InboxView):
 
         return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
 
+
 class SingleInboxView(InboxView):
     """View a single inbox"""
     def get_queryset(self, *args, **kwargs):
@@ -181,7 +183,7 @@ class SingleInboxView(InboxView):
     def get_context_data(self, *args, **kwargs):
         self.headline = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
         context = super(SingleInboxView, self).get_context_data(*args, **kwargs)
-        context.update({"inbox":self.kwargs["inbox"], "domain":self.kwargs["domain"]})
+        context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
         if self.inbox_obj.flags.new:
             with watson.skip_index_update():

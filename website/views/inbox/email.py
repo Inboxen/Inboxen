@@ -37,11 +37,8 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 __all__ = ["EmailView"]
 
-class EmailView(
-                base.CommonContextMixin,
-                base.LoginRequiredMixin,
-                generic.DetailView,
-                ):
+
+class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DetailView):
     model = models.Email
     pk_url_kwarg = "id"
     template_name = 'inbox/email.html'
@@ -51,7 +48,7 @@ class EmailView(
         with watson.skip_index_update():
             out = super(EmailView, self).get(*args, **kwargs)
             if "all-headers" in self.request.GET:
-               self.object.flags.view_all_headers = bool(int(self.request.GET["all-headers"]))
+                self.object.flags.view_all_headers = bool(int(self.request.GET["all-headers"]))
 
             self.object.flags.read = True
             self.object.flags.seen = True
@@ -66,11 +63,11 @@ class EmailView(
     def get_queryset(self, *args, **kwargs):
         queryset = super(EmailView, self).get_queryset(*args, **kwargs)
         queryset = queryset.filter(
-                                    inbox__user=self.request.user,
-                                    inbox__inbox=self.kwargs["inbox"],
-                                    inbox__domain__domain=self.kwargs["domain"],
-                                    flags=~models.Email.flags.deleted
-                                    ).select_related("inbox", "inbox__domain")
+            inbox__user=self.request.user,
+            inbox__inbox=self.kwargs["inbox"],
+            inbox__domain__domain=self.kwargs["domain"],
+            flags=~models.Email.flags.deleted
+            ).select_related("inbox", "inbox__domain")
         return queryset
 
     def get_success_url(self):
@@ -103,9 +100,9 @@ class EmailView(
         if html.parent == plain.parent:
             return not self.request.user.userprofile.flags.prefer_html_email
         # which ever has the lower lft value will win
-        elif  html.lft < plain.lft:
+        elif html.lft < plain.lft:
             return False
-        else: # html.lft > plain.lft
+        else:  # html.lft > plain.lft
             return True
 
     def get_context_data(self, **kwargs):
@@ -184,13 +181,12 @@ class EmailView(
 
         if not plain_message:
             # Mail Pile uses this, give back if you come up with something better
-            cleaner = Cleaner(page_structure=True, meta=True, links=True,
-                       javascript=True, scripts=True, frames=True,
-                       embedded=True, safe_attrs_only=True)
+            cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
+                            scripts=True, frames=True, embedded=True, safe_attrs_only=True)
             cleaner.kill_tags = [
-                        "style", # remove style tags, not attrs
-                        "base",
-                        ]
+                "style",  # remove style tags, not attrs
+                "base",
+            ]
 
             try:
                 email_dict["body"] = Premailer(email_dict["body"]).transform(encoding=email_dict.get("charset", "utf-8"))

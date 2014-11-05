@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,17 +17,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import http
-from django.contrib import messages
 from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 from django.views import generic
 
-from inboxen import models
 from website import forms
 from website.views import base
 
 __all__ = ["RestoreSelectView"]
+
 
 class RestoreSelectView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     form_class = forms.RestoreSelectForm
@@ -35,10 +33,10 @@ class RestoreSelectView(base.CommonContextMixin, base.LoginRequiredMixin, generi
     template_name = "user/account/restore.html"
 
     def get_success_url(self):
-        return urlresolvers.reverse("user-restore", kwargs={"inbox":self.inbox.inbox, "domain":self.inbox.domain.domain})
+        return urlresolvers.reverse("user-restore", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(RestoreSelectView, self).get_form_kwargs(*args, **kwargs)
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(RestoreSelectView, self).get_form_kwargs(**kwargs)
         kwargs.setdefault("request", self.request)
         return kwargs
 

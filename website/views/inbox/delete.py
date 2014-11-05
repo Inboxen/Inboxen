@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -25,10 +25,10 @@ from django.contrib import messages
 
 from inboxen import models
 from queue.delete.tasks import delete_inbox
-from website import forms
 from website.views import base
 
 __all__ = ["InboxDeletionView"]
+
 
 class InboxDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DeleteView):
     model = models.Inbox

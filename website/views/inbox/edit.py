@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ from website.views import base
 from inboxen.models import Inbox
 
 __all__ = ["InboxEditView", "InboxRestoreView"]
+
 
 class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.InboxEditForm
