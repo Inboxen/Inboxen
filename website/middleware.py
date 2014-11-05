@@ -23,9 +23,10 @@ from django.utils.translation import ugettext as _
 
 from ratelimitbackend.exceptions import RateLimitException
 
+
 class RateLimitMiddleware(object):
     """Handles exceptions thrown by rate-limited login attepmts."""
     def process_exception(self, request, exception):
         if isinstance(exception, RateLimitException):
-            messages.warning(request, "Too many login attempts, further login attempts will be ignored.")
+            messages.warning(request, _("Too many login attempts, further login attempts will be ignored."))
             return redirect("user-login")

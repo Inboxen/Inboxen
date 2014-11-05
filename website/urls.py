@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ from two_factor.views import core as twofactor
 
 from website import views
 from website.views import error
-from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
+from website.forms import PlaceHolderPasswordChangeForm
 
 urls.handler400 = error.BadRequest.as_view()
 urls.handler403 = error.PermissionDenied.as_view()

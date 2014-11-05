@@ -21,6 +21,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+
 class Question(models.Model):
     # status contants
     NEW = 0
@@ -51,13 +52,14 @@ class Question(models.Model):
 
         Expects the attribute "last_response_date" to be annotated
         """
-        if not self.last_response_date is None and self.last_response_date > self.last_modified:
+        if self.last_response_date is not None and self.last_response_date > self.last_modified:
             return self.last_response_date
         else:
             return self.last_modified
 
     class Meta:
         ordering = ["-date"]
+
 
 class Response(models.Model):
     question = models.ForeignKey(Question)

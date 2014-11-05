@@ -27,6 +27,7 @@ from django.shortcuts import redirect
 
 from inboxen import models
 
+
 class RequestAdmin(admin.ModelAdmin):
     actions = None
     list_display = ("requester", "date", "amount", "succeeded")
@@ -35,7 +36,7 @@ class RequestAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'authorizer':
             kwargs["initial"] = request.user.id
-            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True) | Q(is_superuser=True))
 
         return super(RequestAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 

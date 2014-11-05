@@ -23,6 +23,7 @@ from django.db.models import Q
 
 from tickets import models
 
+
 class ResponseInline(admin.TabularInline):
     model = models.Response
     extra = 0
@@ -31,7 +32,7 @@ class ResponseInline(admin.TabularInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'author':
             kwargs["initial"] = request.user.id
-            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True) | Q(is_superuser=True))
 
         return super(ResponseInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 

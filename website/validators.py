@@ -24,6 +24,7 @@ from django.utils.translation import ugettext_lazy as _
 
 __all__ = ["EntropyValidation", "CharClassValidation"]
 
+
 class EntropyValidation(object):
     """Guess the entropy of a string"""
     min_entropy = 0.5
@@ -34,17 +35,18 @@ class EntropyValidation(object):
         if entropy < self.min_entropy:
             raise ValidationError(self.message)
 
+
 class CharClassValidation(object):
     """Checks a string contains a certain number of character classes
 
     regex_classes expects to be compiled regex
     """
     regex_classes = [
-                re.compile(r"(?=(\w))(?=\D)", re.UNICODE),  # letters
-                re.compile(r"\d", re.UNICODE),              # numbers
-                re.compile(r"\s", re.UNICODE),              # whitespace
-                re.compile(r"(?=(\W))(?=\S)", re.UNICODE),  # punctuation
-                ]
+        re.compile(r"(?=(\w))(?=\D)", re.UNICODE),  # letters
+        re.compile(r"\d", re.UNICODE),              # numbers
+        re.compile(r"\s", re.UNICODE),              # whitespace
+        re.compile(r"(?=(\W))(?=\S)", re.UNICODE),  # punctuation
+    ]
     min_classes = 2
     message = _("You password should contain at least {0} of the following: letters, numbers, spaces, punctuation.")
 

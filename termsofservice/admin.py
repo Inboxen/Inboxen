@@ -23,6 +23,7 @@ from django.db.models import Q
 
 from termsofservice import models
 
+
 class TOSAdmin(admin.ModelAdmin):
     list_display = ("published", "last_modified")
     readonly_fields = ("rendered_text", "last_modified", "diff")
@@ -33,13 +34,14 @@ class TOSAdmin(admin.ModelAdmin):
             return self.readonly_fields + ("text", )
         return self.readonly_fields
 
+
 class StaffProfileAdmin(admin.ModelAdmin):
     readonly_fields = ("rendered_bio", )
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'user':
             kwargs["initial"] = request.user.id
-            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True) | Q(is_superuser=True))
 
         return super(StaffProfileAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
