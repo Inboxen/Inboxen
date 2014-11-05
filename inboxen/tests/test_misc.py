@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -68,7 +68,7 @@ class LoginTestCase(test.TestCase):
         for i in range(100):
             response = self.client.post(dj_settings.LOGIN_URL, params)
 
-        # check we got rejected on bad password 
+        # check we got rejected on bad password
         self.assertEqual(response.status_code, 302)
 
         # check we still get rejected even with a good password
