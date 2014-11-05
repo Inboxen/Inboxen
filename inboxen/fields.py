@@ -25,6 +25,7 @@ try:
 except ImportError:
     SOUTH = False
 
+
 class DeferAutoSingleRelatedObjectDescriptor(fields.AutoSingleRelatedObjectDescriptor):
     def __init__(self, defer_fields, related):
         self.defer_fields = defer_fields
@@ -34,6 +35,7 @@ class DeferAutoSingleRelatedObjectDescriptor(fields.AutoSingleRelatedObjectDescr
         qs = super(DeferAutoSingleRelatedObjectDescriptor, self).get_queryset(**db_hints)
         return qs.defer(*self.defer_fields)
 
+
 class DeferAutoOneToOneField(fields.AutoOneToOneField):
     def __init__(self, *args, **kwargs):
         self.defer_fields = list(kwargs.pop("defer_fields", []))
@@ -41,6 +43,7 @@ class DeferAutoOneToOneField(fields.AutoOneToOneField):
 
     def contribute_to_related_class(self, cls, related):
         setattr(cls, related.get_accessor_name(), DeferAutoSingleRelatedObjectDescriptor(self.defer_fields, related))
+
 
 if SOUTH:
     add_introspection_rules(

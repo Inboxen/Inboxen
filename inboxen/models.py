@@ -24,7 +24,6 @@ from django.conf import settings
 from django.db import models, transaction
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.utils import safestring
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
 
@@ -33,7 +32,7 @@ from bitfield import BitField
 from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from model_utils.managers import PassThroughManager
-from mptt.models import MPTTModel, TreeForeignKey, TreeOneToOneField
+from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
 
@@ -41,6 +40,7 @@ from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
+
 
 class UserProfile(models.Model):
     """This is auto-created when accessed via a RelatedManager
@@ -76,6 +76,7 @@ class UserProfile(models.Model):
     def __unicode__(self):
         return self.user.username
 
+
 class Statistic(models.Model):
     """Statistics about users"""
     date = models.DateTimeField('date')
@@ -83,6 +84,7 @@ class Statistic(models.Model):
     users = JSONField()
     emails = JSONField()
     inboxes = JSONField()
+
 
 class Liberation(models.Model):
     """Liberation data
@@ -124,12 +126,14 @@ class Liberation(models.Model):
 # Inbox models
 ##
 
+
 class Domain(models.Model):
     """Domain model"""
     domain = models.CharField(max_length=253, unique=True)
 
     def __unicode__(self):
         return self.domain
+
 
 class Inbox(models.Model):
     """Inbox model
@@ -169,6 +173,7 @@ class Inbox(models.Model):
         verbose_name_plural = "Inboxes"
         unique_together = (('inbox', 'domain'),)
 
+
 class Request(models.Model):
     """Inbox allocation request model"""
     amount = models.IntegerField(help_text=_("Pool increase requested"))
@@ -182,6 +187,7 @@ class Request(models.Model):
 ##
 # Email models
 ##
+
 
 class Email(models.Model):
     """Email model
@@ -236,6 +242,7 @@ class Email(models.Model):
 
         return attachments
 
+
 class Body(models.Model):
     """Body model
 
@@ -244,7 +251,7 @@ class Body(models.Model):
 
     This model expects and returns binary data, converting to and from unicode happens elsewhere
     """
-    hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True)  # <algo>:<hash>
     data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
@@ -257,6 +264,7 @@ class Body(models.Model):
 
     def __unicode__(self):
         return self.hashed
+
 
 class PartList(MPTTModel):
     """Part model
@@ -274,6 +282,7 @@ class PartList(MPTTModel):
     def __unicode__(self):
         return unicode(self.id)
 
+
 class HeaderName(models.Model):
     """Header name model
 
@@ -284,16 +293,18 @@ class HeaderName(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class HeaderData(models.Model):
     """Header data model
 
     RFC 2822 implies that header data may be infinite, may as well support it!
     """
-    hashed = models.CharField(max_length=80, unique=True) # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True)  # <algo>:<hash>
     data = models.TextField()
 
     def __unicode__(self):
         return self.hashed
+
 
 class Header(models.Model):
     """Header model

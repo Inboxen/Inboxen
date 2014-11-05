@@ -49,6 +49,7 @@ from django.contrib.staticfiles.utils import matches_patterns
 
 from inboxen.utils import generate_maintenance_page
 
+
 class HashedFilesMixin(object):
     default_template = """url("%s")"""
     patterns = (

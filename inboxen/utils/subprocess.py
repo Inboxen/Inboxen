@@ -1,4 +1,4 @@
-## Lifted from Python 2.7, original header to follow
+# Lifted from Python 2.7, original header to follow
 
 # subprocess - Subprocesses with accessible I/O streams
 #
@@ -16,6 +16,7 @@ from __future__ import absolute_import
 
 from subprocess import Popen, PIPE
 
+
 class CalledProcessError(Exception):
     """This exception is raised when a process run by check_call() or
     check_output() returns a non-zero exit status.
@@ -26,8 +27,10 @@ class CalledProcessError(Exception):
         self.returncode = returncode
         self.cmd = cmd
         self.output = output
+
     def __str__(self):
         return "Command '%s' returned non-zero exit status %d" % (self.cmd, self.returncode)
+
 
 def check_output(*popenargs, **kwargs):
     r"""Run command with arguments and return its output as a byte string.

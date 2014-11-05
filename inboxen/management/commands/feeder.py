@@ -26,8 +26,9 @@ from progress import bar
 
 from inboxen.models import Inbox
 
-## Waiting on Inboxen/router#22
+# Waiting on Inboxen/router#22
 SERVER = {'host': 'localhost', 'port': 8823}
+
 
 class Command(BaseCommand):
     args = "<path to mail box> [<inbox>]"

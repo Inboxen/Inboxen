@@ -29,12 +29,14 @@ except ImportError:
 
 from django.conf import settings
 from django.db import IntegrityError, models
+from django.db.models.loading import get_model
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
 
 from pytz import utc
+
 
 class HashedQuerySet(QuerySet):
     def hash_it(self, data):
@@ -44,10 +46,11 @@ class HashedQuerySet(QuerySet):
 
         return hashed
 
+
 class InboxQuerySet(QuerySet):
     def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
-        domain_model = self.model.domain.field.rel.to
+        domain_model = get_model("inboxen", "domain")
 
         if not isinstance(domain, domain_model):
             raise domain_model.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
@@ -91,16 +94,17 @@ class InboxQuerySet(QuerySet):
 # Email managers
 ##
 
+
 class HeaderQuerySet(HashedQuerySet):
     def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
         if hashed is None:
             hashed = self.hash_it(data)
 
-        name_model = self.model.name.field.rel.to
-        data_model = self.model.data.field.rel.to
+        name_model = get_model("inboxen", "headername")
+        data_model = get_model("inboxen", "headerdata")
 
         name = name_model.objects.only('id').get_or_create(name=name)[0]
-        data, created = data_model.objects.only('id').get_or_create(hashed=hashed, defaults={'data':data})
+        data, created = data_model.objects.only('id').get_or_create(hashed=hashed, defaults={'data': data})
 
         return (super(HeaderQuerySet, self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 
@@ -126,6 +130,7 @@ class HeaderQuerySet(HashedQuerySet):
             headers[value[0]] = part
 
         return headers
+
 
 class BodyQuerySet(HashedQuerySet):
     def get_or_create(self, data=None, hashed=None, **kwargs):
