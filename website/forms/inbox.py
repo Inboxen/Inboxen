@@ -109,8 +109,6 @@ class InboxEditForm(forms.ModelForm):
         self.instance.flags.disabled = data.pop("disable_inbox", False)
         clear_inbox = data.pop("clear_inbox", False)
 
-        return self.instance
-
         if clear_inbox:
             emails = self.instance.email_set.all()
             emails.update(flags=F('flags').bitor(models.Email.flags.deleted))
