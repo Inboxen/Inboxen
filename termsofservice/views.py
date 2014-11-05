@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 from termsofservice import models
 from website.views import base
 
+
 class TOSView(base.CommonContextMixin, generic.DetailView):
     headline = _("Terms Of Service")
     model = models.TOS
@@ -37,6 +38,7 @@ class TOSView(base.CommonContextMixin, generic.DetailView):
         except self.model.DoesNotExist:
             raise Http404
 
+
 class WhoView(base.CommonContextMixin, generic.ListView):
     headline = _("The People Behind The Inbox")
     model = models.StaffProfile
@@ -45,6 +47,7 @@ class WhoView(base.CommonContextMixin, generic.ListView):
     def get_queryset(self):
         qs = super(WhoView, self).get_queryset()
         return qs.filter(user__is_staff=True).select_related("user")
+
 
 class HelpView(base.TemplateView):
     headline = _("Help")
