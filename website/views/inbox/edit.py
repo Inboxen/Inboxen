@@ -25,7 +25,7 @@ from website import forms
 from website.views import base
 from inboxen.models import Inbox
 
-__all__ = ["InboxEditView", "InboxRestoreView"]
+__all__ = ["InboxEditView"]
 
 
 class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
@@ -44,12 +44,3 @@ class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
     def get_object(self, *args, **kwargs):
         inbox = self.request.user.inbox_set.select_related("domain")
         return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], flags=~Inbox.flags.deleted)
-
-
-class InboxRestoreView(InboxEditView):
-    form_class = forms.InboxRestoreForm
-    template_name = "inbox/restore.html"
-
-    def get_object(self, *args, **kwargs):
-        inbox = self.request.user.inbox_set.select_related("domain")
-        return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], flags=Inbox.flags.deleted)

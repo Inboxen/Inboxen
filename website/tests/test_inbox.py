@@ -201,33 +201,3 @@ class InboxEditTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertTrue(models.Inbox.objects.filter(tags="no tags").exists())
-
-
-class InboxDeleteTestCase(test.TestCase):
-    """Test the delete inbox page"""
-    fixtures = ['inboxen_testdata.json']
-
-    def setUp(self):
-        """Create the client and grab the user"""
-        super(InboxDeleteTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
-        self.inbox = self.user.inbox_set.select_related("domain")[0]
-
-        login = self.client.login(username=self.user.username, password="123456")
-
-        if not login:
-            raise Exception("Could not log in")
-
-    def get_url(self):
-        return urlresolvers.reverse("inbox-delete", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
-
-    def test_inbox_form(self):
-        self.client.get(self.get_url())  # we don't actually use a Form form here
-
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
-    def test_inbox_delete(self):
-        params = {"confirm": "{0}@{1}".format(self.inbox.inbox, self.inbox.domain.domain)}
-        response = self.client.post(self.get_url(), params)
-        self.assertEqual(response.status_code, 302)
-
-        self.assertTrue(models.Inbox.objects.get(id=self.inbox.id).flags.deleted)

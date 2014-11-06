@@ -30,7 +30,7 @@ from pytz import utc
 from inboxen import models
 from queue.delete import tasks
 
-__all__ = ["InboxAddForm", "InboxEditForm", "InboxRestoreForm"]
+__all__ = ["InboxAddForm", "InboxEditForm"]
 
 
 class InboxAddForm(forms.ModelForm):
@@ -118,10 +118,3 @@ class InboxEditForm(forms.ModelForm):
         self.instance.save()
 
         return self.instance
-
-
-class InboxRestoreForm(InboxEditForm):
-    def save(self):
-        self.instance.flags.deleted = False
-        self.instance.created = datetime.now(utc)
-        return super(InboxRestoreForm, self).save()

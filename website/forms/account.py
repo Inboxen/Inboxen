@@ -38,8 +38,7 @@ from website.forms.mixins import PlaceHolderMixin
 __all__ = [
     "DeleteAccountForm", "LiberationForm",
     "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
-    "PlaceHolderUserCreationForm", "RestoreSelectForm", "SettingsForm",
-    "UsernameChangeForm",
+    "PlaceHolderUserCreationForm", "SettingsForm", "UsernameChangeForm",
 ]
 
 

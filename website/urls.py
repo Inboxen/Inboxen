@@ -77,8 +77,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/security/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
     urls.url(r'^user/account/security', views.TwoFactorView.as_view(), name='user-security'),
 
-    urls.url(r'^user/account/restore/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxRestoreView.as_view(), name='user-restore'),
-    urls.url(r'^user/account/restore/', views.RestoreSelectView.as_view(), name='user-restore'),
     urls.url(r'^user/account/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
     urls.url(r'^user/account/liberate', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^user/account/delete', views.AccountDeletionView.as_view(), name='user-delete'),
