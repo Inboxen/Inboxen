@@ -142,33 +142,6 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
         return username
 
 
-class RestoreSelectForm(forms.Form):
-    """Select a deleted Inbox to restore"""
-    address = forms.CharField(
-        label=_("Enter a deleted Inbox address"),
-        widget=forms.TextInput(attrs={'placeholder': _('Inbox Address (e.g. hello@example.com)')}),
-        required=False,
-    )
-
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
-        return super(RestoreSelectForm, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        cleaned_data = super(RestoreSelectForm, self).clean()
-        address = cleaned_data.get("address", "").strip()
-
-        try:
-            self.inbox = self.request.user.inbox_set.select_related("domain").from_string(email=address, deleted=True)
-        except (models.Inbox.DoesNotExist, ValueError):
-            raise exceptions.ValidationError(_("The given address does not exist or was not deleted!"))
-
-        return cleaned_data
-
-    def save(self):
-        return self.inbox
-
-
 class SettingsForm(PlaceHolderMixin, forms.Form):
     """A form for general settings"""
     IMAGE_OPTIONS = (
