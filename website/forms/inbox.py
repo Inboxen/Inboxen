@@ -76,7 +76,7 @@ class InboxSecondaryEditForm(forms.Form):
     """A subform to hold dangerous operations that will result in loss
     of data.
     """
-    clear_inbox = forms.BooleanField(required=False, label=_("Clear Inbox"), help_text=_("Delete all emails in this Inbox. Cannot be undone."))
+    clear_inbox = forms.BooleanField(required=False, label=_("Empty Inbox"), help_text=_("Delete all emails in this Inbox. Cannot be undone."))
     disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"), help_text=_("This Inbox will no longer receive emails."))
 
     def __init__(self, instance, *args, **kwargs):
