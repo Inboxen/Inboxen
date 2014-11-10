@@ -41,6 +41,14 @@ class RequestAdmin(admin.ModelAdmin):
         return super(RequestAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class DomainAdmin(admin.ModelAdmin):
+    actions = None
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is not None:
+            return self.readonly_fields + ("domain", )
+        return self.readonly_fields
+
 def login(self, request, extra_context=None):
     if REDIRECT_FIELD_NAME in request.GET:
         url = request.GET[REDIRECT_FIELD_NAME]
@@ -53,3 +61,4 @@ def login(self, request, extra_context=None):
 
 admin.AdminSite.login = login
 admin.site.register(models.Request, RequestAdmin)
+admin.site.register(models.Domain, DomainAdmin)
