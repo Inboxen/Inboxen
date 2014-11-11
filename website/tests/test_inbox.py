@@ -25,6 +25,7 @@ from django.utils import unittest
 
 from inboxen import models
 from website import forms as inboxen_forms
+from website.tests.utils import MockRequest
 
 
 class InboxTestAbstract(object):
@@ -152,15 +153,24 @@ class InboxAddTestCase(test.TestCase):
         return urlresolvers.reverse("inbox-add")
 
     def test_inbox_add_form(self):
-        response = self.client.get(self.get_url())
-        form = response.context["form"]
-        self.assertIsInstance(form, inboxen_forms.InboxAddForm)
+        form = inboxen_forms.InboxAddForm(MockRequest(self.user))
 
         self.assertNotIn("inbox", form.fields)
         self.assertIn("domain", form.fields)
         self.assertIn("tags", form.fields)
 
+        for domain in form.fields["domain"].queryset:
+            self.assertTrue(domain.enabled)
+            self.assertTrue(domain.owner is None or domain.owner.id == self.user.id)
+
+        form_data = {"domain": "3"}
+        form = inboxen_forms.InboxAddForm(MockRequest(self.user), data=form_data)
+        self.assertFalse(form.is_valid())
+
     def test_inbox_add(self):
+        response = self.client.get(self.get_url())
+        self.assertIsInstance(response.context["form"], inboxen_forms.InboxAddForm)
+
         inbox_count_1st = models.Inbox.objects.count()
         response = self.client.post(self.get_url(), {"domain": "1", "tags": "no tags"})
         self.assertEqual(response.status_code, 302)

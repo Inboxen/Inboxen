@@ -38,9 +38,10 @@ log = logging.getLogger(__name__)
 @transaction.atomic()
 def START(message, inbox=None, domain=None):
     try:
-        inbox = Inbox.objects.select_related("user", "user__userprofile").get(inbox=inbox, domain__domain=domain)
+        inbox = Inbox.objects.select_related("domain", "user", "user__userprofile")
+        inbox = inbox.get(inbox=inbox, domain__domain=domain)
 
-        if inbox.flags.deleted and inbox.flags.disabled:
+        if inbox.flags.deleted and inbox.flags.disabled and inbox.domain.enabled:
             raise SMTPError(550, "No such address")
 
         make_email(message, inbox)

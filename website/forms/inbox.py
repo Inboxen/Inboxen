@@ -22,7 +22,7 @@ import random
 
 from django import forms
 from django.contrib import messages
-from django.db.models import F
+from django.db.models import F, Q
 from django.utils.translation import ugettext as _
 
 from pytz import utc
@@ -39,15 +39,19 @@ class InboxAddForm(forms.ModelForm):
     def __init__(self, request, initial=None, *args, **kwargs):
         self.request = request  # needed to create the inbox
 
+        domain_qs = models.Domain.objects.filter(
+            Q(owner=self.request.user) | Q(owner__isnull=True, enabled=True)
+        )
+
         if not initial:
             initial = {
                 "inbox": None,  # This is filled in by the manager.create
-                "domain": random.choice(models.Domain.objects.all()),
+                "domain": random.choice(domain_qs),
             }
 
         super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
-        # Remove empty option "-------"
         self.fields["domain"].empty_label = None
+        self.fields["domain"].queryset = domain_qs
 
     class Meta:
         model = models.Inbox

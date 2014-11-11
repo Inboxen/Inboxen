@@ -128,8 +128,13 @@ class Liberation(models.Model):
 
 
 class Domain(models.Model):
-    """Domain model"""
+    """Domain model
+
+    `owner` is the user who controls the domain
+    """
     domain = models.CharField(max_length=253, unique=True)
+    enabled = models.BooleanField(default=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, default=None, on_delete=models.PROTECT)
 
     def __unicode__(self):
         return self.domain
