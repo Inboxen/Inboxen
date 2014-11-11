@@ -17,15 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
 import random
 
 from django import forms
 from django.contrib import messages
 from django.db.models import F, Q
 from django.utils.translation import ugettext as _
-
-from pytz import utc
 
 from inboxen import models
 from queue.delete import tasks
