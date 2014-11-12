@@ -351,6 +351,12 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 WSGI_APPLICATION = 'website.wsgi.application'
 
 ##
+# Salmon. Splash.
+##
+
+SALMON_SERVER = {"host": "localhost", "port": 8823, "type": "smtp"}
+
+##
 # Misc.
 ##
 
