@@ -43,6 +43,7 @@ class RequestAdmin(admin.ModelAdmin):
 
 class DomainAdmin(admin.ModelAdmin):
     actions = None
+    list_display = ("domain", "owner", "enabled")
 
     def get_readonly_fields(self, request, obj=None):
         if obj is not None:
