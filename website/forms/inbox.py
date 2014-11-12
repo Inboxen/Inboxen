@@ -43,8 +43,12 @@ class InboxAddForm(forms.ModelForm):
         if not initial:
             initial = {
                 "inbox": None,  # This is filled in by the manager.create
-                "domain": random.choice(domain_qs),
             }
+            prefered_domain = self.request.user.userprofile.prefered_domain
+            if prefered_domain is not None and prefered_domain in domain_qs:
+                initial["domain"] = prefered_domain
+            else:
+                initial["domain"] = random.choice(domain_qs)
 
         super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
         self.fields["domain"].empty_label = None

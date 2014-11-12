@@ -55,6 +55,7 @@ class UserProfile(models.Model):
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
     pool_amount = models.IntegerField(default=500)
     flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
+    prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True)
 
     def available_inboxes(self):
         used = self.user.inbox_set.count()
