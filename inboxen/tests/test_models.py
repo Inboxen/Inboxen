@@ -75,6 +75,12 @@ class ModelTestCase(test.TestCase):
         2nd_count = models.Inbox.objects.viewable(self.user).count()
         self.assertNotEqual(1st_count, 2nd_count)
 
+    def test_email_viewable(self):
+        # this is a very crappy test
+        1st_count = models.Email.objects.all().count()
+        2nd_count = models.Email.objects.viewable(self.user).count()
+        self.assertNotEqual(1st_count, 2nd_count)
+
     def test_header_create(self):
         name = "X-Hello"
         data = "Hewwo"

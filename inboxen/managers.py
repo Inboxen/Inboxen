@@ -112,6 +112,15 @@ class InboxQuerySet(QuerySet):
 ##
 
 
+class EmailQuerySet(QuerySet):
+    def viewable(self, user):
+        qs = self.filter(inbox__user)
+        return qs.exclude(
+            flags=get_model("inboxen", "email").flags.deleted,
+            inbox__flags=get_model("inboxen", "inbox").flags.deleted,
+        )
+
+
 class HeaderQuerySet(HashedQuerySet):
     def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
         if hashed is None:

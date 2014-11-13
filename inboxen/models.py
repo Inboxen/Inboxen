@@ -36,7 +36,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
 
-from inboxen.managers import BodyQuerySet, DomainQuerySet, HeaderQuerySet, InboxQuerySet
+from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
@@ -208,6 +208,8 @@ class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted", "read", "seen", "important", "view_all_headers"), default=0)
     received_date = models.DateTimeField()
+
+    objects = PassThroughManager.for_queryset_class(EmailQuerySet)()
 
     @property
     def eid(self):
