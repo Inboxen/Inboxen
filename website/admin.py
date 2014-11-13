@@ -21,6 +21,8 @@ from urllib import urlencode
 
 from django.contrib import admin
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
+from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import redirect
@@ -50,6 +52,31 @@ class DomainAdmin(admin.ModelAdmin):
             return self.readonly_fields + ("domain", )
         return self.readonly_fields
 
+
+class UserAdmin(OriginalUserAdmin):
+    actions = None
+
+    def user_change_password(self, request, *args, **kwargs):
+        if request.user.is_superuser:
+            return super(UserAdmin, self).user_change_password(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+    def get_queryset(self, request):
+        qs = super(UserAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(Q(is_staff=True) | Q(is_superuser=True))
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return self.readonly_fields
+        return self.readonly_fields + (
+            "date_joined", "last_login", "groups", "is_active", "is_staff",
+            "is_superuser", "password", "user_permissions", "username",
+        )
+
+
 def login(self, request, extra_context=None):
     if REDIRECT_FIELD_NAME in request.GET:
         url = request.GET[REDIRECT_FIELD_NAME]
@@ -63,3 +90,6 @@ def login(self, request, extra_context=None):
 admin.AdminSite.login = login
 admin.site.register(models.Request, RequestAdmin)
 admin.site.register(models.Domain, DomainAdmin)
+
+admin.site.unregister(get_user_model())
+admin.site.register(get_user_model(), UserAdmin)
