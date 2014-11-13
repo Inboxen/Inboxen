@@ -21,7 +21,7 @@ import random
 
 from django import forms
 from django.contrib import messages
-from django.db.models import F, Q
+from django.db.models import F
 from django.utils.translation import ugettext as _
 
 from inboxen import models
@@ -36,9 +36,7 @@ class InboxAddForm(forms.ModelForm):
     def __init__(self, request, initial=None, *args, **kwargs):
         self.request = request  # needed to create the inbox
 
-        domain_qs = models.Domain.objects.filter(
-            Q(owner=self.request.user) | Q(owner__isnull=True, enabled=True)
-        )
+        domain_qs = models.Domain.objects.available(self.request.user)
 
         if not initial:
             initial = {

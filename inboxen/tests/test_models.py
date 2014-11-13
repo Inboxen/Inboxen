@@ -34,6 +34,9 @@ class ModelTestCase(test.TestCase):
         super(ModelTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)
 
+    def test_domain_available(self):
+        self.assertEqual(models.Domain.objects.availalbe(self.user).count(), 1)
+
     def test_inbox_create(self):
         with self.assertRaises(models.Domain.DoesNotExist):
             models.Inbox.objects.create()
@@ -59,6 +62,18 @@ class ModelTestCase(test.TestCase):
 
         with self.assertRaises(models.Inbox.DoesNotExist):
             self.user.inbox_set.from_string(email="%s@%s" % (inbox.inbox, domain.domain))
+
+    def test_inbox_receiving(self):
+        # this is a very crappy test
+        1st_count = models.Inbox.objects.all().count()
+        2nd_count = models.Inbox.objects.receiving().count()
+        self.assertNotEqual(1st_count, 2nd_count)
+
+    def test_inbox_viewable(self):
+        # this is a very crappy test
+        1st_count = models.Inbox.objects.all().count()
+        2nd_count = models.Inbox.objects.viewable(self.user).count()
+        self.assertNotEqual(1st_count, 2nd_count)
 
     def test_header_create(self):
         name = "X-Hello"

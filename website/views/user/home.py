@@ -35,7 +35,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     headline = _("Home")
 
     def get_queryset(self):
-        queryset = self.request.user.inbox_set.filter(flags=~models.Inbox.flags.deleted)
+        queryset = models.Inbox.objects.viewable(self.request.user)
         queryset = queryset.select_related("domain")
         return queryset.order_by("-created").distinct()
 

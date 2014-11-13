@@ -47,6 +47,15 @@ class HashedQuerySet(QuerySet):
         return hashed
 
 
+class DomainQuerySet(QuerySet):
+    def available(self, user):
+        """Return QuerySet with domains available to user"""
+        return self.filter(
+            models.Q(owner=user) | models.Q(owner__isnull=True),
+            enabled=True,
+        )
+
+
 class InboxQuerySet(QuerySet):
     def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
@@ -83,6 +92,20 @@ class InboxQuerySet(QuerySet):
         inbox = inbox.get()
 
         return inbox
+
+    def receiving(self):
+        """Returns a QuerySet of Inboxes that can receive emails"""
+        inbox_model = get_model("inboxen", "inbox")
+        qs = self.filter(domain__enabled=True)
+        return self.exclude(
+            flags=inbox_model.flags.deleted | inbox_model.flags.disabled,
+        )
+
+    def viewable(self, user):
+        """Returns a QuerySet of Inboxes the user can view"""
+        inbox_model = get_model("inboxen", "inbox")
+        qs = self.filter(user=user)
+        return self.exclude(flags=inbox_model.flags.deleted)
 
 ##
 # Email managers

@@ -36,7 +36,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
 
-from inboxen.managers import BodyQuerySet, HeaderQuerySet, InboxQuerySet
+from inboxen.managers import BodyQuerySet, DomainQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
@@ -136,6 +136,8 @@ class Domain(models.Model):
     domain = models.CharField(max_length=253, unique=True)
     enabled = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, default=None, on_delete=models.PROTECT)
+
+    objects = PassThroughManager.for_queryset_class(DomainQuerySet)()
 
     def __unicode__(self):
         return self.domain
