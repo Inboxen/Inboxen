@@ -30,6 +30,16 @@ from django.shortcuts import redirect
 from inboxen import models
 
 
+class DomainAdmin(admin.ModelAdmin):
+    actions = None
+    list_display = ("domain", "owner", "enabled")
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is not None:
+            return self.readonly_fields + ("domain", )
+        return self.readonly_fields
+
+
 class RequestAdmin(admin.ModelAdmin):
     actions = None
     list_display = ("requester", "date", "amount", "succeeded")
@@ -41,16 +51,6 @@ class RequestAdmin(admin.ModelAdmin):
             kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True) | Q(is_superuser=True))
 
         return super(RequestAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-
-class DomainAdmin(admin.ModelAdmin):
-    actions = None
-    list_display = ("domain", "owner", "enabled")
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj is not None:
-            return self.readonly_fields + ("domain", )
-        return self.readonly_fields
 
 
 class UserAdmin(OriginalUserAdmin):
@@ -88,8 +88,9 @@ def login(self, request, extra_context=None):
     ))
 
 admin.AdminSite.login = login
-admin.site.register(models.Request, RequestAdmin)
+
 admin.site.register(models.Domain, DomainAdmin)
+admin.site.register(models.Request, RequestAdmin)
 
 admin.site.unregister(get_user_model())
 admin.site.register(get_user_model(), UserAdmin)
