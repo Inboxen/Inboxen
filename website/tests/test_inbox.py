@@ -47,7 +47,7 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 200)
 
     def test_post_important(self):
-        emails = self.get_emails().order_by('-received_date').only("id")
+        emails = self.get_emails().order_by('-received_date').only("id", "flags")
         params = {"important": ""}
 
         i = 0
