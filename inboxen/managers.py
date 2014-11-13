@@ -29,6 +29,7 @@ except ImportError:
 
 from django.conf import settings
 from django.db import IntegrityError, models
+from django.db.models import Q
 from django.db.models.loading import get_model
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
@@ -97,15 +98,15 @@ class InboxQuerySet(QuerySet):
         """Returns a QuerySet of Inboxes that can receive emails"""
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(domain__enabled=True)
-        return self.exclude(
-            flags=inbox_model.flags.deleted | inbox_model.flags.disabled,
+        return qs.exclude(
+            flags=inbox_model.flags.deleted & inbox_model.flags.disabled,
         )
 
     def viewable(self, user):
         """Returns a QuerySet of Inboxes the user can view"""
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(user=user)
-        return self.exclude(flags=inbox_model.flags.deleted)
+        return qs.exclude(flags=inbox_model.flags.deleted)
 
 ##
 # Email managers
@@ -114,10 +115,10 @@ class InboxQuerySet(QuerySet):
 
 class EmailQuerySet(QuerySet):
     def viewable(self, user):
-        qs = self.filter(inbox__user)
+        qs = self.filter(inbox__user=user)
         return qs.exclude(
-            flags=get_model("inboxen", "email").flags.deleted,
-            inbox__flags=get_model("inboxen", "inbox").flags.deleted,
+            Q(flags=get_model("inboxen", "email").flags.deleted) |
+            Q(inbox__flags=get_model("inboxen", "inbox").flags.deleted),
         )
 
 

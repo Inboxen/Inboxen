@@ -35,7 +35,7 @@ class ModelTestCase(test.TestCase):
         self.user = get_user_model().objects.get(id=1)
 
     def test_domain_available(self):
-        self.assertEqual(models.Domain.objects.availalbe(self.user).count(), 1)
+        self.assertEqual(models.Domain.objects.available(self.user).count(), 1)
 
     def test_inbox_create(self):
         with self.assertRaises(models.Domain.DoesNotExist):
@@ -65,21 +65,21 @@ class ModelTestCase(test.TestCase):
 
     def test_inbox_receiving(self):
         # this is a very crappy test
-        1st_count = models.Inbox.objects.all().count()
-        2nd_count = models.Inbox.objects.receiving().count()
-        self.assertNotEqual(1st_count, 2nd_count)
+        count1 = models.Inbox.objects.count()
+        count2 = models.Inbox.objects.receiving().count()
+        self.assertNotEqual(count1, count2)
 
     def test_inbox_viewable(self):
         # this is a very crappy test
-        1st_count = models.Inbox.objects.all().count()
-        2nd_count = models.Inbox.objects.viewable(self.user).count()
-        self.assertNotEqual(1st_count, 2nd_count)
+        count1 = models.Inbox.objects.count()
+        count2 = models.Inbox.objects.viewable(self.user).count()
+        self.assertNotEqual(count1, count2)
 
     def test_email_viewable(self):
         # this is a very crappy test
-        1st_count = models.Email.objects.all().count()
-        2nd_count = models.Email.objects.viewable(self.user).count()
-        self.assertNotEqual(1st_count, 2nd_count)
+        count1 = models.Email.objects.count()
+        count2 = models.Email.objects.viewable(self.user).count()
+        self.assertNotEqual(count1, count2)
 
     def test_header_create(self):
         name = "X-Hello"
