@@ -36,8 +36,6 @@ _database_not_psql = settings.DATABASES["default"]["ENGINE"] != 'django.db.backe
 
 class LiberateTestCase(test.TestCase):
     """Test account liberating"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         self.user = get_user_model().objects.get(id=1)
         self.mail_dir = os.path.join(os.getcwd(), "isdabizda")

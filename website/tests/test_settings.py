@@ -25,7 +25,6 @@ from website.tests import utils
 
 
 class SettingsTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
     form = forms.SettingsForm
 
     def setUp(self):

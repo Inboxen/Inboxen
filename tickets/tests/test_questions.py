@@ -25,8 +25,6 @@ from tickets import models
 
 
 class QuestionViewTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(QuestionViewTestCase, self).setUp()
         self.user = get_user_model().objects.get(username="isdabizda")

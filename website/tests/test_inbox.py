@@ -30,8 +30,6 @@ from website.tests.utils import MockRequest
 
 class InboxTestAbstract(object):
     """An abstract TestCase that won't get picked up by Django's test finder"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxTestAbstract, self).setUp()
@@ -138,8 +136,6 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
 
 class InboxAddTestCase(test.TestCase):
     """Test the add inbox page"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxAddTestCase, self).setUp()
@@ -182,8 +178,6 @@ class InboxAddTestCase(test.TestCase):
 
 class InboxEditTestCase(test.TestCase):
     """Test the edit inbox page"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxEditTestCase, self).setUp()

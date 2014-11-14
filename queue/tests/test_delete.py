@@ -28,8 +28,6 @@ from queue.delete import tasks
 
 class DeleteTestCase(test.TestCase):
     """Test account deleting"""
-    fixtures = ['inboxen_testdata.json']
-
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_delete_account(self):
         tasks.delete_account.delay(user_id=1)

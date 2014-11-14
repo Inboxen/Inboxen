@@ -25,8 +25,6 @@ from website.tests import utils
 
 
 class LowerCaseUsernameTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         self.user = get_user_model().objects.get(username="isdabizda")
 

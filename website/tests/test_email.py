@@ -24,8 +24,6 @@ from inboxen import models
 
 
 class EmailViewTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(EmailViewTestCase, self).setUp()
 

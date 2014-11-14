@@ -28,8 +28,6 @@ from inboxen import models
 
 class ModelTestCase(test.TestCase):
     """Test our custom methods"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(ModelTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)

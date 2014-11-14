@@ -33,8 +33,6 @@ from queue import tasks
 class StatsTestCase(test.TestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
-    fixtures = ['inboxen_testdata.json']
-
     def test_no_exceptions(self):
         tasks.statistics.delay()
 
@@ -43,8 +41,6 @@ class FlagTestCase(test.TestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
     # TODO: actually test
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(FlagTestCase, self).setUp()
         self.user = get_user_model().objects.get(username="isdabizda")
@@ -59,8 +55,6 @@ class FlagTestCase(test.TestCase):
 
 
 class SearchTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def test_search(self):
         result = tasks.search.delay(1, "bizz").get()
         self.assertItemsEqual(result.keys(), ["emails", "inboxes"])
@@ -71,8 +65,6 @@ class SearchTestCase(test.TestCase):
     ADMINS=(("Travis", "ci@example.com"),),
 )
 class RequestReportTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         self.user = get_user_model().objects.get(username="isdabizda")
         self.user.userprofile  # autocreate a profile

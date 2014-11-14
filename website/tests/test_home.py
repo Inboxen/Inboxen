@@ -24,8 +24,6 @@ from django.core import urlresolvers
 
 
 class HomeViewTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(HomeViewTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)

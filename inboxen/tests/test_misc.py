@@ -27,8 +27,6 @@ from django.core.cache import cache
 @test.utils.override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
     """Test various login things"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(LoginTestCase, self).setUp()
         cache.clear()

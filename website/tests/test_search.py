@@ -23,8 +23,6 @@ from django.core import urlresolvers
 
 
 class SearchViewTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(SearchViewTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)
