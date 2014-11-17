@@ -99,7 +99,8 @@ class InboxQuerySet(QuerySet):
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(domain__enabled=True)
         return qs.exclude(
-            flags=inbox_model.flags.deleted & inbox_model.flags.disabled,
+            models.Q(flags=inbox_model.flags.deleted) |
+            models.Q(flags=inbox_model.flags.disabled),
         )
 
     def viewable(self, user):
