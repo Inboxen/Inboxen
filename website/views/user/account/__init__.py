@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -20,5 +20,4 @@
 from .delete import *
 from .liberate import *
 from .otp import *
-from .restore import *
 from .settings import *

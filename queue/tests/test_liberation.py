@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ from website.forms import LiberationForm
 
 _database_not_psql = settings.DATABASES["default"]["ENGINE"] != 'django.db.backends.postgresql_psycopg2'
 
+
 class LiberateTestCase(test.TestCase):
     """Test account liberating"""
     fixtures = ['inboxen_testdata.json']
@@ -55,7 +56,7 @@ class LiberateTestCase(test.TestCase):
                 self.assertTrue(form.is_valid())
                 form.save()
 
-                #TODO: check Liberation model actually has correct archive type
+                # TODO: check Liberation model actually has correct archive type
 
     def test_liberate_inbox(self):
         result = tasks.liberate_inbox(self.mail_dir, 1)
@@ -85,6 +86,7 @@ class LiberateTestCase(test.TestCase):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
+
 
 class LiberateNewUserTestCase(test.TestCase):
     """Liberate a new user, with no data"""

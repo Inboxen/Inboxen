@@ -18,7 +18,6 @@
 ##
 
 from django.conf import urls
-from django.utils.translation import ugettext as _
 
 from termsofservice import views
 

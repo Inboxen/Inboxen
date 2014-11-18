@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 ##
 
 import os
-import sys
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -26,6 +25,7 @@ try:
     from subprocess import check_output, CalledProcessError
 except ImportError:
     from inboxen.utils.subprocess import check_output, CalledProcessError
+
 
 class Command(BaseCommand):
     args = "<start/stop/status>"
@@ -38,8 +38,8 @@ class Command(BaseCommand):
 
         # these need to be ordered from smtp in to database out
         self.salmon_options = [
-                {'pid': 'run/router.pid', 'boot': 'config.boot'},
-                ]
+            {'pid': 'run/router.pid', 'boot': 'config.boot'},
+        ]
 
     def handle(self, *args, **options):
         if not args:

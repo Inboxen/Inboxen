@@ -35,11 +35,12 @@ from queue.liberate.tasks import liberate as data_liberate
 from website import fields
 from website.forms.mixins import PlaceHolderMixin
 
-__all__ = ["DeleteAccountForm", "LiberationForm",
-            "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
-            "PlaceHolderUserCreationForm", "RestoreSelectForm", "SettingsForm",
-            "UsernameChangeForm",
-            ]
+__all__ = [
+    "DeleteAccountForm", "LiberationForm",
+    "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
+    "PlaceHolderUserCreationForm", "SettingsForm", "UsernameChangeForm",
+]
+
 
 class DeleteAccountForm(forms.Form):
 
@@ -54,18 +55,19 @@ class DeleteAccountForm(forms.Form):
         self.request = request
         return super(DeleteAccountForm, self).__init__(*args, **kwargs)
 
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(DeleteAccountForm, self).clean(*args, **kwargs)
+    def clean(self):
+        cleaned_data = super(DeleteAccountForm, self).clean()
         if cleaned_data.get("username", "") != self.user.get_username():
             raise exceptions.ValidationError(_("The username entered does not match your username"))
 
         return cleaned_data
 
-    def save(self, *args, **kwargs):
+    def save(self):
         # Dispatch task and logout
         delete_account.delay(self.user.id)
         auth.logout(self.request)
         return self.user
+
 
 class LiberationForm(forms.ModelForm):
     class Meta:
@@ -104,23 +106,26 @@ class LiberationForm(forms.ModelForm):
             lib_status.started = datetime.now(utc)
 
             result = data_liberate.apply_async(
-                                    kwargs={"user_id": self.user.id, "options": self.cleaned_data},
-                                    countdown=10
-                                    )
+                kwargs={"user_id": self.user.id, "options": self.cleaned_data},
+                countdown=10
+            )
 
             lib_status.async_result = result.id
             lib_status.save()
 
         return self.user
 
+
 class PlaceHolderAuthenticationForm(PlaceHolderMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder
     in each field"""
     pass
 
+
 class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
     new_password1 = fields.PasswordCheckField(label=_("New password"))
+
 
 class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
     """Same as auth.forms.UserCreationForm but adds a label as the placeholder in each field"""
@@ -135,40 +140,27 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
                 )
         return username
 
-class RestoreSelectForm(forms.Form):
-    """Select a deleted Inbox to restore"""
-    address = forms.CharField(
-        label=_("Enter a deleted Inbox address"),
-        widget=forms.TextInput(attrs={'placeholder': _('Inbox Address (e.g. hello@example.com)')}),
-        required=False,
-    )
 
-    def __init__(self, request, *args, **kwargs):
-        self.request = request
-        return super(RestoreSelectForm, self).__init__(*args, **kwargs)
-
-    def clean(self, *args, **kwargs):
-        cleaned_data = super(RestoreSelectForm, self).clean(*args, **kwargs)
-        address = cleaned_data.get("address", "").strip()
-
-        try:
-            self.inbox = self.request.user.inbox_set.select_related("domain").from_string(email=address, deleted=True)
-        except (models.Inbox.DoesNotExist, ValueError):
-            raise exceptions.ValidationError(_("The given address does not exist or was not deleted!"))
-
-        return cleaned_data
-
-    def save(self, *args, **kwargs):
-        return self.inbox
-
-class SettingsForm(PlaceHolderMixin, forms.Form):
+class SettingsForm(forms.Form):
     """A form for general settings"""
     IMAGE_OPTIONS = (
         (0, _("Always ask to display images")),
         (1, _("Always display images")),
         (2, _("Never display images")),
-        )
-    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect, label=_("Display options for HTML emails"))
+    )
+
+    prefered_domain = forms.ModelChoiceField(
+        required=False,
+        queryset=models.Domain.objects.none(),
+        empty_label=_("(No preference)"),
+        help_text=_("Prefer a particular domain when adding a new Inbox")
+    )
+    images = forms.ChoiceField(
+        choices=IMAGE_OPTIONS,
+        widget=forms.RadioSelect,
+        label=_("Display options for HTML emails"),
+        help_text=_("Warning: Images in HTML emails can be used to track if you read an email!"),
+    )
     prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
 
     def __init__(self, request, *args, **kwargs):
@@ -177,6 +169,7 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
         initial = kwargs.get("initial", {})
 
         initial["prefer_html"] = bool(self.profile.flags.prefer_html_email)
+        initial["prefered_domain"] = self.profile.prefered_domain
 
         if self.profile.flags.ask_images:
             initial["images"] = "0"
@@ -186,7 +179,10 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
             initial["images"] = "2"
 
         kwargs.setdefault("initial", initial)
+
         super(SettingsForm, self).__init__(*args, **kwargs)
+
+        self.fields["prefered_domain"].queryset = models.Domain.objects.available(request.user)
 
     def save(self):
         if "prefer_html" in self.cleaned_data and self.cleaned_data["prefer_html"]:
@@ -204,7 +200,10 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
                 self.profile.flags.display_images = False
                 self.profile.flags.ask_images = False
 
-        self.profile.save(update_fields=["flags"])
+        self.profile.prefered_domain = self.cleaned_data["prefered_domain"]
+
+        self.profile.save(update_fields=["flags", "prefered_domain"])
+
 
 class UsernameChangeForm(PlaceHolderMixin, forms.Form):
     """Change username"""

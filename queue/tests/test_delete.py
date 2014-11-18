@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@ from django.utils import unittest
 
 from inboxen import models
 from queue.delete import tasks
+
 
 class DeleteTestCase(test.TestCase):
     """Test account deleting"""

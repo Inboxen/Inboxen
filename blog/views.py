@@ -27,6 +27,7 @@ from django.views import generic
 from blog.models import BlogPost
 from website.views import base
 
+
 class BlogListView(base.CommonContextMixin, generic.ListView):
     context_object_name = "posts"
     headline = _("Blog")
@@ -36,6 +37,7 @@ class BlogListView(base.CommonContextMixin, generic.ListView):
 
     def get_queryset(self):
         return super(BlogListView, self).get_queryset().filter(draft=False)
+
 
 class BlogDetailView(base.CommonContextMixin, generic.DetailView):
     context_object_name = "post"
@@ -48,6 +50,7 @@ class BlogDetailView(base.CommonContextMixin, generic.DetailView):
 
     def get_headline(self):
         return self.object.subject
+
 
 class RssFeed(Feed):
     title = "{0} News Feed".format(settings.SITE_NAME)
@@ -68,6 +71,7 @@ class RssFeed(Feed):
 
     def description(self):
         return _("The latest news and updates for {0}").format(settings.SITE_NAME)
+
 
 class AtomFeed(RssFeed):
     feed_type = Atom1Feed

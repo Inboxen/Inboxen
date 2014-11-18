@@ -17,14 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import json
 import urllib
 
 from django import http
 from django.core.cache import cache
 from django.utils.translation import ugettext as _
 from django.views import generic
-from django.utils import safestring
 
 from website.views import base
 from queue import tasks
@@ -35,14 +33,15 @@ from watson import models as watson_models
 
 __all__ = ["SearchView", "SearchApiView"]
 
+
 class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
                                     generic.ListView):
     """A specialised search view that splits results by model"""
     paginate_by = None
     template_name = "user/search.html"
     filter_limit = 10
-    timeout = 1 # time to wait for results
-    model = None # will be useful later, honest!
+    timeout = 1  # time to wait for results
+    model = None  # will be useful later, honest!
 
     query_param = "q"
     context_object_name = "search_results"
@@ -140,12 +139,12 @@ class SearchApiView(SearchView):
                 search_task.get(self.timeout)
             except exceptions.TimeoutError:
                 cache.set(self.get_cache_key(), result)
-                return http.HttpResponse(status=202) # 202: still waiting for task
-            return http.HttpResponse(status=201) # 201: search results ready
+                return http.HttpResponse(status=202)  # 202: still waiting for task
+            return http.HttpResponse(status=201)  # 201: search results ready
         elif result is not None:
-            return http.HttpResponse(status=201) # 201: search results ready
+            return http.HttpResponse(status=201)  # 201: search results ready
         else:
-            return http.HttpResponseBadRequest() # 400: no search is being performed
+            return http.HttpResponseBadRequest()  # 400: no search is being performed
 
     def head(self, *args, **kwargs):
         return self.get(*args, **kwargs)

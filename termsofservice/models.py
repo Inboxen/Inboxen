@@ -30,6 +30,7 @@ from django.utils.translation import ugettext_lazy as _
 from pytz import utc
 import markdown
 
+
 class TOS(models.Model):
     """Terms of service history"""
     last_modified = models.DateTimeField(auto_now=True)
@@ -46,6 +47,7 @@ class TOS(models.Model):
         get_latest_by = "last_modified"
         ordering = ["-last_modified"]
 
+
 class StaffProfile(models.Model):
     """Profile of staff member for displaying on "who" page"""
     public_name = models.CharField(max_length=1024, help_text=_("Their name, as they're known to the public"))
@@ -60,6 +62,7 @@ class StaffProfile(models.Model):
 
     def __unicode__(self):
         return u"Staff profile of %s" % self.user
+
 
 @receiver(pre_save, sender=TOS, dispatch_uid="termsofservice_diff_creator")
 def diff_creator(sender, instance, **kwargs):
@@ -83,5 +86,10 @@ def diff_creator(sender, instance, **kwargs):
     if len(instance.text) == 0 or instance.text[-1] != "\n":
         instance.text = instance.text + "\n"
 
-    differ = difflib.unified_diff(last.text.split("\n"), instance.text.split("\n"), fromfile=str(last.last_modified), tofile=str(instance.last_modified))
+    differ = difflib.unified_diff(
+        last.text.split("\n"),
+        instance.text.split("\n"),
+        fromfile=str(last.last_modified),
+        tofile=str(instance.last_modified)
+        )
     instance.diff = "".join(differ)

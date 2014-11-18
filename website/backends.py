@@ -23,6 +23,7 @@ from django.contrib.auth.backends import ModelBackend
 
 from ratelimitbackend.backends import RateLimitMixin
 
+
 class CaseInsensitiveMixin(object):
     def authenticate(self, username=None, password=None, **kwargs):
         # we're also case insensitive
@@ -37,6 +38,7 @@ class CaseInsensitiveMixin(object):
         except user_model.DoesNotExist:
             # do like the default backend does, slow down return on non-existence
             user_model.set_password(password)
+
 
 class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
     minutes = settings.LOGIN_ATTEMPT_COOLOFF

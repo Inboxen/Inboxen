@@ -18,10 +18,48 @@
     }
 },
 {
+    "pk": 2, 
+    "model": "auth.user", 
+    "fields": {
+        "username": "isdabizda2", 
+        "first_name": "", 
+        "last_name": "", 
+        "is_active": true, 
+        "is_superuser": false, 
+        "is_staff": false, 
+        "last_login": "2014-06-19T22:07:08.465Z", 
+        "groups": [], 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$12000$NTdO3iQWTpgw$psCr4vCfgtrWIp9IcTlxN35kLOfK2YHa6DoIxFlnP7E=", 
+        "email": "", 
+        "date_joined": "2014-06-19T22:07:08.465Z"
+    }
+},
+{
     "pk": 1, 
     "model": "inboxen.domain", 
     "fields": {
-        "domain": "localhost"
+        "domain": "localhost",
+        "enabled": true,
+        "owner": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "inboxen.domain", 
+    "fields": {
+        "domain": "hostlocal",
+        "enabled": false,
+        "owner": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "inboxen.domain", 
+    "fields": {
+        "domain": "localghost",
+        "enabled": true,
+        "owner": 2
     }
 },
 {
@@ -3020,6 +3058,24 @@
     "model": "inboxen.email", 
     "fields": {
         "flags": "0", 
+        "inbox": 1, 
+        "received_date": "2014-06-19T22:33:25.463Z"
+    }
+},
+{
+    "pk": 151, 
+    "model": "inboxen.email", 
+    "fields": {
+        "flags": "0", 
+        "inbox": 12, 
+        "received_date": "2014-06-19T22:33:25.463Z"
+    }
+},
+{
+    "pk": 152, 
+    "model": "inboxen.email", 
+    "fields": {
+        "flags": "1", 
         "inbox": 1, 
         "received_date": "2014-06-19T22:33:25.463Z"
     }

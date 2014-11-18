@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@ from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
-from inboxen import models
 
 class HomeViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']

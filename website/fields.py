@@ -21,6 +21,7 @@ from django import forms
 
 from website import validators
 
+
 class PasswordCheckField(forms.CharField):
     """Field that makes sure a password is safe(ish) and not too too long"""
     default_validators = [validators.EntropyValidation(), validators.CharClassValidation()]

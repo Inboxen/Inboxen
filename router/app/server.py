@@ -38,12 +38,9 @@ log = logging.getLogger(__name__)
 @transaction.atomic()
 def START(message, inbox=None, domain=None):
     try:
-        inbox = Inbox.objects.select_related("user", "user__userprofile").get(inbox=inbox, domain__domain=domain)
-
-        if inbox.flags.deleted:
-            raise SMTPError(550, "No such address")
-        elif inbox.flags.disabled:
-            raise SMTPError(450, "Address has been disabled")
+        inbox = Inbox.objects.receiving()
+        inbox = inbox.select_related("user", "user__userprofile")
+        inbox = inbox.get(inbox=inbox, domain__domain=domain)
 
         make_email(message, inbox)
 
@@ -57,7 +54,7 @@ def START(message, inbox=None, domain=None):
             profile.save(update_fields=["flags"])
 
     except DatabaseError, e:
-        log.debug("DB error: %s", e)
+        log.exception("DB error: %s", e)
         raise SMTPError(451, "Error processing message, try again later.")
     except Inbox.DoesNotExist:
-        raise SMTPError(450, "No such address")
+        raise SMTPError(550, "No such address")

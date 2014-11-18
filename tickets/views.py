@@ -19,14 +19,13 @@
 
 from django.core import urlresolvers
 from django.db.models import Count, Max
-from django.http import HttpResponseRedirect
+from django.http import Http404
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from braces.views import StaffuserRequiredMixin
-
 from tickets import forms, models
 from website.views import base
+
 
 class FormMixin(generic.edit.FormMixin):
     """FormMixin specific to Tickets"""
@@ -47,10 +46,9 @@ class FormMixin(generic.edit.FormMixin):
         else:
             return self.form_invalid(form)
 
-class QuestionListBaseView(base.CommonContextMixin, generic.ListView, FormMixin):
-    """Base list view of questions. Subclass it to restrict to a single user's
-    questions or admins view.
-    """
+
+class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView, FormMixin):
+    """List of questions that belong to current user"""
     paginate_by = 50
     model = models.Question
     headline = _("Tickets")
@@ -64,16 +62,16 @@ class QuestionListBaseView(base.CommonContextMixin, generic.ListView, FormMixin)
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
-        return super(QuestionListBaseView, self).form_valid(form)
+        return super(QuestionListView, self).form_valid(form)
 
     def dispatch(self, *args, **kwargs):
-        if not "status" in self.kwargs:
+        if "status" not in self.kwargs:
             self.kwargs["status"] = "!resolved"
 
-        return super(QuestionListBaseView, self).dispatch(*args, **kwargs)
+        return super(QuestionListView, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        qs = super(QuestionListBaseView, self).get_queryset()
+        qs = super(QuestionListView, self).get_queryset()
 
         # filter statuses
         try:
@@ -87,7 +85,8 @@ class QuestionListBaseView(base.CommonContextMixin, generic.ListView, FormMixin)
             # or not
             pass
 
-        return qs.select_related("author").annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
+        qs = qs.filter(author=self.request.user).select_related("author")
+        return qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
     def get_success_url(self):
         return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
@@ -129,19 +128,18 @@ class QuestionListBaseView(base.CommonContextMixin, generic.ListView, FormMixin)
             # it's better to do a cheap query than to load the unpaginated
             # queryset in memory.
             if (self.get_paginate_by(self.object_list) is not None
-                and hasattr(self.object_list, 'exists')):
+                    and hasattr(self.object_list, 'exists')):
                 is_empty = not self.object_list.exists()
             else:
                 is_empty = len(self.object_list) == 0
             if is_empty:
                 raise Http404(_("Empty list and '%(class_name)s.allow_empty' is False.")
-                        % {'class_name': self.__class__.__name__})
-        return super(QuestionListBaseView, self).post(*args, **kwargs)
+                            % {'class_name': self.__class__.__name__})
+        return super(QuestionListView, self).post(*args, **kwargs)
 
-class QuestionDetailBaseView(base.CommonContextMixin, generic.DetailView, FormMixin):
-    """Base detail view of a question. Subclass it to restrict to restrict to
-    author or admins view.
-    """
+
+class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, generic.DetailView, FormMixin):
+    """View and respond to Question"""
     model = models.Question
     form_class = forms.ResponseForm
 
@@ -150,10 +148,10 @@ class QuestionDetailBaseView(base.CommonContextMixin, generic.DetailView, FormMi
         response.author = self.request.user
         response.question = self.object
         response.save()
-        return super(QuestionDetailBaseView, self).form_valid(form)
+        return super(QuestionDetailView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        kwargs = super(QuestionDetailBaseView, self).get_context_data(**kwargs)
+        kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
         kwargs.setdefault("responses", self.get_responses())
         return kwargs
 
@@ -162,8 +160,8 @@ class QuestionDetailBaseView(base.CommonContextMixin, generic.DetailView, FormMi
         return "{0}: {1}".format(ticket, self.object.subject)
 
     def get_queryset(self):
-        qs = super(QuestionDetailBaseView, self).get_queryset()
-        return qs.select_related("author")
+        qs = super(QuestionDetailView, self).get_queryset()
+        return qs.filter(author=self.request.user).select_related("author")
 
     def get_success_url(self):
         return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
@@ -173,16 +171,4 @@ class QuestionDetailBaseView(base.CommonContextMixin, generic.DetailView, FormMi
 
     def post(self, *args, **kwargs):
         self.object = self.get_object()
-        return super(QuestionDetailBaseView, self).post(*args, **kwargs)
-
-class QuestionListView(base.LoginRequiredMixin, QuestionListBaseView):
-    """Question list, restricted to the current user"""
-    def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset()
-        return qs.filter(author=self.request.user)
-
-class QuestionDetailView(base.LoginRequiredMixin, QuestionDetailBaseView):
-    """Question detail, restricted to the current user"""
-    def get_queryset(self):
-        qs = super(QuestionDetailView, self).get_queryset()
-        return qs.filter(author=self.request.user)
+        return super(QuestionDetailView, self).post(*args, **kwargs)

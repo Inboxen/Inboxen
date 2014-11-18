@@ -25,6 +25,7 @@ from django.utils.translation import ugettext as _
 
 from website.context_processors import reduced_settings_context
 
+
 def generate_maintenance_page():
     """Render maintenance page into static files"""
     template_name = "maintenance.html"

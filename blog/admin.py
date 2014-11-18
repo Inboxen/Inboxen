@@ -23,6 +23,7 @@ from django.db.models import Q
 
 from blog import models
 
+
 class BlogAdmin(admin.ModelAdmin):
     list_display = ("subject", "author", "date", "published")
     readonly_fields = ("rendered_body", "date", "modified")
@@ -35,7 +36,7 @@ class BlogAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'author':
             kwargs["initial"] = request.user.id
-            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True)|Q(is_superuser=True))
+            kwargs["queryset"] = get_user_model().objects.filter(Q(is_staff=True) | Q(is_superuser=True))
 
         return super(BlogAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 

@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -17,16 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
-from pytz import utc
-
 from django.utils.translation import ugettext as _
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
-
 
 from inboxen.models import Inbox
 
@@ -34,6 +29,7 @@ from website import forms
 from website.views import base
 
 __all__ = ["InboxAddView"]
+
 
 class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
     headline = _("Add Inbox")

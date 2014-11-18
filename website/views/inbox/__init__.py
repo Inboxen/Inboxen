@@ -17,7 +17,6 @@
 
 from .add import *
 from .attachment import *
-from .delete import *
 from .edit import *
 from .email import *
 from .inbox import *

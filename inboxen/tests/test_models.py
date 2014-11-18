@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@ from django.contrib.auth import get_user_model
 
 from inboxen import models
 
+
 class ModelTestCase(test.TestCase):
     """Test our custom methods"""
     fixtures = ['inboxen_testdata.json']
@@ -32,6 +33,9 @@ class ModelTestCase(test.TestCase):
     def setUp(self):
         super(ModelTestCase, self).setUp()
         self.user = get_user_model().objects.get(id=1)
+
+    def test_domain_available(self):
+        self.assertEqual(models.Domain.objects.available(self.user).count(), 1)
 
     def test_inbox_create(self):
         with self.assertRaises(models.Domain.DoesNotExist):
@@ -59,6 +63,24 @@ class ModelTestCase(test.TestCase):
         with self.assertRaises(models.Inbox.DoesNotExist):
             self.user.inbox_set.from_string(email="%s@%s" % (inbox.inbox, domain.domain))
 
+    def test_inbox_receiving(self):
+        # this is a very crappy test
+        count1 = models.Inbox.objects.count()
+        count2 = models.Inbox.objects.receiving().count()
+        self.assertNotEqual(count1, count2)
+
+    def test_inbox_viewable(self):
+        # this is a very crappy test
+        count1 = models.Inbox.objects.count()
+        count2 = models.Inbox.objects.viewable(self.user).count()
+        self.assertNotEqual(count1, count2)
+
+    def test_email_viewable(self):
+        # this is a very crappy test
+        count1 = models.Email.objects.count()
+        count2 = models.Email.objects.viewable(self.user).count()
+        self.assertNotEqual(count1, count2)
+
     def test_header_create(self):
         name = "X-Hello"
         data = "Hewwo"
@@ -83,7 +105,7 @@ class ModelTestCase(test.TestCase):
         self.assertFalse(body2[1])
 
     def test_requests_are_requested(self):
-        models.Request.objects.all().delete() # clear out all requests
+        models.Request.objects.all().delete()  # clear out all requests
         inbox_count = self.user.inbox_set.count()
         profile = self.user.userprofile
         profile.pool_amount = inbox_count + settings.MIN_INBOX_FOR_REQUEST

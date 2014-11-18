@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -24,9 +24,8 @@ from django.core.urlresolvers import reverse_lazy
 from website import forms
 from website.views import base
 
-from queue.delete.tasks import delete_account
-
 __all__ = ["AccountDeletionView"]
+
 
 class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     """ View to delete an account """
@@ -36,8 +35,8 @@ class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, gene
     template_name = "user/account/delete.html"
     headline = _("Delete Account")
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(AccountDeletionView, self).get_form_kwargs(*args, **kwargs)
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(AccountDeletionView, self).get_form_kwargs(**kwargs)
         kwargs.setdefault("request", self.request)
         return kwargs
 

@@ -18,11 +18,11 @@
 ##
 
 from django.views import generic
-from django.utils.translation import ugettext as _
 
-from braces.views import LoginRequiredMixin, SetHeadlineMixin, StaticContextMixin
+from braces.views import LoginRequiredMixin, SetHeadlineMixin
 
 __all__ = ["LoginRequiredMixin", "CommonContextMixin", "TemplateView"]
+
 
 class CommonContextMixin(SetHeadlineMixin):
     """Common items that are used in all views
@@ -30,6 +30,7 @@ class CommonContextMixin(SetHeadlineMixin):
     Can be given headline (string)
     """
     pass
+
 
 class TemplateView(CommonContextMixin, generic.TemplateView):
     """ django's templateview with some commonly needed context data """

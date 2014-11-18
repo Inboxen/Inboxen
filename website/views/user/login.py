@@ -1,7 +1,6 @@
-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -27,6 +26,7 @@ from website.forms import PlaceHolderAuthenticationForm
 from website.views.base import CommonContextMixin
 
 __all__ = ["LoginView"]
+
 
 class LoginView(CommonContextMixin, core.LoginView):
     template_name = "user/login.html"

@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -29,6 +29,7 @@ from pytz import utc
 from inboxen import models
 from queue import tasks
 
+
 class StatsTestCase(test.TestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
@@ -56,6 +57,7 @@ class FlagTestCase(test.TestCase):
         inbox = models.Inbox.objects.filter(email__id=self.emails[0]).only("id").get()
         tasks.deal_with_flags.delay(self.emails, user_id=self.user.id, inbox_id=inbox.id)
 
+
 class SearchTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
@@ -63,16 +65,17 @@ class SearchTestCase(test.TestCase):
         result = tasks.search.delay(1, "bizz").get()
         self.assertItemsEqual(result.keys(), ["emails", "inboxes"])
 
+
 @test.utils.override_settings(
-        EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
-        ADMINS=(("Travis", "ci@example.com"),),
-        )
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    ADMINS=(("Travis", "ci@example.com"),),
+)
 class RequestReportTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
 
     def setUp(self):
         self.user = get_user_model().objects.get(username="isdabizda")
-        self.user.userprofile # autocreate a profile
+        self.user.userprofile  # autocreate a profile
 
         now = datetime.now(utc)
 
@@ -84,15 +87,15 @@ class RequestReportTestCase(test.TestCase):
 
         self.assertEqual(len(results), 1)
         self.assertItemsEqual(
-                results[0],
-                ("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount"),
-                )
+            results[0],
+            ("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount"),
+        )
         self.assertEqual(results[0]["id"], self.waiting.id)
 
     def test_report(self):
         chain(tasks.requests_fetch.s(), tasks.requests_report.s()).delay().get()
 
-        #fetch a fresh copy of the profile
+        # fetch a fresh copy of the profile
         profile = models.UserProfile.objects.get(pk=self.user.userprofile.pk)
 
         self.assertEqual(len(mail.outbox), 1)

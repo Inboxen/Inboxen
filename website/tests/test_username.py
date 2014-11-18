@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 
 from website import forms
 from website.tests import utils
+
 
 class LowerCaseUsernameTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']

@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -35,6 +35,7 @@ This is a test post:
 Bye!
 """
 SUBJECT = """A Test Post For You And Me"""
+
 
 class BlogTestCase(test.TestCase):
     fixtures = ['inboxen_blog_testdata.json']

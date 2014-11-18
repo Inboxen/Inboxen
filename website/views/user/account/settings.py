@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ from website.views import base
 
 __all__ = ["GeneralSettingsView", "UsernameChangeView"]
 
+
 class GeneralSettingsView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     """General settings view"""
     form_class = forms.SettingsForm
@@ -33,14 +34,15 @@ class GeneralSettingsView(base.CommonContextMixin, base.LoginRequiredMixin, gene
     template_name = "user/account/index.html"
     headline = _("Settings")
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(GeneralSettingsView, self).get_form_kwargs(*args, **kwargs)
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(GeneralSettingsView, self).get_form_kwargs(**kwargs)
         kwargs.setdefault("request", self.request)
         return kwargs
 
     def form_valid(self, form, *args, **kwargs):
         form.save()
         return super(GeneralSettingsView, self).form_valid(form=form, *args, **kwargs)
+
 
 class UsernameChangeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
     """Allow users to change their username"""
@@ -49,8 +51,8 @@ class UsernameChangeView(base.CommonContextMixin, base.LoginRequiredMixin, gener
     template_name = "user/account/username.html"
     headline = _("Change Username")
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(UsernameChangeView, self).get_form_kwargs(*args, **kwargs)
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(UsernameChangeView, self).get_form_kwargs(**kwargs)
         kwargs.setdefault("request", self.request)
         return kwargs
 

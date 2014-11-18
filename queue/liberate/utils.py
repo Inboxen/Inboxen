@@ -4,6 +4,7 @@ from cStringIO import StringIO
 from email import encoders
 from email.message import Message
 
+
 class EncodeMessage(Message):
     """Just like a normal email.message.Message, but it automatically enocdes body parts"""
     def get_payload(self, i=None):
@@ -39,6 +40,7 @@ class EncodeMessage(Message):
         # Everything else, including encodings with 8bit or 7bit are returned
         # unchanged.
         return payload
+
 
 def make_message(message):
     """ Make a Python  email.message.Message from our models """

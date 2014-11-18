@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@ from django import test
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
-from inboxen import models
 
 class SearchViewTestCase(test.TestCase):
     fixtures = ['inboxen_testdata.json']
@@ -36,7 +35,7 @@ class SearchViewTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-search", kwargs={"q":"cheddar"})
+        return urlresolvers.reverse("user-search", kwargs={"q": "cheddar"})
 
     def test_context(self):
         response = self.client.get(self.get_url())

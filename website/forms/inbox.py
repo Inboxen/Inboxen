@@ -17,7 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
 import random
 
 from django import forms
@@ -25,29 +24,33 @@ from django.contrib import messages
 from django.db.models import F
 from django.utils.translation import ugettext as _
 
-from pytz import utc
-import watson
-
 from inboxen import models
 from queue.delete import tasks
 
-__all__ = ["InboxAddForm", "InboxEditForm", "InboxRestoreForm"]
+__all__ = ["InboxAddForm", "InboxEditForm"]
+
 
 class InboxAddForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
 
     def __init__(self, request, initial=None, *args, **kwargs):
-        self.request = request # needed to create the inbox
+        self.request = request  # needed to create the inbox
+
+        domain_qs = models.Domain.objects.available(self.request.user)
 
         if not initial:
             initial = {
-                "inbox": None, # This is filled in by the manager.create
-                "domain": random.choice(models.Domain.objects.all()),
+                "inbox": None,  # This is filled in by the manager.create
             }
+            prefered_domain = self.request.user.userprofile.prefered_domain
+            if prefered_domain is not None and prefered_domain in domain_qs:
+                initial["domain"] = prefered_domain
+            else:
+                initial["domain"] = random.choice(domain_qs)
 
         super(InboxAddForm, self).__init__(initial=initial, *args, **kwargs)
-        # Remove empty option "-------"
         self.fields["domain"].empty_label = None
+        self.fields["domain"].queryset = domain_qs
 
     class Meta:
         model = models.Inbox
@@ -56,8 +59,7 @@ class InboxAddForm(forms.ModelForm):
             "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
             }
 
-    def save(self, commit=True):
-        # We're ignoring commit, should we?
+    def save(self):
         # We want this instance created by .create() so we will ignore self.instance
         # which is created just by model(**data)
         data = self.cleaned_data.copy()
@@ -72,16 +74,18 @@ class InboxAddForm(forms.ModelForm):
         messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
         return self.instance
 
+
 class InboxSecondaryEditForm(forms.Form):
     """A subform to hold dangerous operations that will result in loss
     of data.
     """
-    clear_inbox = forms.BooleanField(required=False, label=_("Clear Inbox"), help_text=_("Delete all emails in this Inbox. Cannot be undone."))
+    clear_inbox = forms.BooleanField(required=False, label=_("Empty Inbox"), help_text=_("Delete all emails in this Inbox. Cannot be undone."))
     disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"), help_text=_("This Inbox will no longer receive emails."))
 
     def __init__(self, instance, *args, **kwargs):
         super(InboxSecondaryEditForm, self).__init__(*args, **kwargs)
         self.fields["disable_inbox"].initial = bool(instance.flags.disabled)
+
 
 class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
@@ -99,7 +103,7 @@ class InboxEditForm(forms.ModelForm):
         self.fields["exclude_from_unified"].initial = bool(self.instance.flags.exclude_from_unified)
         self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
 
-    def save(self, commit=True):
+    def save(self):
         data = self.cleaned_data.copy()
         if self.subform.is_valid():
             data.update(self.subform.cleaned_data.copy())
@@ -107,9 +111,6 @@ class InboxEditForm(forms.ModelForm):
         self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
         self.instance.flags.disabled = data.pop("disable_inbox", False)
         clear_inbox = data.pop("clear_inbox", False)
-
-        if not commit:
-            return self.instance
 
         if clear_inbox:
             emails = self.instance.email_set.all()
@@ -120,9 +121,3 @@ class InboxEditForm(forms.ModelForm):
         self.instance.save()
 
         return self.instance
-
-class InboxRestoreForm(InboxEditForm):
-    def save(self, commit=True):
-        self.instance.flags.deleted = False
-        self.instance.created = datetime.now(utc)
-        return super(InboxRestoreForm, self).save(commit)

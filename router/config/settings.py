@@ -1,14 +1,16 @@
-# This file contains python variables that configure Salmon for email processing.
-import logging
-import sys
 import os
+import sys
+
+from salmon.server import SMTPReceiver, LMTPReceiver
 
 sys.path.append('..')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
-receiver_config = {'host': 'localhost', 'port': 8823, "type": "smtp"}
+from django.conf import settings
 
-handlers = ['app.server']
-
-router_defaults = {}
-
+# where to listen for incoming messages
+if settings.SALMON_SERVER["type"] == "lmtp":
+    receiver = LMTPReceiver(socket=settings.SALMON_SERVER["path"])
+elif settings.SALMON_SERVER["type"] == "smtp":
+    receiver = SMTPReceiver(settings.SALMON_SERVER['host'],
+                            settings.SALMON_SERVER['port'])

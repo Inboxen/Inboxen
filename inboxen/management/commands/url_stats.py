@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ example, given a log file where the URL is the third item on a line:
 
     awk '{print $3}' /path/to/access.log | python manage.py url_stats -
 """
+
 
 class Command(BaseCommand):
     args = "<file> | -"
@@ -67,4 +68,3 @@ class Command(BaseCommand):
 
         print "Non-matches:"
         pp.pprint(non_match)
-

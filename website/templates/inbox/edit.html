@@ -22,11 +22,6 @@
                     </div>
                     <div class="panel-body">
                         {{ form.subform|bootstrap }}
-                        <hr>
-                        <p>{% trans "You can also delete this Inbox completely" %}:</p>
-                        <a class="btn btn-danger" href="{% url 'inbox-delete' inbox=inbox.inbox domain=inbox.domain.domain %}">
-                            {% trans "Delete Inbox" %}
-                        </a>
                     </div>
                 </div>
                 <button class="btn btn-primary">{% trans "Save" %}</button>

@@ -20,14 +20,13 @@
 import mailbox
 import smtplib
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from progress import bar
 
 from inboxen.models import Inbox
 
-## Waiting on Inboxen/router#22
-SERVER = {'host': 'localhost', 'port': 8823}
 
 class Command(BaseCommand):
     args = "<path to mail box> [<inbox>]"
@@ -98,7 +97,10 @@ class Command(BaseCommand):
         try:
             self._server.rset()
         except (smtplib.SMTPException, AttributeError):
-            self._server = smtplib.SMTP(SERVER["host"], SERVER["port"])
-            self._server.helo()
+            if settings.SALMON_SERVER["type"] == "smtp":
+                self._server = smtplib.SMTP(settings.SALMON_SERVER["host"], settings.SALMON_SERVER["port"])
+            elif settings.SALMON_SERVER["type"] == "lmtp":
+                self._server = smtplib.LMTP(settings.SALMON_SERVER["path"])
+            self._server.ehlo_or_helo_if_needed()  # will "lhlo" for lmtp
 
         return self._server

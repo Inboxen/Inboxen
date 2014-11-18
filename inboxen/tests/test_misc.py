@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
 
-from inboxen import models
 
 @test.utils.override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
@@ -49,7 +48,7 @@ class LoginTestCase(test.TestCase):
             "auth-username": "isdabizda",
             "auth-password": "123456",
             "login_view-current_step": "auth",
-            }
+        }
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 302)
 
@@ -62,13 +61,13 @@ class LoginTestCase(test.TestCase):
             "auth-username": "isdabizda",
             "auth-password": "bad password",
             "login_view-current_step": "auth",
-            }
+        }
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 200)
         for i in range(100):
             response = self.client.post(dj_settings.LOGIN_URL, params)
 
-        # check we got rejected on bad password 
+        # check we got rejected on bad password
         self.assertEqual(response.status_code, 302)
 
         # check we still get rejected even with a good password

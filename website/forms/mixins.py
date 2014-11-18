@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+
 class PlaceHolderMixin(object):
     """Grabs the label of a text widget and adds it as the placeholder value"""
     def __init__(self, *args, **kwargs):

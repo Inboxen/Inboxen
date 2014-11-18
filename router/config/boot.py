@@ -1,14 +1,12 @@
-import os
 import logging
 import logging.config
+import os
 
 from config import settings
 from salmon import queue
 from salmon.routing import Router
-from salmon.server import SMTPReceiver, LMTPReceiver
 
-logging.config.fileConfig("config/logging.conf.default")
-logging.config.fileConfig("config/logging.conf")
+__all__ = ["settings"]
 
 try:
     os.mkdir("logs", 0700)
@@ -20,15 +18,12 @@ try:
 except OSError:
     pass
 
-# where to listen for incoming messages
-if settings.receiver_config["type"] == "lmtp":
-    settings.receiver = LMTPReceiver(socket=settings.receiver_config['path'])
-elif settings.receiver_config["type"] == "smtp":
-    settings.receiver = SMTPReceiver(settings.receiver_config['host'],
-                                     settings.receiver_config['port'])
+if os.path.exists("config/logging.conf"):
+    logging.config.fileConfig("config/logging.conf")
+else:
+    logging.config.fileConfig("config/logging.conf.default")
 
-Router.defaults(**settings.router_defaults)
-Router.load(settings.handlers)
-Router.RELOAD=False
-Router.LOG_EXCEPTIONS=True
-Router.UNDELIVERABLE_QUEUE=queue.Queue("run/undeliverable")
+Router.load(['app.server'])
+Router.RELOAD = False
+Router.LOG_EXCEPTIONS = True
+Router.UNDELIVERABLE_QUEUE = queue.Queue("run/undeliverable")

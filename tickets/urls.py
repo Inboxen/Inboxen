@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -23,9 +23,29 @@ from tickets import views
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
-    urls.url(r'^$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^status/(?P<status>[!]?\w+)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^status/(?P<status>[!]?\w+)/(?P<page>)/$', views.QuestionListView.as_view(), name='tickets-index'),
-    urls.url(r'^ticket/(?P<pk>\d+)/$', views.QuestionDetailView.as_view(), name='tickets-detail'),
-    )
+    urls.url(
+        r'^$',
+        views.QuestionListView.as_view(),
+         name='tickets-index'
+    ),
+    urls.url(
+        r'^status/(?P<status>[!]?\w+)/$',
+        views.QuestionListView.as_view(),
+        name='tickets-index'
+    ),
+    urls.url(
+        r'^(?P<page>)/$',
+        views.QuestionListView.as_view(),
+        name='tickets-index'
+    ),
+    urls.url(
+        r'^status/(?P<status>[!]?\w+)/(?P<page>)/$',
+        views.QuestionListView.as_view(),
+        name='tickets-index'
+    ),
+    urls.url(
+        r'^ticket/(?P<pk>\d+)/$',
+        views.QuestionDetailView.as_view(),
+        name='tickets-detail'
+    ),
+)

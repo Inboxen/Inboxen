@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -23,12 +23,12 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from inboxen import models
 from queue.liberate.tasks import TAR_TYPES
 from website import forms
 from website.views import base
 
 __all__ = ["LiberationView", "LiberationDownloadView"]
+
 
 class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.LiberationForm
@@ -39,8 +39,8 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
     def get_object(self, queryset=None):
         return self.request.user.liberation
 
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(LiberationView, self).get_form_kwargs(*args, **kwargs)
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(LiberationView, self).get_form_kwargs(**kwargs)
         kwargs.setdefault("user", self.request.user)
         return kwargs
 
@@ -48,6 +48,7 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
         output = super(LiberationView, self).form_valid(form, *args, **kwargs)
         messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
         return output
+
 
 class LiberationDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):

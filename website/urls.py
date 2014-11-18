@@ -1,6 +1,6 @@
 ##
 #    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
-#   
+#
 #    This file is part of Inboxen.
 #
 #    Inboxen is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ from two_factor.views import core as twofactor
 
 from website import views
 from website.views import error
-from website.forms import PlaceHolderAuthenticationForm, PlaceHolderPasswordChangeForm
+from website.forms import PlaceHolderPasswordChangeForm
 
 urls.handler400 = error.BadRequest.as_view()
 urls.handler403 = error.PermissionDenied.as_view()
@@ -43,7 +43,6 @@ urlpatterns = urls.patterns('',
 
     urls.url(r'^inbox/add/', views.InboxAddView.as_view(), name='inbox-add'),
     urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxEditView.as_view(), name='inbox-edit'),
-    urls.url(r'^inbox/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxDeletionView.as_view(), name='inbox-delete'),
 
     urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', views.AttachmentDownloadView.as_view(), name='email-attachment'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)', views.EmailView.as_view(), name='email-view'),
@@ -78,8 +77,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/security/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
     urls.url(r'^user/account/security', views.TwoFactorView.as_view(), name='user-security'),
 
-    urls.url(r'^user/account/restore/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxRestoreView.as_view(), name='user-restore'),
-    urls.url(r'^user/account/restore/', views.RestoreSelectView.as_view(), name='user-restore'),
     urls.url(r'^user/account/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
     urls.url(r'^user/account/liberate', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^user/account/delete', views.AccountDeletionView.as_view(), name='user-delete'),
