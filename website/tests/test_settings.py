@@ -60,9 +60,27 @@ class SettingsTestCase(test.TestCase):
 
         self.assertTrue(form.is_valid())
 
+    def test_form_domains_valid(self):
+        request = utils.MockRequest(self.user)
+        form = self.form(request)
 
-class UsernameChangeTestCase(SettingsTestCase):
+        for domain in form.fields["prefered_domain"].queryset:
+            if domain.owner != self.user and domain.owner is not None:
+                self.fail("Domain shouldn't be available")
+
+
+class UsernameChangeTestCase(test.TestCase):
+    fixtures = ['inboxen_testdata.json']
     form = forms.UsernameChangeForm
+
+    def setUp(self):
+        super(UsernameChangeTestCase, self).setUp()
+        self.user = get_user_model().objects.get(id=1)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
 
     def get_url(self):
         return urlresolvers.reverse("user-username")
@@ -82,8 +100,18 @@ class UsernameChangeTestCase(SettingsTestCase):
         self.assertTrue(form.is_valid())
 
 
-class LiberateTestCase(SettingsTestCase):
+class LiberateTestCase(test.TestCase):
+    fixtures = ['inboxen_testdata.json']
     form = forms.LiberationForm
+
+    def setUp(self):
+        super(LiberateTestCase, self).setUp()
+        self.user = get_user_model().objects.get(id=1)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
 
     def get_url(self):
         return urlresolvers.reverse("user-liberate")
@@ -101,8 +129,18 @@ class LiberateTestCase(SettingsTestCase):
         self.assertTrue(form.is_valid())
 
 
-class DeleteTestCase(SettingsTestCase):
+class DeleteTestCase(test.TestCase):
+    fixtures = ['inboxen_testdata.json']
     form = forms.DeleteAccountForm
+
+    def setUp(self):
+        super(DeleteTestCase, self).setUp()
+        self.user = get_user_model().objects.get(id=1)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
 
     def get_url(self):
         return urlresolvers.reverse("user-delete")

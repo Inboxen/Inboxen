@@ -141,14 +141,26 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
         return username
 
 
-class SettingsForm(PlaceHolderMixin, forms.Form):
+class SettingsForm(forms.Form):
     """A form for general settings"""
     IMAGE_OPTIONS = (
         (0, _("Always ask to display images")),
         (1, _("Always display images")),
         (2, _("Never display images")),
-        )
-    images = forms.ChoiceField(choices=IMAGE_OPTIONS, widget=forms.RadioSelect, label=_("Display options for HTML emails"))
+    )
+
+    prefered_domain = forms.ModelChoiceField(
+        required=False,
+        queryset=models.Domain.objects.none(),
+        empty_label=_("(No preference)"),
+        help_text=_("Prefer a particular domain when adding a new Inbox")
+    )
+    images = forms.ChoiceField(
+        choices=IMAGE_OPTIONS,
+        widget=forms.RadioSelect,
+        label=_("Display options for HTML emails"),
+        help_text=_("Warning: Images in HTML emails can be used to track if you read an email!"),
+    )
     prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
 
     def __init__(self, request, *args, **kwargs):
@@ -157,6 +169,7 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
         initial = kwargs.get("initial", {})
 
         initial["prefer_html"] = bool(self.profile.flags.prefer_html_email)
+        initial["prefered_domain"] = self.profile.prefered_domain
 
         if self.profile.flags.ask_images:
             initial["images"] = "0"
@@ -166,7 +179,10 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
             initial["images"] = "2"
 
         kwargs.setdefault("initial", initial)
+
         super(SettingsForm, self).__init__(*args, **kwargs)
+
+        self.fields["prefered_domain"].queryset = models.Domain.objects.available(request.user)
 
     def save(self):
         if "prefer_html" in self.cleaned_data and self.cleaned_data["prefer_html"]:
@@ -184,7 +200,9 @@ class SettingsForm(PlaceHolderMixin, forms.Form):
                 self.profile.flags.display_images = False
                 self.profile.flags.ask_images = False
 
-        self.profile.save(update_fields=["flags"])
+        self.profile.prefered_domain = self.cleaned_data["prefered_domain"]
+
+        self.profile.save(update_fields=["flags", "prefered_domain"])
 
 
 class UsernameChangeForm(PlaceHolderMixin, forms.Form):
