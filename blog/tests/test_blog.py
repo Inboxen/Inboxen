@@ -21,7 +21,11 @@ from django import test
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
+import factory
+import factory.fuzzy
+
 from blog import models
+from inboxen.tests import factories
 
 BODY = """
 Hey there!
@@ -37,15 +41,26 @@ Bye!
 SUBJECT = """A Test Post For You And Me"""
 
 
+class BlogPostFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.BlogPost
+
+
+    subject = factory.fuzzy.FuzzyText()
+    body = factory.fuzzy.FuzzyText()
+
 class BlogTestCase(test.TestCase):
     def test_blog_index(self):
+        user = factories.UserFactory()
+        BlogPostFactory.create_batch(10, draft=False, author=user)
+
         url = urlresolvers.reverse("blog")
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
 
     def test_blog_post(self):
-        user = get_user_model().objects.get(username="isdabizda")
+        user = factories.UserFactory()
         user.is_staff = True
         user.save()
 
@@ -54,12 +69,23 @@ class BlogTestCase(test.TestCase):
         if not login:
             raise Exception("Could not log in")
 
-        models.BlogPost.objects.create(author=user, subject=SUBJECT, draft=False, body=BODY)
-        post = models.BlogPost.objects.latest("date")
+        models.BlogPost.objects.create(author=user, subject=SUBJECT, draft=True, body=BODY)
+        post = models.BlogPost.objects.get()
         self.assertEqual(post.subject, SUBJECT)
         self.assertEqual(post.body, BODY)
+        self.assertEqual(post.date, None)
+
+        old_mod = post.modified
+        post.draft = False
+        post.save()
+        post = models.BlogPost.objects.get()
+        self.assertNotEqual(post.date, None)
+        self.assertNotEqual(post.modified, old_mod)
 
     def test_feeds(self):
+        user = factories.UserFactory()
+        BlogPostFactory.create_batch(10, draft=False, author=user)
+
         response_rss = self.client.get(urlresolvers.reverse("blog-feed-rss"))
         response_atom = self.client.get(urlresolvers.reverse("blog-feed-atom"))
 
