@@ -38,9 +38,9 @@ log = logging.getLogger(__name__)
 @transaction.atomic()
 def START(message, inbox=None, domain=None):
     try:
-        inbox = Inbox.objects.receiving()
-        inbox = inbox.select_related("user", "user__userprofile")
-        inbox = inbox.get(inbox=inbox, domain__domain=domain)
+        inbox = Inbox.objects.filter(inbox=inbox, domain__domain=domain)
+        inbox = inbox.select_related("user", "user__userprofile").receiving()
+        inbox = inbox.get()
 
         make_email(message, inbox)
 
