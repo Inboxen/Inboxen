@@ -18,16 +18,36 @@
 ##
 
 from django import test
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
+import factory
+import factory.fuzzy
+
+from inboxen.tests import factories
 from tickets import models
+
+
+class QuestionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Question
+
+    subject = factory.fuzzy.FuzzyText()
+    body = factory.fuzzy.FuzzyText()
+
+
+class ResponseFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Response
+
+    body = factory.fuzzy.FuzzyText()
 
 
 class QuestionViewTestCase(test.TestCase):
     def setUp(self):
         super(QuestionViewTestCase, self).setUp()
-        self.user = get_user_model().objects.get(username="isdabizda")
+        self.user = factories.UserFactory()
+
+        QuestionFactory.create_batch(10, author=self.user)
 
         login = self.client.login(username=self.user.username, password="123456")
 
