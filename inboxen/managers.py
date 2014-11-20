@@ -165,4 +165,7 @@ class BodyQuerySet(HashedQuerySet):
         if hashed is None:
             hashed = self.hash_it(data)
 
+        if "defaults" in kwargs:
+            kwargs.pop("defaults")
+
         return super(BodyQuerySet, self).get_or_create(hashed=hashed, defaults={'data': data}, **kwargs)

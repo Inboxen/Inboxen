@@ -22,6 +22,7 @@ import datetime
 from django.contrib.auth import get_user_model
 
 import factory
+import factory.fuzzy
 
 from inboxen import models
 
@@ -64,3 +65,27 @@ class EmailFactory(factory.django.DjangoModelFactory):
 
     inbox = factory.SubFactory(InboxFactory)
     received_date = datetime.datetime.now()
+
+
+class BodyFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Body
+        django_get_or_create = ("data", )
+
+    data = factory.fuzzy.FuzzyText()
+
+
+class PartListFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.PartList
+
+    body = factory.SubFactory(BodyFactory)
+
+
+class HeaderFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Header
+
+    data = factory.fuzzy.FuzzyText()
+    name = factory.fuzzy.FuzzyText()
+    part = factory.SubFactory(PartListFactory)
