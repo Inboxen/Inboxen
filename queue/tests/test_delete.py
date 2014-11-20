@@ -23,14 +23,19 @@ from django.contrib.auth import get_user_model
 from django.utils import unittest
 
 from inboxen import models
+from inboxen.tests import factories
 from queue.delete import tasks
 
 
 class DeleteTestCase(test.TestCase):
     """Test account deleting"""
+    def setUp(self):
+        self.user = factories.UserFactory()
+
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_delete_account(self):
-        tasks.delete_account.delay(user_id=1)
+        factories.EmailFactory.create_batch(inbox__user=self.user)
+        tasks.delete_account.delay(user_id=self.user.id)
 
         self.assertEqual(get_user_model().objects.count(), 0)
         self.assertEqual(models.Email.objects.count(), 0)
@@ -39,8 +44,9 @@ class DeleteTestCase(test.TestCase):
 
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_delete_orphans(self):
-        models.Inbox.objects.all().delete()
-
+        models.Body.objects.get_or_create(data="this is a test")
+        models.HeaderName.objects.create(name="bluhbluh")
+        models.HeaderData.objects.create(data="bluhbluh", hashed="fakehash")
         tasks.clean_orphan_models.delay()
 
         self.assertEqual(models.Body.objects.count(), 0)
@@ -48,7 +54,7 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(models.HeaderName.objects.count(), 0)
 
     def test_delete_inboxen_item(self):
-        email = models.Email.objects.only("id").all()[0]
+        email = factories.EmailFactory(inbox__user=self.user)
         tasks.delete_inboxen_item.delay("email", email.id)
 
         with self.assertRaises(models.Email.DoesNotExist):
@@ -61,19 +67,19 @@ class DeleteTestCase(test.TestCase):
         tasks.delete_inboxen_item.chunks([], 500)()
 
     def test_finish_delete_user(self):
-        user = get_user_model().objects.get(id=1)
+        factories.InboxFactory.create_batch(4, user=self.user)
 
         with self.assertRaises(Exception):
-            tasks.finish_delete_user({}, user.id)
+            tasks.finish_delete_user({}, self.user.id)
 
-        user.inbox_set.delete()
-        tasks.finish_delete_user({}, user.id)
+        self.user.inbox_set.delete()
+        tasks.finish_delete_user({}, self.user.id)
 
         with self.assertRaises(get_user_model().DoesNotExist):
             get_user_model().objects.get(id=1)
 
     def test_disown_inbox(self):
-        inbox = models.Inbox.objects.filter(user__isnull=False).only("id")[0]
+        inbox = factories.InboxFactory(user=self.user)
         tasks.disown_inbox.delay({}, inbox.id)
 
         inbox = models.Inbox.objects.get(id=inbox.id)

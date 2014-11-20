@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import itertools
 import os
 import os.path
 import shutil
@@ -28,6 +29,7 @@ from django.contrib.auth import get_user_model
 from django.utils import unittest
 
 from inboxen import models
+from inboxen.tests import factories
 from queue.liberate import tasks
 from website.forms import LiberationForm
 
@@ -37,7 +39,14 @@ _database_not_psql = settings.DATABASES["default"]["ENGINE"] != 'django.db.backe
 class LiberateTestCase(test.TestCase):
     """Test account liberating"""
     def setUp(self):
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
+        inboxes = factories.InboxFactory.create_batch(2)
+        emails = factories.EmailFactory.create_batch(5, inbox=inboxes[0])
+        emails.extend(factories.EmailFactory.create_batch(5, inbox=inboxes[1]))
+
+        for email in emails:
+            factories.PartListFactory(email=email)
+
         self.mail_dir = os.path.join(os.getcwd(), "isdabizda")
         mailbox.Maildir(self.mail_dir)
 
@@ -47,14 +56,13 @@ class LiberateTestCase(test.TestCase):
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
-        for storage in LiberationForm.STORAGE_TYPES:
-            for compression in LiberationForm.COMPRESSION_TYPES:
-                form_data = {"storage_type": storage[0], "compression_type": compression[0]}
-                form = LiberationForm(self.user, data=form_data)
-                self.assertTrue(form.is_valid())
-                form.save()
+        for storage, commpression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
+            form_data = {"storage_type": storage[0], "compression_type": compression[0]}
+            form = LiberationForm(self.user, data=form_data)
+            self.assertTrue(form.is_valid())
+            form.save()
 
-                # TODO: check Liberation model actually has correct archive type
+            # TODO: check Liberation model actually has correct archive type
 
     def test_liberate_inbox(self):
         result = tasks.liberate_inbox(self.mail_dir, 1)
