@@ -16,10 +16,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+import itertools
+
 from django import test
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
+from inboxen.tests import factories
 from website import forms
 from website.tests import utils
 
@@ -29,7 +32,11 @@ class SettingsTestCase(test.TestCase):
 
     def setUp(self):
         super(SettingsTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        for args in itertools.product([True, False], [self.user, other_user, None]):
+            factories.DomainFactory(enabled=args[0], owner=args[1])
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -44,6 +51,10 @@ class SettingsTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context["form"]
         self.assertIsInstance(form, self.form)
+
+        for domain in form.fields["prefered_domain"].queryset:
+            self.assertTrue(domain.enabled)
+            self.assertTrue(domain.owner is None or domain.owner.id == self.user.id)
 
     def test_form_bad_data(self):
         params = {"images": "12213"}
@@ -69,12 +80,11 @@ class SettingsTestCase(test.TestCase):
 
 
 class UsernameChangeTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
     form = forms.UsernameChangeForm
 
     def setUp(self):
         super(UsernameChangeTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -100,12 +110,11 @@ class UsernameChangeTestCase(test.TestCase):
 
 
 class LiberateTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
     form = forms.LiberationForm
 
     def setUp(self):
         super(LiberateTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -129,12 +138,11 @@ class LiberateTestCase(test.TestCase):
 
 
 class DeleteTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
     form = forms.DeleteAccountForm
 
     def setUp(self):
         super(DeleteTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
 

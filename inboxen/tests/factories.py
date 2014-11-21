@@ -21,6 +21,7 @@ import datetime
 
 from django.contrib.auth import get_user_model
 
+from pytz import utc
 import factory
 import factory.fuzzy
 
@@ -64,7 +65,7 @@ class EmailFactory(factory.django.DjangoModelFactory):
         model = models.Email
 
     inbox = factory.SubFactory(InboxFactory)
-    received_date = datetime.datetime.now()
+    received_date = factory.fuzzy.FuzzyDateTime(datetime.datetime(2000, 2, 4, tzinfo=utc))
 
 
 class BodyFactory(factory.django.DjangoModelFactory):
@@ -89,3 +90,4 @@ class HeaderFactory(factory.django.DjangoModelFactory):
     data = factory.fuzzy.FuzzyText()
     name = factory.fuzzy.FuzzyText()
     part = factory.SubFactory(PartListFactory)
+    ordinal = factory.Sequence(int)

@@ -18,14 +18,15 @@
 ##
 
 from django import test
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
+
+from inboxen.tests import factories
 
 
 class SearchViewTestCase(test.TestCase):
     def setUp(self):
         super(SearchViewTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
 

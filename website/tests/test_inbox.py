@@ -17,13 +17,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import itertools
+
 from django import test
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.utils import unittest
 
 from inboxen import models
+from inboxen.tests import factories
 from website import forms as inboxen_forms
 from website.tests.utils import MockRequest
 
@@ -33,7 +35,7 @@ class InboxTestAbstract(object):
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxTestAbstract, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -45,25 +47,25 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 200)
 
     def test_post_important(self):
-        emails = self.get_emails().order_by('-received_date').only("id", "flags")
-        email_old_count = emails.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        self.assertEqual(count, 0)
+
         params = {"important": ""}
 
-        for email in emails[:12]:
+        for email in self.emails[:2]:
             params[email.eid] = "email"
 
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
 
-        email = self.get_emails().order_by('-received_date').only("id", "flags")
-        important_count = emails.filter(flags=models.Email.flags.important).count()
-        self.assertNotEqual(important_count, email_old_count)
+        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        self.assertEqual(count, 2)
 
     def test_get_read(self):
-        emails = self.get_emails().order_by('-received_date').select_related("inbox", "inbox__domain")
-        email_old_count = emails.filter(flags=models.Email.flags.read).count()
+        count = models.Email.objects.filter(flags=models.Email.flags.read).count()
+        self.assertEqual(count, 0)
 
-        for email in emails[:12]:
+        for email in self.emails[:2]:
             kwargs = {
                 "inbox": email.inbox.inbox,
                 "domain": email.inbox.domain.domain,
@@ -71,20 +73,18 @@ class InboxTestAbstract(object):
             }
             self.client.get(urlresolvers.reverse("email-view", kwargs=kwargs))
 
-        emails = self.get_emails().order_by('-received_date').select_related("inbox", "inbox__domain")
-        read_count = emails.filter(flags=models.Email.flags.read).count()
-        self.assertNotEqual(read_count, email_old_count)
+        count = models.Email.objects.filter(flags=models.Email.flags.read).count()
+        self.assertEqual(count, 2)
 
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_post_delete(self):
-        email_ids = self.get_emails().order_by('?').only('id')[:5]
-        email_ids = [email.eid for email in email_ids]
-        count_1st = self.get_emails().count()
+        count_1st = len(self.emails)
+        email_ids = [email.eid for email in self.emails[10]]
 
         response = self.client.post(self.get_url(), {"delete-single": email_ids.pop()})
         self.assertEqual(response.status_code, 302)
 
-        count_2nd = self.get_emails().count()
+        count_2nd = models.Email.objects.count()
         self.assertEqual(count_1st - 1, count_2nd)
 
         params = dict([(email_id, "email") for email_id in email_ids])
@@ -92,10 +92,15 @@ class InboxTestAbstract(object):
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
 
-        count_3rd = self.get_emails().count()
-        self.assertEqual(count_2nd - 4, count_3rd)
+        count_3rd = models.Email.objects.count()
+        self.assertEqual(count_2nd - 9, count_3rd)
 
     def test_important_first(self):
+        # mark some emails as important
+        for email in self.emails[:3]:
+            email.flags.important = True
+            email.save()
+
         response = self.client.get(self.get_url())
         objs = response.context["page_obj"].object_list[:5]
         objs = [obj.important for obj in objs]
@@ -115,23 +120,33 @@ class InboxTestAbstract(object):
 class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
     """Test Inbox specific views"""
     def setUp(self):
-        self.inbox = models.Inbox.objects.filter(id=1).select_related("domain").get()
         super(SingleInboxTestCase, self).setUp()
+        self.inbox = factories.InboxFactory(user=self.user)
+        self.emails = factories.EmailFactory.create_batch(150, inbox=self.inbox)
+
+        for email in self.emails:
+            part = factories.PartListFactory(email=email)
+            factories.HeaderFactory(part=part)
+            factories.HeaderFactory(part=part, name="From")
+            factories.HeaderFactory(part=part, name="Subject")
 
     def get_url(self):
         return urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
-    def get_emails(self):
-        return models.Email.objects.filter(inbox=self.inbox)
-
 
 class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
-    """Test Inbox specific views"""
+    """Test Unified Inbox specific views"""
+    def setUp(self):
+        super(UnifiedInboxTestCase, self).setUp()
+        self.emails = factories.EmailFactory.create_batch(150, inbox__user=self.user)
+
+        for email in self.emails:
+            part = factories.PartListFactory(email=email)
+            factories.HeaderFactory(part=part, name="From")
+            factories.HeaderFactory(part=part, name="Subject")
+
     def get_url(self):
         return urlresolvers.reverse("unified-inbox")
-
-    def get_emails(self):
-        return models.Email.objects.filter(inbox__user=self.user)
 
 
 class InboxAddTestCase(test.TestCase):
@@ -139,7 +154,11 @@ class InboxAddTestCase(test.TestCase):
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxAddTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        for args in itertools.product([True, False], [self.user, other_user, None]):
+            factories.DomainFactory(enabled=args[0], owner=args[1])
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -160,7 +179,15 @@ class InboxAddTestCase(test.TestCase):
             self.assertTrue(domain.enabled)
             self.assertTrue(domain.owner is None or domain.owner.id == self.user.id)
 
-        form_data = {"domain": "3"}
+        # vaid domain
+        domain_id = form.fields["domain"].queryset[0].id
+        form_data = {"domain": domain_id}
+        form = inboxen_forms.InboxAddForm(MockRequest(self.user), data=form_data)
+        self.assertTrue(form.is_valid())
+
+        # invalid domain
+        domain_id = models.Domain.objects.filter(enabled=False)[0].id
+        form_data = {"domain": domain_id}
         form = inboxen_forms.InboxAddForm(MockRequest(self.user), data=form_data)
         self.assertFalse(form.is_valid())
 
@@ -181,8 +208,8 @@ class InboxEditTestCase(test.TestCase):
     def setUp(self):
         """Create the client and grab the user"""
         super(InboxEditTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
-        self.inbox = self.user.inbox_set.select_related("domain")[0]
+        self.user = factories.UserFactory()
+        self.inbox = factories.InboxFactory(user=self.user)
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -201,7 +228,7 @@ class InboxEditTestCase(test.TestCase):
         self.assertNotIn("domain", form.fields)
         self.assertIn("tags", form.fields)
 
-    def test_inbox_add(self):
+    def test_inbox_add_tags(self):
         response = self.client.post(self.get_url(), {"tags": "no tags"})
         self.assertEqual(response.status_code, 302)
 

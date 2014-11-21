@@ -19,14 +19,17 @@
 
 from django import test
 from django.conf import settings as dj_settings
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
+
+from inboxen.tests import factories
 
 
 class HomeViewTestCase(test.TestCase):
     def setUp(self):
         super(HomeViewTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
+        self.user = factories.UserFactory()
+        domain = factories.DomainFactory()
+        factories.InboxFactory.create_batch(150, domain=domain, user=self.user)
 
         login = self.client.login(username=self.user.username, password="123456")
 

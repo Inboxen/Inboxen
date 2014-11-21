@@ -18,15 +18,15 @@
 ##
 
 from django import test
-from django.contrib.auth import get_user_model
 
+from inboxen.tests import factories
 from website import forms
 from website.tests import utils
 
 
 class LowerCaseUsernameTestCase(test.TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.get(username="isdabizda")
+        self.user = factories.UserFactory()
 
     def test_login(self):
         params = {"username": "ISdaBIZda", "password": "123456"}
