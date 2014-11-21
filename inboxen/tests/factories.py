@@ -28,6 +28,13 @@ import factory.fuzzy
 from inboxen import models
 
 
+class FuzzyBinary(factory.fuzzy.FuzzyText):
+    """Fuzzes a byte string, works the same as FuzzyText"""
+    def fuzz(self):
+        fuzz = super(FuzzyBinary, self).fuzz()
+        return fuzz.encode("utf8")
+
+
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = get_user_model()
@@ -73,7 +80,7 @@ class BodyFactory(factory.django.DjangoModelFactory):
         model = models.Body
         django_get_or_create = ("data", )
 
-    data = factory.fuzzy.FuzzyText()
+    data = FuzzyBinary()
 
 
 class PartListFactory(factory.django.DjangoModelFactory):
