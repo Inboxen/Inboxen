@@ -22,8 +22,6 @@ from django.core import urlresolvers
 
 
 class StatsViewTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def get_url(self):
         return urlresolvers.reverse("stats")
 

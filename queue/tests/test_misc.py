@@ -27,14 +27,13 @@ from celery import chain
 from pytz import utc
 
 from inboxen import models
+from inboxen.tests import factories
 from queue import tasks
 
 
 class StatsTestCase(test.TestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
-    fixtures = ['inboxen_testdata.json']
-
     def test_no_exceptions(self):
         tasks.statistics.delay()
 
@@ -43,26 +42,31 @@ class FlagTestCase(test.TestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
     # TODO: actually test
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(FlagTestCase, self).setUp()
-        self.user = get_user_model().objects.get(username="isdabizda")
-        self.emails = [email.id for email in models.Email.objects.filter(inbox__user=self.user)[:10]]
+        self.user = factories.UserFactory()
+        self.inboxes = [
+            factories.InboxFactory(user=self.user, flags=0),
+            factories.InboxFactory(user=self.user, flags=models.Inbox.flags.new),
+        ]
+        self.emails = factories.EmailFactory.create_batch(10, inbox=self.inboxes[0])
+        self.emails.extend(factories.EmailFactory.create_batch(10, inbox=self.inboxes[1]))
 
     def test_flags_from_unified(self):
-        tasks.deal_with_flags.delay(self.emails, user_id=self.user.id)
+        tasks.deal_with_flags.delay([email.id for email in self.emails], user_id=self.user.id)
 
     def test_flags_from_single_inbox(self):
-        inbox = models.Inbox.objects.filter(email__id=self.emails[0]).only("id").get()
-        tasks.deal_with_flags.delay(self.emails, user_id=self.user.id, inbox_id=inbox.id)
+        tasks.deal_with_flags.delay(
+            [email.id for email in self.emails],
+            user_id=self.user.id,
+            inbox_id=self.inboxes[0].id,
+        )
 
 
 class SearchTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def test_search(self):
-        result = tasks.search.delay(1, "bizz").get()
+        user = factories.UserFactory()
+        result = tasks.search.delay(user.id, "bizz").get()
         self.assertItemsEqual(result.keys(), ["emails", "inboxes"])
 
 
@@ -71,10 +75,8 @@ class SearchTestCase(test.TestCase):
     ADMINS=(("Travis", "ci@example.com"),),
 )
 class RequestReportTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
-        self.user = get_user_model().objects.get(username="isdabizda")
+        self.user = factories.UserFactory()
         self.user.userprofile  # autocreate a profile
 
         now = datetime.now(utc)

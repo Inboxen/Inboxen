@@ -20,17 +20,18 @@
 from django import test
 from django.core import urlresolvers
 
-from inboxen import models
+from inboxen.tests import factories
 
 
 class EmailViewTestCase(test.TestCase):
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(EmailViewTestCase, self).setUp()
 
-        self.email = models.Email.objects.filter(id=1).select_related("inbox", "inbox__domain", "inbox__user").get()
-        self.user = self.email.inbox.user
+        self.user = factories.UserFactory()
+        self.email = factories.EmailFactory(inbox__user=self.user)
+        part = factories.PartListFactory(email=self.email)
+        factories.HeaderFactory(part=part, name="From")
+        factories.HeaderFactory(part=part, name="Subject")
 
         login = self.client.login(username=self.user.username, password="123456")
 
