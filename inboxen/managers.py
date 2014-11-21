@@ -97,7 +97,7 @@ class InboxQuerySet(QuerySet):
     def receiving(self):
         """Returns a QuerySet of Inboxes that can receive emails"""
         inbox_model = get_model("inboxen", "inbox")
-        qs = self.filter(domain__enabled=True)
+        qs = self.filter(domain__enabled=True, user__isnull=False)
         return qs.exclude(
             models.Q(flags=inbox_model.flags.deleted) |
             models.Q(flags=inbox_model.flags.disabled),

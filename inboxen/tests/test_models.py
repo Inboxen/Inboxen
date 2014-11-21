@@ -36,6 +36,7 @@ class ModelTestCase(test.TestCase):
         # all the permutations of Domains
         for args in itertools.product([True, False], [user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
+
         self.assertEqual(models.Domain.objects.available(user).count(), 2)
 
     def test_inbox_create(self):
@@ -77,7 +78,7 @@ class ModelTestCase(test.TestCase):
             [user, None],
         )
         for args in itertools.product(*params):
-            factories.InboxFactory(domain__enabled=args[0], flags=args[1])
+            factories.InboxFactory(domain__enabled=args[0], flags=args[1], user=args[2])
 
         count = models.Inbox.objects.receiving().count()
         self.assertEqual(count, 2)
