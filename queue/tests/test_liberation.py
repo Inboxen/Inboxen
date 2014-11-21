@@ -40,12 +40,14 @@ class LiberateTestCase(test.TestCase):
     """Test account liberating"""
     def setUp(self):
         self.user = factories.UserFactory()
-        inboxes = factories.InboxFactory.create_batch(2)
-        emails = factories.EmailFactory.create_batch(5, inbox=inboxes[0])
-        emails.extend(factories.EmailFactory.create_batch(5, inbox=inboxes[1]))
+        self.inboxes = factories.InboxFactory.create_batch(2)
+        self.emails = factories.EmailFactory.create_batch(5, inbox=self.inboxes[0])
+        self.emails.extend(factories.EmailFactory.create_batch(5, inbox=self.inboxes[1]))
 
-        for email in emails:
-            factories.PartListFactory(email=email)
+        for email in self.emails:
+            part = factories.PartListFactory(email=email)
+            factories.HeaderFactory(part=part, name="From")
+            factories.HeaderFactory(part=part, name="Subject")
 
         self.mail_dir = os.path.join(os.getcwd(), "isdabizda")
         mailbox.Maildir(self.mail_dir)
@@ -56,7 +58,7 @@ class LiberateTestCase(test.TestCase):
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
-        for storage, commpression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
+        for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
             form_data = {"storage_type": storage[0], "compression_type": compression[0]}
             form = LiberationForm(self.user, data=form_data)
             self.assertTrue(form.is_valid())
@@ -65,17 +67,18 @@ class LiberateTestCase(test.TestCase):
             # TODO: check Liberation model actually has correct archive type
 
     def test_liberate_inbox(self):
-        result = tasks.liberate_inbox(self.mail_dir, 1)
+        result = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)
         self.assertIn("folder", result)
         self.assertIn("ids", result)
         self.assertTrue(os.path.exists(os.path.join(self.mail_dir, '.' + result["folder"])))
 
-        email_ids = models.Email.objects.filter(inbox_id=1, flags=~models.Email.flags.deleted).values_list("id", flat=True)
+        email_ids = models.Email.objects.filter(inbox=self.inboxes[0]).values_list("id", flat=True)
         self.assertItemsEqual(email_ids, result["ids"])
 
     def test_liberate_message(self):
-        inbox = tasks.liberate_inbox(self.mail_dir, 1)["folder"]
-        tasks.liberate_message(self.mail_dir, inbox, 1)
+        inbox = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)["folder"]
+        email = self.inboxes[0].email_set.all()[0]
+        tasks.liberate_message(self.mail_dir, inbox, email.id)
 
         with self.assertRaises(Exception):
             tasks.liberate_message(self.mail_dir, inbox, 10000000)

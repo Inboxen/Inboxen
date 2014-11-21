@@ -195,8 +195,9 @@ class InboxAddTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertIsInstance(response.context["form"], inboxen_forms.InboxAddForm)
 
+        domain = models.Domain.objects.filter(enabled=True, owner=None)[0]
         inbox_count_1st = models.Inbox.objects.count()
-        response = self.client.post(self.get_url(), {"domain": "1", "tags": "no tags"})
+        response = self.client.post(self.get_url(), {"domain": domain.id, "tags": "no tags"})
         self.assertEqual(response.status_code, 302)
 
         inbox_count_2nd = models.Inbox.objects.count()
