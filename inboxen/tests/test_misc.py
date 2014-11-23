@@ -23,21 +23,22 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
 
+from inboxen.tests import factories
+
 
 @test.utils.override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
     """Test various login things"""
-    fixtures = ['inboxen_testdata.json']
-
     def setUp(self):
         super(LoginTestCase, self).setUp()
+        self.user = factories.UserFactory()
         cache.clear()
 
     def test_last_login(self):
-        login = self.client.login(username="isdabizda", password="123456")
+        login = self.client.login(username=self.user.username, password="123456")
         self.assertEqual(login, True)
 
-        user = get_user_model().objects.get(username="isdabizda")
+        user = get_user_model().objects.get(id=self.user.id)
         self.assertEqual(user.last_login, user.date_joined)
 
     def test_normal_login(self):
@@ -45,7 +46,7 @@ class LoginTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
 
         params = {
-            "auth-username": "isdabizda",
+            "auth-username": self.user.username,
             "auth-password": "123456",
             "login_view-current_step": "auth",
         }
@@ -58,7 +59,7 @@ class LoginTestCase(test.TestCase):
 
     def test_ratelimit(self):
         params = {
-            "auth-username": "isdabizda",
+            "auth-username": self.user.username,
             "auth-password": "bad password",
             "login_view-current_step": "auth",
         }

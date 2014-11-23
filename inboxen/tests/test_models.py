@@ -18,73 +18,107 @@
 ##
 
 import datetime
+import itertools
 
 from django import test
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
 from inboxen import models
+from inboxen.tests import factories
 
 
 class ModelTestCase(test.TestCase):
     """Test our custom methods"""
-    fixtures = ['inboxen_testdata.json']
-
-    def setUp(self):
-        super(ModelTestCase, self).setUp()
-        self.user = get_user_model().objects.get(id=1)
-
     def test_domain_available(self):
-        self.assertEqual(models.Domain.objects.available(self.user).count(), 1)
+        user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        # all the permutations of Domains
+        for args in itertools.product([True, False], [user, other_user, None]):
+            factories.DomainFactory(enabled=args[0], owner=args[1])
+
+        self.assertEqual(models.Domain.objects.available(user).count(), 2)
 
     def test_inbox_create(self):
+        user = factories.UserFactory()
+        domain = factories.DomainFactory()
+
         with self.assertRaises(models.Domain.DoesNotExist):
             models.Inbox.objects.create()
 
-        domain = models.Domain.objects.get(id=1)
-        inbox = models.Inbox.objects.create(domain=domain, user=self.user)
+        inbox = models.Inbox.objects.create(domain=domain, user=user)
 
         self.assertIsInstance(inbox.created, datetime.datetime)
-        self.assertEqual(inbox.user, self.user)
+        self.assertEqual(inbox.user, user)
 
     def test_inbox_from_string(self):
-        inbox = models.Inbox.objects.select_related("domain").get(id=1)
+        user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        inbox = factories.InboxFactory(user=user)
         email = "%s@%s" % (inbox.inbox, inbox.domain.domain)
 
-        inbox2 = inbox.user.inbox_set.from_string(email=email)
+        inbox2 = user.inbox_set.from_string(email=email)
 
         self.assertEqual(inbox, inbox2)
 
-    def test_inbox_from_string_and_user(self):
-        user = get_user_model().objects.create(username="bizz")
-        domain = models.Domain.objects.get(id=1)
-        inbox = models.Inbox.objects.create(domain=domain, user=user)
-
         with self.assertRaises(models.Inbox.DoesNotExist):
-            self.user.inbox_set.from_string(email="%s@%s" % (inbox.inbox, domain.domain))
+            other_user.inbox_set.from_string(email=email)
 
     def test_inbox_receiving(self):
-        # this is a very crappy test
-        count1 = models.Inbox.objects.count()
-        count2 = models.Inbox.objects.receiving().count()
-        self.assertNotEqual(count1, count2)
+        user = factories.UserFactory()
+
+        # all the permutations of Inboxes that can receive
+        params = (
+            [True, False],
+            [0, models.Inbox.flags.deleted, models.Inbox.flags.disabled,
+                models.Inbox.flags.deleted | models.Inbox.flags.disabled,
+                ~models.Inbox.flags.deleted & ~models.Inbox.flags.disabled,
+            ],
+            [user, None],
+        )
+        for args in itertools.product(*params):
+            factories.InboxFactory(domain__enabled=args[0], flags=args[1], user=args[2])
+
+        count = models.Inbox.objects.receiving().count()
+        self.assertEqual(count, 2)
 
     def test_inbox_viewable(self):
-        # this is a very crappy test
-        count1 = models.Inbox.objects.count()
-        count2 = models.Inbox.objects.viewable(self.user).count()
-        self.assertNotEqual(count1, count2)
+        user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        # all the permutations of Inboxes that can be viewed
+        params = (
+            [0, models.Inbox.flags.deleted, ~models.Inbox.flags.deleted],
+            [user, other_user, None],
+        )
+        for args in itertools.product(*params):
+            factories.InboxFactory(flags=args[0], user=args[1])
+
+        count = models.Inbox.objects.viewable(user).count()
+        self.assertEqual(count, 2)
 
     def test_email_viewable(self):
-        # this is a very crappy test
-        count1 = models.Email.objects.count()
-        count2 = models.Email.objects.viewable(self.user).count()
-        self.assertNotEqual(count1, count2)
+        user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        # all the permutations of Emailss that can be viewed
+        params = (
+            [0, models.Inbox.flags.deleted, ~models.Inbox.flags.deleted],
+            [user, other_user, None],
+            [0, models.Email.flags.deleted, ~models.Email.flags.deleted],
+        )
+        for args in itertools.product(*params):
+            factories.EmailFactory(inbox__flags=args[0], inbox__user=args[1], flags=args[2])
+
+        count = models.Email.objects.viewable(user).count()
+        self.assertEqual(count, 4)
 
     def test_header_create(self):
         name = "X-Hello"
         data = "Hewwo"
-        part = models.PartList.objects.get(id=1)
+        body = models.Body.objects.create(data="Hello", hashed="fakehash")
+        part = models.PartList.objects.create(email=factories.EmailFactory(), body=body)
 
         header1 = part.header_set.create(name=name, data=data, ordinal=0)
         header2 = part.header_set.create(name=name, data=data, ordinal=1)
@@ -105,19 +139,18 @@ class ModelTestCase(test.TestCase):
         self.assertFalse(body2[1])
 
     def test_requests_are_requested(self):
-        models.Request.objects.all().delete()  # clear out all requests
-        inbox_count = self.user.inbox_set.count()
-        profile = self.user.userprofile
-        profile.pool_amount = inbox_count + settings.MIN_INBOX_FOR_REQUEST
+        user = factories.UserFactory()
+        profile = user.userprofile
+        profile.pool_amount = settings.MIN_INBOX_FOR_REQUEST
         profile.save()
 
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 0)
-        models.Inbox.objects.create(user=self.user, domain=models.Domain.objects.get(id=1))
+        factories.InboxFactory(user=user)
 
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
-        models.Inbox.objects.create(user=self.user, domain=models.Domain.objects.get(id=1))
+        factories.InboxFactory(user=user)
 
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
