@@ -45,7 +45,6 @@ class BlogPostFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.BlogPost
 
-
     subject = factory.fuzzy.FuzzyText()
     body = factory.fuzzy.FuzzyText()
 
@@ -56,7 +55,10 @@ class BlogTestCase(test.TestCase):
 
         url = urlresolvers.reverse("blog")
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
+        url = urlresolvers.reverse("blog", kwargs={"page": "2"})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_blog_post(self):
