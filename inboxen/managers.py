@@ -56,6 +56,10 @@ class DomainQuerySet(QuerySet):
             enabled=True,
         )
 
+    def receiving(self):
+        """Return QuerySet with domains that can receive mail"""
+        return self.filter(enabled=True)
+
 
 class InboxQuerySet(QuerySet):
     def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
