@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -17,10 +18,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils import unittest
+
 from django import test
 from django.core import urlresolvers
 
 from inboxen.tests import factories
+
+BODY = """<html><body>
+<p>Hello! This is a test of £££ and €€€ <img src="http://example.com/coolface.jpg"></p>
+</body></html>
+"""
 
 
 class EmailViewTestCase(test.TestCase):
@@ -29,9 +37,11 @@ class EmailViewTestCase(test.TestCase):
 
         self.user = factories.UserFactory()
         self.email = factories.EmailFactory(inbox__user=self.user)
-        part = factories.PartListFactory(email=self.email)
+        body = factories.BodyFactory(data=BODY)
+        part = factories.PartListFactory(email=self.email, body=body)
         factories.HeaderFactory(part=part, name="From")
         factories.HeaderFactory(part=part, name="Subject")
+        factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"utf-8\"")
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -67,5 +77,15 @@ class EmailViewTestCase(test.TestCase):
 
         headersfetchall = response.context["headersfetchall"]
         self.assertFalse(headersfetchall)
+
+    @unittest.skip("LXML is screwing our encoding :(")
+    def test_body_encoding(self):
+        response = self.client.get(self.get_url() + "?imgDisplay=1")
+        content = response.content
+        self.assertIn("£££", content)
+
+        response = self.client.get(self.get_url())
+        content = response.content
+        self.assertIn("£££", content)
 
     # TODO: test body choosing with multipart emails
