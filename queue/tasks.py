@@ -47,7 +47,7 @@ def statistics():
     else:
         log.info("Can't get standard deviation, use a proper database")
 
-    users =  get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
+    users = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
 
     # aggregate-if doesn't like JOINs - see https://github.com/henriquebastos/django-aggregate-if/issues/1
     # so we'll just do a manual query
