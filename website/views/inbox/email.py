@@ -166,18 +166,14 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         plain_message = self.find_body(html, plain)
         if plain_message is None:
             if len(attachments) == 1:
-                email_dict["body"] = str(attachments[0][0].body.data)
-                email_dict["charset"] = attachments[0][0].charset
+                email_dict["body"] = unicode(attachments[0][0].body.data, attachments[0][0].charset, errors="replace")
             else:
-                email_dict["body"] = ""
-                email_dict["charset"] = "utf-8"
+                email_dict["body"] = u""
             plain_message = True
         elif plain_message:
-            email_dict["body"] = str(plain.body.data)
-            email_dict["charset"] = plain.charset
+            email_dict["body"] = unicode(plain.body.data, plain.charset, errors="replace")
         else:
-            email_dict["body"] = str(html.body.data)
-            email_dict["charset"] = html.charset
+            email_dict["body"] = unicode(html.body.data, html.charset, errors="replace")
 
         if not plain_message:
             # Mail Pile uses this, give back if you come up with something better
@@ -188,24 +184,28 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 "base",
             ]
 
+            assert(isinstance(email_dict["body"], unicode))
+
             try:
-                email_dict["body"] = Premailer(email_dict["body"]).transform(encoding=email_dict.get("charset", "utf-8"))
+                email_dict["body"] = Premailer(email_dict["body"]).transform(encoding="unicode")
             except Exception:
                 # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
                 messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
+
+            assert(isinstance(email_dict["body"], unicode))
 
             try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = str(plain.body.data)
-                    email_dict["charset"] = plain.charset
+                    email_dict["body"] = unicode(plain.body.data, plain.charset, errors="replace")
                 else:
-                    email_dict["body"] = ""
-                    email_dict["charset"] = "utf-8"
+                    email_dict["body"] = u""
 
                 plain_message = True
                 messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
+
+        assert(isinstance(email_dict["body"], unicode))
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
@@ -233,18 +233,14 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                         del img.attrib["src"]
                     except KeyError:
                         pass
-                email_dict["body"] = etree.tostring(tree)
+                email_dict["body"] = etree.tostring(tree, encoding="unicode")
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = str(plain.body.data)
-                    email_dict["charset"] = plain.charset
+                    email_dict["body"] = unicode(plain.body.data, plain.charset, errors="replace")
                 else:
-                    email_dict["body"] = ""
-                    email_dict["charset"] = "utf-8"
+                    email_dict["body"] = u""
 
-        # convert to unicode as late as possible, but sometimes we already have unicode
-        if not isinstance(email_dict["body"], unicode):
-            email_dict["body"] = unicode(email_dict["body"], email_dict["charset"], errors="replace")
+        assert(isinstance(email_dict["body"], unicode))
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({

@@ -25,9 +25,18 @@ from django.core import urlresolvers
 
 from inboxen.tests import factories
 
-BODY = """<html><body>
-<p>Hello! This is a test of £££ and €€€ <img src="http://example.com/coolface.jpg"></p>
-</body></html>
+BODY = """<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+p {color: #ffffff;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+</body>
+</html>
 """
 
 
@@ -78,14 +87,14 @@ class EmailViewTestCase(test.TestCase):
         headersfetchall = response.context["headersfetchall"]
         self.assertFalse(headersfetchall)
 
-    @unittest.skip("LXML is screwing our encoding :(")
-    def test_body_encoding(self):
+    def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
-        content = response.content
-        self.assertIn("£££", content)
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
 
+    def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
-        content = response.content
-        self.assertIn("£££", content)
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
 
     # TODO: test body choosing with multipart emails
