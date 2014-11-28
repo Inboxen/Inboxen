@@ -86,7 +86,7 @@ class PermissionDenied(ErrorView):
 
 
 class ServerError(ErrorView):
-    error_message = _("There has been an error without software. Our administrators have been notified.")
+    error_message = _("There has been an error with our software. Our administrators have been notified.")
     error_css_class = "danger"
     error_code = 500
 
