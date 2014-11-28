@@ -35,6 +35,7 @@ p {color: #ffffff;}
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
 <p>&nbsp;</p>
+<p>£££</p>
 </body>
 </html>
 """
@@ -91,10 +92,50 @@ class EmailViewTestCase(test.TestCase):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         content = response.context["email"]["body"]
         self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
         content = response.context["email"]["body"]
         self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
 
     # TODO: test body choosing with multipart emails
+
+@unittest.expectedFailure
+class BadEmailTestCase(test.TestCase):
+    def setUp(self):
+        super(BadEmailTestCase, self).setUp()
+
+        self.user = factories.UserFactory()
+        self.email = factories.EmailFactory(inbox__user=self.user)
+        body = factories.BodyFactory(data=BODY)
+        part = factories.PartListFactory(email=self.email, body=body)
+        factories.HeaderFactory(part=part, name="From")
+        factories.HeaderFactory(part=part, name="Subject")
+        factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"windows-1252\"")
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        kwargs = {
+            "inbox": self.email.inbox.inbox,
+            "domain": self.email.inbox.domain.domain,
+            "id": self.email.eid,
+        }
+        return urlresolvers.reverse("email-view", kwargs=kwargs)
+
+    def test_body_encoding_with_imgDisplay(self):
+        response = self.client.get(self.get_url() + "?imgDisplay=1")
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
+
+    def test_body_encoding_without_imgDisplay(self):
+        response = self.client.get(self.get_url())
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
