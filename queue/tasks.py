@@ -182,8 +182,8 @@ def search(user_id, search_term, offset=0, limit=10):
         "inboxes": list(search_qs.filter(content_type__model="inbox").values_list("id", flat=True)[offset:limit]),
     }
 
-    key = "{0}-{1}".format(user.username, search_term)
-    key = urllib.quote(key)
+    key = u"{0}-{1}".format(user.username, search_term)
+    key = urllib.quote(key.encode("utf-8"))
 
     cache.set(key, results)
 

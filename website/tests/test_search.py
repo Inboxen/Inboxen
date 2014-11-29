@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -34,7 +35,7 @@ class SearchViewTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-search", kwargs={"q": "cheddar"})
+        return urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
 
     def test_context(self):
         response = self.client.get(self.get_url())
@@ -43,7 +44,7 @@ class SearchViewTestCase(test.TestCase):
 
     def test_content(self):
         response = self.client.get(self.get_url())
-        self.assertIn("There are no Inboxes or emails containing <em>cheddar</em>", response.content)
+        self.assertIn(u"There are no Inboxes or emails containing <em>cheddär</em>", response.content.decode("utf-8"))
 
     def test_get(self):
         response = self.client.get(self.get_url())
