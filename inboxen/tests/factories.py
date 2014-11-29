@@ -24,6 +24,7 @@ from django.contrib.auth import get_user_model
 from pytz import utc
 import factory
 import factory.fuzzy
+import watson
 
 from inboxen import models
 
@@ -98,3 +99,20 @@ class HeaderFactory(factory.django.DjangoModelFactory):
     name = factory.fuzzy.FuzzyText()
     part = factory.SubFactory(PartListFactory)
     ordinal = factory.Sequence(int)
+
+
+class FullEmailFactory(EmailFactory):
+    """Create a full fleshed out Email object, with a plain text body and some
+    headers. It should also produce a search entry
+    """
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        with watson.update_index():
+            email = super(FullEmailFactory, cls)._create(model_class, *args, **kwargs)
+            body = BodyFactory(data="This mail body is searchable")
+            part = PartListFactory(body=body)
+            HeaderFactory(part=part, name="From")
+            HeaderFactory(part=part, name="Subject")
+            HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")
+
+        return email
