@@ -38,6 +38,16 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 __all__ = ["EmailView"]
 
 
+def unicode_damnit(data, charset="utf-8", errors="replace"):
+    """Makes doubley sure that we can turn the database's binary typees into
+    unicode objects
+    """
+    if isinstance(data, unicode):
+        return data
+
+    return unicode(str(data), charset, errors)
+
+
 class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DetailView):
     model = models.Email
     pk_url_kwarg = "id"
@@ -166,14 +176,14 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         plain_message = self.find_body(html, plain)
         if plain_message is None:
             if len(attachments) == 1:
-                email_dict["body"] = unicode(attachments[0][0].body.data, attachments[0][0].charset, errors="replace")
+                email_dict["body"] = unicode_damnit(attachments[0][0].body.data, attachments[0][0].charset)
             else:
                 email_dict["body"] = u""
             plain_message = True
         elif plain_message:
-            email_dict["body"] = unicode(plain.body.data, plain.charset, errors="replace")
+            email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
         else:
-            email_dict["body"] = unicode(html.body.data, html.charset, errors="replace")
+            email_dict["body"] = unicode_damnit(html.body.data, html.charset)
 
         if not plain_message:
             # Mail Pile uses this, give back if you come up with something better
@@ -198,7 +208,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = unicode(plain.body.data, plain.charset, errors="replace")
+                    email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
                 else:
                     email_dict["body"] = u""
 
@@ -236,7 +246,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 email_dict["body"] = etree.tostring(tree, encoding="unicode")
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = unicode(plain.body.data, plain.charset, errors="replace")
+                    email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
                 else:
                     email_dict["body"] = u""
 

@@ -24,6 +24,7 @@ from django import test
 from django.core import urlresolvers
 
 from inboxen.tests import factories
+from website.views.inbox.email import unicode_damnit
 
 BODY = """<html>
 <head>
@@ -139,3 +140,15 @@ class BadEmailTestCase(test.TestCase):
         content = response.context["email"]["body"]
         self.assertIn(u"<p>\xa0</p>", content)
         self.assertIn(u"<p>£££</p>", content)
+
+
+class UtilityTestCase(test.TestCase):
+    def test_is_unicode(self):
+        string = "Hey there!"
+        self.assertTrue(isinstance(unicode_damnit(string), unicode))
+
+    def test_unicode_passthrough(self):
+        already_unicode = u"€"
+
+        # if this doesn't passthrough, it will error
+        unicode_damnit(already_unicode, "ascii", "strict")
