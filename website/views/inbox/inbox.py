@@ -62,8 +62,13 @@ class InboxView(
         # this is kinda bad, but nested forms aren't supported in all browsers
         if "delete-single" in self.request.POST:
             email_id = int(self.request.POST["delete-single"], 16)
-            email = qs.get(id=email_id)
-            email.delete()
+
+            try:
+                email = qs.get(id=email_id)
+                email.delete()
+            except self.model.DoesNotExist:
+                pass
+
             return HttpResponseRedirect(self.get_success_url())
         elif "important-single" in self.request.POST:
             with watson.skip_index_update():
