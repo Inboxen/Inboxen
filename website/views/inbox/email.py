@@ -183,18 +183,49 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         elif plain_message:
             email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
         else:
-            email_dict["body"] = unicode_damnit(html.body.data, html.charset)
+            email_dict["body"] = html.body.data
 
         if not plain_message:
-            # Mail Pile uses this, give back if you come up with something better
-            cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
-                            scripts=True, frames=True, embedded=True, safe_attrs_only=True)
-            cleaner.kill_tags = [
-                "style",  # remove style tags, not attrs
-                "base",
-            ]
+            html_tree = lxml_html.fromstring(email_dict["body"])
+            charset = html.charset
 
-            assert(isinstance(email_dict["body"], unicode))
+            # if the HTML doc says its a different encoding, use that
+            for meta_tag in html_tree.find(".//meta"):
+                if meta_tag.get("http-equiv", None) is "Content-Type":
+                    content = meta_tag.get("content")
+                    content = content.split(";", 1)[1]
+                    charset = dict(HEADER_PARAMS.finall(content)).get("charset", html.charset)
+                    break
+                elif meta_tag.get("charset", None) is not None and meta_tag.get("charset", None) is not "":
+                    charset = meta_tag.get("charset")
+                    break
+
+            # GET params for users with `ask_image` set in their profile
+            if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
+                img_display = True
+                ask_images = False
+            elif self.request.user.userprofile.flags.ask_images:
+                img_display = False
+                ask_images = True
+            else:
+                img_display = self.request.user.userprofile.flags.display_images
+                ask_images = False
+
+            # filter images if we need to
+            if not img_display:
+                try:
+                    for img in html_tree.findall(".//img"):
+                        try:
+                            del img.attrib["src"]
+                        except KeyError:
+                            pass
+                except (etree.LxmlError, ValueError):
+                    if plain is not None and len(plain.body.data) > 0:
+                        email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
+                    else:
+                        email_dict["body"] = u""
+                else:
+                    email_dict["body"] = unicode_damnit(html_tree.tostring(), charset)
 
             try:
                 email_dict["body"] = Premailer(email_dict["body"]).transform(encoding="unicode")
@@ -203,6 +234,14 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
             assert(isinstance(email_dict["body"], unicode))
+
+            # Mail Pile uses this, give back if you come up with something better
+            cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
+                            scripts=True, frames=True, embedded=True, safe_attrs_only=True)
+            cleaner.kill_tags = [
+                "style",  # remove style tags, not attrs
+                "base",
+            ]
 
             try:
                 email_dict["body"] = cleaner.clean_html(email_dict["body"])
@@ -215,40 +254,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 plain_message = True
                 messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
 
-        assert(isinstance(email_dict["body"], unicode))
-
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
-
-        # GET params for users with `ask_image` set in their profile
-        if plain_message:
-            # bypass image scrubber
-            img_display = True
-            ask_images = False
-        elif "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
-            img_display = True
-            ask_images = False
-        elif self.request.user.userprofile.flags.ask_images:
-            img_display = False
-            ask_images = True
-        else:
-            img_display = self.request.user.userprofile.flags.display_images
-            ask_images = False
-
-        # filter images if we need to
-        if not img_display:
-            try:
-                tree = lxml_html.fromstring(email_dict["body"])
-                for img in tree.findall(".//img"):
-                    try:
-                        del img.attrib["src"]
-                    except KeyError:
-                        pass
-                email_dict["body"] = etree.tostring(tree, encoding="unicode")
-            except (etree.LxmlError, ValueError):
-                if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
-                else:
-                    email_dict["body"] = u""
 
         assert(isinstance(email_dict["body"], unicode))
 
