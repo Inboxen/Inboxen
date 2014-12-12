@@ -183,7 +183,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         elif plain_message:
             email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
         else:
-            email_dict["body"] = html.body.data
+            email_dict["body"] = str(html.body.data)
 
         if not plain_message:
             html_tree = lxml_html.fromstring(email_dict["body"])
@@ -225,7 +225,11 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                     else:
                         email_dict["body"] = u""
                 else:
-                    email_dict["body"] = unicode_damnit(html_tree.tostring(), charset)
+                    # remove this once premail accepts etrees
+                    email_dict["body"] = unicode_damnit(etree.tostring(html_tree), charset)
+            else:
+                # remove this once premail accepts etrees
+                email_dict["body"] = unicode_damnit(etree.tostring(html_tree), charset)
 
             assert isinstance(email_dict["body"], unicode), "body is %r" % type(email_dict["body"])
 
