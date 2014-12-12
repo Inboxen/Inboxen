@@ -11,6 +11,24 @@ Join us in our IRC channel! We're in the #inboxen channel on [MegNet](https://ww
 
 See also: <https://etherpad.mozilla.org/inboxen>
 
+Developing
+----------
+
+Set yourself up with a virtual environment and run the following:
+
+```
+git clone https://github.com/Inboxen/Inboxen.git
+cd Inboxen
+pip install -r requirements-dev.txt
+```
+
+When you've made your changes, remember to run `flake8` against Python files
+you've changed and run unit tests. To run the tests, do the following:
+
+```
+DB=sqlite python manage.py test --settings=inboxen.tests.settings
+```
+
 Deploying
 ---------
 
