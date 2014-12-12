@@ -227,13 +227,15 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 else:
                     email_dict["body"] = unicode_damnit(html_tree.tostring(), charset)
 
+            assert isinstance(email_dict["body"], unicode), "body is %r" % type(email_dict["body"])
+
             try:
                 email_dict["body"] = Premailer(email_dict["body"]).transform(encoding="unicode")
             except Exception:
                 # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
                 messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
-            assert(isinstance(email_dict["body"], unicode))
+            assert isinstance(email_dict["body"], unicode), "body is %r" % type(email_dict["body"])
 
             # Mail Pile uses this, give back if you come up with something better
             cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
@@ -256,7 +258,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
-        assert(isinstance(email_dict["body"], unicode))
+        assert isinstance(email_dict["body"], unicode), "body is %r" % type(email_dict["body"])
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
