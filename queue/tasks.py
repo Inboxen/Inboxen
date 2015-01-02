@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import transaction
-from django.db.models import Avg, Count, F, Max, Min, StdDev, Sum
+from django.db.models import Avg, Count, F, Max, Min, Q, StdDev, Sum
 
 from celery import task
 from pytz import utc
@@ -47,12 +47,13 @@ def statistics():
     else:
         log.info("Can't get standard deviation, use a proper database")
 
-    users =  get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
+    users = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
 
     # aggregate-if doesn't like JOINs - see https://github.com/henriquebastos/django-aggregate-if/issues/1
     # so we'll just do a manual query
     one_day_ago = datetime.now(utc) - timedelta(days=1)
     users["new"] = get_user_model().objects.filter(date_joined__gte=one_day_ago).count()
+    users["active"] = get_user_model().objects.filter(inbox__isnull=False).distinct().count()
 
     inboxes = {}
     for key in list(users.keys()):
@@ -181,8 +182,8 @@ def search(user_id, search_term, offset=0, limit=10):
         "inboxes": list(search_qs.filter(content_type__model="inbox").values_list("id", flat=True)[offset:limit]),
     }
 
-    key = "{0}-{1}".format(user.username, search_term)
-    key = urllib.quote(key)
+    key = u"{0}-{1}".format(user.username, search_term)
+    key = urllib.quote(key.encode("utf-8"))
 
     cache.set(key, results)
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -17,10 +18,28 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.utils import unittest
+
 from django import test
 from django.core import urlresolvers
 
 from inboxen.tests import factories
+from website.views.inbox.email import unicode_damnit
+
+BODY = """<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+p {color: #ffffff;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+<p>£££</p>
+</body>
+</html>
+"""
 
 
 class EmailViewTestCase(test.TestCase):
@@ -29,9 +48,11 @@ class EmailViewTestCase(test.TestCase):
 
         self.user = factories.UserFactory()
         self.email = factories.EmailFactory(inbox__user=self.user)
-        part = factories.PartListFactory(email=self.email)
+        body = factories.BodyFactory(data=BODY)
+        part = factories.PartListFactory(email=self.email, body=body)
         factories.HeaderFactory(part=part, name="From")
         factories.HeaderFactory(part=part, name="Subject")
+        factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"utf-8\"")
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -68,4 +89,66 @@ class EmailViewTestCase(test.TestCase):
         headersfetchall = response.context["headersfetchall"]
         self.assertFalse(headersfetchall)
 
+    def test_body_encoding_with_imgDisplay(self):
+        response = self.client.get(self.get_url() + "?imgDisplay=1")
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
+
+    def test_body_encoding_without_imgDisplay(self):
+        response = self.client.get(self.get_url())
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
+
     # TODO: test body choosing with multipart emails
+
+@unittest.expectedFailure
+class BadEmailTestCase(test.TestCase):
+    def setUp(self):
+        super(BadEmailTestCase, self).setUp()
+
+        self.user = factories.UserFactory()
+        self.email = factories.EmailFactory(inbox__user=self.user)
+        body = factories.BodyFactory(data=BODY)
+        part = factories.PartListFactory(email=self.email, body=body)
+        factories.HeaderFactory(part=part, name="From")
+        factories.HeaderFactory(part=part, name="Subject")
+        factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"windows-1252\"")
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        kwargs = {
+            "inbox": self.email.inbox.inbox,
+            "domain": self.email.inbox.domain.domain,
+            "id": self.email.eid,
+        }
+        return urlresolvers.reverse("email-view", kwargs=kwargs)
+
+    def test_body_encoding_with_imgDisplay(self):
+        response = self.client.get(self.get_url() + "?imgDisplay=1")
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
+
+    def test_body_encoding_without_imgDisplay(self):
+        response = self.client.get(self.get_url())
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>\xa0</p>", content)
+        self.assertIn(u"<p>£££</p>", content)
+
+
+class UtilityTestCase(test.TestCase):
+    def test_is_unicode(self):
+        string = "Hey there!"
+        self.assertTrue(isinstance(unicode_damnit(string), unicode))
+
+    def test_unicode_passthrough(self):
+        already_unicode = u"€"
+
+        # if this doesn't passthrough, it will error
+        unicode_damnit(already_unicode, "ascii", "strict")

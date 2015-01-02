@@ -29,7 +29,7 @@ from inboxen.tests import factories
 
 class ModelTestCase(test.TestCase):
     """Test our custom methods"""
-    def test_domain_available(self):
+    def test_domain_queryset_methods(self):
         user = factories.UserFactory()
         other_user = factories.UserFactory(username="lalna")
 
@@ -38,6 +38,7 @@ class ModelTestCase(test.TestCase):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
         self.assertEqual(models.Domain.objects.available(user).count(), 2)
+        self.assertEqual(models.Domain.objects.receiving().count(), 3)
 
     def test_inbox_create(self):
         user = factories.UserFactory()
