@@ -92,18 +92,26 @@ class EmailViewTestCase(test.TestCase):
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         content = response.context["email"]["body"]
-        self.assertIn(u"<p>\xa0</p>", content)
-        self.assertIn(u"<p>£££</p>", content)
+        self.assertIn(u"<p>&#160;</p>", content)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
+        self.assertIn(u"http://example.com/coolface.jpg", content)
+
+        # premailer should have worked fine
+        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
         content = response.context["email"]["body"]
-        self.assertIn(u"<p>\xa0</p>", content)
-        self.assertIn(u"<p>£££</p>", content)
+        self.assertIn(u"<p>&#160;</p>", content)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
+        self.assertNotIn(u"http://example.com/coolface.jpg", content)
+
+        # premailer should have worked fine
+        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
 
     # TODO: test body choosing with multipart emails
 
-@unittest.expectedFailure
+
 class BadEmailTestCase(test.TestCase):
     def setUp(self):
         super(BadEmailTestCase, self).setUp()
@@ -132,14 +140,22 @@ class BadEmailTestCase(test.TestCase):
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         content = response.context["email"]["body"]
-        self.assertIn(u"<p>\xa0</p>", content)
-        self.assertIn(u"<p>£££</p>", content)
+        self.assertIn(u"<p>&#160;</p>", content)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
+        self.assertIn(u"http://example.com/coolface.jpg", content)
+
+        # premailer should have worked fine
+        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
         content = response.context["email"]["body"]
-        self.assertIn(u"<p>\xa0</p>", content)
-        self.assertIn(u"<p>£££</p>", content)
+        self.assertIn(u"<p>&#160;</p>", content)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
+        self.assertNotIn(u"http://example.com/coolface.jpg", content)
+
+        # premailer should have worked fine
+        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
 
 
 class UtilityTestCase(test.TestCase):
