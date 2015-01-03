@@ -227,7 +227,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                     html_tree = Premailer(html_tree).transform()
                 except Exception:
                     # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
-                    messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
+                    messages.info(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
                 # Mail Pile uses this, give back if you come up with something better
                 cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
