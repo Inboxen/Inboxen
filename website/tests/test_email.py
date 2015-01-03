@@ -41,6 +41,20 @@ p {color: #ffffff;}
 </html>
 """
 
+METALESS_BODY = """<html>
+<head>
+<style type="text/css">
+p {color: #ffffff;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+<p>$$$</p>
+</body>
+</html>
+"""
+
 
 class EmailViewTestCase(test.TestCase):
     def setUp(self):
@@ -91,6 +105,7 @@ class EmailViewTestCase(test.TestCase):
 
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
+        self.assertEqual(response.status_code, 200)
         content = response.context["email"]["body"]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
@@ -101,6 +116,7 @@ class EmailViewTestCase(test.TestCase):
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
         content = response.context["email"]["body"]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
@@ -124,21 +140,32 @@ class BadEmailTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"windows-1252\"")
 
+        self.email_metaless = factories.EmailFactory(inbox__user=self.user)
+        body = factories.BodyFactory(data=METALESS_BODY)
+        part = factories.PartListFactory(email=self.email_metaless, body=body)
+        factories.HeaderFactory(part=part, name="From")
+        factories.HeaderFactory(part=part, name="Subject")
+        factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"ascii\"")
+
         login = self.client.login(username=self.user.username, password="123456")
 
         if not login:
             raise Exception("Could not log in")
 
-    def get_url(self):
+    def get_url(self, email=None):
+        if email is None:
+            email = self.email
+
         kwargs = {
-            "inbox": self.email.inbox.inbox,
-            "domain": self.email.inbox.domain.domain,
-            "id": self.email.eid,
+            "inbox": email.inbox.inbox,
+            "domain": email.inbox.domain.domain,
+            "id": email.eid,
         }
         return urlresolvers.reverse("email-view", kwargs=kwargs)
 
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
+        self.assertEqual(response.status_code, 200)
         content = response.context["email"]["body"]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
@@ -149,10 +176,22 @@ class BadEmailTestCase(test.TestCase):
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
         content = response.context["email"]["body"]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertNotIn(u"http://example.com/coolface.jpg", content)
+
+        # premailer should have worked fine
+        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+
+    def test_body_with_no_meta(self):
+        response = self.client.get(self.get_url(self.email_metaless) + "?imgDisplay=1")
+        self.assertEqual(response.status_code, 200)
+        content = response.context["email"]["body"]
+        self.assertIn(u"<p>&#160;</p>", content)
+        self.assertIn(u"<p>$$$</p>", content)
+        self.assertIn(u"http://example.com/coolface.jpg", content)
 
         # premailer should have worked fine
         self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
