@@ -185,6 +185,9 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         else:
             email_dict["body"] = str(html.body.data)
 
+        # default to not asking - no images in plain text emails
+        ask_images = False
+
         if not plain_message:
             try:
                 # anything in this try block could raise an exception that would require us
@@ -206,13 +209,11 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 # GET params for users with `ask_image` set in their profile
                 if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
                     img_display = True
-                    ask_images = False
                 elif self.request.user.userprofile.flags.ask_images:
                     img_display = False
                     ask_images = True
                 else:
                     img_display = self.request.user.userprofile.flags.display_images
-                    ask_images = False
 
                 # filter images if we need to
                 if not img_display:
@@ -246,6 +247,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                     email_dict["body"] = u""
 
                 plain_message = True
+                ask_images = False
                 messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
