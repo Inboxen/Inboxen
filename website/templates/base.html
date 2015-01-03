@@ -21,6 +21,7 @@
         {% block header %}{% endblock %}
     </head>
     <body>
+        <span class="sr-only"><a href="#contentstart">{% trans "Skip to content" %}</a></span>
         <div class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -65,6 +66,7 @@
         <div class="container-fluid">
             {% block breadcumbs %}
             {% endblock %}
+            <span id="contentstart"><!-- Target for skip to content link -->&nbsp;</span>
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }}" role="alert">
