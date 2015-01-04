@@ -53,7 +53,7 @@ def statistics():
     # so we'll just do a manual query
     one_day_ago = datetime.now(utc) - timedelta(days=1)
     users["new"] = get_user_model().objects.filter(date_joined__gte=one_day_ago).count()
-    users["active"] = get_user_model().objects.filter(inbox__isnull=False).distinct().count()
+    users["with_inboxes"] = get_user_model().objects.filter(inbox__isnull=False).distinct().count()
 
     inboxes = {}
     for key in list(users.keys()):

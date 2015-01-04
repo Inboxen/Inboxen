@@ -196,7 +196,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 charset = html.charset
 
                 # if the HTML doc says its a different encoding, use that
-                for meta_tag in html_tree.find(".//meta"):
+                for meta_tag in html_tree.xpath("/html/head/meta"):
                     if meta_tag.get("http-equiv", None) is "Content-Type":
                         content = meta_tag.get("content")
                         content = content.split(";", 1)[1]
@@ -217,7 +217,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
                 # filter images if we need to
                 if not img_display:
-                    for img in html_tree.findall(".//img"):
+                    for img in html_tree.xpath("//img"):
                         try:
                             del img.attrib["src"]
                         except KeyError:
@@ -227,7 +227,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                     html_tree = Premailer(html_tree).transform()
                 except Exception:
                     # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
-                    messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
+                    messages.info(self.request, _("Part of this message could not be parsed - it may not display correctly"))
 
                 # Mail Pile uses this, give back if you come up with something better
                 cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
