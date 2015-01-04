@@ -22,7 +22,7 @@
             <th>{% trans "User count" %}</th>
             <td>
                 {{ object.users.count }}
-                <i>({% trans "Active:" %} {{ object.users.active }})</i>
+                <i>({% trans "With Inboxes:" %} {{ object.users.with_inboxes }})</i>
             </td>
         </tr>
         <tr>
