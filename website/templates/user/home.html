@@ -9,7 +9,6 @@
 {% endblock %}
 
 {% block content %}
-{% url 'unified-inbox' as inbox_url %}
 <div class="table-responsive">
 <table class="table table-hover table-honeydew">
     <thead>
@@ -22,30 +21,24 @@
     </thead>
     <tr class="warning">
         <td>
-            <a href="{{ inbox_url }}">{% trans "Unified Inbox" %}</a>
+            <a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a>
             {{ user.userprofile.flags|render_flags }}
         </td>
         <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
     </tr>
-
     {% for inbox in page_obj.object_list %}
-
-        <tr{% if inbox.flags.disabled %} class="inbox-disabled"{% endif %}>
-            <td>
+        <tr id="{{ inbox.inbox }}@{{ inbox.domain.domain }}" {% if inbox.flags.disabled %} class="inbox-disabled"{% endif %}>
+            <td class="inbox-name">
                 <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">
                     {{ inbox.inbox }}@{{ inbox.domain.domain }}
                 </a>
                 {{ inbox.flags|render_flags }}
             </td>
-            <td><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
-            {% if inbox.tags %}
-                <td>{{ inbox.tags }}</td>
-            {% else %}
-                <td>&nbsp;</td>
-            {% endif %}
-            <td>
+            <td class="inbox-created"><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
+            <td class="inbox-tags">{{ inbox.tags|default:"&nbsp;" }}</td>
+            <td class="inbox-options">
                 <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
                     <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Inbox Options" %}</span>
                 </a>
