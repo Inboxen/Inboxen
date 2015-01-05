@@ -1,0 +1,15 @@
+{% load i18n bootstrap %}
+<form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            {% trans "Danger Area" %}&trade;
+        </div>
+        <div class="panel-body">
+            {{ form.subform|bootstrap }}
+        </div>
+    </div>
+    <button class="btn btn-primary">{% trans "Save" %}</button>
+    <a class="btn btn-default">{% trans "Cancel" %}</a>
+</form>

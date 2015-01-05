@@ -41,6 +41,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', headline=_('Huh?')), name='huh'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
 
+    # inbox views
     urls.url(r'^inbox/add/', views.InboxAddView.as_view(), name='inbox-add'),
     urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxEditView.as_view(), name='inbox-edit'),
 
@@ -51,6 +52,10 @@ urlpatterns = urls.patterns('',
     urls.url(r'^inbox/(?P<page>\d+)', views.UnifiedInboxView.as_view(), name='unified-inbox'),
     urls.url(r'^inbox/', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 
+    # form inlines
+    urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.FormInboxEditView.as_view(), name='form-inbox-edit'),
+
+    # user views
     urls.url(r'^user/login/', views.LoginView.as_view(), name='user-login'),
     urls.url(r'^user/home/(?P<page>\d+)', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/home/', views.UserHomeView.as_view(), name='user-home'),
@@ -84,6 +89,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/', views.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
 
+    # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^help/', urls.include("termsofservice.urls")),

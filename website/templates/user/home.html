@@ -8,6 +8,25 @@
     </ul>
 {% endblock %}
 
+{% block header %}
+    {{ block.super }}
+    <script>
+        <!-- inline option forms -->
+        $(document).ready(function() {
+            var $optionButtons = $("td.inbox-options > a");
+            $optionButtons.click(function() {
+                var $row = $(this).parents("tr:has(td.inbox-name)");
+                var formURL = "/forms/inbox/edit/" + $row.attr("id") + "/";
+
+                $.get(formURL, function(data) {
+                    $row.after("<tr>" + data + "</tr>")
+                });
+                return false;
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block content %}
 <div class="table-responsive">
 <table class="table table-hover table-honeydew">
