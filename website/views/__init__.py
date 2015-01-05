@@ -16,7 +16,6 @@
 ##
 
 from .base import *
-from .forms import *
 from .inbox import *
 from .index import *
 from .stats import *
