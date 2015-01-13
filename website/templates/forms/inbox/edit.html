@@ -13,3 +13,14 @@
     <button class="btn btn-primary">{% trans "Save" %}</button>
     <a class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
+<script>
+    $("#form-{{ inbox.inbox }}@{{ inbox.domain.domain }}").submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: $(this).serializeArray(),
+            success: function() {}
+        });
+    });
+</script>
