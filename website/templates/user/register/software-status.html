@@ -13,7 +13,7 @@
         </ul>
 
     <br />
-    {% blocktrans %} Please only continue if you accept these could occur while using this software. We're constantly working on {{ SITE_NAME}}, in the future the risks will be much lower and we will have a stable, reliable service.{% endblocktrans %}<p>
+    {% blocktrans with settings.SITE_NAME as SITE_NAME %} Please only continue if you accept these could occur while using this service. We're constantly working on {{ SITE_NAME }}, in the future the risks will be much lower and we will have a stable, reliable service.{% endblocktrans %}<p>
 
     <div class="text-center">
         <a href="{% url 'index' %}" class="btn btn-default">{% trans "I'll return when you're stable" %}</a>
