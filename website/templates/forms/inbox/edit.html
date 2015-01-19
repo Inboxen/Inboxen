@@ -20,7 +20,11 @@
             type: "POST",
             url: $(this).attr('action'),
             data: $(this).serializeArray(),
-            success: function() {}
+            success: function() {
+                $("[id=form-{{ inbox.inbox }}-{{ inbox.domain.domain }}]").hide();
+                console.log("Form {{ inbox.inbox }}@{{ inbox.domain.domain }} has been sent off.")
+                // TODO: success message?
+            }
         });
     });
 </script>

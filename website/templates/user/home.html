@@ -19,7 +19,7 @@
                 var formURL = "/forms/inbox/edit/" + $row.attr("id") + "/";
 
                 $.get(formURL, function(data) {
-                    $row.after("<tr>" + data + "</tr>")
+                    $row.after("<tr><td colspan=\"4\">" + data + "</td></tr>")
                 });
                 return false;
             });
