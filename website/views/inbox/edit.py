@@ -46,5 +46,5 @@ class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
         return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], flags=~Inbox.flags.deleted)
 
 
-class FormInboxEditView(views.InboxEditView):
+class FormInboxEditView(InboxEditView):
     template_name = "forms/inbox/edit.html"
