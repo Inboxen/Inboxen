@@ -1,5 +1,5 @@
 {% load i18n bootstrap %}
-<form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+<form id="form-{{ inbox.inbox }}-{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
     {% csrf_token %}
     {{ form|bootstrap }}
     <div class="panel panel-danger">
@@ -14,7 +14,7 @@
     <a class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
 <script>
-    $("#form-{{ inbox.inbox }}@{{ inbox.domain.domain }}").submit(function(event) {
+    $("[id=form-{{ inbox.inbox }}-{{ inbox.domain.domain }}]").submit(function(event) {
         event.preventDefault();
         $.ajax({
             type: "POST",
