@@ -208,6 +208,7 @@ class BadEmailTestCase(test.TestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+        self.assertIn("He l lo .jpg", response["Content-Disposition"])
 
 
 class UtilityTestCase(test.TestCase):
