@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -125,6 +125,12 @@ class EmailViewTestCase(test.TestCase):
         # premailer should have worked fine
         self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
 
+    def test_attachments_get(self):
+        part = self.email.parts.get()
+        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     # TODO: test body choosing with multipart emails
 
 
@@ -139,6 +145,7 @@ class BadEmailTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="From")
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"windows-1252\"")
+        factories.HeaderFactory(part=part, name="Content-Disposition", data="inline filename=\"He\n\rl\rlo\n.jpg\"")
 
         self.email_metaless = factories.EmailFactory(inbox__user=self.user)
         body = factories.BodyFactory(data=METALESS_BODY)
@@ -195,6 +202,12 @@ class BadEmailTestCase(test.TestCase):
 
         # premailer should have worked fine
         self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+
+    def test_attachments_get(self):
+        part = self.email.parts.get()
+        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
 
 class UtilityTestCase(test.TestCase):
