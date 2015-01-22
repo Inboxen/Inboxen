@@ -24,6 +24,7 @@ lxml
 premailer
 progress
 psycopg2
+python-daemon<1.7
 pytz
 salmon-mail>=2
 simplejson
