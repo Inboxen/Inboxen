@@ -19,23 +19,21 @@
         <th>&nbsp;</th>
     </tr>
     </thead>
-    <tr class="warning">
-        <td>
+    <tr id="unified" class="warning">
+        <td class="inbox-name">{% spaceless %}
             <a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a>
             {{ user.userprofile.flags|render_flags }}
-        </td>
+        {% endspaceless %}</td>
         <td><span title="{{ user.date_joined|date:"r" }}">{{ user.date_joined|timesince }} {% trans "ago" %}</span></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
     </tr>
     {% for inbox in page_obj.object_list %}
-        <tr id="{{ inbox.inbox }}@{{ inbox.domain.domain }}" {% if inbox.flags.disabled %} class="inbox-disabled"{% endif %}>
-            <td class="inbox-name">
-                <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">
-                    {{ inbox.inbox }}@{{ inbox.domain.domain }}
-                </a>
+        <tr id="{{ inbox.inbox }}@{{ inbox.domain.domain }}"{% if inbox.flags.disabled %} class="inbox-disabled"{% endif %}>
+            <td class="inbox-name">{% spaceless %}
+                <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">{{ inbox.inbox }}@{{ inbox.domain.domain }}</a>
                 {{ inbox.flags|render_flags }}
-            </td>
+            {% endspaceless %}</td>
             <td class="inbox-created"><span title="{{ inbox.created|date:"r" }}">{{ inbox.created|timesince }} {% trans "ago" %}</span></td>
             <td class="inbox-tags">{{ inbox.tags|default:"&nbsp;" }}</td>
             <td class="inbox-options">
