@@ -87,6 +87,7 @@ urlpatterns = urls.patterns('',
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^help/', urls.include("termsofservice.urls")),
+    urls.url(r'^source/', urls.include("source.urls")),
 )
 
 if settings.ENABLE_REGISTRATION:
