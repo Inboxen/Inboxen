@@ -339,6 +339,7 @@ INSTALLED_APPS = (
     'queue',
     'queue.delete',
     'queue.liberate',
+    'redirect',
     'source',
     'termsofservice',
     'tickets',
