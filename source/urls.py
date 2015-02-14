@@ -27,6 +27,6 @@ urlpatterns = urls.patterns('',
     urls.url(
         r'^$',
         views.SourceView.as_view(),
-         name='source-index'
+        name='source-index',
     ),
 )
