@@ -18,7 +18,7 @@
 ##
 
 from django import test
-from django.core import urlresolvers
+from django.core import mail, urlresolvers
 
 import factory
 import factory.fuzzy
@@ -66,3 +66,25 @@ class QuestionViewTestCase(test.TestCase):
         response = self.client.post(self.get_url(), params)
         question = models.Question.objects.latest("date")
         self.assertRedirects(response, urlresolvers.reverse("tickets-detail", kwargs={"pk": question.pk}))
+
+
+@test.utils.override_settings(ADMINS=(("admin", "root@localhost"),))
+class QuestionNoticeTestCase(test.TestCase):
+    def setUp(self):
+        super(QuestionNoticeTestCase, self).setUp()
+        self.user = factories.UserFactory()
+
+    def test_admins_emailed(self):
+        question = models.Question()
+        question.author = self.user
+        question.subject = "Hey"
+        question.body = "Sort it out!"
+
+        question.save()
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        question2 = models.Question.objects.get(id=question.id)
+        question2.save()
+
+        self.assertEqual(len(mail.outbox), 1)

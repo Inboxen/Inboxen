@@ -19,8 +19,11 @@
 
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
+from tickets import tasks
 
 class Question(models.Model):
     # status contants
@@ -70,3 +73,9 @@ class Response(models.Model):
 
     class Meta:
         ordering = ["date"]
+
+
+@receiver(post_save, sender=Question, dispatch_uid="question notifier")
+def new_question(sender, instance, created, **kwargs):
+    if created:
+        tasks.new_question_notification.delay(instance.id)
