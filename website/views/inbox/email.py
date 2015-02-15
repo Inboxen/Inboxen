@@ -32,6 +32,7 @@ import watson
 
 from inboxen import models
 from website.views import base
+from redirect import proxy_url
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -222,6 +223,13 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                             del img.attrib["src"]
                         except KeyError:
                             pass
+
+                for link in html_tree.xpath("//a"):
+                    try:
+                        url = link.attrib["href"]
+                        link.attrib["href"] = proxy_url(url)
+                    except KeyError:
+                        pass
 
                 try:
                     html_tree = Premailer(html_tree).transform()
