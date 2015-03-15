@@ -47,45 +47,32 @@ class FormMixin(generic.edit.FormMixin):
             return self.form_invalid(form)
 
 
-class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView, FormMixin):
+class QuestionHomeView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView, FormMixin):
     """List of questions that belong to current user"""
-    paginate_by = 50
+    paginate_by = 10
     model = models.Question
     headline = _("Tickets")
     form_class = forms.QuestionForm
-
-    # ugly
-    # same order as in models.py
-    choices = ("NEW", "IN_PROGRESS", "NEED_INFO", "RESOLVED")
+    template_name = "tickets/question_home.html"
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
-        return super(QuestionListView, self).form_valid(form)
 
-    def dispatch(self, *args, **kwargs):
-        if "status" not in self.kwargs:
-            self.kwargs["status"] = "!resolved"
+        return super(QuestionHomeView, self).form_valid(form)
 
-        return super(QuestionListView, self).dispatch(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super(QuestionHomeView, self).get_context_data(**kwargs)
+        context["open"] = self.get_queryset().open()[:self.paginate_by]
+        context["closed"] = self.get_queryset().closed()[:self.paginate_by]
+
+        return context
 
     def get_queryset(self):
-        qs = super(QuestionListView, self).get_queryset()
-
-        # filter statuses
-        try:
-            if self.kwargs["status"].startswith("!"):
-                status = self.choices.index(self.kwargs["status"][1:].upper())
-                qs = qs.exclude(status=status)
-            else:
-                status = self.choices.index(self.kwargs["status"].upper())
-                qs = qs.filter(status=status)
-        except ValueError:
-            # or not
-            pass
-
+        qs = super(QuestionHomeView, self).get_queryset()
         qs = qs.filter(author=self.request.user).select_related("author")
+
         return qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
     def get_success_url(self):
@@ -135,7 +122,36 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
             if is_empty:
                 raise Http404(_("Empty list and '%(class_name)s.allow_empty' is False.")
                             % {'class_name': self.__class__.__name__})
-        return super(QuestionListView, self).post(*args, **kwargs)
+
+        return super(QuestionHomeView, self).post(*args, **kwargs)
+
+
+class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView):
+    paginate_by = 50
+    model = models.Question
+    headline = _("Tickets")
+
+    def get_context_data(self, **kwargs):
+        context = super(QuestionListView, self).get_context_data(**kwargs)
+        context["status"] = self.kwargs.get("status", "").title()
+
+    def get_queryset(self):
+        qs = super(QuestionListView, self).get_queryset()
+
+        # filter statuses
+        try:
+            status = self.kwargs["status"].upper()
+            if status.startswith("!"):
+                status = getattr(self.model, status[1:])
+                qs = qs.exclude(status=status)
+            else:
+                status = getattr(self.model, status)
+                qs = qs.filter(status=status)
+        except (AttributeError, KeyError, IndexError, ValueError):
+            raise Http404
+
+        qs = qs.filter(author=self.request.user).select_related("author")
+        return qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
 
 class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, generic.DetailView, FormMixin):
