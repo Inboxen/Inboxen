@@ -25,23 +25,18 @@ from tickets import views
 urlpatterns = urls.patterns('',
     urls.url(
         r'^$',
-        views.QuestionListView.as_view(),
+        views.QuestionHomeView.as_view(),
          name='tickets-index'
     ),
     urls.url(
         r'^status/(?P<status>[!]?\w+)/$',
         views.QuestionListView.as_view(),
-        name='tickets-index'
+        name='tickets-list'
     ),
     urls.url(
-        r'^(?P<page>)/$',
+        r'^status/(?P<status>[!]?\w+)/(?P<page>\d+)/$',
         views.QuestionListView.as_view(),
-        name='tickets-index'
-    ),
-    urls.url(
-        r'^status/(?P<status>[!]?\w+)/(?P<page>)/$',
-        views.QuestionListView.as_view(),
-        name='tickets-index'
+        name='tickets-list'
     ),
     urls.url(
         r'^ticket/(?P<pk>\d+)/$',

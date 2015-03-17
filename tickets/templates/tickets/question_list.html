@@ -4,13 +4,12 @@
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
-        <li class="active">{% trans "Questions" %}</li>
+        <li><a href="{% url 'tickets-index' %}">{% trans "Questions" %}</a></li>
+        <li class="active">{% blocktrans %}Status: {{ status }}{% endblocktrans %}</li>
     </ul>
 {% endblock %}
 
 {% block content %}
-<span class="sr-only"><a href="#question-form">{% trans "Go to Question form" %}</a></span>
-
 <div class="table-responsive">
     <table class="table table-hover table-honeydew">
         <thead>
@@ -37,13 +36,17 @@
         </tbody>
     </table>
 </div>
-<div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
-    <div class="panel-body">
-        <form id="question-form" class="form" method="post" action="{% url 'tickets-index' %}">
-            {% csrf_token %}
-            {{ form|bootstrap }}
-            <button class="btn btn-primary">{% trans "Submit" %}</button>
-        </form>
-    </div>
-</div>
+<ul class="pager">
+    {% if page_obj.has_previous %}
+        <li class="previous"><a href="{% url 'tickets-list' status=status page=page_obj.previous_page_number %}">
+            <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+        </a></li>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+        <li class="next"><a href="{% url 'tickets-list' status=status page=page_obj.next_page_number %}">
+            <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+        </a></li>
+    {% endif %}
+</ul>
 {% endblock %}
