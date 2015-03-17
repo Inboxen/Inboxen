@@ -1,0 +1,8 @@
+<div class="panel panel-default col-xs-12"><div class="panel-body">
+    <h2>
+        <a href="{% url 'blog-post' postid=post.id %}" class="inherit-colour">{{ post.subject }}</a>
+    </h2>
+    <p class="text-right" title="{{ post.date|date:"r" }}"><i>{{ post.date|date:"jS F Y" }}</i></p>
+    {{ post.rendered_body }}
+    <br /><br />
+</div></div>
