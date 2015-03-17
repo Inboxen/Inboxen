@@ -16,8 +16,8 @@
             <a href="{% url 'blog-post' postid=post.id %}" class="inherit-colour">{{ post.subject }}</a>
         </h2>
         <p class="text-right" title="{{ post.date|date:"r" }}"><i>{{ post.date|date:"jS F Y" }}</i></p>
-        <p> {{ post.rendered_body }}</p><br />
-        <br />
+        {{ post.rendered_body }}
+        <br /><br />
     </div></div>
 {% endfor %}
 
