@@ -36,4 +36,17 @@
         </tbody>
     </table>
 </div>
+<ul class="pager">
+    {% if page_obj.has_previous %}
+        <li class="previous"><a href="{% url 'tickets-list' status=status page=page_obj.previous_page_number %}">
+            <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+        </a></li>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+        <li class="next"><a href="{% url 'tickets-list' status=status page=page_obj.next_page_number %}">
+            <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+        </a></li>
+    {% endif %}
+</ul>
 {% endblock %}

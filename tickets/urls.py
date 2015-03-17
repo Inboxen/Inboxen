@@ -34,7 +34,7 @@ urlpatterns = urls.patterns('',
         name='tickets-list'
     ),
     urls.url(
-        r'^status/(?P<status>[!]?\w+)/(?P<page>)/$',
+        r'^status/(?P<status>[!]?\w+)/(?P<page>\d+)/$',
         views.QuestionListView.as_view(),
         name='tickets-list'
     ),

@@ -29,11 +29,28 @@
                 <td>{{ question.get_status_display }}</td>
                 <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|timesince }} {% trans "ago" %}</td>
             </tr>
+            {% if forloop.last %}
+                <tr><td colspan=4><div class="pull-right"><a class="btn btn-info" href="{% url "tickets-list" status="!resolved" %}">{% trans "More Open Tickets" %}</a></div></td></tr>
+            {% endif %}
         {% empty %}
             <tr>
                 <td colspan=4>{% trans "There are no open questions." %}</td>
             </tr>
         {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="table-responsive">
+    <table class="table table-hover table-honeydew">
+        <thead>
+            <tr>
+                <th>{% trans "Subject" %}</th>
+                <th>{% trans "Responses" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Last Activity" %}</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for question in closed %}
             <tr>
                 <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
@@ -41,6 +58,9 @@
                 <td>{{ question.get_status_display }}</td>
                 <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|timesince }} {% trans "ago" %}</td>
             </tr>
+            {% if forloop.last %}
+                <tr><td colspan=4><div class="pull-right"><a class="btn btn-danger" href="{% url "tickets-list" status="resolved" %}">{% trans "More Closed Tickets" %}</a></div></td></tr>
+            {% endif %}
         {% empty %}
             <tr>
                 <td colspan=4>{% trans "There are no closed questions." %}</td>

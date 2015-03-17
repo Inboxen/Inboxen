@@ -135,6 +135,8 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
         context = super(QuestionListView, self).get_context_data(**kwargs)
         context["status"] = self.kwargs.get("status", "").title()
 
+        return context
+
     def get_queryset(self):
         qs = super(QuestionListView, self).get_queryset()
 
