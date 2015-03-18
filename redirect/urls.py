@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -19,28 +19,14 @@
 
 from django.conf import urls
 
-from tickets import views
+from redirect import views
+
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
     urls.url(
         r'^$',
-        views.QuestionHomeView.as_view(),
-         name='tickets-index'
-    ),
-    urls.url(
-        r'^status/(?P<status>[!]?\w+)/$',
-        views.QuestionListView.as_view(),
-        name='tickets-list'
-    ),
-    urls.url(
-        r'^status/(?P<status>[!]?\w+)/(?P<page>\d+)/$',
-        views.QuestionListView.as_view(),
-        name='tickets-list'
-    ),
-    urls.url(
-        r'^ticket/(?P<pk>\d+)/$',
-        views.QuestionDetailView.as_view(),
-        name='tickets-detail'
+        views.RedirectView.as_view(),
+        name='redirect',
     ),
 )

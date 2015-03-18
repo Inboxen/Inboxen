@@ -131,6 +131,10 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
     """Same as auth.forms.UserCreationForm but adds a label as the placeholder in each field"""
     password1 = fields.PasswordCheckField(label=_("Password"))
 
+    def __init__(self, *args, **kwargs):
+        super(PlaceHolderUserCreationForm, self).__init__(*args, **kwargs)
+        self.fields["username"].help_text = _("Letters, numbers, and the symbols @/./+/-/_ are allowed.")
+
     def clean_username(self):
         username = self.cleaned_data["username"]
         if get_user_model().objects.filter(username__iexact=username).exists():

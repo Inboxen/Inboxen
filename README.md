@@ -29,6 +29,38 @@ you've changed and run unit tests. To run the tests, do the following:
 DB=sqlite python manage.py test --settings=inboxen.tests.settings
 ```
 
+Committing and Branching
+------------------------
+
+### Branching
+
+[Vincent Driessen's branching model](http://nvie.com/posts/a-successful-git-branching-model/) best
+describes how *should* do things.
+
+There are some differences however:
+* Our `master` is really Driessen's `develop`, we don't have an equivalent to Driessen's `master`
+* `deploy` is our only release branch
+* We don't tag releases (or "deploys" as we would call them)
+
+Commits on `deploy` **must** be signed with a GPG key. This is important for the future.
+
+### Commit messages
+
+You should follow the pattern of "summary, gap, details, gap, issue references"
+
+For example:
+
+```
+Blah blah thing
+
+Fixes this thing, changes how we should do something else
+
+fix #345
+touch #234
+```
+
+Merges from `master` to `deploy` should contain a changelog, referencing GitHub issues as well.
+
 Deploying
 ---------
 

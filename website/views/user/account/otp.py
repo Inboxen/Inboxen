@@ -31,7 +31,7 @@ __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoF
 
 class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
     template_name = "user/account/security.html"
-    headline = _("Two Factor Authenication")
+    headline = _("Security")  # view contains link to password change form too
 
 
 class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):

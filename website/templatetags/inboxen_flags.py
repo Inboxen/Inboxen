@@ -79,7 +79,6 @@ def render_flags(flags_obj):
         flags.append(LABEL_STR.format(**flag))
     if len(flags) > 0:
         flags = "".join(flags)
+        return safestring.mark_safe(flags)
     else:
-        flags = "&nbsp;"
-
-    return safestring.mark_safe(flags)
+        return ""

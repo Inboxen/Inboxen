@@ -304,6 +304,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -319,6 +320,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+
+    # third party
     'bootstrapform',
     'south',
     'django_extensions',
@@ -328,14 +331,18 @@ INSTALLED_APPS = (
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'two_factor',
+
+    # Inboxen
     'inboxen',
     'blog',
     'website',
     'queue',
     'queue.delete',
     'queue.liberate',
-    'tickets',
+    'redirect',
+    'source',
     'termsofservice',
+    'tickets',
 )
 
 if DEBUG:
