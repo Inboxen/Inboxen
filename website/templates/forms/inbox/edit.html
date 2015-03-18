@@ -1,5 +1,5 @@
 {% load i18n bootstrap %}
-<form id="form-{{ inbox.inbox }}-{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+<form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
     {% csrf_token %}
     {{ form|bootstrap }}
     <div class="panel panel-danger">
@@ -14,17 +14,26 @@
     <a class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
 <script>
-    $("[id=form-{{ inbox.inbox }}-{{ inbox.domain.domain }}]").submit(function(event) {
+    $("[id=form-{{ inbox.inbox }}\\@{{ inbox.domain.domain }}]").submit(function(event) {
         event.preventDefault();
         $.ajax({
             type: "POST",
             url: $(this).attr('action'),
             data: $(this).serializeArray(),
-            success: function() {
-                $("[id=form-{{ inbox.inbox }}-{{ inbox.domain.domain }}]").hide();
-                console.log("Form {{ inbox.inbox }}@{{ inbox.domain.domain }} has been sent off.")
-                // TODO: success message?
+            complete: function() {
+                var $row = $("[id={{ inbox.inbox }}\\@{{ inbox.domain.domain }}] + tr");
+                if (this.statusCode === 204) {
+                    $row.hide();
+                    $row.remove();
+                } else {
+                    $row.replaceWith(this.responseText);
+                }
             }
         });
+    });
+    $("[id=form-{{ inbox.inbox }}\\@{{ inbox.domain.domain }}] > a").click(function() {
+        var $row = $("[id={{ inbox.inbox }}\\@{{ inbox.domain.domain }}] + tr");
+        $row.hide();
+        $row.remove();
     });
 </script>

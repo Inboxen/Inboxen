@@ -17,10 +17,11 @@
             $optionButtons.click(function() {
                 var $row = $(this).parents("tr:has(td.inbox-name)");
                 var formURL = "/forms/inbox/edit/" + $row.attr("id") + "/";
-
-                $.get(formURL, function(data) {
-                    $row.after("<tr><td colspan=\"4\">" + data + "</td></tr>")
-                });
+                if ($row.next().attr("class") !== "inbox-edit-form-row") {
+                    $.get(formURL, function(data) {
+                        $row.after("<tr class=\"inbox-edit-form-row\"><td colspan=\"4\">" + data + "</td></tr>")
+                    });
+                }
                 return false;
             });
         });

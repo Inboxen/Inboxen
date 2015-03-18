@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -48,3 +48,9 @@ class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
 
 class FormInboxEditView(InboxEditView):
     template_name = "forms/inbox/edit.html"
+
+    def form_valid(self, form):
+        response = super(FormInboxEditView, self).form_valid(form)
+        response.status_code = 204
+
+        return response
