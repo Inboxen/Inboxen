@@ -22,7 +22,7 @@ from django.utils import unittest
 
 from bitfield import BitHandler
 
-from website.templatetags import inboxen_flags
+from website.templatetags import inboxen_flags, inboxen_selector
 
 
 class InboxFlagTestCase(test.TestCase):
@@ -53,3 +53,12 @@ class InboxFlagTestCase(test.TestCase):
         output = inboxen_flags.render_flags(flag_obj)
 
         self.assertEqual(output, "")
+
+
+class SelectorEscapeTestCase(test.TestCase):
+    def test_escapes(self):
+        input_string = "me@inboxen.org"
+        expected_string = r"me\\@inboxen\\.org"
+        result = inboxen_selector.escape_selector(input_string)
+
+        self.assertEqual(expected_string, result)
