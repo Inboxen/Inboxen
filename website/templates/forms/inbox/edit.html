@@ -16,17 +16,37 @@
 <script>
     $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]").submit(function(event) {
         event.preventDefault();
+        var tags, is_disabled;
+
+        tags = $(this).find("[id=id_tags]").val();
+        is_disabled = $(this).find("[id=id_disable_inbox]").prop("checked");
+
         $.ajax({
             type: "POST",
             url: $(this).attr('action'),
             data: $(this).serializeArray(),
-            complete: function() {
+            complete: function(e, xhr, opts) {
                 var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
-                if (this.statusCode === 204) {
+
+                if (e.status === 204) {
+                    var $tags_cell = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > td.inbox-tags");
+                    var $inbox_row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]");
+
+                    $tags_cell.text(tags);
+
+                    if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
+                        $inbox_row.addClass("inbox-disabled");
+                        $inbox_row.find("td.inbox-name  span.label").remove();
+                        $inbox_row.find("td.inbox-name").append("<span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span>");
+                    } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
+                        $inbox_row.removeClass("inbox-disabled");
+                        $inbox_row.find("td.inbox-name span.label-default").remove();
+                    }
+
                     $row.hide();
                     $row.remove();
                 } else {
-                    $row.replaceWith(this.responseText);
+                    $row.children("td").html(e.responseText);
                 }
             }
         });
