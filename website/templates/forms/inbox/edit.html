@@ -43,7 +43,6 @@
                         $inbox_row.find("td.inbox-name span.label-default").remove();
                     }
 
-                    $row.hide();
                     $row.remove();
                 } else {
                     $row.children("td").html(e.responseText);
@@ -53,7 +52,6 @@
     });
     $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > a").click(function() {
         var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
-        $row.hide();
         $row.remove();
     });
 </script>
