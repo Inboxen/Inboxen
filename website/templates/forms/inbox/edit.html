@@ -45,7 +45,13 @@
 
                     $row.remove();
                 } else {
-                    $row.children("td").html(e.responseText);
+                    var $form = $row.children("td");
+                    if (e.status === 200) {
+                        $form.html(e.responseText);
+                    } else {
+                        $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+                        console.log("Form for {{ inbox.id }} failed to POST (" + e.status + ")");
+                    }
                 }
             }
         });
