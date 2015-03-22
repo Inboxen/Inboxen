@@ -16,7 +16,7 @@
 ##
 
 from .base import *
-from .index import *
-from .user import *
 from .inbox import *
+from .index import *
 from .stats import *
+from .user import *

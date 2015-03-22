@@ -83,14 +83,13 @@
                 {% endblock %}
             </div>
         </div>
-    </div>
-    <div id="footer">
-        <div class="container">
-            <p class="text-muted text-center">
-            <a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a> |
-            <a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a>
-            </p>
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted text-center">
+                <a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a> |
+                <a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a>
+                </p>
+            </div>
         </div>
-    </div>
     </body>
 </html>
