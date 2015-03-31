@@ -155,3 +155,56 @@ class ModelTestCase(test.TestCase):
 
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
+
+
+class ModelFlagsTestCase(test.TestCase):
+    def test_email_flags_order(self):
+        # DON'T CHANGE ORDER OF THIS LIST
+        flag_order = [
+            "deleted",
+            "read",
+            "seen",
+            "important",
+            "view_all_headers",
+        ]
+
+        email_flags = list(models.Email.flags)
+
+        self.assertEqual(flag_order, email_flags)
+
+    def test_inbox_flags_order(self):
+        # DON'T CHANGE ORDER OF THIS LIST
+        flag_order = [
+            "deleted",
+            "new",
+            "exclude_from_unified",
+            "disabled",
+        ]
+
+        inbox_flags = list(models.Inbox.flags)
+
+        self.assertEqual(flag_order, inbox_flags)
+
+    def test_profile_flags_order(self):
+        # DON'T CHANGE ORDER OF THIS LIST
+        flag_order = [
+            "prefer_html_email",
+            "unified_has_new_messages",
+            "ask_images",
+            "display_images",
+        ]
+
+        profile_flags = list(models.UserProfile.flags)
+
+        self.assertEqual(flag_order, profile_flags)
+
+    def test_liberation_flags_order(self):
+        # DON'T CHANGE ORDER OF THIS LIST
+        flag_order = [
+            "running",
+            "errored",
+        ]
+
+        liberation_flags = list(models.Liberation.flags)
+
+        self.assertEqual(flag_order, liberation_flags)
