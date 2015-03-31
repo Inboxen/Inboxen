@@ -3,8 +3,10 @@ Markdown<2.5
 South
 celery<3.2
 configobj
+cssutils
 django-aggregate-if
 django-annoying
+django-assets
 django-async-messages
 django-bitfield
 django-bootstrap-form
@@ -19,6 +21,7 @@ django-two-factor-auth>=1.0.0
 django-watson>=1.1.4
 djorm-ext-pgbytea>=0.6.0
 factory-boy
+jsmin
 jsondate
 lxml
 premailer
