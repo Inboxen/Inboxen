@@ -11,8 +11,8 @@
         <script src="{% static "js/jquery.min.js" %}"></script>
         <script src="{% static "js/bootstrap.min.js" %}"></script>
         <script>
-            var button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>';
             $(document).ready(function() {
+                var button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>';
                 $("div[role=alert]").each(function() {
                     $(this).append(button);
                 });
@@ -69,15 +69,13 @@
         <div class="container-fluid">
             {% block breadcumbs %}
             {% endblock %}
-            {% if messages %}
-                <div id="alertmessages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+            <div id="alertmessages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
                 </div>
-            {% endif %}
+            {% endfor %}
+            </div>
             <div id="contentstart">
                 {% block content %}
                 {% endblock %}
