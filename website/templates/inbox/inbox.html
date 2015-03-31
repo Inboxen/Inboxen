@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
-{% load i18n %}
-{% load inboxen_flags %}
+{% load i18n inboxen_flags %}
+
+{% if inbox %}
+    {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
+{% else %}
+    {% url 'unified-inbox' as inbox_url %}
+{% endif %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -13,15 +18,10 @@
     </ul>
 {% endblock %}
 
-{% block content %}
 
-{% if inbox %}
-    {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
-{% else %}
-    {% url 'unified-inbox' as inbox_url %}
-{% endif %}
+{% block content %}
 <div class="table-responsive">
-    <form action="{{ request.path }}" method="POST">
+    <form id="email-list" action="{{ request.path }}" method="POST">
     {% csrf_token %}
     <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
     <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
@@ -38,20 +38,20 @@
         </tr>
         </thead>
         {% for email in page_obj.object_list %}
-            <tr>
-                <td><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
-                <td>
+            <tr id="email-{{ email.id }}">
+                <td class="email-checkbox"><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
+                <td class="email-flags">{% spaceless %}
                     {{ email.flags|render_flags }}
-                </td>
-                    <td>{{ email.sender }}</td>
-                    {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
-                    {% if email.subject %}
-                        <td><a href="{{ email_url }}"> {{ email.subject }} </a></td>
-                    {% else %}
-                        <td><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
-                    {% endif %}
-                        <td title="{{ email.received_date|date:"r" }}"><div>{{ email.timesince }} {% trans "ago" %}</div></td>
-                <td>
+                {% endspaceless %}</td>
+                <td class="email-sender">{{ email.sender }}</td>
+                {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
+                {% if email.subject %}
+                    <td class="email-subject"><a href="{{ email_url }}"> {{ email.subject }} </a></td>
+                {% else %}
+                    <td class="email-subject"><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
+                {% endif %}
+                <td title="{{ email.received_date|date:"r" }}" class="email-reveived"><div>{{ email.timesince }} {% trans "ago" %}</div></td>
+                <td class="email-buttons">
                     <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">
                         <span aria-hidden="true">&#9733;</span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
                     </button>
