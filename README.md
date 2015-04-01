@@ -78,8 +78,7 @@ After this has completed, see the next section on minimum configuration. Also,
 `settings.py` is well commented and explains what various configuration options
 do.
 
-settings.ini
------------
+### settings.ini
 
 At the very least, this file should contain the following:
 
@@ -91,8 +90,7 @@ secret_key = some_random_string
 Where `some_random_string` is a long (at least a length of 50) string,
 containing random characters.
 
-Webserver
----------
+### Webserver
 
 The WSGI script can be found at `website/wsgi.py`
 
@@ -101,10 +99,12 @@ to improve performance for the first request after a reload. It can be found at
 `website/importscript.py`
 
 There is also `website/admin-wsgi.py` - this enables the admin interface on
-`/admin`. It is **highly** recommended that you protect from the outside world.
+`/admin`. It is **highly** recommended that you protect it from the outside world.
 Solutions such as a VPN are probably the easiest for your staff to use.
 
-Collecting Static Files
------------------------
+### Static Files
+
+Static files are collected into `./static_content/`. You should configure your
+webserver to point the URL `/static/` to this folder.
 
 Remember to run `python manage.py collectstatic`!
