@@ -35,8 +35,9 @@ from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
-
 from pytz import utc
+
+from inboxen.utils import is_reserved
 
 
 class HashedQuerySet(QuerySet):
@@ -75,9 +76,15 @@ class InboxQuerySet(QuerySet):
             for i in range(length):
                 inbox += random.choice(string.ascii_lowercase)
 
+            inbox = "".join(inbox)
+
+            # check against reserved names
+            if is_reserved(inbox):
+                raise IntegrityError
+
             try:
                 return super(InboxQuerySet, self).create(
-                    inbox="".join(inbox),
+                    inbox=inbox,
                     created=datetime.now(utc),
                     domain=domain,
                     **kwargs
