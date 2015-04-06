@@ -1,6 +1,5 @@
 Django>=1.8,<1.9
 Markdown
-South
 celery
 configobj
 cssutils
