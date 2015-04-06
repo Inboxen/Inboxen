@@ -18,7 +18,7 @@ django-mptt
 django-otp
 django-ratelimit-backend
 django-two-factor-auth>=1.0.0
-django-watson==1.1.5
+django-watson>=1.1.4
 djorm-ext-pgbytea>=0.6.0
 factory-boy
 jsmin
