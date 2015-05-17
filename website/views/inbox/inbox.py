@@ -19,7 +19,7 @@
 
 from django.core.cache import cache
 from django.db.models import F, Q
-from django.http import HttpResponseRedirect, Http404
+from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.timesince import timesince
 from django.views import generic
@@ -32,7 +32,7 @@ from queue.delete.tasks import delete_inboxen_item
 from queue.tasks import deal_with_flags
 from website.views import base
 
-__all__ = ["UnifiedInboxView", "SingleInboxView"]
+__all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 
 
 class InboxView(
@@ -61,17 +61,27 @@ class InboxView(
 
         # this is kinda bad, but nested forms aren't supported in all browsers
         if "delete-single" in self.request.POST:
-            email_id = int(self.request.POST["delete-single"], 16)
-            email = qs.get(id=email_id)
+            try:
+                email_id = int(self.request.POST["delete-single"], 16)
+                email = qs.get(id=email_id)
+            except self.model.DoesNotExist, ValueError:
+                raise Http404
+
             email.delete()
+
             return HttpResponseRedirect(self.get_success_url())
         elif "important-single" in self.request.POST:
-            with watson.skip_index_update():
+            try:
                 email_id = int(self.request.POST["important-single"], 16)
                 email = qs.get(id=email_id)
+            except self.model.DoesNotExist, ValueError:
+                raise Http404
+
+            with watson.skip_index_update():
                 email.flags.important = not email.flags.important
                 email.save(update_fields=["flags"])
-                return HttpResponseRedirect(self.get_success_url())
+
+            return HttpResponseRedirect(self.get_success_url())
 
         emails = []
         for email in self.request.POST:
@@ -80,13 +90,13 @@ class InboxView(
                     email_id = int(email, 16)
                     emails.append(email_id)
                 except ValueError:
-                    return HttpResponseRedirect(self.get_success_url())
+                    raise Http404
 
         if len(emails) == 0:
             # nothing was selected, return early
             return HttpResponseRedirect(self.get_success_url())
 
-        # Something between Bitfield and Django's ORM doesn't like out complex queries
+        # Something between Bitfield and Django's ORM doesn't like our complex queries
         emails = qs.filter(id__in=emails).order_by("id").only("id")
         email_ids = list(emails.values_list('id', flat=True))
         emails = self.model.objects.filter(id__in=email_ids).only("id")
@@ -152,6 +162,22 @@ class InboxView(
         return context
 
 
+class FormInboxView(InboxView):
+    """POST-only view for JS stuff"""
+    def get(self, *args, **kwargs):
+        raise HttpResponseNotAllowed("Only POST requests please")
+
+    def post(self, *args, **kwargs):
+        response = super(FormInboxView, self).post(*args, **kwargs)
+
+        # JS auto follows redirects, so change the response code
+        # to allow us to detect success
+        if response.status_code == 302:
+            response.status_code = 204
+
+        return response
+
+
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
     def get_queryset(self, *args, **kwargs):
@@ -167,6 +193,12 @@ class UnifiedInboxView(InboxView):
             profile.save(update_fields=["flags"])
 
         return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        try:
+            return super(UnifiedInboxView, self).post(*args, **kwargs)
+        except Http404:
+            return HttpResponseRedirect(self.get_success_url())
 
 
 class SingleInboxView(InboxView):
@@ -191,3 +223,9 @@ class SingleInboxView(InboxView):
                 self.inbox_obj.save(update_fields=["flags"])
 
         return context
+
+    def post(self, *args, **kwargs):
+        try:
+            return super(SingleInboxView, self).post(*args, **kwargs)
+        except Http404:
+            return HttpResponseRedirect(self.get_success_url())

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -32,6 +32,7 @@ import watson
 
 from inboxen import models
 from website.views import base
+from redirect import proxy_url
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -183,29 +184,70 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         elif plain_message:
             email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
         else:
-            email_dict["body"] = unicode_damnit(html.body.data, html.charset)
+            email_dict["body"] = str(html.body.data)
+
+        # default to not asking - no images in plain text emails
+        ask_images = False
 
         if not plain_message:
-            # Mail Pile uses this, give back if you come up with something better
-            cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
-                            scripts=True, frames=True, embedded=True, safe_attrs_only=True)
-            cleaner.kill_tags = [
-                "style",  # remove style tags, not attrs
-                "base",
-            ]
-
-            assert(isinstance(email_dict["body"], unicode))
-
             try:
-                email_dict["body"] = Premailer(email_dict["body"]).transform(encoding="unicode")
-            except Exception:
-                # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
-                messages.warning(self.request, _("Part of this message could not be parsed - it may not display correctly"))
+                # anything in this try block could raise an exception that would require us
+                # to display an error and present the plain text part of a message
+                html_tree = lxml_html.fromstring(email_dict["body"])
+                charset = html.charset
 
-            assert(isinstance(email_dict["body"], unicode))
+                # if the HTML doc says its a different encoding, use that
+                for meta_tag in html_tree.xpath("/html/head/meta"):
+                    if meta_tag.get("http-equiv", None) is "Content-Type":
+                        content = meta_tag.get("content")
+                        content = content.split(";", 1)[1]
+                        charset = dict(HEADER_PARAMS.finall(content)).get("charset", html.charset)
+                        break
+                    elif meta_tag.get("charset", None) is not None and meta_tag.get("charset", None) is not "":
+                        charset = meta_tag.get("charset")
+                        break
 
-            try:
-                email_dict["body"] = cleaner.clean_html(email_dict["body"])
+                # GET params for users with `ask_image` set in their profile
+                if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
+                    img_display = True
+                elif self.request.user.userprofile.flags.ask_images:
+                    img_display = False
+                    ask_images = True
+                else:
+                    img_display = self.request.user.userprofile.flags.display_images
+
+                # filter images if we need to
+                if not img_display:
+                    for img in html_tree.xpath("//img"):
+                        try:
+                            del img.attrib["src"]
+                        except KeyError:
+                            pass
+
+                for link in html_tree.xpath("//a"):
+                    try:
+                        url = link.attrib["href"]
+                        link.attrib["href"] = proxy_url(url)
+                    except KeyError:
+                        pass
+
+                try:
+                    html_tree = Premailer(html_tree).transform()
+                except Exception:
+                    # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
+                    messages.info(self.request, _("Part of this message could not be parsed - it may not display correctly"))
+
+                # Mail Pile uses this, give back if you come up with something better
+                cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
+                                scripts=True, frames=True, embedded=True, safe_attrs_only=True)
+                cleaner.kill_tags = [
+                    "style",  # remove style tags, not attrs
+                    "base",
+                ]
+
+                html_tree = cleaner.clean_html(html_tree)
+
+                email_dict["body"] = unicode_damnit(etree.tostring(html_tree), charset)
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:
                     email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
@@ -213,44 +255,12 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                     email_dict["body"] = u""
 
                 plain_message = True
+                ask_images = False
                 messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
-
-        assert(isinstance(email_dict["body"], unicode))
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
-        # GET params for users with `ask_image` set in their profile
-        if plain_message:
-            # bypass image scrubber
-            img_display = True
-            ask_images = False
-        elif "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
-            img_display = True
-            ask_images = False
-        elif self.request.user.userprofile.flags.ask_images:
-            img_display = False
-            ask_images = True
-        else:
-            img_display = self.request.user.userprofile.flags.display_images
-            ask_images = False
-
-        # filter images if we need to
-        if not img_display:
-            try:
-                tree = lxml_html.fromstring(email_dict["body"])
-                for img in tree.findall(".//img"):
-                    try:
-                        del img.attrib["src"]
-                    except KeyError:
-                        pass
-                email_dict["body"] = etree.tostring(tree, encoding="unicode")
-            except (etree.LxmlError, ValueError):
-                if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
-                else:
-                    email_dict["body"] = u""
-
-        assert(isinstance(email_dict["body"], unicode))
+        assert isinstance(email_dict["body"], unicode), "body is %r" % type(email_dict["body"])
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({

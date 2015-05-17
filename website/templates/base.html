@@ -1,18 +1,35 @@
-{% load i18n staticfiles %}
+{% load assets i18n staticfiles %}
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="{% static "css/bootstrap.min.css"%}" rel="stylesheet" type="text/css" />
-        <link href="{% static "css/inboxen.min.css" %}" rel="stylesheet" type="text/css" />
         <link rel="icon" type="image/png" href="{% static "megmelon-icon.png" %}" />
         <title>{{ headline }} - {{ settings.SITE_NAME }}</title>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="{% static "js/jquery.min.js" %}"></script>
-        <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {% assets "inboxen_css" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css" />
+        {% endassets %}
+
+        {% assets "inboxen_js" %}
+            <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+
+        <script>
+            $(document).ready(function() {
+                var button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>';
+                $("div[role=alert]").each(function() {
+                    $(this).append(button);
+                });
+            });
+        </script>
         {% block header %}{% endblock %}
     </head>
     <body>
+        <span class="sr-only">
+            {% if messages %}<a href="#alertmessages">{% trans "Skip to alerts" %}</a>{% endif %}
+            <a href="#contentstart">{% trans "Skip to content" %}</a>
+        </span>
         <div class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -43,7 +60,7 @@
                     onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
                 >
                     <div class="input-group">
-                        <label class="sr-only">{% trans "Search emails and tags" %}</label>
+                        <label class="sr-only">{% trans "Search emails and inboxes" %}</label>
                         <input type="text" class="form-control" name="q" value="{{ query }}">
                         <span class="input-group-btn">
                             <button class="btn btn-default">{% trans 'Search' %}</button>
@@ -57,30 +74,25 @@
         <div class="container-fluid">
             {% block breadcumbs %}
             {% endblock %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert">
-                            <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span>
-                        </button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% block content %}
-            {% endblock %}
+            <div id="alertmessages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            </div>
+            <div id="contentstart">
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
-    </div>
-    <div id="footer">
-        <div class="container">
-            <p class="text-muted text-center">
-                <a href="{{ settings.SOURCE_LINK }}">{% trans "Inboxen" %}</a> <!-- Commit ID: {{ settings.INBOXEN_COMMIT_ID }} -->
-                {% trans "is licensed under the" %} <a href="https://www.gnu.org/licenses/agpl.txt">AGPL v3</a> |
-                <a href="http://getbootstrap.com/">{% trans "Bootstrap" %}</a>
-                {% trans "is licensed under the" %} <a href="https://raw.githubusercontent.com/twbs/bootstrap/v3.2.0/LICENSE">MIT License (MIT)</a> |
-            <a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a>
-            </p>
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted text-center">
+                <a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a> |
+                <a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a>
+                </p>
+            </div>
         </div>
-    </div>
     </body>
 </html>

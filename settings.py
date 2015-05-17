@@ -272,6 +272,7 @@ STATIC_URL = '/static/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django_assets.finders.AssetsFinder',
 )
 
 STATICFILES_STORAGE = 'inboxen.storage.ManifestStaticFilesStorage'
@@ -304,6 +305,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -319,23 +321,30 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'bootstrapform',
+
+    # third party
     'south',
+    'bootstrapform',
+    'django_assets',
     'django_extensions',
-    'watson',
     'djcelery',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'two_factor',
+    'watson',
+
+    # Inboxen
     'inboxen',
     'blog',
     'website',
     'queue',
     'queue.delete',
     'queue.liberate',
-    'tickets',
+    'redirect',
+    'source',
     'termsofservice',
+    'tickets',
 )
 
 if DEBUG:

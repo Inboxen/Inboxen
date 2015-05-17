@@ -12,9 +12,9 @@
     {% endblocktrans %}</p>
     <p>{% blocktrans %}
         Your emails and profile will deleted, as well as meta-data on your
-        Inboxes (e.g. tags and creation time). We keep a record of all Inbox
-        addresses that have been created but have no owner, this is to prevent
-        another user generating an Inbox address that has previously been used.
+        Inboxes (owner, description and creation time). We keep a record of Inboxes
+        that have been previously used to prevent them being given to other
+        users after your account has been deleted.
     {% endblocktrans %}</p>
     <form method="POST" action="{% url 'user-delete' %}" class="form">
         {% csrf_token %}

@@ -11,9 +11,9 @@ before_script:
   - psql -c 'create database inboxen;' -U postgres
 
 install:
-    - if [[ $DB == postgres ]]; then pip install -q psycopg2; fi
-    - pip install -q -r requirements.txt
-    - pip install coveralls
+    - if [[ $DB == postgres ]]; then travis_retry pip install -q psycopg2; fi
+    - travis_retry pip install -q -r requirements.txt
+    - travis_retry pip install coveralls
     - python manage.py collectstatic --noinput --settings=inboxen.tests.settings
 
 script: coverage run manage.py test --settings=inboxen.tests.settings

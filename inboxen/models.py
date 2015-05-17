@@ -161,7 +161,7 @@ class Inbox(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled"), default=0)
-    tags = models.CharField(max_length=256, null=True, blank=True)
+    description = models.CharField(max_length=256, null=True, blank=True)
 
     objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
 

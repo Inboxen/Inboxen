@@ -24,6 +24,7 @@ from inboxen import models
 from website.views import base
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
+HEADER_CLEAN = re.compile(r'\s+')
 
 __all__ = ["AttachmentDownloadView"]
 
@@ -79,7 +80,7 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
         )
 
         response["Content-Length"] = self.object.body.size or len(data)
-        response["Content-Disposition"] = disposition
-        response["Content-Type"] = content_type
+        response["Content-Disposition"] = HEADER_CLEAN.sub(" ", disposition)
+        response["Content-Type"] = HEADER_CLEAN.sub(" ", content_type)
 
         return response

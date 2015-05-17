@@ -178,13 +178,13 @@ def liberate_convert_box(result, mail_path, options):
 @task()
 def liberate_fetch_info(result, options):
     """Fetch user info and dump json to files"""
-    tags_json = liberate_inbox_tags(options['user'])
+    inbox_json = liberate_inbox_metadata(options['user'])
     profile_json = liberate_user_profile(options['user'], result or [])
 
     with open(os.path.join(options["path"], "profile.json"), "w") as profile:
         profile.write(profile_json)
-    with open(os.path.join(options["path"], "tags.json"), "w") as tags:
-        tags.write(tags_json)
+    with open(os.path.join(options["path"], "inbox.json"), "w") as inbox:
+        inbox.write(inbox_json)
 
 
 @task(default_retry_delay=600)
@@ -271,8 +271,8 @@ def liberate_user_profile(user_id, email_results):
     return json.dumps(data)
 
 
-def liberate_inbox_tags(user_id):
-    """ Grab tags from inboxes """
+def liberate_inbox_metadata(user_id):
+    """ Grab metadata from inboxes """
     data = {}
 
     inboxes = Inbox.objects.filter(user__id=user_id)
@@ -281,7 +281,7 @@ def liberate_inbox_tags(user_id):
         data[address] = {
             "created": inbox.created.isoformat(),
             "flags": dict(inbox.flags.items()),
-            "tags": inbox.tags,
+            "description": inbox.description,
         }
 
     return json.dumps(data)

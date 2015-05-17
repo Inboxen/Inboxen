@@ -1,0 +1,63 @@
+{% load i18n bootstrap inboxen_selector %}
+<form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            {% trans "Danger Area" %}&trade;
+        </div>
+        <div class="panel-body">
+            {{ form.subform|bootstrap }}
+        </div>
+    </div>
+    <button class="btn btn-primary">{% trans "Save" %}</button>
+    <a class="btn btn-default">{% trans "Cancel" %}</a>
+</form>
+<script>
+    $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]").submit(function(event) {
+        event.preventDefault();
+        var description, is_disabled;
+
+        description = $(this).find("[id=id_description]").val();
+        is_disabled = $(this).find("[id=id_disable_inbox]").prop("checked");
+
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: $(this).serializeArray(),
+            complete: function(e, xhr, opts) {
+                var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
+
+                if (e.status === 204) {
+                    var $description_cell = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > td.inbox-description");
+                    var $inbox_row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]");
+
+                    $description_cell.text(description);
+
+                    if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
+                        $inbox_row.addClass("inbox-disabled");
+                        $inbox_row.find("td.inbox-name  span.label").remove();
+                        $inbox_row.find("td.inbox-name").append("<span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span>");
+                    } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
+                        $inbox_row.removeClass("inbox-disabled");
+                        $inbox_row.find("td.inbox-name span.label-default").remove();
+                    }
+
+                    $row.remove();
+                } else {
+                    var $form = $row.children("td");
+                    if (e.status === 200) {
+                        $form.html(e.responseText);
+                    } else {
+                        $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+                        console.log("Form for {{ inbox.id }} failed to POST (" + e.status + ")");
+                    }
+                }
+            }
+        });
+    });
+    $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > a").click(function() {
+        var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
+        $row.remove();
+    });
+</script>
