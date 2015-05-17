@@ -54,20 +54,17 @@ class InboxAddForm(forms.ModelForm):
 
     class Meta:
         model = models.Inbox
-        fields = ["domain", "tags"]
-        widgets = {
-            "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
-            }
+        fields = ["domain", "description"]
 
     def save(self):
         # We want this instance created by .create() so we will ignore self.instance
         # which is created just by model(**data)
         data = self.cleaned_data.copy()
-        tags = data.pop("tags")
+        description = data.pop("description")
         excludes = data.pop("exclude_from_unified", False)
 
         self.instance = self.request.user.inbox_set.create(**data)
-        self.instance.tags = tags
+        self.instance.description = description
         self.instance.flags.exclude_from_unified = excludes
         self.instance.save()
 
@@ -92,10 +89,7 @@ class InboxEditForm(forms.ModelForm):
 
     class Meta:
         model = models.Inbox
-        fields = ["tags"]
-        widgets = {
-            "tags": forms.TextInput(attrs={'placeholder': 'Tag1, Tag2, ...'})
-            }
+        fields = ["description"]
 
     def __init__(self, request, initial=None, instance=None, *args, **kwargs):
         self.request = request

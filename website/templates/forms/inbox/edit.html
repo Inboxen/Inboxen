@@ -16,9 +16,9 @@
 <script>
     $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]").submit(function(event) {
         event.preventDefault();
-        var tags, is_disabled;
+        var description, is_disabled;
 
-        tags = $(this).find("[id=id_tags]").val();
+        description = $(this).find("[id=id_description]").val();
         is_disabled = $(this).find("[id=id_disable_inbox]").prop("checked");
 
         $.ajax({
@@ -29,10 +29,10 @@
                 var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
 
                 if (e.status === 204) {
-                    var $tags_cell = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > td.inbox-tags");
+                    var $description_cell = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > td.inbox-description");
                     var $inbox_row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]");
 
-                    $tags_cell.text(tags);
+                    $description_cell.text(description);
 
                     if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
                         $inbox_row.addClass("inbox-disabled");

@@ -127,7 +127,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
 class InboxSearchAdapter(watson.SearchAdapter):
     def get_title(self, obj):
-        return obj.tags or ""
+        return obj.description or ""
 
     def get_description(self, obj):
         return u""  # no point in repeating what's in get_title

@@ -60,7 +60,7 @@
                     onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
                 >
                     <div class="input-group">
-                        <label class="sr-only">{% trans "Search emails and tags" %}</label>
+                        <label class="sr-only">{% trans "Search emails and inboxes" %}</label>
                         <input type="text" class="form-control" name="q" value="{{ query }}">
                         <span class="input-group-btn">
                             <button class="btn btn-default">{% trans 'Search' %}</button>
