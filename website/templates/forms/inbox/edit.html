@@ -25,10 +25,10 @@
             type: "POST",
             url: $(this).attr('action'),
             data: $(this).serializeArray(),
-            complete: function(e, xhr, opts) {
+            complete: function(xhr, statusText) {
                 var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
 
-                if (e.status === 204) {
+                if (xhr.status === 204) {
                     var $description_cell = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > td.inbox-description");
                     var $inbox_row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]");
 
@@ -46,11 +46,11 @@
                     $row.remove();
                 } else {
                     var $form = $row.children("td");
-                    if (e.status === 200) {
-                        $form.html(e.responseText);
+                    if (xhr.status === 200) {
+                        $form.html(xhr.responseText);
                     } else {
                         $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-                        console.log("Form for {{ inbox.id }} failed to POST (" + e.status + ")");
+                        console.log("Form for {{ inbox.id }} failed to POST (" + xhr.status + ")");
                     }
                 }
             }
