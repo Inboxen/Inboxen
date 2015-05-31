@@ -50,7 +50,17 @@
             $("[id=email-list] [type=submit]").click(function(event) {
                 event.preventDefault();
 
-                var button = {"name": $(this).attr("name"), "value": $(this).attr("value")};
+                var $this = $(this);
+                if ($this.data("clicked") === "yes" {
+                    return false;
+                } else {
+                    $this.data("clicked", "yes");
+                    setTimeout(function() {
+                        $this.data("clicked", "no");
+                    }, 3000);
+                }
+
+                var button = {"name": $this.attr("name"), "value": $this.attr("value")};
                 var form_data = $("[id=email-list]").serializeArray();
                 form_data.push(button);
 
