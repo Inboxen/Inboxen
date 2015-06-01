@@ -55,6 +55,7 @@ class LiberateTestCase(test.TestCase):
     def tearDown(self):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
+    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
         for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
