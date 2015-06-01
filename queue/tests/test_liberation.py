@@ -55,7 +55,6 @@ class LiberateTestCase(test.TestCase):
     def tearDown(self):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
         for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
@@ -107,7 +106,6 @@ class LiberateNewUserTestCase(test.TestCase):
     def tearDown(self):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_liberate(self):
         form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
         self.assertTrue(form.is_valid())

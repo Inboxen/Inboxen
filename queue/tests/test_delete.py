@@ -32,7 +32,6 @@ class DeleteTestCase(test.TestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_delete_account(self):
         factories.EmailFactory.create_batch(inbox__user=self.user)
         tasks.delete_account.delay(user_id=self.user.id)
@@ -42,7 +41,6 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(models.Inbox.filter(flags=~models.Inbox.flags.deleted).count(), 0)
         self.assertEqual(models.Inbox.filter(user__isnull=False).count(), 0)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_delete_orphans(self):
         models.Body.objects.get_or_create(data="this is a test")
         models.HeaderName.objects.create(name="bluhbluh")

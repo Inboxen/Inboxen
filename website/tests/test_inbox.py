@@ -76,7 +76,6 @@ class InboxTestAbstract(object):
         count = models.Email.objects.filter(flags=models.Email.flags.read).count()
         self.assertEqual(count, 2)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_post_delete(self):
         count_1st = len(self.emails)
 
@@ -88,7 +87,6 @@ class InboxTestAbstract(object):
         count_2nd = models.Email.objects.count()
         self.assertEqual(count_1st - 10, count_2nd)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_post_single_delete(self):
         email_id = self.emails[0].id
         response = self.client.post(self.get_url(), {"delete-single": email_id})
