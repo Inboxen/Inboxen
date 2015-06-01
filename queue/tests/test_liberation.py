@@ -113,6 +113,7 @@ class LiberateNewUserTestCase(test.TestCase):
     def tearDown(self):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
+    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
         with test.utils.override_settings(LIBERATION_PATH=self.tmp_dir):
             form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
