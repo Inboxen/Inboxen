@@ -51,7 +51,7 @@ class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
             url_name = resolve(referer).url_name
             self.success_views.index(url_name)
             return referer
-        except ValueError, Resolver404:
+        except (ValueError, Resolver404):
             return reverse("user-home")
 
 
