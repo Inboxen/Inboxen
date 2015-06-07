@@ -24,8 +24,10 @@
                         return false;
                     } else {
                         $this.data("clicked", "yes");
+                        $this.addClass("disabled");
                         setTimeout(function() {
                             $this.data("clicked", "no");
+                            $this.removeClass("disabled");
                         }, 3000);
                     }
 
