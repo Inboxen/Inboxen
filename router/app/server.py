@@ -1,6 +1,6 @@
 ##
 #
-# Copyright 2013 Jessica Tallon, Matt Molyneaux
+# Copyright 2013, 2015 Jessica Tallon, Matt Molyneaux
 # 
 # This file is part of Inboxen.
 #
@@ -19,6 +19,8 @@
 #
 ##
 
+from datetime import datetime
+
 from salmon.routing import nolocking, route, stateless
 from salmon.server import SMTPError
 
@@ -31,6 +33,7 @@ from inboxen.models import Inbox
 import logging
 
 log = logging.getLogger(__name__)
+
 
 @route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless
@@ -51,7 +54,8 @@ def START(message, inbox=None, domain=None):
         if not inbox.flags.exclude_from_unified:
             profile = inbox.user.userprofile
             profile.flags.unified_has_new_messages = True
-            profile.save(update_fields=["flags"])
+            profile.last_activity = datetime.now(utc)
+            profile.save(update_fields=["flags", "last_activity"])
 
     except DatabaseError, e:
         log.exception("DB error: %s", e)
