@@ -72,7 +72,13 @@
                 <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">{{ inbox.inbox }}@{{ inbox.domain.domain }}</a>
                 {{ inbox.flags|render_flags }}
             {% endspaceless %}</td>
-            <td class="inbox-activity"><span title="{{ inbox.last_activity|date:"r" }}">{{ inbox.last_activity|timesince }} {% trans "ago" %}</span></td>
+            <td class="inbox-activity">
+                {% if inbox.last_activity %}
+                    <span title="{{ inbox.last_activity|date:"r" }}">{{ inbox.last_activity|timesince }} {% trans "ago" %}</span>
+                {% else %}
+                    <span><i>{% trans "No activity" %}</i></span>
+                {% endif %}
+            </td>
             <td class="inbox-description">{{ inbox.description|default:"&nbsp;" }}</td>
             <td class="inbox-options">
                 <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
