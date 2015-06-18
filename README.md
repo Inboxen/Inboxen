@@ -78,6 +78,9 @@ After this has completed, see the next section on minimum configuration. Also,
 `settings.py` is well commented and explains what various configuration options
 do.
 
+You should also tag your deployments - we use signed annotated tags (`git tag -as deplpy-YYYYMMDD`).
+This is particularly useful for rollbacks if something goes wrong.
+
 ### settings.ini
 
 At the very least, this file should contain the following:
