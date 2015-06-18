@@ -272,6 +272,7 @@ STATIC_URL = '/static/'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'django_assets.finders.AssetsFinder',
 )
 
 STATICFILES_STORAGE = 'inboxen.storage.ManifestStaticFilesStorage'
@@ -322,15 +323,16 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # third party
-    'bootstrapform',
     'south',
+    'bootstrapform',
+    'django_assets',
     'django_extensions',
-    'watson',
     'djcelery',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'two_factor',
+    'watson',
 
     # Inboxen
     'inboxen',

@@ -1,18 +1,29 @@
-{% load i18n staticfiles %}
+{% load assets i18n staticfiles %}
 <!DOCTYPE html>
 <html>
     <head>
-        <link href="{% static "css/bootstrap.min.css"%}" rel="stylesheet" type="text/css" />
-        <link href="{% static "css/inboxen.min.css" %}" rel="stylesheet" type="text/css" />
         <link rel="icon" type="image/png" href="{% static "megmelon-icon.png" %}" />
         <title>{{ headline }} - {{ settings.SITE_NAME }}</title>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="{% static "js/jquery.min.js" %}"></script>
-        <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+        {% assets "inboxen_css" %}
+            <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css" />
+        {% endassets %}
+
+        {% assets "inboxen_js" %}
+            <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+
         <script>
-            var button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>';
             $(document).ready(function() {
+                // collapsing nav
+                // we do this here so that the nav still works for those without JS
+                $("#navbar-button-1").removeClass("hidden");
+                $("#navbar-collapse-1").addClass("collapse navbar-collapse");
+
+                // alert buttons
+                var button = '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button>';
                 $("div[role=alert]").each(function() {
                     $(this).append(button);
                 });
@@ -28,9 +39,16 @@
         <div class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
+                      <button id="navbar-button-1" type="button" class="navbar-toggle collapsed hidden" data-toggle="collapse" data-target="#navbar-collapse-1">
+                          <span class="sr-only">{% trans "Toggle navigation" %}</span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                          <span class="icon-bar"></span>
+                      </button>
                     <a class="navbar-brand" href="{% url 'index' %}">{{ settings.SITE_NAME }}</a>
                 </div>
                 {% block navbar %}
+                <div id="navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     {% if user.is_authenticated %}
                         <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
@@ -55,7 +73,7 @@
                     onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
                 >
                     <div class="input-group">
-                        <label class="sr-only">{% trans "Search emails and tags" %}</label>
+                        <label class="sr-only">{% trans "Search emails and inboxes" %}</label>
                         <input type="text" class="form-control" name="q" value="{{ query }}">
                         <span class="input-group-btn">
                             <button class="btn btn-default">{% trans 'Search' %}</button>
@@ -63,21 +81,20 @@
                     </div>
                 </form>
                 {% endif %}
+                </div>
                 {% endblock %}
             </div>
         </div>
         <div class="container-fluid">
             {% block breadcumbs %}
             {% endblock %}
-            {% if messages %}
-                <div id="alertmessages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+            <div id="alertmessages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{ message }}
                 </div>
-            {% endif %}
+            {% endfor %}
+            </div>
             <div id="contentstart">
                 {% block content %}
                 {% endblock %}

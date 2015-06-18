@@ -24,7 +24,7 @@ from django.core import urlresolvers
 from django.core.cache import cache
 
 from inboxen.tests import factories
-
+from inboxen.utils import is_reserved
 
 @test.utils.override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
@@ -81,3 +81,9 @@ class LoginTestCase(test.TestCase):
 
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertFalse(response.context["request"].user.is_authenticated())
+
+
+class UtilsTestCase(test.TestCase):
+    def test_reserved(self):
+        self.assertTrue(is_reserved("root"))
+        self.assertFalse(is_reserved("root1"))
