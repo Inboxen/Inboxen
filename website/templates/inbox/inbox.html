@@ -124,6 +124,7 @@
             <th>&nbsp;</th>
             <th>{% trans "From" %}</th>
             <th>{% trans "Subject" %}</th>
+            {% if not inbox %}<th>{% trans "Inbox" %}</th>{% endif %}
             <th>{% trans "Received" %}</th>
             <th>&nbsp;</th>
         </tr>
@@ -141,6 +142,7 @@
                 {% else %}
                     <td class="email-subject"><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
                 {% endif %}
+                {% if not inbox %}<td class="email-inbox"><a href="{% url 'inbox-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox.inbox}}@{{ email.inbox.domain.domain }}</a></td>{% endif %}
                 <td title="{{ email.received_date|date:"r" }}" class="email-reveived"><div>{{ email.timesince }} {% trans "ago" %}</div></td>
                 <td class="email-buttons">
                     <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">
