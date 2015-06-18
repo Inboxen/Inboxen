@@ -54,8 +54,7 @@ def START(message, inbox=None, domain=None):
         if not inbox.flags.exclude_from_unified:
             profile = inbox.user.userprofile
             profile.flags.unified_has_new_messages = True
-            profile.last_activity = datetime.now(utc)
-            profile.save(update_fields=["flags", "last_activity"])
+            profile.save(update_fields=["flags"])
 
     except DatabaseError, e:
         log.exception("DB error: %s", e)

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2014, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -41,9 +41,6 @@ from inboxen import fields, search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
-def get_datetime_now():
-    return datetime.now(utc)
-
 
 class UserProfile(models.Model):
     """This is auto-created when accessed via a RelatedManager
@@ -59,7 +56,6 @@ class UserProfile(models.Model):
     pool_amount = models.IntegerField(default=500)
     flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True)
-    last_activity = models.DateTimeField(default=get_datetime_now)
 
     def available_inboxes(self):
         used = self.user.inbox_set.count()
