@@ -28,6 +28,7 @@ from pytz import utc
 
 from inboxen import models
 from inboxen.tests import factories
+from inboxen.utils import override_settings
 from queue import tasks
 
 
@@ -70,7 +71,7 @@ class SearchTestCase(test.TestCase):
         self.assertItemsEqual(result.keys(), ["emails", "inboxes"])
 
 
-@test.utils.override_settings(
+@override_settings(
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
     ADMINS=(("Travis", "ci@example.com"),),
 )

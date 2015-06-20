@@ -24,9 +24,10 @@ from django.core import urlresolvers
 from django.core.cache import cache
 
 from inboxen.tests import factories
-from inboxen.utils import is_reserved
+from inboxen.utils import is_reserved, override_settings
 
-@test.utils.override_settings(CACHE_BACKEND="locmem:///")
+
+@override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
     """Test various login things"""
     def setUp(self):
