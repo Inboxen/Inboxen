@@ -40,7 +40,6 @@ describes how *should* do things.
 There are some differences however:
 * Our `master` is really Driessen's `develop`, we don't have an equivalent to Driessen's `master`
 * `deploy` is our only release branch
-* We don't tag releases (or "deploys" as we would call them)
 
 Commits on `deploy` **must** be signed with a GPG key. This is important for the future.
 
