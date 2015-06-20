@@ -80,7 +80,7 @@ class InboxTestAbstract(object):
     def test_post_delete(self):
         count_1st = len(self.emails)
 
-        params = dict([(emaili.id, "email") for email in self.emails[10]])
+        params = dict([(email.id, "email") for email in self.emails[:10]])
         params["delete"] = ""
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
@@ -88,7 +88,6 @@ class InboxTestAbstract(object):
         count_2nd = models.Email.objects.count()
         self.assertEqual(count_1st - 10, count_2nd)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_post_single_delete(self):
         email_id = self.emails[0].id
         response = self.client.post(self.get_url(), {"delete-single": email_id})
