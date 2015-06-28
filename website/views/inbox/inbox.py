@@ -49,7 +49,7 @@ class InboxView(
         return self.request.path
 
     def get_queryset(self, *args, **kwargs):
-        qs = super(InboxView, self).get_queryset(*args, **kwargs).distinct()
+        qs = super(InboxView, self).get_queryset(*args, **kwargs)
         qs = qs.filter(inbox__user=self.request.user, flags=F('flags').bitand(~models.Email.flags.deleted))
         qs = qs.filter(inbox__flags=F('inbox__flags').bitand(~models.Inbox.flags.deleted))
         qs = qs.annotate(important=ConditionalCount('id', only=Q(flags=models.Email.flags.important)))
