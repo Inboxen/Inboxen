@@ -29,7 +29,7 @@ except ImportError:
 
 from django.conf import settings
 from django.db import IntegrityError, models
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.db.models.loading import get_model
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
@@ -119,6 +119,12 @@ class InboxQuerySet(QuerySet):
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(user=user)
         return qs.exclude(flags=inbox_model.flags.deleted)
+
+    def add_last_activity(self):
+        """Annotates `last_activity` onto each Inbox"""
+        qs = self.annotate(last_activity=Max("email__received_date"))
+        return qs
+
 
 ##
 # Email managers
