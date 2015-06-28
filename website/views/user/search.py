@@ -51,7 +51,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         return super(SearchView, self).get(request, *args, **kwargs)
 
     def get_cache_key(self):
-        key = u"{0}-{1}".format(self.request.user.username, self.query)
+        key = u"{0}-{1}".format(self.request.user.id, self.query)
         return urllib.quote(key.encode("utf-8"))
 
     def get_results(self):
