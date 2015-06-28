@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2014, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #

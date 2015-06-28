@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -19,16 +19,24 @@
 
 import os
 import re
+import logging
+import sys
 
 from django.conf import settings
 from django.template import loader, Context
+from django import test
 from django.utils.translation import ugettext as _
+
+from django_assets import env as assets_env
 
 from website.context_processors import reduced_settings_context
 
 # use the following to get a pipe separated list of inboxes that should be reserved
 # cat /etc/aliases | egrep "^[^#]" | awk '{gsub (":", ""); print $1}' | sort | tr "\n" "|" | sed 's/|$/\)$\n/' | sed 's/^/\^(/'
 RESERVED_LOCAL_PARTS = re.compile(r"""^(abuse|adm|amanda|apache|bin|canna|daemon|dbus|decode|desktop|dovecot|dumper|fax|ftp|ftpadm|ftp-adm|ftpadmin|ftp-admin|games|gdm|gopher|halt|hostmaster|ident|info|ingres|ldap|lp|mail|mailer-daemon|mailnull|manager|marketing|mysql|named|netdump|news|newsadm|newsadmin|nfsnobody|nobody|noc|nscd|ntp|nut|operator|pcap|postfix|postgres|postmaster|privoxy|pvm|quagga|radiusd|radvd|root|rpc|rpcuser|rpm|sales|security|shutdown|smmsp|squid|sshd|support|sync|system|toor|usenet|uucp|vcsa|webalizer|webmaster|wnn|www|xfs)$""")
+
+
+_log = logging.getLogger(__name__)
 
 
 def generate_maintenance_page():
@@ -58,3 +66,33 @@ def is_reserved(inbox):
     Assumes `inbox` has been lowercased
     """
     return RESERVED_LOCAL_PARTS.search(inbox) is not None
+
+
+class WebAssetsOverrideMixin(object):
+    """Reset Django Assets crap
+
+    Work around for https://github.com/miracle2k/django-assets/issues/44
+    """
+
+    asset_modules = ["website.assets"]
+
+    def disable(self, *args, **kwargs):
+        ret_value = super(WebAssetsOverrideMixin, self).disable(*args, **kwargs)
+
+        # reset asset env
+        assets_env.reset()
+        assets_env._ASSETS_LOADED = False
+
+        # unload asset modules so python reimports them
+        for module in self.asset_modules:
+            try:
+                del sys.modules[module]
+                __import__(module)
+            except (KeyError, ImportError):
+                _log.debug("Couldn't find %s in sys.modules", module)
+
+        return ret_value
+
+
+class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
+    pass

@@ -54,7 +54,7 @@
         <thead>
         <tr>
             <th>{% trans "Inbox" %}</th>
-            <th>{% trans "Created" %}</th>
+            {#<th>{% trans "Last Activity" %}</th>#}
             <th>{% trans "Description" %}</th>
             <th>&nbsp;</th>
         </tr>
@@ -65,7 +65,15 @@
                     <a href="{% url 'single-inbox' inbox=result.object.inbox domain=result.meta.domain %}">{{ result.object.inbox }}@{{ result.meta.domain }}</a>
                     {{ result.object.flags|render_flags }}
                 {% endspaceless %}</td>
-                <td><span title="{{ result.object.created|date:"r" }}">{{ result.object.created|timesince }} {% trans "ago" %}</span></td>
+                {% comment %}
+                <td class="inbox-activity">
+                    {% if results.object.last_activity %}
+                        <span title="{{ result.object.last_activity|date:"r" }}">{{ result.object.last_activity|timesince }} {% trans "ago" %}</span>
+                    {% else %}
+                        <span><i>{% trans "No activity" %}</i></span>
+                    {% endif %}
+                </td>
+                {% endcomment %}
                 <td>{{ result.title }}</td>
                 <td>
                     <a title="{% trans "Options" %}" class="close" href="{% url 'inbox-edit' inbox=result.object.inbox domain=result.meta.domain %}">
