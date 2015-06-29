@@ -73,12 +73,11 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
     def get_queryset(self, *args, **kwargs):
         queryset = super(EmailView, self).get_queryset(*args, **kwargs)
+        queryset = queryset.viewable(self.request.user)
         queryset = queryset.filter(
-            inbox__user=self.request.user,
             inbox__inbox=self.kwargs["inbox"],
             inbox__domain__domain=self.kwargs["domain"],
-            flags=~models.Email.flags.deleted
-            ).select_related("inbox", "inbox__domain")
+        ).select_related("inbox", "inbox__domain")
         return queryset
 
     def get_success_url(self):

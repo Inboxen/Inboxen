@@ -40,7 +40,6 @@ describes how *should* do things.
 There are some differences however:
 * Our `master` is really Driessen's `develop`, we don't have an equivalent to Driessen's `master`
 * `deploy` is our only release branch
-* We don't tag releases (or "deploys" as we would call them)
 
 Commits on `deploy` **must** be signed with a GPG key. This is important for the future.
 
@@ -77,6 +76,9 @@ pip install -r requirements.txt
 After this has completed, see the next section on minimum configuration. Also,
 `settings.py` is well commented and explains what various configuration options
 do.
+
+You should also tag your deployments - we use signed annotated tags (`git tag -as deplpy-YYYYMMDD`).
+This is particularly useful for rollbacks if something goes wrong.
 
 ### settings.ini
 

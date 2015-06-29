@@ -17,9 +17,10 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
-from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse, resolve, Resolver404
+from django.http import Http404
+from django.utils.translation import ugettext as _
+from django.views import generic
 
 from website import forms
 from website.views import base
@@ -42,8 +43,13 @@ class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
         return kwargs
 
     def get_object(self, *args, **kwargs):
-        inbox = self.request.user.inbox_set.select_related("domain")
-        return inbox.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"], flags=~Inbox.flags.deleted)
+        inbox = Inbox.objects.viewable(self.request.user).select_related("domain")
+        inbox = inbox.filter(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
+
+        try:
+            return inbox.get()
+        except Inbox.DoesNotExist:
+            raise Http404
 
     def get_success_url(self):
         referer = self.request.META.get("HTTP_REFERER", "/user/home/")

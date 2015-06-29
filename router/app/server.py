@@ -1,6 +1,6 @@
 ##
 #
-# Copyright 2013 Jessica Tallon, Matt Molyneaux
+# Copyright 2013, 2015 Jessica Tallon, Matt Molyneaux
 # 
 # This file is part of Inboxen.
 #
@@ -19,6 +19,8 @@
 #
 ##
 
+from datetime import datetime
+
 from salmon.routing import nolocking, route, stateless
 from salmon.server import SMTPError
 
@@ -31,6 +33,7 @@ from inboxen.models import Inbox
 import logging
 
 log = logging.getLogger(__name__)
+
 
 @route("(inbox)@(domain)", inbox=".+", domain=".+")
 @stateless

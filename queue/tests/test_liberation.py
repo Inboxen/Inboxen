@@ -18,10 +18,11 @@
 ##
 
 import itertools
+import mailbox
 import os
 import os.path
 import shutil
-import mailbox
+import tempfile
 
 from django import test
 from django.conf import settings
@@ -32,6 +33,7 @@ from inboxen import models
 from inboxen.tests import factories
 from queue.liberate import tasks
 from website.forms import LiberationForm
+
 
 _database_not_psql = settings.DATABASES["default"]["ENGINE"] != 'django.db.backends.postgresql_psycopg2'
 
@@ -49,22 +51,24 @@ class LiberateTestCase(test.TestCase):
             factories.HeaderFactory(part=part, name="From")
             factories.HeaderFactory(part=part, name="Subject")
 
-        self.mail_dir = os.path.join(os.getcwd(), "isdabizda")
+        self.tmp_dir = tempfile.mkdtemp()
+        self.mail_dir = os.path.join(self.tmp_dir, "isdabizda")
         mailbox.Maildir(self.mail_dir)
 
     def tearDown(self):
-        shutil.rmtree(self.mail_dir, ignore_errors=True)
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
+    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
-        for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
-            form_data = {"storage_type": storage[0], "compression_type": compression[0]}
-            form = LiberationForm(self.user, data=form_data)
-            self.assertTrue(form.is_valid())
-            form.save()
+        with test.utils.override_settings(LIBERATION_PATH=self.tmp_dir):
+            for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
+                form_data = {"storage_type": storage[0], "compression_type": compression[0]}
+                form = LiberationForm(self.user, data=form_data)
+                self.assertTrue(form.is_valid())
+                form.save()
 
-            # TODO: check Liberation model actually has correct archive type
+                # TODO: check Liberation model actually has correct archive type
 
     def test_liberate_inbox(self):
         result = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)
@@ -101,17 +105,20 @@ class LiberateNewUserTestCase(test.TestCase):
     """Liberate a new user, with no data"""
     def setUp(self):
         self.user = get_user_model().objects.create(username="atester")
-        self.mail_dir = os.path.join(os.getcwd(), "isdabizda")
+
+        self.tmp_dir = tempfile.mkdtemp()
+        self.mail_dir = os.path.join(self.tmp_dir, "isdabizda")
         mailbox.Maildir(self.mail_dir)
 
     def tearDown(self):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
+    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
-        form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
-        self.assertTrue(form.is_valid())
-        form.save()
+        with test.utils.override_settings(LIBERATION_PATH=self.tmp_dir):
+            form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
+            self.assertTrue(form.is_valid())
+            form.save()
 
     def test_liberate_fetch_info(self):
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})

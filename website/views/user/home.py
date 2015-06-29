@@ -37,7 +37,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     def get_queryset(self):
         queryset = models.Inbox.objects.viewable(self.request.user)
         queryset = queryset.select_related("domain")
-        return queryset.order_by("-created").distinct()
+        return queryset.add_last_activity().order_by("-last_activity")
 
     def get_context_data(self, **kwargs):
         context = super(UserHomeView, self).get_context_data(**kwargs)
