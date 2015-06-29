@@ -29,7 +29,7 @@ except ImportError:
 
 from django.conf import settings
 from django.db import IntegrityError, models
-from django.db.models import Q, Max
+from django.db.models import F, Q, Max
 from django.db.models.loading import get_model
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
@@ -118,7 +118,7 @@ class InboxQuerySet(QuerySet):
         """Returns a QuerySet of Inboxes the user can view"""
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(user=user)
-        return qs.exclude(flags=inbox_model.flags.deleted)
+        return qs.exclude(flags=F("flags").bitor(inbox_model.flags.deleted))
 
     def add_last_activity(self):
         """Annotates `last_activity` onto each Inbox"""
@@ -135,8 +135,8 @@ class EmailQuerySet(QuerySet):
     def viewable(self, user):
         qs = self.filter(inbox__user=user)
         return qs.exclude(
-            Q(flags=get_model("inboxen", "email").flags.deleted) |
-            Q(inbox__flags=get_model("inboxen", "inbox").flags.deleted),
+            Q(flags=F("flags").bitor(get_model("inboxen", "email").flags.deleted)) |
+            Q(inbox__flags=F("inbox__flags").bitor(get_model("inboxen", "inbox").flags.deleted)),
         )
 
 
