@@ -20,6 +20,8 @@
 import datetime
 import itertools
 
+from pytz import utc
+
 from django import test
 from django.conf import settings
 
@@ -114,6 +116,21 @@ class ModelTestCase(test.TestCase):
 
         count = models.Email.objects.viewable(user).count()
         self.assertEqual(count, 4)
+
+    def test_add_last_activity(self):
+        now = datetime.datetime.now(utc)
+
+        email = factories.EmailFactory(received_date=now)
+        email.inbox.created = now - datetime.timedelta(2)
+        email.inbox.save()
+
+        inbox = factories.InboxFactory()
+        inbox.created = now - datetime.timedelta(1)
+        inbox.save()
+
+        inboxes = list(models.Inbox.objects.all().add_last_activity())
+        self.assertEqual(inboxes[0].last_activity, now)
+        self.assertEqual(inboxes[1].last_activity, now - datetime.timedelta(1))
 
     def test_header_create(self):
         name = "X-Hello"
