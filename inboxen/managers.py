@@ -29,7 +29,8 @@ except ImportError:
 
 from django.conf import settings
 from django.db import IntegrityError, models
-from django.db.models import Q
+from django.db.models import F, Q
+from django.db.models.sql.aggregates import Max
 from django.db.models.loading import get_model
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
@@ -38,6 +39,26 @@ from django.utils.translation import ugettext as _
 from pytz import utc
 
 from inboxen.utils import is_reserved
+
+
+class MaxDefault(Max):
+    """A quick hack to get a default value for the Max aggregate
+
+    Based on code from https://code.djangoproject.com/ticket/10929#comment:1
+    """
+    sql_template = 'COALESCE(%(function)s(%(field)s), %(default)s)'
+
+    def __init__(self, lookup, **extra):
+        self.lookup = lookup
+        self.extra = extra
+
+    def _default_alias(self):
+        return '%s__%s' % (self.lookup, self.__class__.__name__.lower())
+    default_alias = property(_default_alias)
+
+    def add_to_query(self, query, alias, col, source, is_summary):
+        super(MaxDefault, self).__init__(col, source, is_summary, **self.extra)
+        query.aggregate_select[alias] = self
 
 
 class HashedQuerySet(QuerySet):
@@ -118,7 +139,13 @@ class InboxQuerySet(QuerySet):
         """Returns a QuerySet of Inboxes the user can view"""
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(user=user)
-        return qs.exclude(flags=inbox_model.flags.deleted)
+        return qs.exclude(flags=F("flags").bitor(inbox_model.flags.deleted))
+
+    def add_last_activity(self):
+        """Annotates `last_activity` onto each Inbox and then orders by that column"""
+        qs = self.annotate(last_activity=MaxDefault("email__received_date", default="created")).order_by("-last_activity")
+        return qs
+
 
 ##
 # Email managers
@@ -129,8 +156,8 @@ class EmailQuerySet(QuerySet):
     def viewable(self, user):
         qs = self.filter(inbox__user=user)
         return qs.exclude(
-            Q(flags=get_model("inboxen", "email").flags.deleted) |
-            Q(inbox__flags=get_model("inboxen", "inbox").flags.deleted),
+            Q(flags=F("flags").bitor(get_model("inboxen", "email").flags.deleted)) |
+            Q(inbox__flags=F("inbox__flags").bitor(get_model("inboxen", "inbox").flags.deleted)),
         )
 
 

@@ -80,7 +80,7 @@ class InboxTestAbstract(object):
     def test_post_delete(self):
         count_1st = len(self.emails)
 
-        params = dict([(emaili.id, "email") for email in self.emails[10]])
+        params = dict([(email.id, "email") for email in self.emails[:10]])
         params["delete"] = ""
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
@@ -88,7 +88,6 @@ class InboxTestAbstract(object):
         count_2nd = models.Email.objects.count()
         self.assertEqual(count_1st - 10, count_2nd)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_post_single_delete(self):
         email_id = self.emails[0].id
         response = self.client.post(self.get_url(), {"delete-single": email_id})
@@ -176,7 +175,7 @@ class InboxAddTestCase(test.TestCase):
 
         self.assertNotIn("inbox", form.fields)
         self.assertIn("domain", form.fields)
-        self.assertIn("tags", form.fields)
+        self.assertIn("description", form.fields)
 
         for domain in form.fields["domain"].queryset:
             self.assertTrue(domain.enabled)
@@ -200,7 +199,7 @@ class InboxAddTestCase(test.TestCase):
 
         domain = models.Domain.objects.filter(enabled=True, owner=None)[0]
         inbox_count_1st = models.Inbox.objects.count()
-        response = self.client.post(self.get_url(), {"domain": domain.id, "tags": "no tags"})
+        response = self.client.post(self.get_url(), {"domain": domain.id, "description": "nothing at all"})
         self.assertEqual(response.status_code, 302)
 
         inbox_count_2nd = models.Inbox.objects.count()
@@ -230,10 +229,10 @@ class InboxEditTestCase(test.TestCase):
 
         self.assertNotIn("inbox", form.fields)
         self.assertNotIn("domain", form.fields)
-        self.assertIn("tags", form.fields)
+        self.assertIn("description", form.fields)
 
-    def test_inbox_add_tags(self):
-        response = self.client.post(self.get_url(), {"tags": "no tags"})
+    def test_inbox_add_description(self):
+        response = self.client.post(self.get_url(), {"description": "nothing at all"})
         self.assertEqual(response.status_code, 302)
 
-        self.assertTrue(models.Inbox.objects.filter(tags="no tags").exists())
+        self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())

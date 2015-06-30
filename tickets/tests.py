@@ -24,6 +24,7 @@ import factory
 import factory.fuzzy
 
 from inboxen.tests import factories
+from inboxen.utils import override_settings
 from tickets import models
 
 
@@ -109,7 +110,7 @@ class QuestionListTestCase(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-@test.utils.override_settings(ADMINS=(("admin", "root@localhost"),))
+@override_settings(ADMINS=(("admin", "root@localhost"),))
 class QuestionNoticeTestCase(test.TestCase):
     def setUp(self):
         super(QuestionNoticeTestCase, self).setUp()

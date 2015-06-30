@@ -23,3 +23,5 @@ notifications:
         channels:
             - "ircs://irc.megworld.co.uk:9000#inboxen"
         use_notice: true
+
+sudo: false

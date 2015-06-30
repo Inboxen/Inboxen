@@ -50,7 +50,19 @@
             $("[id=email-list] [type=submit]").click(function(event) {
                 event.preventDefault();
 
-                var button = {"name": $(this).attr("name"), "value": $(this).attr("value")};
+                var $this = $(this);
+                if ($this.data("clicked") === "yes") {
+                    return false;
+                } else {
+                    $this.data("clicked", "yes");
+                    $this.addClass("disabled");
+                    setTimeout(function() {
+                        $this.data("clicked", "no");
+                        $this.removeClass("disabled");
+                    }, 3000);
+                }
+
+                var button = {"name": $this.attr("name"), "value": $this.attr("value")};
                 var form_data = $("[id=email-list]").serializeArray();
                 form_data.push(button);
 
@@ -58,8 +70,8 @@
                     type: "POST",
                     url: "{% url 'form-inbox-email' %}",
                     data: form_data,
-                    complete: function(e, xhr, opts) {
-                        if (e.status === 204) {
+                    complete: function(xhr, statusText) {
+                        if (xhr.status === 204) {
                             var $row = $("tr[id=email-" + button.value + "]");
                             if (button.name === "important-single") {
                                 ToggleImportant($row);
@@ -112,12 +124,13 @@
             <th>&nbsp;</th>
             <th>{% trans "From" %}</th>
             <th>{% trans "Subject" %}</th>
+            {% if not inbox %}<th>{% trans "Inbox" %}</th>{% endif %}
             <th>{% trans "Received" %}</th>
             <th>&nbsp;</th>
         </tr>
         </thead>
         {% for email in page_obj.object_list %}
-            <tr id="email-{{ email.id }}">
+            <tr id="email-{{ email.eid }}">
                 <td class="email-checkbox"><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
                 <td class="email-flags">{% spaceless %}
                     {{ email.flags|render_flags }}
@@ -129,6 +142,7 @@
                 {% else %}
                     <td class="email-subject"><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
                 {% endif %}
+                {% if not inbox %}<td class="email-inbox"><a href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox.inbox}}@{{ email.inbox.domain.domain }}</a></td>{% endif %}
                 <td title="{{ email.received_date|date:"r" }}" class="email-reveived"><div>{{ email.timesince }} {% trans "ago" %}</div></td>
                 <td class="email-buttons">
                     <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">

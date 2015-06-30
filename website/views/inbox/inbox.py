@@ -49,9 +49,8 @@ class InboxView(
         return self.request.path
 
     def get_queryset(self, *args, **kwargs):
-        qs = super(InboxView, self).get_queryset(*args, **kwargs).distinct()
-        qs = qs.filter(inbox__user=self.request.user, flags=F('flags').bitand(~models.Email.flags.deleted))
-        qs = qs.filter(inbox__flags=F('inbox__flags').bitand(~models.Inbox.flags.deleted))
+        qs = super(InboxView, self).get_queryset(*args, **kwargs)
+        qs = qs.viewable(self.request.user)
         qs = qs.annotate(important=ConditionalCount('id', only=Q(flags=models.Email.flags.important)))
         qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
@@ -205,7 +204,8 @@ class SingleInboxView(InboxView):
     """View a single inbox"""
     def get_queryset(self, *args, **kwargs):
         try:
-            self.inbox_obj = models.Inbox.objects.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
+            self.inbox_obj = models.Inbox.objects.viewable(self.request.user)
+            self.inbox_obj = self.inbox_obj.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
         except models.Inbox.DoesNotExist:
             raise Http404(_("No Inbox found matching the query."))
         qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)

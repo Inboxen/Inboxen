@@ -34,7 +34,7 @@ class DeleteTestCase(test.TestCase):
 
     @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_delete_account(self):
-        factories.EmailFactory.create_batch(inbox__user=self.user)
+        factories.EmailFactory.create_batch(10, inbox__user=self.user)
         tasks.delete_account.delay(user_id=self.user.id)
 
         self.assertEqual(get_user_model().objects.count(), 0)
