@@ -13,7 +13,7 @@ django-bootstrap-form
 django-braces
 django-celery
 django-extensions
-django-model-utils<2.3
+django-model-utils!=2.3
 django-mptt
 django-otp
 django-ratelimit-backend
