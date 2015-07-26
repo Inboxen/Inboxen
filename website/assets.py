@@ -21,17 +21,23 @@ from django_assets import Bundle, register
 
 
 css = Bundle(
-    "css/bootstrap.css",
-    "css/inboxen.css",
-    filters="cssutils",
+    "css/copying-css.txt",
+    Bundle(
+        "css/bootstrap.css",
+        "css/inboxen.css",
+        filters="cssutils",
+    ),
     output="compiled/css/website.%(version)s.css",
 )
 
 
 js = Bundle(
-    "js/jquery.js",
-    "js/bootstrap.js",
-    filters="jsmin",
+    "js/copying-js.txt",
+    Bundle(
+        "js/jquery.js",
+        "js/bootstrap.js",
+        filters="jsmin",
+    ),
     output="compiled/js/website.%(version)s.js",
 )
 
