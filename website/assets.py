@@ -38,6 +38,7 @@ js = Bundle(
         "js/bootstrap.js",
         "js/menu.js",
         "js/home.js",
+        "js/search.js",
         filters="jsmin",
     ),
     output="compiled/js/website.%(version)s.js",

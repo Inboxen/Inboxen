@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
+ * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
+ */
+function AreWeReadyYet() {
+    var http = new XMLHttpRequest();
+    http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
+    http.onload = function (e) {
+        if (http.readyState > 2) {
+            if (http.status == 202) {
+                // not done
+                document.getElementById("refreshnote").innerHTML = "";
+            } else if (http.status == 201) {
+                // done!
+                clearInterval(timer);
+                document.getElementById("refreshnote").innerHTML = "{% trans "Loading results…" %}";
+                location.reload(true);
+            } else if (http.status == 400) {
+                clearInterval(timer);
+                document.getElementById("searchinfo").innerHTML = "{% trans "The search timed out. Please try again." %}";
+                document.getElementById("searchinfo").className = "alert alert-warning";
+                console.error("{% trans "Server says there is no such search" %}");
+            } else {
+                clearInterval(timer);
+                document.getElementById("searchinfo").innerHTML = "{% trans "Something went wrong while searching. Please try again later." %}";
+                document.getElementById("searchinfo").className = "alert alert-danger";
+                console.error("{% trans "Unexpected response code" %}");
+            }
+        }
+    };
+    http.send(null);
+}
+$(document).ready(function() {
+    var element = document.getElementById("refreshnote");
+    if (element == null) {
+        return;
+    }
+    element.innerHTML = "";
+    // poll the server every 7000 ms
+    var timer = setInterval(function(){AreWeReadyYet();}, 7000);
+});
