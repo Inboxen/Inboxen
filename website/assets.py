@@ -36,6 +36,7 @@ js = Bundle(
     Bundle(
         "js/jquery.js",
         "js/bootstrap.js",
+        "js/menu.js",
         filters="jsmin",
     ),
     output="compiled/js/website.%(version)s.js",
