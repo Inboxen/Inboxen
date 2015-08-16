@@ -8,7 +8,7 @@ $(document).ready(function() {
 
     function ToggleImportant($row) {
         if ($row.find("span.label-danger").length === 0) {
-           $row.find("td[class=email-flags]").append(important_label);
+           $row.find("td.email-flags").append(important_label);
         } else {
             $row.find("span.label-danger").remove();
         }
@@ -16,7 +16,7 @@ $(document).ready(function() {
 
     function MarkImportant($row) {
         if ($row.find("span.label-danger").length === 0) {
-           $row.find("td[class=email-flags]").append(important_label);
+           $row.find("td.email-flags").append(important_label);
         }
     }
 
@@ -44,7 +44,7 @@ $(document).ready(function() {
         }
 
         var button = {"name": $this.attr("name"), "value": $this.attr("value")};
-        var form_data = $("[id=email-list]").serializeArray();
+        var form_data = $("#email-list").serializeArray();
         form_data.push(button);
 
         $.ajax({
@@ -53,7 +53,7 @@ $(document).ready(function() {
             data: form_data,
             complete: function(xhr, statusText) {
                 if (xhr.status === 204) {
-                    var $row = $("tr[id=email-" + button.value + "]");
+                    var $row = $("#email-" + button.value);
                     if (button.name === "important-single") {
                         ToggleImportant($row);
                         return;
@@ -76,11 +76,11 @@ $(document).ready(function() {
 
                     $.each(form_data, function(index, value) {
                         if (value.value === "email") {
-                            fn($("tr[id=email-" + value.name + "]"));
+                            fn($("#email-" + value.name));
                         }
                     });
                 } else {
-                    var $messageBlock = $("[id=alertmessages]");
+                    var $messageBlock = $("#alertmessages");
                     var message = '<div class="alert alert-warning" role="alert">{% trans "Something went wrong!" %}<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button></div>';
                     $messageBlock.append(message);
                 }

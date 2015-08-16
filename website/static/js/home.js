@@ -24,8 +24,8 @@ function initForm($form) {
             $this.find("a.btn").removeClass("disabled");
         }, 3000);
 
-        description = $this.find("[id=id_description]").val();
-        is_disabled = $this.find("[id=id_disable_inbox]").prop("checked");
+        description = $this.find("#id_description").val();
+        is_disabled = $this.find("#id_disable_inbox").prop("checked");
 
         $.ajax({
             type: "POST",
@@ -35,8 +35,8 @@ function initForm($form) {
                 var $row = $("#" + inbox + " + tr");
 
                 if (xhr.status === 204) {
-                    var $description_cell = $("#" + inbox + " > td.inbox-description");
                     var $inbox_row = $("#" + inbox);
+                    var $description_cell = $inbox_row.children("td.inbox-description");
 
                     $description_cell.text(description);
 
