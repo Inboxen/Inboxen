@@ -2,6 +2,8 @@
  * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
+
+// add the collapsing nav via JS - makes the navigation fallback gracefully if your phone has JS turned off :)
 $(document).ready(function() {
     // collapsing nav
     // we do this here so that the nav still works for those without JS

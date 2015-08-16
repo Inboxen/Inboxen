@@ -2,6 +2,8 @@
  * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
+
+// adds event listeners for inline forms to be popped in
 $(document).ready(function() {
     var $optionButtons = $("table#home td.inbox-options > a");
 
