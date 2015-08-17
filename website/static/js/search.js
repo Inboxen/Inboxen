@@ -13,18 +13,18 @@ function AreWeReadyYet() {
             } else if (http.status == 201) {
                 // done!
                 clearInterval(timer);
-                document.getElementById("refreshnote").innerHTML = "{% trans "Loading results…" %}";
+                document.getElementById("refreshnote").innerHTML = "Loading results…";
                 location.reload(true);
             } else if (http.status == 400) {
                 clearInterval(timer);
-                document.getElementById("searchinfo").innerHTML = "{% trans "The search timed out. Please try again." %}";
+                document.getElementById("searchinfo").innerHTML = "The search timed out. Please try again.";
                 document.getElementById("searchinfo").className = "alert alert-warning";
-                console.error("{% trans "Server says there is no such search" %}");
+                console.error("Server says there is no such search");
             } else {
                 clearInterval(timer);
-                document.getElementById("searchinfo").innerHTML = "{% trans "Something went wrong while searching. Please try again later." %}";
+                document.getElementById("searchinfo").innerHTML = "Something went wrong while searching. Please try again later.";
                 document.getElementById("searchinfo").className = "alert alert-danger";
-                console.error("{% trans "Unexpected response code" %}");
+                console.error("Unexpected response code");
             }
         }
     };
