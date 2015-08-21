@@ -4,11 +4,12 @@
  */
 
 function initForm($form) {
+    var inbox = $form.data("inbox-selector");
+
     $form.submit(function(event) {
         event.preventDefault();
-        var description, is_disabled, $this, inbox;
+        var description, is_disabled, $this;
 
-        inbox = $form.data("inbox-selector")
         $this = $(this);
 
         if ($this.data("sending") === "yes") {
