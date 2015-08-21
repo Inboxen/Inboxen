@@ -28,6 +28,7 @@ from django import test
 from django.utils.translation import ugettext as _
 
 from django_assets import env as assets_env
+from webassets.script import GenericArgparseImplementation
 
 from website.context_processors import reduced_settings_context
 
@@ -58,6 +59,19 @@ def generate_maintenance_page():
     output = open(output_path, "w")
     output.write(rendered)
     output.close()
+
+
+def build_assets():
+    """Build assets like ./manage.py assets build does"""
+    if settings.ASSETS_AUTO_BUILD:
+        return
+
+    env = assets_env.get_env()
+    argparser = GenericArgparseImplementation(env=env, no_global_options=False)
+
+    errored = argparser.run_with_argv(["build"]) or 0
+    if errored != 0:
+        raise Exception("Asset building failed with error cdoe %d" % errored)
 
 
 def is_reserved(inbox):
