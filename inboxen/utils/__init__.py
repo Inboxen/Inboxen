@@ -44,17 +44,20 @@ def generate_maintenance_page():
     """Render maintenance page into static files"""
     template_name = "maintenance.html"
     template = loader.get_template(template_name)
+
+    output_dir = os.path.join(settings.STATIC_ROOT, "pages")
+    output_path = os.path.join(output_dir, template_name)
+    _log.info("Building maintenance page...")
+
     context = Context(reduced_settings_context(None))
     context["headline"] = _("Back Soon!")
     rendered = template.render(context)
 
-    output_dir = os.path.join(settings.STATIC_ROOT, "pages")
     try:
         os.mkdir(output_dir, 0711)
     except OSError:
         pass
 
-    output_path = os.path.join(output_dir, template_name)
 
     output = open(output_path, "w")
     output.write(rendered)
