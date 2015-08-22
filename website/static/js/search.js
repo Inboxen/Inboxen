@@ -2,7 +2,7 @@
  * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
-function AreWeReadyYet($refreshNote, $searchInfo) {
+function AreWeReadyYet($refreshNote, $searchInfo, timer) {
     var http = new XMLHttpRequest();
     http.open("HEAD", $refreshNote.data("url"), true);
     http.onload = function (e) {
@@ -36,7 +36,7 @@ $(document).ready(function() {
     if ($refreshNote.length === 0) {
         return;
     }
-    refreshNote.innerHTML = "";
+    $refreshNote.html("");
     // poll the server every 7000 ms
-    var timer = setInterval(function($refreshNote, $searchInfo){AreWeReadyYet($refreshNote, $searchInfo);}, 7000);
+    var timer = setInterval(function(){AreWeReadyYet($refreshNote, $searchInfo, timer);}, 7000);
 });
