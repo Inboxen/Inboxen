@@ -20,7 +20,7 @@
 
 {% block content %}
 <div class="table-responsive">
-    <form id="email-list" action="{{ request.path }}" method="POST">
+    <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}">
     {% csrf_token %}
     <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
     <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>

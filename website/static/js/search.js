@@ -2,9 +2,9 @@
  * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
-function AreWeReadyYet() {
+function AreWeReadyYet(apiUrl) {
     var http = new XMLHttpRequest();
-    http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
+    http.open("HEAD", apiUrl, true);
     http.onload = function (e) {
         if (http.readyState > 2) {
             if (http.status == 202) {
@@ -36,6 +36,7 @@ $(document).ready(function() {
         return;
     }
     element.innerHTML = "";
+    var apiUrl = $("#searchapiurl").data("url");
     // poll the server every 7000 ms
-    var timer = setInterval(function(){AreWeReadyYet();}, 7000);
+    var timer = setInterval(function(apiUrl){AreWeReadyYet(apiUrl);}, 7000);
 });

@@ -28,7 +28,7 @@ $(document).ready(function() {
         $row.remove();
     }
 
-    $("form#email-list [type=submit]").click(function(event) {
+    $("#email-list button[type=submit]").click(function(event) {
         event.preventDefault();
 
         var $this = $(this);
@@ -49,7 +49,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: "POST",
-            url: "{% url 'form-inbox-email' %}",
+            url: $("#email-list").data("url"),
             data: form_data,
             complete: function(xhr, statusText) {
                 if (xhr.status === 204) {
@@ -81,7 +81,7 @@ $(document).ready(function() {
                     });
                 } else {
                     var $messageBlock = $("#alertmessages");
-                    var message = '<div class="alert alert-warning" role="alert">{% trans "Something went wrong!" %}<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Close" %}</span></button></div>';
+                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
             }
