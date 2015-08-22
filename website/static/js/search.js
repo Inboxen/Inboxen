@@ -32,7 +32,7 @@ function AreWeReadyYet() {
 }
 $(document).ready(function() {
     var element = document.getElementById("refreshnote");
-    if (element == null) {
+    if (element === null) {
         return;
     }
     element.innerHTML = "";

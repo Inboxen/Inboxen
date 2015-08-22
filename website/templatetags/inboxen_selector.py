@@ -30,8 +30,11 @@ SELECTOR_REGEX = re.compile(r"([:.,@|\[\]<>+])")
 
 
 @register.filter()
-def escape_selector(input_str):
+def escape_selector(input_str, as_data=False):
     """Takes a string and escapes characters special for CSS selectors
 
     E.g. `me@inboxen.org` becomes `me\\@inboxen\\.org`"""
-    return SELECTOR_REGEX.sub(r"\\\\\g<0>", input_str)
+    if as_data:
+        return SELECTOR_REGEX.sub(r"\\\g<0>", input_str)
+    else:
+        return SELECTOR_REGEX.sub(r"\\\\\g<0>", input_str)

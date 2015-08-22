@@ -1,6 +1,6 @@
 {% load i18n bootstrap inboxen_selector %}
 <form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}"
-    data-inbox-selector="{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}" class="form"
+    data-inbox-selector="{{ inbox.inbox|escape_selector:True }}\@{{ inbox.domain.domain|escape_selector:True }}" class="form"
     action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
     {% csrf_token %}
     {{ form|bootstrap }}
