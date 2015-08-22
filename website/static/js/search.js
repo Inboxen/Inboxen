@@ -2,28 +2,28 @@
  * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
-function AreWeReadyYet(apiUrl) {
+function AreWeReadyYet($refreshNote, $searchInfo) {
     var http = new XMLHttpRequest();
-    http.open("HEAD", apiUrl, true);
+    http.open("HEAD", $refreshNote.data("url"), true);
     http.onload = function (e) {
         if (http.readyState > 2) {
             if (http.status == 202) {
                 // not done
-                document.getElementById("refreshnote").innerHTML = "";
+                $refreshNote.html("");
             } else if (http.status == 201) {
                 // done!
                 clearInterval(timer);
-                document.getElementById("refreshnote").innerHTML = "Loading results…";
+                $refreshNote.html("Loading results…");
                 location.reload(true);
             } else if (http.status == 400) {
                 clearInterval(timer);
-                document.getElementById("searchinfo").innerHTML = "The search timed out. Please try again.";
-                document.getElementById("searchinfo").className = "alert alert-warning";
+                $searchInfo.html("The search timed out. Please try again.");
+                $searchInfo.addClass("alert alert-warning");
                 console.error("Server says there is no such search");
             } else {
                 clearInterval(timer);
-                document.getElementById("searchinfo").innerHTML = "Something went wrong while searching. Please try again later.";
-                document.getElementById("searchinfo").className = "alert alert-danger";
+                $searchInfo.html("Something went wrong while searching. Please try again later.");
+                $searchInfo.addClass("alert alert-warning");
                 console.error("Unexpected response code");
             }
         }
@@ -31,12 +31,12 @@ function AreWeReadyYet(apiUrl) {
     http.send(null);
 }
 $(document).ready(function() {
-    var element = document.getElementById("refreshnote");
-    if (element === null) {
+    var $refreshNote = $("#refreshnote");
+    var $searchInfo = $("#searchinfo");
+    if ($refreshNote.length === 0) {
         return;
     }
-    element.innerHTML = "";
-    var apiUrl = $("#searchapiurl").data("url");
+    refreshNote.innerHTML = "";
     // poll the server every 7000 ms
-    var timer = setInterval(function(apiUrl){AreWeReadyYet(apiUrl);}, 7000);
+    var timer = setInterval(function($refreshNote, $searchInfo){AreWeReadyYet($refreshNote, $searchInfo);}, 7000);
 });
