@@ -17,41 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django_assets import Bundle, register
+from django import test
+
+from website import assets
 
 
-css = Bundle(
-    "css/copying-css.txt",
-    Bundle(
-        "css/bootstrap.css",
-        "css/inboxen.css",
-        filters="cssutils",
-    ),
-    output="compiled/css/website.%(version)s.css",
-)
-
-
-js = Bundle(
-    "js/copying-js.txt",
-    Bundle(
-        "js/jquery.js",
-        "js/bootstrap.js",
-        "js/menu.js",
-        "js/home.js",
-        "js/inbox.js",
-        "js/email.js",  # make sure this one is last
-        filters="jsmin",
-    ),
-    output="compiled/js/website.%(version)s.js",
-)
-
-search_js = Bundle(
-    "js/search.js",
-    filters="jsmin",
-    output="compiled/js/search.%(version)s.js",
-)
-
-
-register("inboxen_css", css)
-register("inboxen_js", js)
-register("inboxen_search_js", search_js)
+class AssetTest(test.TestCase):
+    def test_asset_order(self):
+        self.assertEqual(assets.js.contents[-1].contents[-1], "js/email.js")

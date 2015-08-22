@@ -3,6 +3,10 @@
 
 {% block header %}
     {% if waiting %}
+        {% assets "inboxen_search_js" %}
+            <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+
         <noscript>
             <meta http-equiv="refresh" content="5">
         </noscript>
