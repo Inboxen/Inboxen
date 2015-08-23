@@ -138,10 +138,7 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data["username"]
         if get_user_model().objects.filter(username__iexact=username).exists():
-            raise exceptions.ValidationError(
-                self.error_messages['duplicate_username'],
-                code='duplicate_username',
-                )
+            raise exceptions.ValidationError(_("A user with that username already exists."), code='duplicate_username')
         return username
 
 
