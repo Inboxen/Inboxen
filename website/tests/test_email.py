@@ -18,8 +18,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils import unittest
-
 from django import test
 from django.core import urlresolvers
 

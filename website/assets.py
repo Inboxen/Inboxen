@@ -21,19 +21,37 @@ from django_assets import Bundle, register
 
 
 css = Bundle(
-    "css/bootstrap.css",
-    "css/inboxen.css",
-    filters="cssutils",
+    "css/copying-css.txt",
+    Bundle(
+        "css/bootstrap.css",
+        "css/inboxen.css",
+        filters="cssutils",
+    ),
     output="compiled/css/website.%(version)s.css",
 )
 
 
 js = Bundle(
-    "js/jquery.js",
-    "js/bootstrap.js",
-    filters="jsmin",
+    "js/copying-js.txt",
+    Bundle(
+        "js/jquery.js",
+        "js/bootstrap.js",
+        "js/menu.js",
+        "js/home.js",
+        "js/inbox.js",
+        "js/email.js",  # make sure this one is last
+        filters="jsmin",
+    ),
     output="compiled/js/website.%(version)s.js",
 )
 
+search_js = Bundle(
+    "js/search.js",
+    filters="jsmin",
+    output="compiled/js/search.%(version)s.js",
+)
+
+
 register("inboxen_css", css)
 register("inboxen_js", js)
+register("inboxen_search_js", search_js)

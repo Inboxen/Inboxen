@@ -62,3 +62,10 @@ class SelectorEscapeTestCase(test.TestCase):
         result = inboxen_selector.escape_selector(input_string)
 
         self.assertEqual(expected_string, result)
+
+    def test_escapes_in_data(self):
+        input_string = "me@inboxen.org"
+        expected_string = r"me\@inboxen\.org"
+        result = inboxen_selector.escape_selector(input_string, as_data=True)
+
+        self.assertEqual(expected_string, result)

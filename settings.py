@@ -203,6 +203,9 @@ COLUMN_HASHER = "sha1"
 # variable DJANGO_SETTINGS_MODULE to your module. See Django docs for details
 ##
 
+ASSETS_DEBUG = DEBUG
+ASSETS_AUTO_BUILD = DEBUG
+
 if not DEBUG:
     # These security settings are annoying while debugging
     CSRF_COOKIE_SECURE = True

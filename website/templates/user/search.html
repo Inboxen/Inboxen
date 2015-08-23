@@ -1,42 +1,16 @@
 {% extends 'base.html' %}
-{% load i18n staticfiles inboxen_flags %}
+{% load assets i18n staticfiles inboxen_flags %}
 
 {% block header %}
-{% if waiting %}
-<script>
-    function AreWeReadyYet() {
-        var http = new XMLHttpRequest();
-        http.open("HEAD", "{% url 'user-searchapi' q=query %}", true);
-        http.onload = function (e) {
-            if (http.readyState > 2) {
-                if (http.status == 202) {
-                    // not done
-                    document.getElementById("refreshnote").innerHTML = "";
-                } else if (http.status == 201) {
-                    // done!
-                    clearInterval(timer);
-                    document.getElementById("refreshnote").innerHTML = "{% trans "Loading results…" %}";
-                    location.reload(true);
-                } else if (http.status == 400) {
-                    clearInterval(timer);
-                    document.getElementById("searchinfo").innerHTML = "{% trans "The search timed out. Please try again." %}";
-                    document.getElementById("searchinfo").className = "alert alert-warning";
-                    console.error("{% trans "Server says there is no such search" %}");
-                } else {
-                    clearInterval(timer);
-                    document.getElementById("searchinfo").innerHTML = "{% trans "Something went wrong while searching. Please try again later." %}";
-                    document.getElementById("searchinfo").className = "alert alert-danger";
-                    console.error("{% trans "Unexpected response code" %}");
-                }
-            }
-        };
-        http.send(null);
-    }
-</script>
-<noscript>
-    <meta http-equiv="refresh" content="5">
-</noscript>
-{% endif %}
+    {% if waiting %}
+        {% assets "inboxen_search_js" %}
+            <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+
+        <noscript>
+            <meta http-equiv="refresh" content="5">
+        </noscript>
+    {% endif %}
 {% endblock %}
 
 {% block breadcumbs %}
@@ -124,14 +98,9 @@
     {% elif waiting %}
     <div class="text-center" id="searchinfo">
         <p>{% blocktrans %}Searching…{% endblocktrans %}</p>
-        <p><i id="refreshnote">{% blocktrans %}
+        <p><i id="refreshnote" data-url="{% url 'user-searchapi' q=query %}">{% blocktrans %}
             If this page doesn't refresh automatically after 5 seconds, <a href="{{ request.path }}">click here</a>
         {% endblocktrans %}</i></p>
-        <script>
-            document.getElementById("refreshnote").innerHTML = "";
-            // poll the server every 7000 ms
-            var timer = setInterval(function(){AreWeReadyYet();}, 7000);
-        </script>
         <p><img src="{% static "throbber.gif" %}"></p>
     </div>
     {% else %}

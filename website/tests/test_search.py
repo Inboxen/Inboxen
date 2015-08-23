@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,6 +17,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+import mock
 
 from django import test
 from django.core import urlresolvers
@@ -45,6 +47,12 @@ class SearchViewTestCase(test.TestCase):
     def test_content(self):
         response = self.client.get(self.get_url())
         self.assertIn(u"There are no Inboxes or emails containing <em>cheddär</em>", response.content.decode("utf-8"))
+
+        # this is bad, we shouldn't do this
+        # TODO test the template directly
+        with mock.patch("website.views.user.search.SearchView.get_queryset", return_value={}):
+            response = self.client.get(self.get_url())
+            self.assertIn(u'data-url="%s"' % urlresolvers.reverse("user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
 
     def test_get(self):
         response = self.client.get(self.get_url())
