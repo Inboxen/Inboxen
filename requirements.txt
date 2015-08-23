@@ -5,7 +5,7 @@ configobj
 cssutils
 django-aggregate-if
 django-annoying
-django-assets==0.10
+django-assets
 django-async-messages
 django-bitfield
 django-bootstrap-form
