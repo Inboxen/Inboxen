@@ -256,7 +256,6 @@ def liberate_user_profile(user_id, email_results):
     data["id"] = user.id
     data['username'] = user.username
     data["is_active"] = user.is_active
-    data['last_login'] = user.last_login.isoformat()
     data['join_date'] = user.date_joined.isoformat()
     data['groups'] = [str(groups) for groups in user.groups.all()]
 
