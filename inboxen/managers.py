@@ -139,7 +139,7 @@ class InboxQuerySet(QuerySet):
         """Returns a QuerySet of Inboxes the user can view"""
         inbox_model = get_model("inboxen", "inbox")
         qs = self.filter(user=user)
-        return qs.exclude(flags=F("flags").bitor(inbox_model.flags.deleted))
+        return qs.exclude(flags=inbox_model.flags.deleted)
 
     def add_last_activity(self):
         """Annotates `last_activity` onto each Inbox and then orders by that column"""
@@ -156,8 +156,8 @@ class EmailQuerySet(QuerySet):
     def viewable(self, user):
         qs = self.filter(inbox__user=user)
         return qs.exclude(
-            Q(flags=F("flags").bitor(get_model("inboxen", "email").flags.deleted)) |
-            Q(inbox__flags=F("inbox__flags").bitor(get_model("inboxen", "inbox").flags.deleted)),
+            Q(flags=get_model("inboxen", "email").flags.deleted) |
+            Q(inbox__flags=get_model("inboxen", "inbox").flags.deleted),
         )
 
 
