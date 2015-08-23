@@ -3,7 +3,6 @@ Markdown
 celery
 configobj
 cssutils
-django-aggregate-if
 django-annoying
 django-assets
 django-async-messages
