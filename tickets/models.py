@@ -58,7 +58,8 @@ class Question(models.Model):
 
         Expects the attribute "last_response_date" to be annotated
         """
-        if self.last_response_date is not None and self.last_response_date > self.last_modified:
+        # TODO turn this property into an annotation
+        if getattr(self, "last_response_date", None) is not None and self.last_response_date > self.last_modified:
             return self.last_response_date
         else:
             return self.last_modified
