@@ -52,6 +52,7 @@
 {% endif %}
 
 <strong>{% trans "Message" %}:</strong><br />
+<div id="email-body">
 {% if plain_message %}
     <pre>
 {% endif %}
@@ -61,7 +62,7 @@
 {% if plain_message %}
     </pre>
 {% endif %}
-
+</div>
 <br />
 <strong>{% trans "Attachments" %}</strong>:<br />
 <div class="form">
