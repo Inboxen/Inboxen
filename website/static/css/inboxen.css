@@ -85,3 +85,7 @@ td.inbox-name > a {
 .clear-gap {
     padding-bottom: 50px;
 }
+
+.inline-buttons {
+    display: inline-block;
+}
