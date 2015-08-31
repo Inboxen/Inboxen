@@ -1,3 +1,4 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'base.html' %}
 {% load assets i18n staticfiles inboxen_flags %}
 
@@ -101,7 +102,7 @@
         <p><i id="refreshnote" data-url="{% url 'user-searchapi' q=query %}">{% blocktrans %}
             If this page doesn't refresh automatically after 5 seconds, <a href="{{ request.path }}">click here</a>
         {% endblocktrans %}</i></p>
-        <p><img src="{% static "throbber.gif" %}"></p>
+        <p><img src="{% static "imgs/throbber.gif" %}"></p>
     </div>
     {% else %}
         <p class="alert alert-info">{% trans "If you search for nothing, you won't get anything." %}</p>

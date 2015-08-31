@@ -6,4 +6,4 @@
 // cleans email body of any JS events that have been accidently attached there
 $(document).ready(function() {
     $("#email-body").off();
-}
+});
