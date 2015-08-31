@@ -21,12 +21,12 @@
 </p>
 {% endif %}
 
-<div style="float: right">
-    <form action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST" style="display:inline-block">
+<div class="pull-right">
+    <form action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST" class="form-inline">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" value="{{ email.eid }}" name="delete-single">{% trans "Delete" %}</button>
     </form>
-    <form action="{{ request.path }}" method="POST" style="display:inline-block">
+    <form action="{{ request.path }}" method="POST" class="form-inline">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="important-toggle">
         {% if object.flags.important %}{# email isn't actually the email object #}

@@ -3,10 +3,10 @@
 {% load i18n %}
 
 {% block content %}
-    <div style="text-align: center; font-size:75px; line-height:75px">
-        <div><b>Emails identify you.</b></div><div style="font-size: 50px; line-height: 50px;"><b>They're used to sell your data.</b></div>
-
-        <div style="padding-top: 50px; font-size: 50px; line-height: 50px;">We can help fix that...</div>
+    <div class="index-heading">
+        <div><b>Emails identify you.</b></div>
+        <div class="index-subheading clear-gap"><b>They're used to sell your data.</b></div>
+        <div class="index-subheading">We can help fix that...</div>
         {% if settings.ENABLE_REGISTRATION %}
             <a href="{% url 'user-status' %}" class="btn btn-lg btn-primary">Join</a>
         {% endif%}

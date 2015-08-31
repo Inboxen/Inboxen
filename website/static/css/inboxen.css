@@ -67,5 +67,21 @@ td.inbox-name > a {
 
 @media (min-width: 768px) {
   .navbar {
-    border-radius: 0px;
+    border-radius: 0;
   }
+}
+
+.index-heading {
+    text-align: center;
+    font-size: 75px;
+    line-height: 75px;
+}
+
+.index-subheading {
+    font-size: 50px;
+    line-height: 50px;
+}
+
+.clear-gap {
+    padding-bottom: 50px;
+}
