@@ -38,6 +38,7 @@ urls.handler500 = error.ServerError.as_view()
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
+    urls.url(r'^_csp_report/', error.CspReport, name='csp_logger'),
     urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', headline=_('Huh?')), name='huh'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
 

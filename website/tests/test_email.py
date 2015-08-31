@@ -88,6 +88,9 @@ class EmailViewTestCase(test.TestCase):
         button = button % self.email.eid
         self.assertIn(button, response.content)
 
+        # check for no-referrer
+        self.assertIn('<meta name="referrer" content="no-referrer">', response.content)
+
     def test_get_with_headers(self):
         response = self.client.get(self.get_url() + "?all-headers=1")
         self.assertEqual(response.status_code, 200)

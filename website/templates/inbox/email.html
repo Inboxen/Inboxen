@@ -1,6 +1,10 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'base.html' %}
-
 {% load i18n %}
+
+{% block header %}
+    <meta name="referrer" content="no-referrer">
+{% endblock %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -17,12 +21,12 @@
 </p>
 {% endif %}
 
-<div style="float: right">
-    <form action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST" style="display:inline-block">
+<div class="pull-right">
+    <form class="inline-buttons" action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" value="{{ email.eid }}" name="delete-single">{% trans "Delete" %}</button>
     </form>
-    <form action="{{ request.path }}" method="POST" style="display:inline-block">
+    <form class="inline-buttons" action="{{ request.path }}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="important-toggle">
         {% if object.flags.important %}{# email isn't actually the email object #}

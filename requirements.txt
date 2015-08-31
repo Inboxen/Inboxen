@@ -10,6 +10,7 @@ django-bitfield
 django-bootstrap-form
 django-braces
 django-celery
+django-csp
 django-extensions
 django-formtools
 django-mptt

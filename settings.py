@@ -315,6 +315,7 @@ MIDDLEWARE_CLASSES = (
     'async_messages.middleware.AsyncMiddleware',
     'website.middleware.RateLimitMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -357,6 +358,10 @@ ROOT_URLCONF = 'website.urls'
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")
 LOGOUT_URL = urlresolvers.reverse_lazy("user-logout")
 LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
+
+# CSP settings
+CSP_REPORT_ONLY = True
+CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'website.wsgi.application'
