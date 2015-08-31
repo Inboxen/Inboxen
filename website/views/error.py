@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013-2014 Jessica Tallon, Matt Molyneaux
+#    Copyright (C) 2013-2015 Jessica Tallon, Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,12 +17,19 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
+
 from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpResponse
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from website.views import base
 
-__all__ = ["ErrorView", "NotFound", "PermissionDenied", "ServerError", "BadRequest"]
+__all__ = ["ErrorView", "NotFound", "PermissionDenied", "ServerError", "BadRequest", "CspReport"]
+
+_log = logging.getLogger(__name__)
 
 
 class ErrorView(base.TemplateView):
@@ -99,3 +106,11 @@ class BadRequest(ErrorView):
     error_code = 400
 
     headline = _("No Idea")
+
+
+@csrf_exempt
+@require_POST
+def CspReport(request):
+    """Simple CSP report view"""
+    _log.critical("CSP Report: ", request.body)
+    return HttpResponse("")

@@ -362,6 +362,7 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 
 # CSP settings
 CSP_REPORT_ONLY = True
+CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'website.wsgi.application'
