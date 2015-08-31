@@ -113,3 +113,26 @@ class WebAssetsOverrideMixin(object):
 
 class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
     pass
+
+
+def find_body(user, html, plain):
+    """Given a pair of plaintext and html MIME parts, return True or False
+    based on whether the body should be plaintext or not. Returns None
+    if there is no viable body
+    """
+    # find if one is None
+    if html is None and plain is None:
+        return None
+    elif html is None:
+        return True
+    elif plain is None:
+        return False
+
+    # parts are siblings, user preference
+    if html.parent == plain.parent:
+        return not user.userprofile.flags.prefer_html_email
+    # which ever has the lower lft value will win
+    elif html.lft < plain.lft:
+        return False
+    else:  # html.lft > plain.lft
+        return True

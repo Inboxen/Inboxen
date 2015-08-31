@@ -222,7 +222,7 @@ class Email(models.Model):
     def get_parts(self):
         """Return a list of (<part>, <content headers>)"""
         attachments = []
-        for part in self.object.parts.all():
+        for part in self.parts.all():
             part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
             part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
 

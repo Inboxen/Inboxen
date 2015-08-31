@@ -32,6 +32,7 @@ from premailer.premailer import Premailer
 import watson
 
 from inboxen import models
+from inboxen.utils import find_body
 from website.views import base
 from redirect import proxy_url
 
@@ -95,27 +96,6 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def find_body(self, html, plain):
-        """Given a pair of plaintext and html MIME parts, return True or False
-        based on whether the body should be plaintext or not. Returns None
-        if there is no viable body
-        """
-        # find if one is None
-        if html is None and plain is None:
-            return None
-        elif html is None:
-            return True
-        elif plain is None:
-            return False
-
-        # parts are siblings, user preference
-        if html.parent == plain.parent:
-            return not self.request.user.userprofile.flags.prefer_html_email
-        # which ever has the lower lft value will win
-        elif html.lft < plain.lft:
-            return False
-        else:  # html.lft > plain.lft
-            return True
 
     def get_context_data(self, **kwargs):
         if "all-headers" in self.request.GET:
@@ -141,41 +121,15 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         # iterate over MIME parts
         html = None
         plain = None
-        attachments = []
-        for part in self.object.parts.all():
-            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
-            part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
-            dispos = part_head.pop("Content-Disposition", "")
-
-            if part_head["content_type"][0].startswith("multipart") or part_head["content_type"][0].startswith("message"):
-                continue
-
-            try:
-                params = dict(HEADER_PARAMS.findall(part_head["content_type"][1]))
-            except IndexError:
-                params = {}
-            params.update(dict(HEADER_PARAMS.findall(dispos)))
-
-            # find filename, could be anywhere
-            if "filename" in params:
-                part_head["filename"] = params["filename"]
-            elif "name" in params:
-                part_head["filename"] = params["name"]
-            else:
-                part_head["filename"] = ""
-
-            # grab charset
-            part.charset = params.get("charset", "utf-8")
-
-            if html is None and part_head["content_type"][0] == "text/html":
+        attachments = self.object.get_parts()
+        for part, headers in attachments:
+            if html is None and headers["content_type"][0] == "text/html":
                 html = part
-            elif plain is None and part_head["content_type"][0] == "text/plain":
+            elif plain is None and headers["content_type"][0] == "text/plain":
                 plain = part
 
-            attachments.append((part, part_head))
-
         # set raw body
-        plain_message = self.find_body(html, plain)
+        plain_message = find_body(self.request.user, html, plain)
         if plain_message is None:
             if len(attachments) == 1:
                 email_dict["body"] = unicode_damnit(attachments[0][0].body.data, attachments[0][0].charset)
