@@ -18,8 +18,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils import unittest
-
 from django import test
 from django.core import urlresolvers
 
@@ -89,6 +87,9 @@ class EmailViewTestCase(test.TestCase):
         button = "value=\"%s\" name=\"delete-single\""
         button = button % self.email.eid
         self.assertIn(button, response.content)
+
+        # check for no-referrer
+        self.assertIn('<meta name="referrer" content="no-referrer">', response.content)
 
     def test_get_with_headers(self):
         response = self.client.get(self.get_url() + "?all-headers=1")

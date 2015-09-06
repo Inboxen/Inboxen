@@ -1,5 +1,8 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% load i18n bootstrap inboxen_selector %}
-<form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}" class="form" action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+<form id="form-{{ inbox.inbox }}@{{ inbox.domain.domain }}"
+    data-inbox-selector="{{ inbox.inbox|escape_selector:True }}\@{{ inbox.domain.domain|escape_selector:True }}" class="form"
+    action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
     {% csrf_token %}
     {{ form|bootstrap }}
     <div class="panel panel-danger">
@@ -13,66 +16,3 @@
     <button class="btn btn-primary">{% trans "Save" %}</button>
     <a class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
-<script>
-    $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]").submit(function(event) {
-        event.preventDefault();
-        var description, is_disabled, $this;
-
-        $this = $(this);
-
-        if ($this.data("sending") === "yes") {
-            return false;
-        }
-
-        $this.find("button").prop("disabled", true);
-        $this.find("a.btn").addClass("disabled");
-        $this.data("sending", "yes");
-        setTimeout(function() {
-            $this.data("sending", "no");
-            $this.find("button").prop("disabled", false);
-            $this.find("a.btn").removeClass("disabled");
-        }, 3000);
-
-        description = $this.find("[id=id_description]").val();
-        is_disabled = $this.find("[id=id_disable_inbox]").prop("checked");
-
-        $.ajax({
-            type: "POST",
-            url: $this.attr('action'),
-            data: $this.serializeArray(),
-            complete: function(xhr, statusText) {
-                var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
-
-                if (xhr.status === 204) {
-                    var $description_cell = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > td.inbox-description");
-                    var $inbox_row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}]");
-
-                    $description_cell.text(description);
-
-                    if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
-                        $inbox_row.addClass("inbox-disabled");
-                        $inbox_row.find("td.inbox-name  span.label").remove();
-                        $inbox_row.find("td.inbox-name").append("<span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span>");
-                    } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
-                        $inbox_row.removeClass("inbox-disabled");
-                        $inbox_row.find("td.inbox-name span.label-default").remove();
-                    }
-
-                    $row.remove();
-                } else {
-                    var $form = $row.children("td");
-                    if (xhr.status === 200) {
-                        $form.html(xhr.responseText);
-                    } else {
-                        $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-                        console.log("Form for {{ inbox.id }} failed to POST (" + xhr.status + ")");
-                    }
-                }
-            }
-        });
-    });
-    $("[id=form-{{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] > a").click(function() {
-        var $row = $("[id={{ inbox.inbox|escape_selector }}\\@{{ inbox.domain.domain|escape_selector }}] + tr");
-        $row.remove();
-    });
-</script>

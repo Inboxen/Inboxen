@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
 #
@@ -17,24 +18,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import re
-
-from django import template
-from django.utils import safestring
-from django.utils.translation import ugettext as _
-
-register = template.Library()
+from django import test
+from django.core.urlresolvers import reverse
 
 
-SELECTOR_REGEX = re.compile(r"([:.,@|\[\]<>+])")
+class CSPTestCase(test.TestCase):
+    def test_csp_report_view(self):
+        url = reverse("csp_logger")
+        response = self.client.post(url)
 
-
-@register.filter()
-def escape_selector(input_str, as_data=False):
-    """Takes a string and escapes characters special for CSS selectors
-
-    E.g. `me@inboxen.org` becomes `me\\@inboxen\\.org`"""
-    if as_data:
-        return SELECTOR_REGEX.sub(r"\\\g<0>", input_str)
-    else:
-        return SELECTOR_REGEX.sub(r"\\\\\g<0>", input_str)
+        self.assertEqual(response.status_code, 200)

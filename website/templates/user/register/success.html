@@ -1,3 +1,4 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'base.html' %}
 
 {% load i18n %}
@@ -18,7 +19,7 @@
 
     If you like us, recomend us to a friend!
     {% endblocktrans %}
-    <p><a class="btn btn-lg btn-primary" href="{% url 'user-login' %}" style="margin-left:43%;">{% trans "Login" %}</a></p>
+    <p class="text-center"><a class="btn btn-lg btn-primary" href="{% url 'user-login' %}">{% trans "Login" %}</a></p>
 </div>
 </div>
 {% endblock %}

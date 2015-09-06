@@ -47,7 +47,7 @@ from django.utils.six.moves.urllib.parse import unquote, urlsplit, urlunsplit, u
 from django.contrib.staticfiles.storage import StaticFilesStorage
 from django.contrib.staticfiles.utils import matches_patterns
 
-from inboxen.utils import generate_maintenance_page
+from inboxen.utils import build_assets, generate_maintenance_page
 
 
 class HashedFilesMixin(object):
@@ -339,4 +339,6 @@ class ManifestStaticFilesStorage(ManifestFilesMixin, StaticFilesStorage):
                                    self).post_process(*args, **kwargs)
         for post_processed in all_post_processed:
             yield post_processed
+
+        build_assets()
         generate_maintenance_page()

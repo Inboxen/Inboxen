@@ -1,3 +1,4 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'base.html' %}
 {% load i18n %}
 {% load inboxen_flags %}
@@ -8,47 +9,9 @@
     </ul>
 {% endblock %}
 
-{% block header %}
-    {{ block.super }}
-    <script>
-        <!-- inline option forms -->
-        $(document).ready(function() {
-            var $optionButtons = $("td.inbox-options > a");
-            $optionButtons.click(function() {
-                var $this = $(this);
-                var $row = $this.parents("tr:has(td.inbox-name)");
-                var formURL = "/forms/inbox/edit/" + $row.attr("id") + "/";
-
-                if (!$row.next().hasClass("inbox-edit-form-row")) {
-                    if ($this.data("clicked") === "yes") {
-                        return false;
-                    } else {
-                        $this.data("clicked", "yes");
-                        $this.addClass("disabled");
-                        setTimeout(function() {
-                            $this.data("clicked", "no");
-                            $this.removeClass("disabled");
-                        }, 3000);
-                    }
-
-                    $.get(formURL, function(data) {
-                        // double check
-                        if (!$row.next().hasClass("inbox-edit-form-row")) {
-                            $row.after("<tr class=\"inbox-edit-form-row\"><td colspan=\"4\">" + data + "</td></tr>");
-                        }
-                    });
-                } else if ($row.next().hasClass("inbox-edit-form-row")) {
-                    $row.next().remove();
-                }
-                return false;
-            });
-        });
-    </script>
-{% endblock %}
-
 {% block content %}
 <div class="table-responsive">
-<table class="table table-hover table-honeydew">
+<table id="home" class="table table-hover table-honeydew">
     <thead>
     <tr>
         <th>{% trans "Inbox" %}</th>

@@ -17,24 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import re
+from django import test
 
-from django import template
-from django.utils import safestring
-from django.utils.translation import ugettext as _
-
-register = template.Library()
+from website import assets
 
 
-SELECTOR_REGEX = re.compile(r"([:.,@|\[\]<>+])")
-
-
-@register.filter()
-def escape_selector(input_str, as_data=False):
-    """Takes a string and escapes characters special for CSS selectors
-
-    E.g. `me@inboxen.org` becomes `me\\@inboxen\\.org`"""
-    if as_data:
-        return SELECTOR_REGEX.sub(r"\\\g<0>", input_str)
-    else:
-        return SELECTOR_REGEX.sub(r"\\\\\g<0>", input_str)
+class AssetTest(test.TestCase):
+    def test_asset_order(self):
+        self.assertEqual(assets.js.contents[-1].contents[-1], "js/email.js")

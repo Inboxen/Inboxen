@@ -25,6 +25,7 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from csp.decorators import csp_replace
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
 from premailer.premailer import Premailer
@@ -54,6 +55,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
     pk_url_kwarg = "id"
     template_name = 'inbox/email.html'
 
+    @csp_replace(STYLE_SRC=["'self'", "'unsafe-inline'"])
     def get(self, *args, **kwargs):
 
         with watson.skip_index_update():
