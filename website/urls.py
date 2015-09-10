@@ -35,6 +35,10 @@ urls.handler403 = error.PermissionDenied.as_view()
 urls.handler404 = error.NotFound.as_view()
 urls.handler500 = error.ServerError.as_view()
 
+# csrf stuff
+import session_csrf
+session_csrf.monkeypatch()
+
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
