@@ -83,6 +83,11 @@ class LoginTestCase(test.TestCase):
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertFalse(response.context["request"].user.is_authenticated())
 
+    def test_no_csrf_cookie(self):
+        response = self.client.get(dj_settings.LOGIN_URL)
+        self.assertNotIn("csrftoken", response.cookies)
+        self.assertIn("sessionid", response.cookies)
+
 
 class UtilsTestCase(test.TestCase):
     def test_reserved(self):
