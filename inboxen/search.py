@@ -54,9 +54,8 @@ class EmailSearchAdapter(watson.SearchAdapter):
             content_type = content_type[0].data.data
             content_type = content_type.split(";", 1)
             params = dict(HEADER_PARAMS.findall(content_type[1]))
-            if "charset" in params:
-                encoding = params["charset"]
-        except (exceptions.ObjectDoesNotExist, IndexError):
+            encoding = params["charset"]
+        except (exceptions.ObjectDoesNotExist, IndexError, KeyError):
             encoding = "utf-8"
 
         return encoding
