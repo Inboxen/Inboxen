@@ -1,6 +1,6 @@
 ##
 #
-# Copyright 2013 Jessica Tallon, Matt Molyneaux
+# Copyright 2013. 2015 Jessica Tallon, Matt Molyneaux
 # 
 # This file is part of Inboxen.
 #
@@ -27,7 +27,9 @@ import watson
 
 from inboxen.models import Body, Email, Header, PartList
 
+
 log = logging.getLogger(__name__)
+
 
 @watson.update_index()
 def make_email(message, inbox):
@@ -41,7 +43,7 @@ def make_email(message, inbox):
     email.save()
 
     data = encode_body(base)
-    body = Body.objects.only("id").get_or_create(data=data)[0]
+    body, _ = Body.objects.only("id").get_or_create(data=data)
 
     part = PartList(body=body, email=email)
     part.save()
@@ -54,7 +56,7 @@ def make_email(message, inbox):
 
     for part in message.walk():
         data = encode_body(part)
-        body = Body.objects.only("id").get_or_create(data=data)[0]
+        body, _ = Body.objects.only("id").get_or_create(data=data)
         part_item = PartList(body=body, email=email, parent_id=parents[part.parent])
         part_item.save()
         parents[part] = part_item.id
@@ -62,6 +64,7 @@ def make_email(message, inbox):
         for header in part.keys():
             ordinal = part.keys().index(header)
             Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
+
 
 def encode_body(part):
     """Make certain that the body of a part is bytes and not unicode"""
@@ -74,5 +77,8 @@ def encode_body(part):
             data = part.body.encode("utf-8")
     else:
         data = part.body
+
+    if not data:
+        data = ''
 
     return data
