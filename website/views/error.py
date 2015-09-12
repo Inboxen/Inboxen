@@ -27,7 +27,6 @@ from django.views.decorators.http import require_POST
 
 from website.views import base
 
-__all__ = ["ErrorView", "NotFound", "PermissionDenied", "ServerError", "BadRequest", "CspReport"]
 
 _log = logging.getLogger(__name__)
 
@@ -76,41 +75,41 @@ class ErrorView(base.TemplateView):
         return templates
 
 
-class NotFound(ErrorView):
-    error_message = _("The page you requested cannot be found.")
-    error_css_class = "info"
-    error_code = 404
-
-    headline = _("Not Found")
-
-
-class PermissionDenied(ErrorView):
-    error_message = _("You do not have permission to view this page.")
-    error_css_class = "warning"
-    error_code = 403
-
-    headline = _("Permission Denied")
+not_found = ErrorView.as_view(
+    error_message=_("The page you requested cannot be found."),
+    error_css_class="info",
+    error_code=404,
+    headline=_("Not Found"),
+)
 
 
-class ServerError(ErrorView):
-    error_message = _("There has been an error with our software. Our administrators have been notified.")
-    error_css_class = "danger"
-    error_code = 500
+permission_denied = ErrorView.as_view(
+    error_message=_("You do not have permission to view this page."),
+    error_css_class="warning",
+    error_code=403,
+    headline=_("Permission Denied"),
+)
 
-    headline = _("Error")
+
+server_error = ErrorView.as_view(
+    error_message=_("There has been an error with our software. Our administrators have been notified."),
+    error_css_class="danger",
+    error_code=500,
+    headline=_("Error"),
+)
 
 
-class BadRequest(ErrorView):
-    error_message = _("I have no idea what you were trying to do, but you probably shouldn't be doing it!")
-    error_css_class = "info"
-    error_code = 400
-
-    headline = _("No Idea")
+bad_request = ErrorView.as_view(
+    error_message=_("I have no idea what you were trying to do, but you probably shouldn't be doing it!"),
+    error_css_class="info",
+    error_code=400,
+    headline=_("No Idea"),
+)
 
 
 @csrf_exempt
 @require_POST
-def CspReport(request):
+def csp_report(request):
     """Simple CSP report view"""
     _log.critical("CSP Report: ", request.body)
     return HttpResponse("")

@@ -367,6 +367,7 @@ CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 
 # csrf
 ANON_AS_LOGGED_IN = True
+CSRF_FAILURE_VIEW = "website.views.error.permission_denied"
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'website.wsgi.application'
