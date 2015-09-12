@@ -89,3 +89,7 @@ td.inbox-name > a {
 .inline-buttons {
     display: inline-block;
 }
+
+.wrap-words {
+    word-wrap: break-word;
+}
