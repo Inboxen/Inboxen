@@ -289,6 +289,10 @@ class PartList(MPTTModel):
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
+    class Meta:
+        # breadth-first search, rather than the usual depth-first
+        ordering = ("tree_id", "level", "lft")
+
     def __unicode__(self):
         return unicode(self.id)
 
