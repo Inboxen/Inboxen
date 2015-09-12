@@ -31,7 +31,6 @@ from django.conf import settings
 from django.db import IntegrityError, models
 from django.db.models import F, Q
 from django.db.models.sql.aggregates import Max
-from django.db.models.loading import get_model
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
@@ -86,10 +85,10 @@ class DomainQuerySet(QuerySet):
 class InboxQuerySet(QuerySet):
     def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
-        domain_model = get_model("inboxen", "domain")
+        from inboxen.models import Domain
 
-        if not isinstance(domain, domain_model):
-            raise domain_model.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
+        if not isinstance(domain, Domain):
+            raise Domain.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
 
         while True:
             # loop around until we create a unique address
@@ -128,18 +127,20 @@ class InboxQuerySet(QuerySet):
 
     def receiving(self):
         """Returns a QuerySet of Inboxes that can receive emails"""
-        inbox_model = get_model("inboxen", "inbox")
+        from inboxen.models import Inbox
+
         qs = self.filter(domain__enabled=True, user__isnull=False)
         return qs.exclude(
-            models.Q(flags=inbox_model.flags.deleted) |
-            models.Q(flags=inbox_model.flags.disabled),
+            models.Q(flags=Inbox.flags.deleted) |
+            models.Q(flags=Inbox.flags.disabled),
         )
 
     def viewable(self, user):
         """Returns a QuerySet of Inboxes the user can view"""
-        inbox_model = get_model("inboxen", "inbox")
+        from inboxen.models import Inbox
+
         qs = self.filter(user=user)
-        return qs.exclude(flags=F("flags").bitor(inbox_model.flags.deleted))
+        return qs.exclude(flags=F("flags").bitor(Inbox.flags.deleted))
 
     def add_last_activity(self):
         """Annotates `last_activity` onto each Inbox and then orders by that column"""
@@ -154,23 +155,24 @@ class InboxQuerySet(QuerySet):
 
 class EmailQuerySet(QuerySet):
     def viewable(self, user):
+        from inboxen.models import Email
+
         qs = self.filter(inbox__user=user)
         return qs.exclude(
-            Q(flags=F("flags").bitor(get_model("inboxen", "email").flags.deleted)) |
-            Q(inbox__flags=F("inbox__flags").bitor(get_model("inboxen", "inbox").flags.deleted)),
+            Q(flags=F("flags").bitor(Email.flags.deleted)) |
+            Q(inbox__flags=F("inbox__flags").bitor(Email.flags.deleted)),
         )
 
 
 class HeaderQuerySet(HashedQuerySet):
     def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
+        from inboxen.models import HeaderName, HeaderData
+
         if hashed is None:
             hashed = self.hash_it(data)
 
-        name_model = get_model("inboxen", "headername")
-        data_model = get_model("inboxen", "headerdata")
-
-        name = name_model.objects.only('id').get_or_create(name=name)[0]
-        data, created = data_model.objects.only('id').get_or_create(hashed=hashed, defaults={'data': data})
+        name = HeaderName.objects.only('id').get_or_create(name=name)[0]
+        data, created = HeaderData.objects.only('id').get_or_create(hashed=hashed, defaults={'data': data})
 
         return (super(HeaderQuerySet, self).create(name=name, data=data, ordinal=ordinal, **kwargs), created)
 

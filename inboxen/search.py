@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -21,9 +21,9 @@ import re
 
 from django.core import exceptions
 from django.utils import encoding
-from django.db.models.loading import get_model
 
 import watson
+
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -33,7 +33,8 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
     def get_bodies(self, obj):
         """Return a queryset of text/* bodies for given obj"""
-        Body = get_model("inboxen", "body")
+        from inboxen.models import Body
+
         data = Body.objects.filter(
             partlist__email__id=obj.id,
             partlist__header__name__name="Content-Type",
@@ -44,19 +45,20 @@ class EmailSearchAdapter(watson.SearchAdapter):
             data = Body.objects.filter(partlist__email__id=obj.id)
             data = data.exclude(partlist__header__name__name="Content-Type")
             data = data.exclude(partlist__header__name__name="MIME-Version")
+
         return data
 
     def get_body_charset(self, obj, body):
         """Figure out the charset for the body we've just been given"""
-        Header = get_model("inboxen", "header")
+        from inboxen.models import Header
+
         content_type = Header.objects.filter(part__email__id=obj.id, part__body__id=body.id, name__name="Content-Type").select_related("data")
         try:
             content_type = content_type[0].data.data
             content_type = content_type.split(";", 1)
             params = dict(HEADER_PARAMS.findall(content_type[1]))
-            if "charset" in params:
-                encoding = params["charset"]
-        except (exceptions.ObjectDoesNotExist, IndexError):
+            encoding = params["charset"]
+        except (exceptions.ObjectDoesNotExist, IndexError, KeyError):
             encoding = "utf-8"
 
         return encoding
@@ -65,7 +67,8 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
     def get_title(self, obj):
         """Fetch subject for obj"""
-        HeaderData = get_model("inboxen", "headerdata")
+        from inboxen.models import HeaderData
+
         try:
             subject = HeaderData.objects.filter(
                 header__part__parent__isnull=True,
@@ -107,7 +110,8 @@ class EmailSearchAdapter(watson.SearchAdapter):
 
     def get_meta(self, obj):
         """Extra meta data to save DB queries later"""
-        HeaderData = get_model("inboxen", "headerdata")
+        from inboxen.models import HeaderData
+
         try:
             from_header = HeaderData.objects.filter(
                 header__part__parent__isnull=True,

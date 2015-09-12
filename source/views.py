@@ -18,11 +18,8 @@
 ##
 
 from django.utils.translation import ugettext_lazy as _
-from django.views import generic
 
 from website.views import base
 
 
-class SourceView(base.CommonContextMixin, generic.TemplateView):
-    headline = _("Source Code")
-    template_name = "source/index.html"
+index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
