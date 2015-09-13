@@ -155,12 +155,12 @@ class InboxQuerySet(QuerySet):
 
 class EmailQuerySet(QuerySet):
     def viewable(self, user):
-        from inboxen.models import Email
+        from inboxen.models import Email, Inbox
 
         qs = self.filter(inbox__user=user)
         return qs.exclude(
             Q(flags=F("flags").bitor(Email.flags.deleted)) |
-            Q(inbox__flags=F("inbox__flags").bitor(Email.flags.deleted)),
+            Q(inbox__flags=F("inbox__flags").bitor(Inbox.flags.deleted)),
         )
 
 
