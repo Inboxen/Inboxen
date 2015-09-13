@@ -2,12 +2,14 @@ Inboxen
 =======
 
 [![Build Status](https://travis-ci.org/Inboxen/Inboxen.svg?branch=master)](https://travis-ci.org/Inboxen/Inboxen)
+[![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg?branch=master)](http://codecov.io/github/Inboxen/Inboxen?branch=master)
 
 This is the complete system with everything you need to set up Inboxen. Please
 use the "deploy" branch if you wish to use this in production - "master"
 sometimes breaks!
 
-Join us in our IRC channel! We're in the #inboxen channel on [MegNet](https://www.megworld.co.uk/irc/)
+Join us in our IRC channel! We're in the #inboxen channel on
+[MegNet](https://www.megworld.co.uk/irc/)
 
 See also: <https://etherpad.mozilla.org/inboxen>
 
@@ -34,14 +36,17 @@ Committing and Branching
 
 ### Branching
 
-[Vincent Driessen's branching model](http://nvie.com/posts/a-successful-git-branching-model/) best
-describes how *should* do things.
+[Vincent Driessen's branching
+model](http://nvie.com/posts/a-successful-git-branching-model/) best describes
+how *should* do things.
 
 There are some differences however:
-* Our `master` is really Driessen's `develop`, we don't have an equivalent to Driessen's `master`
+* Our `master` is really Driessen's `develop`, we don't have an equivalent to
+  Driessen's `master`
 * `deploy` is our only release branch
 
-Commits on `deploy` **must** be signed with a GPG key. This is important for the future.
+Commits on `deploy` **must** be signed with a GPG key. This is important for
+the future.
 
 ### Commit messages
 
@@ -58,7 +63,8 @@ fix #345
 touch #234
 ```
 
-Merges from `master` to `deploy` should contain a changelog, referencing GitHub issues as well.
+Merges from `master` to `deploy` should contain a changelog, referencing GitHub
+issues as well.
 
 Deploying
 ---------
@@ -77,8 +83,9 @@ After this has completed, see the next section on minimum configuration. Also,
 `settings.py` is well commented and explains what various configuration options
 do.
 
-You should also tag your deployments - we use signed annotated tags (`git tag -as deplpy-YYYYMMDD`).
-This is particularly useful for rollbacks if something goes wrong.
+You should also tag your deployments - we use signed annotated tags (`git tag
+-as deplpy-YYYYMMDD`).  This is particularly useful for rollbacks if something
+goes wrong.
 
 ### settings.ini
 
@@ -96,13 +103,9 @@ containing random characters.
 
 The WSGI script can be found at `website/wsgi.py`
 
-If your WSGI daemon supports it (e.g. mod_wsgi), we provide an "import script"
-to improve performance for the first request after a reload. It can be found at
-`website/importscript.py`
-
 There is also `website/admin-wsgi.py` - this enables the admin interface on
-`/admin`. It is **highly** recommended that you protect it from the outside world.
-Solutions such as a VPN are probably the easiest for your staff to use.
+`/admin`. It is **highly** recommended that you protect it from the outside
+world.  Solutions such as a VPN are probably the easiest for your staff to use.
 
 ### Static Files
 

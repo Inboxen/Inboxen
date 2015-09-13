@@ -21,11 +21,12 @@ import logging
 
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.db.models.loading import get_model
 
 from celery import task
 
+
 log = logging.getLogger(__name__)
+
 
 SUBJECT_TMPL = "[{site_name} ticket]: #{id}  {subject}"
 
@@ -40,9 +41,12 @@ Message:
 {body}
 """
 
+
 @task(ignore_result=True)
 def new_question_notification(question_id):
-    question = get_model("tickets", "question").objects.select_related("author").get(id=question_id)
+    from tickets.models import Question
+
+    question = Question.objects.select_related("author").get(id=question_id)
     subject = SUBJECT_TMPL.format(site_name=settings.SITE_NAME, subject=question.subject, id=question.id)
     body = BODY_TMPL.format(user=question.author, subject=question.subject, body=question.body)
 

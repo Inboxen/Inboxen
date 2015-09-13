@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,9 +17,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
+from django import test
+from django.core.urlresolvers import reverse
 
-from website.views import base
 
+class TosViewsTestCase(test.TestCase):
+    def test_get(self):
+        response = self.client.get(reverse("termsofservice-index"))
+        self.assertEqual(response.status_code, 200)
 
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+        response = self.client.get(reverse("termsofservice-tos"))
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(reverse("termsofservice-who"))
+        self.assertEqual(response.status_code, 200)

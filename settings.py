@@ -300,6 +300,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.core.context_processors.request",
+    "session_csrf.context_processor",
     "django.contrib.messages.context_processors.messages",
     "website.context_processors.reduced_settings_context"
 )
@@ -307,9 +308,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'session_csrf.CsrfMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'async_messages.middleware.AsyncMiddleware',
@@ -362,6 +363,10 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 # CSP settings
 CSP_REPORT_ONLY = True
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
+
+# csrf
+ANON_AS_LOGGED_IN = True
+CSRF_FAILURE_VIEW = "website.views.error.permission_denied"
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'website.wsgi.application'

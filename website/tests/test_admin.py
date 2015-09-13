@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,9 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
+from django import test
+from django.contrib import admin
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core import urlresolvers
 
-from website.views import base
 
+class AdminTestCase(test.TestCase):
+    def setUp(self):
+        self.factory = test.RequestFactory()
 
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+    def test_login_redirects(self):
+        request = self.factory.get("/", {REDIRECT_FIELD_NAME: "/hello"})
+        response = admin.site.login(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "%s?%s" % (urlresolvers.reverse("user-login"), "next=%2Fhello"))

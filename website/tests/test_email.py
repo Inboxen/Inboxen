@@ -21,8 +21,10 @@
 from django import test
 from django.core import urlresolvers
 
+from inboxen import models
 from inboxen.tests import factories
 from website.views.inbox.email import unicode_damnit
+
 
 BODY = """<html>
 <head>
@@ -38,6 +40,7 @@ p {color: #ffffff;}
 </body>
 </html>
 """
+
 
 METALESS_BODY = """<html>
 <head>
@@ -131,6 +134,23 @@ class EmailViewTestCase(test.TestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        important = self.email.flags.important
+
+        params = {"important-toggle": ""}
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        email = models.Email.objects.get(pk=self.email.pk)
+        self.assertNotEqual(email.flags.important, important)
+
+        important = not important
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        email = models.Email.objects.get(pk=self.email.pk)
+        self.assertNotEqual(email.flags.important, important)
 
     # TODO: test body choosing with multipart emails
 
