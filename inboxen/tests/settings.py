@@ -2,6 +2,7 @@ from __future__ import absolute_import
 import os
 
 os.environ['INBOX_TESTING'] = '1'
+os.environ["INBOXEN_ADMIN_ACCESS"] = '1'
 from settings import *
 
 CACHES = {
