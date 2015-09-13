@@ -8,5 +8,6 @@ source =
     tickets
     website
 omit =
-    */tests/*
     */migrations/*
+    */tests.py
+    */tests/*
