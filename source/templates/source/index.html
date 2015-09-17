@@ -21,7 +21,7 @@
     <div class="col-sm-5 col-md-4">
         <h3>Get the code</h3>
         <p>
-            {% blocktrans with SOURCE_LINK=settings.SOURCE_LINK %}You can find the source code <a href="{{ SOURCE_LINK }}">here</a>.{% endblocktrans %}
+            {% blocktrans with SOURCE_LINK=settings.SOURCE_LINK %}You can find the source code <a target="_blank" href="{{ SOURCE_LINK }}">here</a>.{% endblocktrans %}
             {% if settings.INBOXEN_COMMIT_ID %}
                 {% trans "The commit ID of the version this server is using is:" %}
                 <code>{{ settings.INBOXEN_COMMIT_ID }}</code>
