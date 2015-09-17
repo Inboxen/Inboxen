@@ -58,6 +58,9 @@ class LoginTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["request"].user.is_authenticated())
 
+        response = self.client.get(urlresolvers.reverse("index"))
+        self.assertEqual(response.status_code, 302)
+
     def test_ratelimit(self):
         params = {
             "auth-username": self.user.username,
