@@ -25,6 +25,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import safestring
 
+from markdown_newtab import NewTabExtension
 from pytz import utc
 import markdown
 
@@ -40,7 +41,7 @@ class BlogPost(models.Model):
     @property
     def rendered_body(self):
         """Render MarkDown to HTML"""
-        return safestring.mark_safe(markdown.markdown(self.body))
+        return safestring.mark_safe(markdown.markdown(self.body, extensions=[NewTabExtension()]))
 
     def __unicode__(self):
         draft = ""
