@@ -83,7 +83,7 @@
                     </a>
                 </div>
             </div>
-            <div class="panel-body wrap-words">{{ attachment.1.filename }} ({{ attachment.1.content_type.0 }})</div>
+            <div class="panel-body wrap-words">{{ attachment.1.filename }} ({{ attachment.1.content_type.0|default:"text/plain" }})</div>
         </div>
     </div>
 {% endfor %}
