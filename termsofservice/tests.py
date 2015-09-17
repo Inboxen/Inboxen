@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,34 +17,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django_assets import Bundle, register
+from django import test
+from django.core.urlresolvers import reverse
 
 
-css = Bundle(
-    "css/copying-css.txt",
-    Bundle(
-        "css/bootstrap.css",
-        "css/inboxen.css",
-        filters="cssutils",
-    ),
-    output="compiled/css/website.%(version)s.css",
-)
+class TosViewsTestCase(test.TestCase):
+    def test_get(self):
+        response = self.client.get(reverse("termsofservice-index"))
+        self.assertEqual(response.status_code, 200)
 
+        response = self.client.get(reverse("termsofservice-tos"))
+        self.assertEqual(response.status_code, 404)
 
-js = Bundle(
-    "js/copying-js.txt",
-    Bundle(
-        "js/jquery.js",
-        "js/bootstrap.js",
-        "js/menu.js",
-        "js/home.js",
-        "js/search.js",
-        "js/inbox.js",
-        "js/email.js",  # make sure this one is last
-        filters="jsmin",
-    ),
-    output="compiled/js/website.%(version)s.js",
-)
-
-register("inboxen_css", css)
-register("inboxen_js", js)
+        response = self.client.get(reverse("termsofservice-who"))
+        self.assertEqual(response.status_code, 200)

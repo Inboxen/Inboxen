@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,34 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django_assets import Bundle, register
+from django import test
+from django.contrib import admin
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core import urlresolvers
 
 
-css = Bundle(
-    "css/copying-css.txt",
-    Bundle(
-        "css/bootstrap.css",
-        "css/inboxen.css",
-        filters="cssutils",
-    ),
-    output="compiled/css/website.%(version)s.css",
-)
+class AdminTestCase(test.TestCase):
+    def setUp(self):
+        self.factory = test.RequestFactory()
 
-
-js = Bundle(
-    "js/copying-js.txt",
-    Bundle(
-        "js/jquery.js",
-        "js/bootstrap.js",
-        "js/menu.js",
-        "js/home.js",
-        "js/search.js",
-        "js/inbox.js",
-        "js/email.js",  # make sure this one is last
-        filters="jsmin",
-    ),
-    output="compiled/js/website.%(version)s.js",
-)
-
-register("inboxen_css", css)
-register("inboxen_js", js)
+    def test_login_redirects(self):
+        request = self.factory.get("/", {REDIRECT_FIELD_NAME: "/hello"})
+        response = admin.site.login(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "%s?%s" % (urlresolvers.reverse("user-login"), "next=%2Fhello"))

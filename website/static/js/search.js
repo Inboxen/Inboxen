@@ -31,8 +31,14 @@ function AreWeReadyYet($refreshNote, $searchInfo, timer) {
     http.send(null);
 }
 $(document).ready(function() {
-    var $refreshNote = $("#refreshnote");
-    var $searchInfo = $("#searchinfo");
+    var $refreshNote = $("#search-refreshnote");
+    var $searchInfo = $("#search-info");
+
+    $("#inboxen-search-box").on("submit", function() {
+        window.location = this.action + this.q.value + "/";
+        return false;
+    });
+
     if ($refreshNote.length === 0) {
         return;
     }

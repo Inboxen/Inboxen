@@ -13,6 +13,7 @@ docs/_*
 *.sw?
 *~
 
+/htmlcov
 db.sqlite3
 
 # C extensions

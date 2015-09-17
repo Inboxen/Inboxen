@@ -13,11 +13,11 @@ before_script:
 install:
     - if [[ $DB == postgres ]]; then travis_retry pip install -q psycopg2; fi
     - travis_retry pip install -q -r requirements.txt
-    - travis_retry pip install -q coveralls
+    - travis_retry pip install -q codecov
     - python manage.py collectstatic --noinput --settings=inboxen.tests.settings
 
 script: coverage run manage.py test --settings=inboxen.tests.settings
-after_success: coveralls
+after_success: codecov
 
 notifications:
     irc:

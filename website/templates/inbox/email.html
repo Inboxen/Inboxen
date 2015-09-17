@@ -71,21 +71,21 @@
 <strong>{% trans "Attachments" %}</strong>:<br />
 <div class="form">
 {% for attachment in attachments %}
-    <div class="col-sm-4">
-    <div class="input-group">
-        <span class="input-group-addon">{{ attachment.1.filename }} ({{ attachment.1.content_type.0 }})</span>
-        <div class="input-group-btn">
-            <a href="{% url 'email-attachment' attachmentid=attachment.0.id method='download' %}" class="btn btn-default">
-                {% trans "Download" %}
-            </a>
-            <a href="{% url 'email-attachment' attachmentid=attachment.0.id method='view' %}" class="btn btn-default">
-                {% trans "View" %}
-            </a>
+    <div class="col-sm-4 col-md-3 col-lg-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group btn-group-justified" role="group">
+                    <a href="{% url 'email-attachment' attachmentid=attachment.0.id method='download' %}" class="btn btn-default">
+                        {% trans "Download" %}
+                    </a>
+                    <a href="{% url 'email-attachment' attachmentid=attachment.0.id method='view' %}" class="btn btn-default">
+                        {% trans "View" %}
+                    </a>
+                </div>
+            </div>
+            <div class="panel-body wrap-words">{{ attachment.1.filename }} ({{ attachment.1.content_type.0|default:"text/plain" }})</div>
         </div>
-    </div>
     </div>
 {% endfor %}
 </div>
-<br /><br />
-
 {% endblock %}

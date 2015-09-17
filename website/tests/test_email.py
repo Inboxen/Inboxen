@@ -21,8 +21,10 @@
 from django import test
 from django.core import urlresolvers
 
+from inboxen import models
 from inboxen.tests import factories
 from website.views.inbox.email import unicode_damnit
+
 
 BODY = """<html>
 <head>
@@ -34,10 +36,11 @@ p {color: #ffffff;}
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
 <p>&nbsp;</p>
-<p>£££</p>
+<p>£££</p><p><a href="http://example.com/?q=thing">link</a></p>
 </body>
 </html>
 """
+
 
 METALESS_BODY = """<html>
 <head>
@@ -48,7 +51,7 @@ p {color: #ffffff;}
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
 <p>&nbsp;</p>
-<p>$$$</p>
+<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
 </body>
 </html>
 """
@@ -132,6 +135,29 @@ class EmailViewTestCase(test.TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_post(self):
+        important = self.email.flags.important
+
+        params = {"important-toggle": ""}
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        email = models.Email.objects.get(pk=self.email.pk)
+        self.assertNotEqual(email.flags.important, important)
+
+        important = not important
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        email = models.Email.objects.get(pk=self.email.pk)
+        self.assertNotEqual(email.flags.important, important)
+
+    def test_html_a(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        content = response.context["email"]["body"]
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
+
     # TODO: test body choosing with multipart emails
 
 
@@ -210,6 +236,12 @@ class BadEmailTestCase(test.TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn("He l lo .jpg", response["Content-Disposition"])
+
+    def test_html_a(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        content = response.context["email"]["body"]
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
 
 
 class UtilityTestCase(test.TestCase):

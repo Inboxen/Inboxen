@@ -54,10 +54,10 @@
                 {% if user.is_authenticated %}
                 <p class="navbar-text"><a class="inherit-colour" href="{% url 'user-logout' %}">{% trans "Logout" %}</a></p>
                 <form
+                    id="inboxen-search-box"
                     class="navbar-form navbar-right"
                     method="GET"
                     action="{% url 'user-search' %}"
-                    onsubmit='window.location="{% url 'user-search' %}"+this.q.value+"/"; return false;'
                 >
                     <div class="input-group">
                         <label class="sr-only">{% trans "Search emails and inboxes" %}</label>

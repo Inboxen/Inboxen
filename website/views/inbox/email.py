@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
 import re
 
 from django.contrib import messages
@@ -38,6 +39,8 @@ from redirect import proxy_url
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 __all__ = ["EmailView"]
+
+_log = logging.getLogger(__name__)
 
 
 def unicode_damnit(data, charset="utf-8", errors="replace"):
@@ -227,16 +230,21 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
                 for link in html_tree.xpath("//a"):
                     try:
+                        # proxy link
                         url = link.attrib["href"]
                         link.attrib["href"] = proxy_url(url)
+
+                        # open link in tab
+                        link.attrib["target"] = "_blank"
                     except KeyError:
                         pass
 
                 try:
                     html_tree = Premailer(html_tree).transform()
-                except Exception:
+                except Exception as exc:
                     # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
                     messages.info(self.request, _("Part of this message could not be parsed - it may not display correctly"))
+                    _log.exception(exc)
 
                 # Mail Pile uses this, give back if you come up with something better
                 cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
