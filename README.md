@@ -63,9 +63,6 @@ fix #345
 touch #234
 ```
 
-Merges from `master` to `deploy` should contain a changelog, referencing GitHub
-issues as well.
-
 Deploying
 ---------
 
@@ -83,9 +80,10 @@ After this has completed, see the next section on minimum configuration. Also,
 `settings.py` is well commented and explains what various configuration options
 do.
 
-You should also tag your deployments - we use signed annotated tags (`git tag
--as deplpy-YYYYMMDD`).  This is particularly useful for rollbacks if something
-goes wrong.
+We tag our deployments (you should too) - we use signed annotated tags (`git
+tag -as deplpy-YYYYMMDD`). The tag should contain a changelog since the last
+deploy tag. This is particularly useful for rollbacks and keeps a record of
+deployments that's separate from git history.
 
 ### settings.ini
 

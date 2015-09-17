@@ -36,7 +36,7 @@ p {color: #ffffff;}
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
 <p>&nbsp;</p>
-<p>£££</p>
+<p>£££</p><p><a href="http://example.com/?q=thing">link</a></p>
 </body>
 </html>
 """
@@ -51,7 +51,7 @@ p {color: #ffffff;}
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
 <p>&nbsp;</p>
-<p>$$$</p>
+<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
 </body>
 </html>
 """
@@ -152,6 +152,12 @@ class EmailViewTestCase(test.TestCase):
         email = models.Email.objects.get(pk=self.email.pk)
         self.assertNotEqual(email.flags.important, important)
 
+    def test_html_a(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        content = response.context["email"]["body"]
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
+
     # TODO: test body choosing with multipart emails
 
 
@@ -230,6 +236,12 @@ class BadEmailTestCase(test.TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn("He l lo .jpg", response["Content-Disposition"])
+
+    def test_html_a(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        content = response.context["email"]["body"]
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
 
 
 class UtilityTestCase(test.TestCase):

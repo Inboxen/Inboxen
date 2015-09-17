@@ -38,6 +38,7 @@ js = Bundle(
         "js/bootstrap.js",
         "js/menu.js",
         "js/home.js",
+        "js/search.js",
         "js/inbox.js",
         "js/email.js",  # make sure this one is last
         filters="jsmin",
@@ -45,13 +46,5 @@ js = Bundle(
     output="compiled/js/website.%(version)s.js",
 )
 
-search_js = Bundle(
-    "js/search.js",
-    filters="jsmin",
-    output="compiled/js/search.%(version)s.js",
-)
-
-
 register("inboxen_css", css)
 register("inboxen_js", js)
-register("inboxen_search_js", search_js)

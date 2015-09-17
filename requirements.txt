@@ -23,6 +23,7 @@ factory-boy
 jsmin
 jsondate
 lxml
+markdown-newtab
 premailer
 progress
 psycopg2
