@@ -72,8 +72,9 @@ class QuestionHomeView(base.LoginRequiredMixin, base.CommonContextMixin, generic
     def get_queryset(self):
         qs = super(QuestionHomeView, self).get_queryset()
         qs = qs.filter(author=self.request.user).select_related("author")
+        qs = qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
-        return qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
+        return qs
 
     def get_success_url(self):
         return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})

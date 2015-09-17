@@ -18,13 +18,12 @@
 ##
 
 from django.core.cache import cache
-from django.db.models import F, Q
+from django.db.models import Case, Count, F, IntegerField, Q, When
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.timesince import timesince
 from django.views import generic
 
-from aggregate_if import Count as ConditionalCount
 import watson
 
 from inboxen import models
@@ -51,7 +50,7 @@ class InboxView(
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs)
         qs = qs.viewable(self.request.user)
-        qs = qs.annotate(important=ConditionalCount('id', only=Q(flags=models.Email.flags.important)))
+        qs = qs.annotate(important=Count(Case(When(flags=models.Email.flags.important, then=1), output_field=IntegerField())))
         qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 

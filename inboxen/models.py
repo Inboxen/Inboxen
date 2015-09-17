@@ -31,7 +31,6 @@ from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
 from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
-from model_utils.managers import PassThroughManager
 from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
@@ -137,7 +136,7 @@ class Domain(models.Model):
     enabled = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, default=None, on_delete=models.PROTECT)
 
-    objects = PassThroughManager.for_queryset_class(DomainQuerySet)()
+    objects = DomainQuerySet.as_manager()
 
     def __unicode__(self):
         return self.domain
@@ -163,7 +162,7 @@ class Inbox(models.Model):
     flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled"), default=0)
     description = models.CharField(max_length=256, null=True, blank=True)
 
-    objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
+    objects = InboxQuerySet.as_manager()
 
     def __unicode__(self):
         return u"%s@%s" % (self.inbox, self.domain.domain)
@@ -209,7 +208,7 @@ class Email(models.Model):
     flags = BitField(flags=("deleted", "read", "seen", "important", "view_all_headers"), default=0)
     received_date = models.DateTimeField()
 
-    objects = PassThroughManager.for_queryset_class(EmailQuerySet)()
+    objects = EmailQuerySet.as_manager()
 
     @property
     def eid(self):
@@ -265,7 +264,7 @@ class Body(models.Model):
     data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
-    objects = PassThroughManager.for_queryset_class(BodyQuerySet)()
+    objects = BodyQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
         if self.size is None:
@@ -329,7 +328,7 @@ class Header(models.Model):
     part = models.ForeignKey(PartList)
     ordinal = models.IntegerField()
 
-    objects = PassThroughManager.for_queryset_class(HeaderQuerySet)()
+    objects = HeaderQuerySet.as_manager()
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)

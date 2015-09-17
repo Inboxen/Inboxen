@@ -328,7 +328,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
 
     # third party
-    'south',
     'bootstrapform',
     'django_assets',
     'django_extensions',

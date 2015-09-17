@@ -72,7 +72,7 @@ class DeleteTestCase(test.TestCase):
         with self.assertRaises(Exception):
             tasks.finish_delete_user({}, self.user.id)
 
-        self.user.inbox_set.delete()
+        self.user.inbox_set.all().delete()
         tasks.finish_delete_user({}, self.user.id)
 
         with self.assertRaises(get_user_model().DoesNotExist):
