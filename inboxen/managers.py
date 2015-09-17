@@ -17,15 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from collections import OrderedDict
+from datetime import datetime
 import hashlib
 import random
 import string
-from datetime import datetime
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 
 from django.conf import settings
 from django.db import IntegrityError, models

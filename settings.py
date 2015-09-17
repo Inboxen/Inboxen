@@ -278,7 +278,7 @@ STATICFILES_FINDERS = (
     'django_assets.finders.AssetsFinder',
 )
 
-STATICFILES_STORAGE = 'inboxen.storage.ManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'inboxen.storage.InboxenStaticFilesStorage'
 
 AUTHENTICATION_BACKENDS = (
     'website.backends.RateLimitWithSettings',

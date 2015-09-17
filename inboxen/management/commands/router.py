@@ -21,10 +21,7 @@ import os
 
 from django.core.management.base import BaseCommand, CommandError
 
-try:
-    from subprocess import check_output, CalledProcessError
-except ImportError:
-    from inboxen.utils.subprocess import check_output, CalledProcessError
+from subprocess import check_output, CalledProcessError
 
 
 class Command(BaseCommand):
