@@ -230,8 +230,12 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
                 for link in html_tree.xpath("//a"):
                     try:
+                        # proxy link
                         url = link.attrib["href"]
                         link.attrib["href"] = proxy_url(url)
+
+                        # open link in tab
+                        link.attrib["target"] = "_blank"
                     except KeyError:
                         pass
 
