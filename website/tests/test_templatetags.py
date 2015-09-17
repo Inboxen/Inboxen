@@ -17,8 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import unittest
+
 from django import test
-from django.utils import unittest
 
 from bitfield import BitHandler
 

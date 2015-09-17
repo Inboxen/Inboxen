@@ -17,10 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import unittest
+
 from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.utils import unittest
 
 from inboxen import models
 from inboxen.tests import factories

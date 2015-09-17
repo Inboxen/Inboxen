@@ -18,11 +18,11 @@
 ##
 
 import itertools
+import unittest
 
 from django import test
 from django.conf import settings
 from django.core import urlresolvers
-from django.utils import unittest
 
 from inboxen import models
 from inboxen.tests import factories

@@ -23,11 +23,11 @@ import os
 import os.path
 import shutil
 import tempfile
+import unittest
 
 from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.utils import unittest
 
 from inboxen import models
 from inboxen.tests import factories
