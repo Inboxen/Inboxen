@@ -6,7 +6,7 @@ from pytz import utc
 
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
-from django.db.models.loading import get_model
+from django.apps import apps
 
 from inboxen.models import Inbox
 
@@ -79,7 +79,7 @@ def delete_account(user_id):
 @task(rate_limit=500)
 @transaction.atomic()
 def delete_inboxen_item(model, item_pk):
-    _model = get_model("inboxen", model)
+    _model = apps.get_app_config("inboxen").get_model(model)
     try:
         item = _model.objects.only('pk').get(pk=item_pk)
         item.delete()
