@@ -21,7 +21,6 @@ django-watson>=1.1.4
 djorm-ext-pgbytea>=0.6.0
 factory-boy
 jsmin
-jsondate
 lxml
 markdown-newtab
 premailer

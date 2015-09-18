@@ -27,10 +27,8 @@ from django.contrib.messages import constants as message_constants
 from django.core import exceptions, urlresolvers
 
 from kombu.common import Broadcast, Exchange, Queue
-from kombu.serialization import registry
 import configobj
 import djcelery
-import jsondate
 import validate
 
 djcelery.setup_loader()
@@ -216,14 +214,11 @@ if not DEBUG:
 ##
 
 # load custom kombu encoder
-registry.register('json_date', jsondate.dumps, jsondate.loads,
-                content_type='application/json+date', content_encoding='utf-8')
-
 CELERY_SEND_TASK_ERROR_EMAILS = True
 CELERY_RESULT_BACKEND = BROKER_URL
-CELERY_ACCEPT_CONTENT = ['json', 'json_date']
-CELERY_TASK_SERIALIZER = "json_date"
-CELERY_RESULT_SERIALIZER = "json_date"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
 CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
