@@ -96,7 +96,7 @@ class Liberation(models.Model):
     flags = BitField(flags=("running", "errored"), default=0)
     data = LargeObjectField(null=True)
     content_type = models.PositiveSmallIntegerField(default=0)
-    async_result = UUIDField(auto=False, null=True)
+    async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
     size = models.PositiveIntegerField(null=True)
