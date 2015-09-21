@@ -164,16 +164,14 @@ def requests():
 
 
 @task(rate_limit="100/s")
-def search(user_id, search_term, offset=0, limit=10):
+def search(user_id, search_term):
     """Offload the expensive part of search to avoid blocking the web interface"""
     email_subquery = models.Email.objects.viewable(user_id)
     inbox_subquery = models.Inbox.objects.viewable(user_id)
 
-    limit = offset + limit
-
     results = {
-        "emails": list(watson.search(search_term, models=(email_subquery,)).values_list("id", flat=True)[offset:limit]),
-        "inboxes": list(watson.search(search_term, models=(inbox_subquery,)).values_list("id", flat=True)[offset:limit]),
+        "emails": list(watson.search(search_term, models=(email_subquery,)).values_list("id", flat=True)),
+        "inboxes": list(watson.search(search_term, models=(inbox_subquery,)).values_list("id", flat=True)),
     }
 
     key = u"{0}-{1}".format(user_id, search_term)

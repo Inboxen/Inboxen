@@ -89,12 +89,12 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
 
         # some rubbish about not liking empty sets during IN statements :\
         if len(results["emails"]) > 0:
-            queryset["emails"] = watson_models.SearchEntry.objects.filter(id__in=results["emails"]).prefetch_related("object")
+            queryset["emails"] = watson_models.SearchEntry.objects.filter(id__in=results["emails"][:10]).prefetch_related("object")
         else:
             queryset["emails"] = []
 
         if len(results["inboxes"]) > 0:
-            queryset["inboxes"] = watson_models.SearchEntry.objects.filter(id__in=results["inboxes"]).prefetch_related("object")
+            queryset["inboxes"] = watson_models.SearchEntry.objects.filter(id__in=results["inboxes"][:10]).prefetch_related("object")
         else:
             queryset["inboxes"] = []
 
