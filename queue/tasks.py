@@ -10,18 +10,18 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Avg, Count, F, Max, Min, Q, StdDev, Sum
 
-from celery import task
 from pytz import utc
 import watson
 
 from inboxen import models
+from inboxen.celery import app
 
 log = logging.getLogger(__name__)
 
 SEARCH_TIMEOUT = 60 * 30
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 @transaction.atomic()
 def statistics():
     """Gather statistics about users and their inboxes"""
@@ -78,7 +78,7 @@ def statistics():
     log.info("Saved statistics (%s)", stat.date)
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
     emails = models.Email.objects.order_by("-received_date").only('id')
@@ -103,7 +103,7 @@ def inbox_new_flag(user_id, inbox_id=None):
             inbox.save(update_fields=["flags"])
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 def deal_with_flags(email_id_list, user_id, inbox_id=None):
     """Set seen flags on a list of email IDs and then send off tasks to update
     "new" flags on affected Inbox objects
@@ -125,7 +125,7 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
         inbox_new_flag.delay(user_id)
 
 
-@task()
+@app.task()
 def requests_fetch():
     """Check for unresolved Inbox allocation requests"""
     requests = models.Request.objects.filter(succeeded__isnull=True)
@@ -134,7 +134,7 @@ def requests_fetch():
     return list(requests)
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 def requests_report(requests):
     """Send an email to admins if there are any still pending"""
     if len(requests) == 0:
@@ -158,14 +158,14 @@ def requests_report(requests):
     mail.mail_admins("Inbox Allocation Requests", output)
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 def requests():
     """Send out an email to admins if there are waiting Inbox allocation requests"""
     request = requests_fetch.s() | requests_report.s()
     request.delay()
 
 
-@task(rate_limit="100/s")
+@app.task(rate_limit="100/s")
 def search(user_id, search_term):
     """Offload the expensive part of search to avoid blocking the web interface"""
     email_subquery = models.Email.objects.viewable(user_id)
@@ -184,7 +184,7 @@ def search(user_id, search_term):
     return results
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 def force_garbage_collection():
     """Call the garbage collector.
 

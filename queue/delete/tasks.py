@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from celery import chain, chord, task
+from celery import chain, chord
 from pytz import utc
 
 from django.contrib.auth import get_user_model
@@ -9,11 +9,12 @@ from django.db import IntegrityError, transaction
 from django.apps import apps
 
 from inboxen.models import Inbox
+from inboxen.celery import app
 
 log = logging.getLogger(__name__)
 
 
-@task(rate_limit="10/m", default_retry_delay=5*60)  # 5 minutes
+@app.task(rate_limit="10/m", default_retry_delay=5*60)  # 5 minutes
 @transaction.atomic()
 def delete_inbox(inbox_id, user_id=None):
     inbox = Inbox.objects
@@ -38,7 +39,7 @@ def delete_inbox(inbox_id, user_id=None):
     return True
 
 
-@task()
+@app.task()
 @transaction.atomic()
 def disown_inbox(result, inbox_id):
     inbox = Inbox.objects.get(id=inbox_id)
@@ -46,7 +47,7 @@ def disown_inbox(result, inbox_id):
     inbox.save()
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 @transaction.atomic()
 def finish_delete_user(result, user_id):
     inbox = Inbox.objects.filter(user__id=user_id).only('id').exists()
@@ -58,7 +59,7 @@ def finish_delete_user(result, user_id):
         user.delete()
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 @transaction.atomic()
 def delete_account(user_id):
     # first we need to make sure the user can't login
@@ -76,7 +77,7 @@ def delete_account(user_id):
     log.info("Deletion tasks for %s sent off", user.username)
 
 
-@task(rate_limit=500)
+@app.task(rate_limit=500)
 @transaction.atomic()
 def delete_inboxen_item(model, item_pk):
     _model = apps.get_app_config("inboxen").get_model(model)
@@ -87,7 +88,7 @@ def delete_inboxen_item(model, item_pk):
         pass
 
 
-@task(rate_limit="1/m")
+@app.task(rate_limit="1/m")
 @transaction.atomic()
 def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
     """If something goes wrong and you've got a lot of orphaned entries in the
@@ -119,7 +120,7 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
     items.apply_async()
 
 
-@task(rate_limit="1/h")
+@app.task(rate_limit="1/h")
 def clean_orphan_models():
     # Body
     batch_delete_items.delay("body", kwargs={"partlist__isnull": True})
