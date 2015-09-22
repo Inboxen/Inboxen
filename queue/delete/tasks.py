@@ -101,7 +101,7 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
     * args and kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
-    _model = get_model("inboxen", model)
+    _model = apps.get_app_config("inboxen").get_model(model)
 
     if args is None and kwargs is None:
         raise Exception("You need to specify some filter options!")
