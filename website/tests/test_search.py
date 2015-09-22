@@ -19,9 +19,10 @@
 ##
 
 import mock
+import urllib
 
 from django import test
-from django.core import urlresolvers
+from django.core import urlresolvers, cache
 
 from inboxen.tests import factories
 
@@ -32,28 +33,31 @@ class SearchViewTestCase(test.TestCase):
         self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
+        self.url = urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
+        key = "%s-cheddär" % self.user.id
+        self.key = urllib.quote(key)
 
         if not login:
             raise Exception("Could not log in")
 
-    def get_url(self):
-        return urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
-
     def test_context(self):
-        response = self.client.get(self.get_url())
+        cache.cache.set(self.key, {"emails": [], "inboxes": []})
+        response = self.client.get(self.url)
         self.assertIn("search_results", response.context)
         self.assertItemsEqual(response.context["search_results"], ["emails", "inboxes"])
 
     def test_content(self):
-        response = self.client.get(self.get_url())
+        cache.cache.set(self.key, {"emails": [], "inboxes": []})
+        response = self.client.get(self.url)
         self.assertIn(u"There are no Inboxes or emails containing <em>cheddär</em>", response.content.decode("utf-8"))
 
         # this is bad, we shouldn't do this
         # TODO test the template directly
         with mock.patch("website.views.user.search.SearchView.get_queryset", return_value={}):
-            response = self.client.get(self.get_url())
+            response = self.client.get(self.url)
             self.assertIn(u'data-url="%s"' % urlresolvers.reverse("user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
 
     def test_get(self):
-        response = self.client.get(self.get_url())
+        cache.cache.set(self.key, {"emails": [], "inboxes": []})
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)

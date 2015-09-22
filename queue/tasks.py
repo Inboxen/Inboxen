@@ -18,6 +18,8 @@ from inboxen import models
 
 log = logging.getLogger(__name__)
 
+SEARCH_TIMEOUT = 60 * 30
+
 
 @task(ignore_result=True)
 @transaction.atomic()
@@ -177,7 +179,7 @@ def search(user_id, search_term):
     key = u"{0}-{1}".format(user_id, search_term)
     key = urllib.quote(key.encode("utf-8"))
 
-    cache.set(key, results)
+    cache.set(key, results, SEARCH_TIMEOUT)
 
     return results
 

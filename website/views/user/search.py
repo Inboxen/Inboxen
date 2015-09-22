@@ -62,16 +62,13 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
         if result is None:
             search_task = tasks.search.apply_async(args=[self.request.user.id, self.query])
             result = {"task": search_task.id}
+            cache.set(self.get_cache_key(), result, tasks.SEARCH_TIMEOUT)
         elif "task" in result:
             search_task = AsyncResult(result["task"])
         else:
             return result
 
-        try:
-            result = search_task.get(self.timeout)
-        finally:
-            # always update the cache at this point
-            cache.set(self.get_cache_key(), result)
+        result = search_task.get(self.timeout)
 
         return result
 
@@ -138,7 +135,6 @@ class SearchApiView(SearchView):
             try:
                 search_task.get(self.timeout)
             except exceptions.TimeoutError:
-                cache.set(self.get_cache_key(), result)
                 return http.HttpResponse(status=202)  # 202: still waiting for task
             return http.HttpResponse(status=201)  # 201: search results ready
         elif result is not None:
