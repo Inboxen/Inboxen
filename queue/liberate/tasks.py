@@ -21,9 +21,10 @@ from celery import task, chain, chord
 from pytz import utc
 from async_messages import message_user
 
+from inboxen.celery import app
 from inboxen.models import Email, Inbox
-from queue.liberate import utils
 from queue import tasks
+from queue.liberate import utils
 
 log = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ TAR_TYPES = {
 }
 
 
-@task(rate_limit='4/h')
+@app.task(rate_limit='4/h')
 def liberate(user_id, options=None):
     """ Get set for liberation, expects User object """
     if options is None:
@@ -83,7 +84,7 @@ def liberate(user_id, options=None):
     lib_status.save()
 
 
-@task(rate_limit='100/m')
+@app.task(rate_limit='100/m')
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
     inbox = Inbox.objects.get(id=inbox_id, flags=~Inbox.flags.deleted)
@@ -96,7 +97,7 @@ def liberate_inbox(mail_path, inbox_id):
     }
 
 
-@task()
+@app.task()
 def liberate_collect_emails(results, mail_path, options):
     """ Send off data mining tasks """
     msg_tasks = []
@@ -134,7 +135,7 @@ def liberate_collect_emails(results, mail_path, options):
     lib_status.save()
 
 
-@task(rate_limit='1000/m')
+@app.task(rate_limit='1000/m')
 @transaction.atomic()
 def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
@@ -150,7 +151,7 @@ def liberate_message(mail_path, inbox, email_id):
         raise Exception(msg_id)
 
 
-@task()
+@app.task()
 def liberate_convert_box(result, mail_path, options):
     """ Convert maildir to mbox if needed """
     if options['storage_type'] == '0':
@@ -175,7 +176,7 @@ def liberate_convert_box(result, mail_path, options):
     return result
 
 
-@task()
+@app.task()
 def liberate_fetch_info(result, options):
     """Fetch user info and dump json to files"""
     inbox_json = liberate_inbox_metadata(options['user'])
@@ -187,7 +188,7 @@ def liberate_fetch_info(result, options):
         inbox.write(inbox_json)
 
 
-@task(default_retry_delay=600)
+@app.task(default_retry_delay=600)
 def liberate_tarball(result, options):
     """ Tar up and delete the dir """
 
@@ -216,7 +217,7 @@ def liberate_tarball(result, options):
     return tar_name
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 @transaction.atomic()
 def liberation_finish(result, options):
     """ Create email to send to user """

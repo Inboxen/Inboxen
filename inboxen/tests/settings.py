@@ -12,6 +12,7 @@ CACHES = {
 }
 
 db = os.environ.get('DB')
+postgres_user = os.environ.get('PG_USER', 'postgres')
 
 SECRET_KEY = "This is a test, you don't need secrets"
 
@@ -27,7 +28,7 @@ elif db == "postgres":
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'inboxen',
-            'USER': 'postgres',
+            'USER': postgres_user,
         },
     }
 else:

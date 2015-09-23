@@ -32,16 +32,6 @@ from website.tests.utils import MockRequest
 
 class InboxTestAbstract(object):
     """An abstract TestCase that won't get picked up by Django's test finder"""
-    def setUp(self):
-        """Create the client and grab the user"""
-        super(InboxTestAbstract, self).setUp()
-        self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456")
-
-        if not login:
-            raise Exception("Could not log in")
-
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
@@ -76,11 +66,9 @@ class InboxTestAbstract(object):
         count = models.Email.objects.filter(flags=models.Email.flags.read).count()
         self.assertEqual(count, 2)
 
-    @unittest.skipIf(settings.CELERY_ALWAYS_EAGER, "Task errors during testing, works fine in production")
     def test_post_delete(self):
         count_1st = len(self.emails)
-
-        params = dict([(email.id, "email") for email in self.emails[:10]])
+        params = dict([(email.eid, "email") for email in self.emails[:10]])
         params["delete"] = ""
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
@@ -122,7 +110,13 @@ class InboxTestAbstract(object):
 class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
     """Test Inbox specific views"""
     def setUp(self):
-        super(SingleInboxTestCase, self).setUp()
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
         self.inbox = factories.InboxFactory(user=self.user)
         self.emails = factories.EmailFactory.create_batch(150, inbox=self.inbox)
 
@@ -139,7 +133,13 @@ class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
 class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
     """Test Unified Inbox specific views"""
     def setUp(self):
-        super(UnifiedInboxTestCase, self).setUp()
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
         self.emails = factories.EmailFactory.create_batch(150, inbox__user=self.user)
 
         for email in self.emails:
@@ -155,7 +155,6 @@ class InboxAddTestCase(test.TestCase):
     """Test the add inbox page"""
     def setUp(self):
         """Create the client and grab the user"""
-        super(InboxAddTestCase, self).setUp()
         self.user = factories.UserFactory()
         other_user = factories.UserFactory(username="lalna")
 
