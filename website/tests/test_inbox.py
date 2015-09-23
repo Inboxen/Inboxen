@@ -68,8 +68,7 @@ class InboxTestAbstract(object):
 
     def test_post_delete(self):
         count_1st = len(self.emails)
-
-        params = dict([(email.id, "email") for email in self.emails[:10]])
+        params = dict([(email.eid, "email") for email in self.emails[:10]])
         params["delete"] = ""
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
