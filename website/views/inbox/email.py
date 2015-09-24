@@ -220,25 +220,6 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                 else:
                     img_display = self.request.user.userprofile.flags.display_images
 
-                # filter images if we need to
-                if not img_display:
-                    for img in html_tree.xpath("//img"):
-                        try:
-                            del img.attrib["src"]
-                        except KeyError:
-                            pass
-
-                for link in html_tree.xpath("//a"):
-                    try:
-                        # proxy link
-                        url = link.attrib["href"]
-                        link.attrib["href"] = proxy_url(url)
-
-                        # open link in tab
-                        link.attrib["target"] = "_blank"
-                    except KeyError:
-                        pass
-
                 try:
                     html_tree = Premailer(html_tree).transform()
                 except Exception as exc:
@@ -256,6 +237,28 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
                 html_tree = cleaner.clean_html(html_tree)
 
+                # filter images if we need to
+                if not img_display:
+                    for img in html_tree.xpath("//img"):
+                        try:
+                            # try to delete src first - we don't want to add a src where there wasn't one already
+                            del img.attrib["src"]
+                            img.attrib["src"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="
+                        except KeyError:
+                            pass
+
+                for link in html_tree.xpath("//a"):
+                    try:
+                        # proxy link
+                        url = link.attrib["href"]
+                        link.attrib["href"] = proxy_url(url)
+
+                        # open link in tab
+                        link.attrib["target"] = "_blank"
+                    except KeyError:
+                        pass
+
+                # finally, export to unicode
                 email_dict["body"] = unicode_damnit(etree.tostring(html_tree), charset)
             except (etree.LxmlError, ValueError):
                 if plain is not None and len(plain.body.data) > 0:

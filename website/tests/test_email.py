@@ -114,6 +114,7 @@ class EmailViewTestCase(test.TestCase):
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertIn(u"http://example.com/coolface.jpg", content)
+        self.assertNotIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", content)
 
         # premailer should have worked fine
         self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
@@ -125,6 +126,7 @@ class EmailViewTestCase(test.TestCase):
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertNotIn(u"http://example.com/coolface.jpg", content)
+        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", content)
 
         # premailer should have worked fine
         self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
