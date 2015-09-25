@@ -34,6 +34,17 @@ class LowerCaseUsernameTestCase(test.TestCase):
 
         self.assertTrue(form.is_valid())
 
+    def test_login_fail(self):
+        params = {"username": "hiii", "password": "123456"}
+        form = forms.PlaceHolderAuthenticationForm(data=params)
+
+        self.assertFalse(form.is_valid())
+
+        params = {"username": "isdabizda", "password": "1234567"}
+        form = forms.PlaceHolderAuthenticationForm(data=params)
+
+        self.assertFalse(form.is_valid())
+
     def test_create_fail(self):
         params = {"username": "ISdaBIZda", "password1": "123456qwerty", "password2": "123456qwerty"}
         form = forms.PlaceHolderUserCreationForm(data=params)

@@ -37,7 +37,7 @@ class CaseInsensitiveMixin(object):
                 return user
         except user_model.DoesNotExist:
             # do like the default backend does, slow down return on non-existence
-            user_model.set_password(password)
+            user_model().set_password(password)
 
 
 class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
