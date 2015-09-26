@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
 #
@@ -16,14 +17,15 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-
+import mock
 import unittest
 
 from django import test
+from django.template import Template, Context
 
 from bitfield import BitHandler
 
-from website.templatetags import inboxen_flags, inboxen_selector
+from website.templatetags import inboxen_flags, inboxen_selector, inboxen_account
 
 
 class InboxFlagTestCase(test.TestCase):
@@ -55,6 +57,19 @@ class InboxFlagTestCase(test.TestCase):
 
         self.assertEqual(output, "")
 
+    def test_unicode(self):
+        inboxen_flags.FLAGS_TO_TAGS["snowman"] = {
+            "title": u"Snowman",
+            "str": u"☃",
+            "class": "awesome-snowman",
+            "inverse": False
+        }
+        try:
+            flag_obj = BitHandler(3, ["snowman"])
+            inboxen_flags.render_flags(flag_obj)
+        finally:
+            del inboxen_flags.FLAGS_TO_TAGS["snowman"]
+
 
 class SelectorEscapeTestCase(test.TestCase):
     def test_escapes(self):
@@ -70,3 +85,12 @@ class SelectorEscapeTestCase(test.TestCase):
         result = inboxen_selector.escape_selector(input_string, as_data=True)
 
         self.assertEqual(expected_string, result)
+
+
+class AccountMenuTestCase(test.TestCase):
+
+    def test_handles_utf8(self):
+        test_dict = (("user-settings", u"☃"),)
+        with mock.patch.object(inboxen_account.AccountMenuNode, "menu", test_dict):
+            template = Template("{% load inboxen_account %}{% account_menu 'user-settings' %}")
+            template.render(Context({}))
