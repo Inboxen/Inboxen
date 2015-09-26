@@ -153,6 +153,9 @@ BROKER_URL = config["tasks"]["broker_url"]
 # Number of Celery processes to start
 CELERYD_CONCURRENCY = config["tasks"]["concurrency"]
 
+# Runs tasks synchronously
+CELERY_ALWAYS_EAGER = config["tasks"]["always_eager"]
+
 # Path where liberation data is temporarily stored
 LIBERATION_PATH = os.path.join(BASE_DIR, config["tasks"]["liberation"]["path"])
 
