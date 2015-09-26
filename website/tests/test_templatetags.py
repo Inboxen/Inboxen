@@ -27,6 +27,7 @@ from bitfield import BitHandler
 
 from website.templatetags import inboxen_flags, inboxen_selector, inboxen_account
 
+
 class InboxFlagTestCase(test.TestCase):
     def test_no_error(self):
         flag_obj = BitHandler(6, ["new", "read", "somefakeflag", "someother"])
@@ -55,6 +56,19 @@ class InboxFlagTestCase(test.TestCase):
         output = inboxen_flags.render_flags(flag_obj)
 
         self.assertEqual(output, "")
+
+    def test_unicode(self):
+        inboxen_flags.FLAGS_TO_TAGS["snowman"] = {
+            "title": u"Snowman",
+            "str": u"☃",
+            "class": "awesome-snowman",
+            "inverse": False
+        }
+        try:
+            flag_obj = BitHandler(3, ["snowman"])
+            inboxen_flags.render_flags(flag_obj)
+        finally:
+            del inboxen_flags.FLAGS_TO_TAGS["snowman"]
 
 
 class SelectorEscapeTestCase(test.TestCase):
