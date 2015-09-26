@@ -29,6 +29,5 @@ psycopg2
 python-daemon<1.7
 pytz
 salmon-mail>=2
-Sphinx
 simplejson
 git+https://github.com/moggers87/django-session-csrf.git
