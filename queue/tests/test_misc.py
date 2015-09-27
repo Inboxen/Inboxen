@@ -96,7 +96,7 @@ class RequestReportTestCase(test.TestCase):
         self.assertEqual(results[0]["id"], self.waiting.id)
 
     def test_report(self):
-        chain(tasks.requests_fetch.s(), tasks.requests_report.s()).delay().get()
+        tasks.requests.delay().get()
 
         # fetch a fresh copy of the profile
         profile = models.UserProfile.objects.get(pk=self.user.userprofile.pk)
@@ -106,3 +106,9 @@ class RequestReportTestCase(test.TestCase):
         self.assertIn("User: %s" % (self.user.username), mail.outbox[0].body)
         self.assertIn("Date:", mail.outbox[0].body)
         self.assertIn("Current: %s" % (profile.pool_amount,), mail.outbox[0].body)
+
+    def test_no_reports(self):
+        models.Request.objects.all().delete()
+
+        tasks.requests.delay().get()
+        self.assertEqual(len(mail.outbox), 0)
