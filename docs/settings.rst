@@ -20,9 +20,9 @@ The Setting File
 ================
 
 The settings file is required to set basic settings for the inboxen instance.
-It contains some secret information such as the salt (``secret_key``), you
+It contains some secret information such as the ``secret_key``, you
 should ensure the permissions are set correctly and also that this file is kept
-safe as without it user passwords, sessions along with other things rely on
+safe as without it sessions, cookie storage and along with other things rely on
 this [0]_.
 
 The inboxen settings file can be located in several places on a system, it will
