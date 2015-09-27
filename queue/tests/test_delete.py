@@ -16,8 +16,10 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-
+from datetime import datetime
 import unittest
+
+from pytz import utc
 
 from django import test
 from django.conf import settings
@@ -41,6 +43,19 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(models.Email.objects.count(), 0)
         self.assertEqual(models.Inbox.objects.filter(flags=~models.Inbox.flags.deleted).count(), 0)
         self.assertEqual(models.Inbox.objects.filter(user__isnull=False).count(), 0)
+
+    def test_delete_inbox(self):
+        inbox = factories.InboxFactory(user=self.user)
+        result = tasks.delete_inbox(inbox.id)
+        self.assertTrue(result)
+
+        new_inbox = models.Inbox.objects.get(id=inbox.id)
+        self.assertEqual(new_inbox.created, datetime.fromtimestamp(0, utc))
+        self.assertNotEqual(new_inbox.description, inbox.description)
+        self.assertTrue(new_inbox.flags.deleted)
+
+        result = tasks.delete_inbox(inbox.id + 12)
+        self.assertFalse(result)
 
     def test_delete_orphans(self):
         models.Body.objects.get_or_create(data="this is a test")

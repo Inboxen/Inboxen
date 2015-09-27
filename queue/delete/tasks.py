@@ -16,11 +16,8 @@ log = logging.getLogger(__name__)
 
 @app.task(rate_limit="10/m", default_retry_delay=5*60)  # 5 minutes
 @transaction.atomic()
-def delete_inbox(inbox_id, user_id=None):
+def delete_inbox(inbox_id):
     inbox = Inbox.objects
-
-    if user_id is not None:
-        inbox = Inbox.objects.filter(user__id=user_id)
 
     try:
         inbox = inbox.get(id=inbox_id)

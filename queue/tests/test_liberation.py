@@ -31,6 +31,7 @@ from django.contrib.auth import get_user_model
 
 from inboxen import models
 from inboxen.tests import factories
+from inboxen.utils import override_settings
 from queue.liberate import tasks
 from website.forms import LiberationForm
 
@@ -42,7 +43,7 @@ class LiberateTestCase(test.TestCase):
     """Test account liberating"""
     def setUp(self):
         self.user = factories.UserFactory()
-        self.inboxes = factories.InboxFactory.create_batch(2)
+        self.inboxes = factories.InboxFactory.create_batch(2, user=self.user)
         self.emails = factories.EmailFactory.create_batch(5, inbox=self.inboxes[0])
         self.emails.extend(factories.EmailFactory.create_batch(5, inbox=self.inboxes[1]))
 
@@ -61,12 +62,16 @@ class LiberateTestCase(test.TestCase):
     @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
-        with test.utils.override_settings(LIBERATION_PATH=self.tmp_dir):
+        with override_settings(LIBERATION_PATH=self.tmp_dir):
             for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
-                form_data = {"storage_type": storage[0], "compression_type": compression[0]}
+                form_data = {"storage_type": str(storage[0]), "compression_type": str(compression[0])}
                 form = LiberationForm(self.user, data=form_data)
                 self.assertTrue(form.is_valid())
                 form.save()
+
+                # delete liberation now we're done with it and refetch user
+                models.Liberation.objects.all().delete()
+                self.user = get_user_model().objects.get(id=self.user.id)
 
                 # TODO: check Liberation model actually has correct archive type
 

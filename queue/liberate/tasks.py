@@ -36,11 +36,8 @@ TAR_TYPES = {
 
 
 @app.task(rate_limit='4/h')
-def liberate(user_id, options=None):
+def liberate(user_id, options):
     """ Get set for liberation, expects User object """
-    if options is None:
-        options = {}
-
     options['user'] = user_id
     user = get_user_model().objects.get(id=user_id)
 
