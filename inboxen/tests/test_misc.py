@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -22,6 +22,8 @@ from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
+from django.core.management import call_command
+from django.core.management.base import CommandError
 
 from inboxen.tests import factories
 from inboxen.utils import is_reserved, override_settings
@@ -96,3 +98,20 @@ class UtilsTestCase(test.TestCase):
     def test_reserved(self):
         self.assertTrue(is_reserved("root"))
         self.assertFalse(is_reserved("root1"))
+
+
+class FeederCommand(test.TestCase):
+    def test_command_errors(self):
+        with self.assertRaises(CommandError) as error:
+            # too few args
+            call_command("feeder")
+
+        with self.assertRaises(CommandError) as error:
+            # non-existing mbox
+            call_command("feeder", "some_file")
+        self.assertEqual(error.exception.message, "No such path: some_file")
+
+        with self.assertRaises(CommandError) as error:
+            # non-existing inbox
+            call_command("feeder", "some_file", inbox="something@localhost")
+        self.assertEqual(error.exception.message, "Address malformed")

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -18,6 +18,7 @@
 ##
 
 import mailbox
+import os
 import smtplib
 
 from django.conf import settings
@@ -29,28 +30,31 @@ from inboxen.models import Inbox
 
 
 class Command(BaseCommand):
-    args = "<path to mail box> [<inbox>]"
     help = "Feed emails into the system via SMTP, optionally specifying an inbox"
 
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
         self._server = None
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        parser.add_argument("mailbox", help="path to mailbox")
+        parser.add_argument("--inbox")
+
+    def handle(self, **options):
         # look at the arg
-        if not args:
-            self.stdout.write(self.help)
-            return
-        elif len(args) == 2:
+        if options["inbox"]:
             try:
-                Inbox.objects.from_string(email=args[1])
-                self.inbox = args[1]
+                Inbox.objects.from_string(email=options["inbox"])
+                self.inbox = options["inbox"]
             except Inbox.DoesNotExist:
                 raise CommandError("Address malformed")
         else:
             self.inbox = None
 
-        self.mbox = mailbox.mbox(args[0])
+        if not os.path.exists(options["mailbox"]):
+            raise CommandError("No such path: %s" % options["mailbox"])
+
+        self.mbox = mailbox.mbox(options["mailbox"])
         self.msg_count = len(self.mbox)
 
         if self.msg_count == 0:
