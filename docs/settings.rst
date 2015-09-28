@@ -80,6 +80,8 @@ documentation <https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts
 
 debug
 ^^^^^
+*Default value: False*
+
 Enabling this puts Inboxen into debug mode, this should never be used in a production
 environment as it exposes the state of some calls in Inboxen including the settings file.
 This should be used when developing on Inboxen as it allows for tracebacks to be displayed
@@ -87,29 +89,39 @@ instead of emailed and disables ``allowed_hosts`` checking.
 
 enable_registration
 ^^^^^^^^^^^^^^^^^^^
+*Default value: False*
+
 A boolean flag which controls if the Inboxen instance permits registration, if disabled the
 site will not allow new users to be created through the public facing site and disables the
 links to the registration page.
 
 login_attempt_cooloff
 ^^^^^^^^^^^^^^^^^^^^^
+*Default value: 10*
+
 This is the time in minutes that the user is prevented from trying to login
 after a number of failed login attempts. The value should be an integer
 measured in minutes.
 
 login_attempt_limit
 ^^^^^^^^^^^^^^^^^^^
+*Default value: 5*
+
 This is the number of times people can attempt to login before receiving a cooldown (the
 amount of time for the cooldown is dictated by ``login_attempt_cooloff``).
 
 language_code
 ^^^^^^^^^^^^^
+*Default value: en-gb*
+
 This specifies the language code that is used as a fallback when one can't be detected by
 Django's locale middleware (or if the middleware is disabled). This should be set to a
 standard language ID format [2]_.
 
 static_root
 ^^^^^^^^^^^
+*Default value: static_content*
+
 This specifies where the directory is for serving static files. Django will use this
 directory to place static files when using::
 
@@ -117,20 +129,28 @@ directory to place static files when using::
 
 server_email
 ^^^^^^^^^^^^
+*Default value: django@localhost*
+
 The email the server uses when sending emails.
 
 site_name
 ^^^^^^^^^
+*Default value: LazyAdmin.com's Inboxen*
+
 The name of the site as displayed in page titles.
 
 source_link
 ^^^^^^^^^^^
+*Default value: https://github.com/Inboxen/Inboxen*
+
 The link to the source code for the current instance. If you change any
 code in Inboxen this must be shared back under the terms of the AGPL v3,
 you should populate this with the link to the source code.
 
 time_zone
 ^^^^^^^^^
+*Default value: UTC*
+
 The timezone used for the site, this is used for example when storing dates
 in the database.
 
@@ -139,17 +159,23 @@ Inbox
 
 inbox_length
 ^^^^^^^^^^^^
+*Default value: 5*
+
 The number of characters of the local portion of the email, For example, in the
 email "pineapple@inboxen.org" the local portion is "pineapple" and the length
 would be 9 characters.
 
 min_inbox_for_request
 ^^^^^^^^^^^^^^^^^^^^^
+*Default value: 10*
+
 This is the amount of free (unallocated) inboxes the user has before a
 request to raise the limit is issued.
 
 request_number
 ^^^^^^^^^^^^^^
+*Default value: 500*
+
 The number amount of inboxes that the limit is increased by if a request for
 more inboxes is granted.
 
@@ -158,10 +184,14 @@ Tasks
 
 broker_url
 ^^^^^^^^^^
+*Default value: amqp://guest:guest@localhost:5672//*
+
 The URL that celery will look at to find tasks and to store results.
 
 concurrency
 ^^^^^^^^^^^
+*Default value: 3*
+
 The number of celery processes to start
 
 liberation
@@ -176,6 +206,8 @@ database
 
 engine
 ^^^^^^
+*Default value: sqlite*
+
 Which database engine to use, Django offers several database engines [3]_
 however we only support:
 
@@ -194,6 +226,8 @@ Oracle is not supported as we've never tested it with Inboxen.
 
 name
 ^^^^
+*Default value: db.sqlite3*
+
 This is either the name of the database in PostgreSQL or the file path for
 SQLite.
 
@@ -226,6 +260,8 @@ Cache
 
 backend
 ^^^^^^^
+*Default value: file*
+
 This is the caching backend for Inboxen, this could be one of a number of
 supported backends:
 
@@ -244,6 +280,8 @@ N.B: You will need to install "pylibmc" if you want to use the ``memcached``
 
 timeout
 ^^^^^^^
+*Default value: 300*
+
 The number of seconds before a cache entry is considered stale.
 
 location
