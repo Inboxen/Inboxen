@@ -17,6 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from StringIO import StringIO
+import sys
+
 from django import test
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
@@ -100,7 +103,7 @@ class UtilsTestCase(test.TestCase):
         self.assertFalse(is_reserved("root1"))
 
 
-class FeederCommand(test.TestCase):
+class FeederCommandTest(test.TestCase):
     def test_command_errors(self):
         with self.assertRaises(CommandError) as error:
             # too few args
@@ -115,3 +118,26 @@ class FeederCommand(test.TestCase):
             # non-existing inbox
             call_command("feeder", "some_file", inbox="something@localhost")
         self.assertEqual(error.exception.message, "Address malformed")
+
+
+class UrlStatsCommandTest(test.TestCase):
+    def test_command(self):
+        with self.assertRaises(CommandError) as error:
+            # too few args
+            call_command("url_stats")
+
+        stdin = StringIO()
+        stdin.write("/\n")
+        stdin.seek(0)
+        stdout = StringIO()
+
+        old_in = sys.stdin
+        old_out = sys.stdout
+        sys.stdin = stdin
+        sys.stdout = stdout
+
+        try:
+            call_command("url_stats", "-")
+        finally:
+            sys.stdin = old_in
+            sys.stdout = old_out

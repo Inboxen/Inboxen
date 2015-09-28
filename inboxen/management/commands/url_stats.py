@@ -36,22 +36,22 @@ example, given a log file where the URL is the third item on a line:
 
 
 class Command(BaseCommand):
-    args = "<file> | -"
     help = _help
 
-    def handle(self, *args, **options):
-        if len(args) != 1:
-            raise CommandError("This command expects either a file name or '-' for stdin")
-        if args[0].strip() == "-":
+    def add_arguments(self, parser):
+        parser.add_argument("file", help="file or '-' for stdin")
+
+    def handle(self, **options):
+        if options["file"].strip() == "-":
             file_obj = sys.stdin
         else:
-            file_obj = open(args[0], "r")
+            file_obj = open(options["file"], "r")
 
-        pp = pprint.PrettyPrinter(indent=4)
+        pp = pprint.PrettyPrinter(indent=5)
 
         urls = {}
         non_match = set()
-        for url in file_obj:
+        for url in file_obj.readline():
             try:
                 name = resolve(url).url_name
             except Resolver404:
@@ -63,8 +63,8 @@ class Command(BaseCommand):
             else:
                 urls[name] = 1
 
-        print "URLs:"
+        self.stdout.write("URLs:\n")
         pp.pprint(urls)
 
-        print "Non-matches:"
+        self.stdout.write("\nNon-matches:\n")
         pp.pprint(non_match)
