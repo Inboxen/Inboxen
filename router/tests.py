@@ -68,6 +68,15 @@ Last part!
 --inboxenTest--
 """
 
+BODIES = [
+    "",
+    "Hi,\n\nThis is a plain text message!\n",
+    "",
+    "Last part!\n",
+    "Inside part\n",
+    "Another inside part\n",
+]
+
 
 class RouterTestCase(test.TestCase):
     def setUp(self):
@@ -136,3 +145,6 @@ class RouterTestCase(test.TestCase):
         make_email(message, inbox)
         self.assertEqual(models.Email.objects.count(), 1)
         self.assertEqual(models.PartList.objects.count(), 6)
+
+        bodies = [str(part.body.data) for part in models.PartList.objects.select_related("body").order_by("level", "lft")]
+        self.assertEqual(bodies, BODIES)
