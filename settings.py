@@ -344,6 +344,7 @@ INSTALLED_APPS = (
     'queue.delete',
     'queue.liberate',
     'redirect',
+    'router',
     'source',
     'termsofservice',
     'tickets',
