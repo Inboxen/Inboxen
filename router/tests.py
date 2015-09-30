@@ -24,10 +24,49 @@ from django import test
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
 
+from salmon.mail import MailRequest
 from salmon.server import SMTPError
 
 from inboxen import models
 from inboxen.tests import factories
+from router.app.helpers import make_email
+
+
+TEST_MSG = """From: Test <test@localhost>
+To: no-reply@example.com
+Subject: This is a subject!
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary=inboxenTest
+
+--inboxenTest
+Content-Type: text/plain
+
+Hi,
+
+This is a plain text message!
+
+--inboxenTest
+Content-Type: multipart/mixed; boundary=secondInboxenTest
+
+--secondInboxenTest
+Content-Type: text/plain
+
+Inside part
+
+--secondInboxenTest
+Content-Type: text/plain
+
+Another inside part
+
+--secondInboxenTest--
+
+--inboxenTest
+Content-Type: text/plain
+
+Last part!
+
+--inboxenTest--
+"""
 
 
 class RouterTestCase(test.TestCase):
@@ -89,3 +128,11 @@ class RouterTestCase(test.TestCase):
 
         self.assertTrue(inbox.flags.new)
         self.assertFalse(profile.flags.unified_has_new_messages)
+
+    def test_make_email(self):
+        inbox = factories.InboxFactory()
+        message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
+
+        make_email(message, inbox)
+        self.assertEqual(models.Email.objects.count(), 1)
+        self.assertEqual(models.PartList.objects.count(), 6)
