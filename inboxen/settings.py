@@ -39,7 +39,7 @@ djcelery.setup_loader()
 # The file is searched for in the follow way:
 # 1. The environment variable "INBOXEN_CONFIG", which contains an absolute path
 # 2. ~/.config/inboxen/settings.ini
-# 3. settings.ini in the same folder as this file
+# 3. settings.ini in the root of the git repo (i.e. the same directory as "manage.py")
 #
 # See inboxen/config_spec.ini for defaults, see below for comments
 ##
@@ -63,7 +63,7 @@ cache_dict = {
 
 is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 if os.path.exists(os.getenv('INBOX_CONFIG', '')):
     CONFIG_PATH = os.getenv('INBOX_CONFIG')

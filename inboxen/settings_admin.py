@@ -17,7 +17,7 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from settings import *
+from inboxen.settings import *
 
 ALLOWED_HOSTS = list(ALLOWED_HOSTS) + ["localhost",]
 SESSION_COOKIE_SECURE = False

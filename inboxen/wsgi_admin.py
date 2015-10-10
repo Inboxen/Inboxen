@@ -18,7 +18,7 @@
 ##
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "adminsettings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inboxen.settings_admin")
 os.environ.setdefault("INBOXEN_ADMIN_ACCESS", "True")
 
 from website.wsgi import *
