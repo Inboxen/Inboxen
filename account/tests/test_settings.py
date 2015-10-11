@@ -24,7 +24,7 @@ from django.core import urlresolvers
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
 from inboxen.tests import factories
-from website.tests import utils
+from inboxen.tests import utils
 
 
 class SettingsTestCase(test.TestCase):

@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from account import forms
-from website.views import base
+from inboxen.views import base
 
 __all__ = ["GeneralSettingsView", "UsernameChangeView"]
 

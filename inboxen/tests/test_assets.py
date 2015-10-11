@@ -19,7 +19,7 @@
 
 from django import test
 
-from website import assets
+from inboxen import assets
 
 
 class AssetTest(test.TestCase):

@@ -33,7 +33,7 @@ from premailer.premailer import Premailer
 import watson
 
 from inboxen import models
-from website.views import base
+from inboxen.views import base
 from redirect import proxy_url
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')

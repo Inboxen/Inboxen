@@ -25,8 +25,8 @@ from django.contrib import messages
 
 from inboxen.models import Inbox
 
-from website import forms
-from website.views import base
+from inboxen import forms
+from inboxen.views import base
 
 __all__ = ["InboxAddView"]
 

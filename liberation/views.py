@@ -25,7 +25,7 @@ from django.views import generic
 
 from liberation import forms
 from liberation.tasks import TAR_TYPES
-from website.views import base
+from inboxen.views import base
 
 __all__ = ["LiberationView", "LiberationDownloadView"]
 

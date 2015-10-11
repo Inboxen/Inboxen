@@ -29,7 +29,7 @@ from ratelimitbackend.forms import AuthenticationForm
 from account import fields
 from inboxen import models
 from queue.delete.tasks import delete_account
-from website.forms.mixins import PlaceHolderMixin
+from inboxen.forms.mixins import PlaceHolderMixin
 
 __all__ = [
     "DeleteAccountForm", "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",

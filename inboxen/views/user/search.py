@@ -24,7 +24,7 @@ from django.core.cache import cache
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from website.views import base
+from inboxen.views import base
 from queue import tasks
 
 from celery import exceptions

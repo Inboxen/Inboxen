@@ -53,7 +53,7 @@ class SearchViewTestCase(test.TestCase):
 
         # this is bad, we shouldn't do this
         # TODO test the template directly
-        with mock.patch("website.views.user.search.SearchView.get_queryset", return_value={}):
+        with mock.patch("inboxen.views.user.search.SearchView.get_queryset", return_value={}):
             response = self.client.get(self.url)
             self.assertIn(u'data-url="%s"' % urlresolvers.reverse("user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
 

@@ -21,7 +21,7 @@ from django import test
 
 from inboxen.tests import factories
 from account import forms
-from website.tests import utils
+from inboxen.tests import utils
 
 
 class LowerCaseUsernameTestCase(test.TestCase):

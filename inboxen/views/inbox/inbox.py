@@ -29,7 +29,7 @@ import watson
 from inboxen import models
 from queue.delete.tasks import delete_inboxen_item
 from queue.tasks import deal_with_flags
-from website.views import base
+from inboxen.views import base
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 

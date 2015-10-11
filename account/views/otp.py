@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
 
-from website.views import base
+from inboxen.views import base
 
 __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
 

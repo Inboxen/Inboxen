@@ -22,7 +22,7 @@ from django.views import generic
 from django.utils.translation import ugettext as _
 
 from termsofservice import models
-from website.views import base
+from inboxen.views import base
 
 
 class TOSView(base.CommonContextMixin, generic.DetailView):

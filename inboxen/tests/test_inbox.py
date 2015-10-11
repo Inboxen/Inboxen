@@ -26,8 +26,8 @@ from django.core import urlresolvers
 
 from inboxen import models
 from inboxen.tests import factories
-from website import forms as inboxen_forms
-from website.tests.utils import MockRequest
+from inboxen import forms as inboxen_forms
+from inboxen.tests.utils import MockRequest
 
 
 class InboxTestAbstract(object):

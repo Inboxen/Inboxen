@@ -24,13 +24,13 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
-from website import views
-from website.views import error
+from inboxen import views
+from inboxen.views import error
 
-urls.handler400 = "website.views.error.bad_request"
-urls.handler403 = "website.views.error.permission_denied"
-urls.handler404 = "website.views.error.not_found"
-urls.handler500 = "website.views.error.server_error"
+urls.handler400 = "inboxen.views.error.bad_request"
+urls.handler403 = "inboxen.views.error.permission_denied"
+urls.handler404 = "inboxen.views.error.not_found"
+urls.handler500 = "inboxen.views.error.server_error"
 
 # csrf stuff
 import session_csrf
@@ -39,7 +39,7 @@ session_csrf.monkeypatch()
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
-    urls.url(r'^_csp_report/', "website.views.error.csp_report", name='csp_logger'),
+    urls.url(r'^_csp_report/', "inboxen.views.error.csp_report", name='csp_logger'),
     urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', headline=_('Huh?')), name='huh'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
 

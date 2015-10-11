@@ -23,7 +23,7 @@ from two_factor.views import core
 from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
 
 from account.forms import PlaceHolderAuthenticationForm
-from website.views.base import CommonContextMixin
+from inboxen.views.base import CommonContextMixin
 
 __all__ = ["LoginView"]
 

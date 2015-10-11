@@ -279,7 +279,7 @@ STATICFILES_FINDERS = (
 STATICFILES_STORAGE = 'inboxen.storage.InboxenStaticFilesStorage'
 
 AUTHENTICATION_BACKENDS = (
-    'website.backends.RateLimitWithSettings',
+    'inboxen.backends.RateLimitWithSettings',
 )
 
 # Make sure all custom template tags are thread safe
@@ -300,7 +300,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     "session_csrf.context_processor",
     "django.contrib.messages.context_processors.messages",
-    "website.context_processors.reduced_settings_context"
+    "inboxen.context_processors.reduced_settings_context"
 )
 
 MIDDLEWARE_CLASSES = (
@@ -312,7 +312,7 @@ MIDDLEWARE_CLASSES = (
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'async_messages.middleware.AsyncMiddleware',
-    'website.middleware.RateLimitMiddleware',
+    'inboxen.middleware.RateLimitMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
 )
@@ -340,7 +340,6 @@ INSTALLED_APPS = (
     'inboxen',
     'account',
     'blog',
-    'website',
     'queue',
     'queue.delete',
     'liberation',
@@ -366,10 +365,10 @@ CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 
 # csrf
 ANON_AS_LOGGED_IN = True
-CSRF_FAILURE_VIEW = "website.views.error.permission_denied"
+CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'website.wsgi.application'
+WSGI_APPLICATION = 'inboxen.wsgi.application'
 
 ##
 # Salmon. Splash.

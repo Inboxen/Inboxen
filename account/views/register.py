@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from account import forms
-from website.views.base import CommonContextMixin
+from inboxen.views.base import CommonContextMixin
 
 
 class UserRegistrationView(CommonContextMixin, generic.CreateView):

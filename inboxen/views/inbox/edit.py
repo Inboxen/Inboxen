@@ -22,8 +22,8 @@ from django.http import Http404
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from website import forms
-from website.views import base
+from inboxen import forms
+from inboxen.views import base
 from inboxen.models import Inbox
 
 __all__ = ["InboxEditView", "FormInboxEditView"]

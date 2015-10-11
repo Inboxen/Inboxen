@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from website.views import base
+from inboxen.views import base
 
 
 _log = logging.getLogger(__name__)

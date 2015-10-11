@@ -25,7 +25,7 @@ from two_factor.views import core as twofactor
 
 from account.forms import PlaceHolderPasswordChangeForm
 from account.views import delete, login, otp, register, settings
-from website import views
+from inboxen import views
 
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M

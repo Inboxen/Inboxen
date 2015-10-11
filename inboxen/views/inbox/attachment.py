@@ -21,7 +21,7 @@ from django.http import HttpResponse
 from django.views import generic
 
 from inboxen import models
-from website.views import base
+from inboxen.views import base
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 HEADER_CLEAN = re.compile(r'\s+')

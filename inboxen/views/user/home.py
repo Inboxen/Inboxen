@@ -22,7 +22,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from inboxen import models
-from website.views import base
+from inboxen.views import base
 
 __all__ = ["UserHomeView"]
 

@@ -25,7 +25,7 @@ from django.template import Template, Context
 
 from bitfield import BitHandler
 
-from website.templatetags import inboxen_flags, inboxen_selector, inboxen_account
+from inboxen.templatetags import inboxen_flags, inboxen_selector, inboxen_account
 
 
 class InboxFlagTestCase(test.TestCase):
