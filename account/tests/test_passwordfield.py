@@ -20,7 +20,7 @@
 from django import test
 from django.core.exceptions import ValidationError
 
-from website import fields, validators
+from account import fields, validators
 
 BAD_PASSWORD = "aaaaaaaaaaaaa"
 GOOD_PASSWORD = "abcdefgh!!!!!"  # for smaller values of "good"

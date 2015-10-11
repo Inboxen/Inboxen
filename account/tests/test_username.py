@@ -20,7 +20,7 @@
 from django import test
 
 from inboxen.tests import factories
-from website import forms
+from account import forms
 from website.tests import utils
 
 

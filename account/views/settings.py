@@ -21,7 +21,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from website import forms
+from account import forms
 from website.views import base
 
 __all__ = ["GeneralSettingsView", "UsernameChangeView"]
@@ -31,7 +31,7 @@ class GeneralSettingsView(base.CommonContextMixin, base.LoginRequiredMixin, gene
     """General settings view"""
     form_class = forms.SettingsForm
     success_url = reverse_lazy("user-settings")
-    template_name = "user/account/index.html"
+    template_name = "account/index.html"
     headline = _("Settings")
 
     def get_form_kwargs(self, **kwargs):
@@ -48,7 +48,7 @@ class UsernameChangeView(base.CommonContextMixin, base.LoginRequiredMixin, gener
     """Allow users to change their username"""
     form_class = forms.UsernameChangeForm
     success_url = reverse_lazy("user-settings")
-    template_name = "user/account/username.html"
+    template_name = "account/username.html"
     headline = _("Change Username")
 
     def get_form_kwargs(self, **kwargs):

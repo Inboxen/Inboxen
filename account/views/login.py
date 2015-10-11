@@ -22,14 +22,14 @@ from django.utils.translation import ugettext as _
 from two_factor.views import core
 from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
 
-from website.forms import PlaceHolderAuthenticationForm
+from account.forms import PlaceHolderAuthenticationForm
 from website.views.base import CommonContextMixin
 
 __all__ = ["LoginView"]
 
 
 class LoginView(CommonContextMixin, core.LoginView):
-    template_name = "user/login.html"
+    template_name = "account/login.html"
     headline = _("Login")
 
     form_list = (

@@ -21,7 +21,7 @@ from django.views import generic
 from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse_lazy
 
-from website import forms
+from account import forms
 from website.views import base
 
 __all__ = ["AccountDeletionView"]
@@ -32,7 +32,7 @@ class AccountDeletionView(base.CommonContextMixin, base.LoginRequiredMixin, gene
 
     form_class = forms.DeleteAccountForm
     success_url = reverse_lazy('index')
-    template_name = "user/account/delete.html"
+    template_name = "account/delete.html"
     headline = _("Delete Account")
 
     def get_form_kwargs(self, **kwargs):

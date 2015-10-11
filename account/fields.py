@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,6 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .delete import *
-from .otp import *
-from .settings import *
+from django import forms
+
+from account import validators
+
+
+class PasswordCheckField(forms.CharField):
+    """Field that makes sure a password is safe(ish) and not too too long"""
+    default_validators = [validators.EntropyValidation(), validators.CharClassValidation()]
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 4096)
+        kwargs.setdefault("min_length", 12)
+        kwargs.setdefault("widget", forms.PasswordInput)
+
+        super(PasswordCheckField, self).__init__(*args, **kwargs)

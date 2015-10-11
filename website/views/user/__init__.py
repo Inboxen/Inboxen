@@ -15,7 +15,4 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 from .home import *
-from .login import *
-from .register import *
 from .search import *
-from .account import *

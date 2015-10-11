@@ -30,24 +30,24 @@ __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoF
 
 
 class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
-    template_name = "user/account/security.html"
+    template_name = "account/security.html"
     headline = _("Security")  # view contains link to password change form too
 
 
 class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
-    template_name = "user/account/twofactor-backup.html"
+    template_name = "account/twofactor-backup.html"
     headline = _("Backup Tokens")
     redirect_url = "user-twofactor-backup"
 
 
 class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
-    template_name = "user/account/twofactor-disable.html"
+    template_name = "account/twofactor-disable.html"
     headline = _("Disable Two Factor Authentication")
     redirect_url = "user-security"
 
 
 class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
-    template_name = "user/account/twofactor-setup.html"
+    template_name = "account/twofactor-setup.html"
     headline = _("Setup Two Factor Authentication")
     form_list = (
         ('welcome', forms.Form),

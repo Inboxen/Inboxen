@@ -24,11 +24,8 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
-from two_factor.views import core as twofactor
-
 from website import views
 from website.views import error
-from website.forms import PlaceHolderPasswordChangeForm
 
 urls.handler400 = "website.views.error.bad_request"
 urls.handler403 = "website.views.error.permission_denied"
@@ -62,7 +59,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^forms/inbox/email/', views.FormInboxView.as_view(), name='form-inbox-email'),
 
     # user views
-    urls.url(r'^user/login/', views.LoginView.as_view(), name='user-login'),
     urls.url(r'^user/home/(?P<page>\d+)', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/home/', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)', views.SearchView.as_view(), name='user-search'),
@@ -71,43 +67,14 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/searchapi/(?P<q>.*)/', views.SearchApiView.as_view(), name='user-searchapi'),
 
 
-    urls.url(r'^user/account/security/password', 'django.contrib.auth.views.password_change',
-        {
-            'template_name': 'user/account/password.html',
-            'post_change_redirect': reverse_lazy('user-security'),
-            'password_change_form': PlaceHolderPasswordChangeForm,
-            'extra_context': {
-                'headline': _('Change Password'),
-            },
-        },
-        name='user-password',
-    ),
-    urls.url(r'^user/account/security/setup', views.TwoFactorSetupView.as_view(), name='user-twofactor-setup'),
-    urls.url(r'^user/account/security/backup', views.TwoFactorBackupView.as_view(), name='user-twofactor-backup'),
-    urls.url(r'^user/account/security/disable', views.TwoFactorDisableView.as_view(), name='user-twofactor-disable'),
-    urls.url(r'^user/account/security/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
-    urls.url(r'^user/account/security', views.TwoFactorView.as_view(), name='user-security'),
-
-    urls.url(r'^user/account/delete', views.AccountDeletionView.as_view(), name='user-delete'),
-    urls.url(r'^user/account/username', views.UsernameChangeView.as_view(), name='user-username'),
-    urls.url(r'^user/account/', views.GeneralSettingsView.as_view(), name='user-settings'),
-    urls.url(r'^user/logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
-
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^click/', urls.include("redirect.urls")),
     urls.url(r'^help/', urls.include("termsofservice.urls")),
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
-    urls.url(r'^user/account/liberate/', urls.include("liberation.urls")),
+    urls.url(r'^user/account/', urls.include("account.urls")),
 )
-
-if settings.ENABLE_REGISTRATION:
-    urlpatterns += urls.patterns('',
-        urls.url(r'^user/register/status', views.TemplateView.as_view(template_name='user/register/software-status.html', headline=_('We\'re not stable!')), name='user-status'),
-        urls.url(r'^user/register/success', views.TemplateView.as_view(template_name='user/register/success.html', headline=_('Welcome!')), name='user-success'),
-        urls.url(r'^user/register/', views.UserRegistrationView.as_view(), name='user-registration'),
-    )
 
 if ("INBOXEN_ADMIN_ACCESS" in os.environ and os.environ["INBOXEN_ADMIN_ACCESS"]) or settings.DEBUG:
     admin.autodiscover()

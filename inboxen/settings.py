@@ -338,6 +338,7 @@ INSTALLED_APPS = (
 
     # Inboxen
     'inboxen',
+    'account',
     'blog',
     'website',
     'queue',
@@ -353,7 +354,7 @@ INSTALLED_APPS = (
 if DEBUG:
     INSTALLED_APPS += ('debug_toolbar',)
 
-ROOT_URLCONF = 'website.urls'
+ROOT_URLCONF = 'inboxen.urls'
 
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")
 LOGOUT_URL = urlresolvers.reverse_lazy("user-logout")
