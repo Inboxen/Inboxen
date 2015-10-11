@@ -160,3 +160,7 @@ class LiberateViewTestCase(test.TestCase):
         form = LiberationForm(user=self.user, data=params)
 
         self.assertTrue(form.is_valid())
+
+    def test_get(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)

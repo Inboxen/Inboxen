@@ -104,6 +104,10 @@ class UsernameChangeTestCase(test.TestCase):
 
         self.assertTrue(form.is_valid())
 
+    def test_get(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+
 
 class DeleteTestCase(test.TestCase):
     def setUp(self):
@@ -131,3 +135,7 @@ class DeleteTestCase(test.TestCase):
         form = DeleteAccountForm(request, data=params)
 
         self.assertFalse(form.is_valid())
+
+    def test_get(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
