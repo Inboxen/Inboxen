@@ -88,8 +88,6 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/account/security/qrcode', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
     urls.url(r'^user/account/security', views.TwoFactorView.as_view(), name='user-security'),
 
-    urls.url(r'^user/account/liberate/download', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
-    urls.url(r'^user/account/liberate', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^user/account/delete', views.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^user/account/username', views.UsernameChangeView.as_view(), name='user-username'),
     urls.url(r'^user/account/', views.GeneralSettingsView.as_view(), name='user-settings'),
@@ -98,9 +96,10 @@ urlpatterns = urls.patterns('',
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^click/', urls.include("redirect.urls")),
-    urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^help/', urls.include("termsofservice.urls")),
+    urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
+    urls.url(r'^user/account/liberate/', urls.include("liberation.urls")),
 )
 
 if settings.ENABLE_REGISTRATION:

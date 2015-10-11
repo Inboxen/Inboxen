@@ -28,12 +28,13 @@ import unittest
 from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core import urlresolvers
 
 from inboxen import models
 from inboxen.tests import factories
 from inboxen.utils import override_settings
-from queue.liberate import tasks
-from website.forms import LiberationForm
+from liberation import tasks
+from liberation.forms import LiberationForm
 
 
 _database_not_psql = settings.DATABASES["default"]["ENGINE"] != 'django.db.backends.postgresql_psycopg2'
@@ -133,3 +134,29 @@ class LiberateNewUserTestCase(test.TestCase):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
+
+
+class LiberateViewTestCase(test.TestCase):
+    def setUp(self):
+        super(LiberateViewTestCase, self).setUp()
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urlresolvers.reverse("user-liberate")
+
+    def test_form_bad_data(self):
+        params = {"storage_type": 180, "compression_type": 180}
+        form = LiberationForm(user=self.user, data=params)
+
+        self.assertFalse(form.is_valid())
+
+    def test_form_good_data(self):
+        params = {"storage_type": 1, "compression_type": 1}
+        form = LiberationForm(user=self.user, data=params)
+
+        self.assertTrue(form.is_valid())

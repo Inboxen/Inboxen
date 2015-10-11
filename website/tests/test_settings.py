@@ -109,34 +109,6 @@ class UsernameChangeTestCase(test.TestCase):
         self.assertTrue(form.is_valid())
 
 
-class LiberateTestCase(test.TestCase):
-    form = forms.LiberationForm
-
-    def setUp(self):
-        super(LiberateTestCase, self).setUp()
-        self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456")
-
-        if not login:
-            raise Exception("Could not log in")
-
-    def get_url(self):
-        return urlresolvers.reverse("user-liberate")
-
-    def test_form_bad_data(self):
-        params = {"storage_type": 180, "compression_type": 180}
-        form = self.form(user=self.user, data=params)
-
-        self.assertFalse(form.is_valid())
-
-    def test_form_good_data(self):
-        params = {"storage_type": 1, "compression_type": 1}
-        form = self.form(user=self.user, data=params)
-
-        self.assertTrue(form.is_valid())
-
-
 class DeleteTestCase(test.TestCase):
     form = forms.DeleteAccountForm
 

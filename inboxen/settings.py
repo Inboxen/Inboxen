@@ -342,7 +342,7 @@ INSTALLED_APPS = (
     'website',
     'queue',
     'queue.delete',
-    'queue.liberate',
+    'liberation',
     'redirect',
     'router',
     'source',

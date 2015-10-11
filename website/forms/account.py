@@ -17,8 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
 from django import forms
 from django.contrib import auth
 from django.contrib.auth import get_user_model
@@ -27,17 +25,14 @@ from django.core import exceptions
 from django.utils.translation import ugettext as _
 
 from ratelimitbackend.forms import AuthenticationForm
-from pytz import utc
 
 from inboxen import models
 from queue.delete.tasks import delete_account
-from queue.liberate.tasks import liberate as data_liberate
 from website import fields
 from website.forms.mixins import PlaceHolderMixin
 
 __all__ = [
-    "DeleteAccountForm", "LiberationForm",
-    "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
+    "DeleteAccountForm", "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
     "PlaceHolderUserCreationForm", "SettingsForm", "UsernameChangeForm",
 ]
 
@@ -66,53 +61,6 @@ class DeleteAccountForm(forms.Form):
         # Dispatch task and logout
         delete_account.delay(self.user.id)
         auth.logout(self.request)
-        return self.user
-
-
-class LiberationForm(forms.ModelForm):
-    class Meta:
-        model = models.Inbox
-        fields = []
-
-    STORAGE_TYPES = (
-        (0, _("Maildir")),
-        (1, _("Mailbox .mbox")),
-    )
-
-    # Could we support zip files?
-    COMPRESSION_TYPES = (
-        (0, _("Tarball (gzip compressed)")),
-        (1, _("Tarball (bzip2 compression)")),
-        (2, _("Tarball (no compression)")),
-    )
-
-    storage_type = forms.ChoiceField(choices=STORAGE_TYPES)
-    compression_type = forms.ChoiceField(choices=COMPRESSION_TYPES)
-
-    def __init__(self, user, initial=None, *args, **kwargs):
-        self.user = user
-        if not initial:
-            initial = {
-                "storage_type": 0,
-                "compression_type": 0,
-            }
-
-        return super(LiberationForm, self).__init__(initial=initial, *args, **kwargs)
-
-    def save(self):
-        lib_status = self.user.liberation
-        if not lib_status.flags.running:
-            lib_status.flags = models.Liberation.flags.running
-            lib_status.started = datetime.now(utc)
-
-            result = data_liberate.apply_async(
-                kwargs={"user_id": self.user.id, "options": self.cleaned_data},
-                countdown=10
-            )
-
-            lib_status.async_result = result.id
-            lib_status.save()
-
         return self.user
 
 

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,6 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .delete import *
-from .otp import *
-from .settings import *
+from django.conf import urls
+
+from liberation import views
+
+
+# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
+urlpatterns = urls.patterns('',
+    urls.url(r'^$', views.LiberationView.as_view(), name='user-liberate'),
+    urls.url(r'^download$', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
+)
