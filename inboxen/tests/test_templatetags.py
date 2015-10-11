@@ -21,11 +21,10 @@ import mock
 import unittest
 
 from django import test
-from django.template import Template, Context
 
 from bitfield import BitHandler
 
-from inboxen.templatetags import inboxen_flags, inboxen_selector, inboxen_account
+from inboxen.templatetags import inboxen_flags, inboxen_selector
 
 
 class InboxFlagTestCase(test.TestCase):
@@ -85,12 +84,3 @@ class SelectorEscapeTestCase(test.TestCase):
         result = inboxen_selector.escape_selector(input_string, as_data=True)
 
         self.assertEqual(expected_string, result)
-
-
-class AccountMenuTestCase(test.TestCase):
-
-    def test_handles_utf8(self):
-        test_dict = (("user-settings", u"☃"),)
-        with mock.patch.object(inboxen_account.AccountMenuNode, "menu", test_dict):
-            template = Template("{% load inboxen_account %}{% account_menu 'user-settings' %}")
-            template.render(Context({}))
