@@ -24,7 +24,7 @@ from async_messages import message_user
 from inboxen.celery import app
 from inboxen.models import Email, Inbox
 from liberation import utils
-from queue import tasks
+from inboxen import tasks
 
 log = logging.getLogger(__name__)
 

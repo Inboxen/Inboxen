@@ -27,9 +27,9 @@ from django.views import generic
 import watson
 
 from inboxen import models
-from queue.delete.tasks import delete_inboxen_item
-from queue.tasks import deal_with_flags
+from inboxen.tasks import deal_with_flags
 from inboxen.views import base
+from queue.delete.tasks import delete_inboxen_item
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 

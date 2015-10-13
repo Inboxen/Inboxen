@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from inboxen.views import base
-from queue import tasks
+from inboxen import tasks
 
 from celery import exceptions
 from celery.result import AsyncResult

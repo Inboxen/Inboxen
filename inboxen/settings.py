@@ -227,7 +227,7 @@ CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
     Broadcast('broadcast_tasks'),
     )
-CELERY_ROUTES = {'queue.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
+CELERY_ROUTES = {'inboxen.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
 
 CELERY_DEFAULT_QUEUE = 'default'
 CELERY_DEFAULT_EXCHANGE = 'default'
@@ -235,7 +235,7 @@ CELERY_DEFAULT_ROUTING_KEY = 'default'
 
 CELERYBEAT_SCHEDULE = {
     'statistics': {
-        'task': 'queue.tasks.statistics',
+        'task': 'inboxen.tasks.statistics',
         'schedule': datetime.timedelta(days=1),
     },
     'cleanup': {
@@ -243,7 +243,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(days=1),
     },
     'requests': {
-        'task': 'queue.tasks.requests',
+        'task': 'inboxen.tasks.requests',
         'schedule': datetime.timedelta(days=1),
     },
 }
@@ -340,7 +340,6 @@ INSTALLED_APPS = (
     'inboxen',
     'account',
     'blog',
-    'queue',
     'queue.delete',
     'liberation',
     'redirect',

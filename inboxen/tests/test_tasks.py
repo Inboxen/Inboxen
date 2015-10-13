@@ -26,10 +26,9 @@ from django.core import mail
 from celery import chain
 from pytz import utc
 
-from inboxen import models
+from inboxen import models, tasks
 from inboxen.tests import factories
 from inboxen.utils import override_settings
-from queue import tasks
 
 
 class StatsTestCase(test.TestCase):
