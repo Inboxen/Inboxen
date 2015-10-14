@@ -24,8 +24,7 @@ from django.contrib import messages
 from django.db.models import F
 from django.utils.translation import ugettext as _
 
-from inboxen import models
-from queue.delete import tasks
+from inboxen import models, tasks
 
 __all__ = ["InboxAddForm", "InboxEditForm"]
 

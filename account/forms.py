@@ -27,8 +27,8 @@ from django.utils.translation import ugettext as _
 from ratelimitbackend.forms import AuthenticationForm
 
 from account import fields
+from account.tasks import delete_account
 from inboxen import models
-from queue.delete.tasks import delete_account
 from inboxen.forms.mixins import PlaceHolderMixin
 
 __all__ = [

@@ -239,7 +239,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(days=1),
     },
     'cleanup': {
-        'task': 'queue.delete.tasks.clean_orphan_models',
+        'task': 'inboxen.tasks.clean_orphan_models',
         'schedule': datetime.timedelta(days=1),
     },
     'requests': {
@@ -340,7 +340,6 @@ INSTALLED_APPS = (
     'inboxen',
     'account',
     'blog',
-    'queue.delete',
     'liberation',
     'redirect',
     'router',

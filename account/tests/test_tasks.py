@@ -17,17 +17,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 from datetime import datetime
-import unittest
 
 from pytz import utc
 
 from django import test
-from django.conf import settings
 from django.contrib.auth import get_user_model
 
 from inboxen import models
 from inboxen.tests import factories
-from queue.delete import tasks
+from account import tasks
 
 
 class DeleteTestCase(test.TestCase):
@@ -44,41 +42,19 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(models.Inbox.objects.filter(flags=~models.Inbox.flags.deleted).count(), 0)
         self.assertEqual(models.Inbox.objects.filter(user__isnull=False).count(), 0)
 
-    def test_delete_inbox(self):
+    def test_disown_inbox(self):
         inbox = factories.InboxFactory(user=self.user)
-        result = tasks.delete_inbox(inbox.id)
+        result = tasks.disown_inbox(inbox.id)
         self.assertTrue(result)
 
         new_inbox = models.Inbox.objects.get(id=inbox.id)
         self.assertEqual(new_inbox.created, datetime.fromtimestamp(0, utc))
         self.assertNotEqual(new_inbox.description, inbox.description)
         self.assertTrue(new_inbox.flags.deleted)
+        self.assertEqual(new_inbox.user, None)
 
-        result = tasks.delete_inbox(inbox.id + 12)
+        result = tasks.disown_inbox(inbox.id + 12)
         self.assertFalse(result)
-
-    def test_delete_orphans(self):
-        models.Body.objects.get_or_create(data="this is a test")
-        models.HeaderName.objects.create(name="bluhbluh")
-        models.HeaderData.objects.create(data="bluhbluh", hashed="fakehash")
-        tasks.clean_orphan_models.delay()
-
-        self.assertEqual(models.Body.objects.count(), 0)
-        self.assertEqual(models.HeaderData.objects.count(), 0)
-        self.assertEqual(models.HeaderName.objects.count(), 0)
-
-    def test_delete_inboxen_item(self):
-        email = factories.EmailFactory(inbox__user=self.user)
-        tasks.delete_inboxen_item.delay("email", email.id)
-
-        with self.assertRaises(models.Email.DoesNotExist):
-            models.Email.objects.get(id=email.id)
-
-        # we can send off the same task, but it won't error if there's no object
-        tasks.delete_inboxen_item.delay("email", email.id)
-
-        # test with an empty list
-        tasks.delete_inboxen_item.chunks([], 500)()
 
     def test_finish_delete_user(self):
         factories.InboxFactory.create_batch(4, user=self.user)
@@ -91,10 +67,3 @@ class DeleteTestCase(test.TestCase):
 
         with self.assertRaises(get_user_model().DoesNotExist):
             get_user_model().objects.get(id=1)
-
-    def test_disown_inbox(self):
-        inbox = factories.InboxFactory(user=self.user)
-        tasks.disown_inbox.delay({}, inbox.id)
-
-        inbox = models.Inbox.objects.get(id=inbox.id)
-        self.assertEqual(inbox.user, None)

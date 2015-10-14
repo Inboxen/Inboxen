@@ -20,10 +20,8 @@
 from datetime import datetime
 
 from django import test
-from django.contrib.auth import get_user_model
 from django.core import mail
 
-from celery import chain
 from pytz import utc
 
 from inboxen import models, tasks
@@ -111,3 +109,31 @@ class RequestReportTestCase(test.TestCase):
 
         tasks.requests.delay().get()
         self.assertEqual(len(mail.outbox), 0)
+
+
+class DeleteTestCase(test.TestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+
+    def test_delete_orphans(self):
+        models.Body.objects.get_or_create(data="this is a test")
+        models.HeaderName.objects.create(name="bluhbluh")
+        models.HeaderData.objects.create(data="bluhbluh", hashed="fakehash")
+        tasks.clean_orphan_models.delay()
+
+        self.assertEqual(models.Body.objects.count(), 0)
+        self.assertEqual(models.HeaderData.objects.count(), 0)
+        self.assertEqual(models.HeaderName.objects.count(), 0)
+
+    def test_delete_inboxen_item(self):
+        email = factories.EmailFactory(inbox__user=self.user)
+        tasks.delete_inboxen_item.delay("email", email.id)
+
+        with self.assertRaises(models.Email.DoesNotExist):
+            models.Email.objects.get(id=email.id)
+
+        # we can send off the same task, but it won't error if there's no object
+        tasks.delete_inboxen_item.delay("email", email.id)
+
+        # test with an empty list
+        tasks.delete_inboxen_item.chunks([], 500)()

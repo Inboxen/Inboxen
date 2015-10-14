@@ -3,12 +3,13 @@ import gc
 import logging
 import urllib
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
-from django.db import transaction
-from django.db.models import Avg, Count, F, Max, Min, Q, StdDev, Sum
+from django.db import IntegrityError, transaction
+from django.db.models import Avg, Count, F, Max, Min, StdDev, Sum
 
 from pytz import utc
 import watson
@@ -193,3 +194,58 @@ def force_garbage_collection():
     collected = gc.collect()
 
     log.info("GC collected {0} objects.".format(collected))
+
+
+@app.task(rate_limit=500)
+@transaction.atomic()
+def delete_inboxen_item(model, item_pk):
+    _model = apps.get_app_config("inboxen").get_model(model)
+    try:
+        item = _model.objects.only('pk').get(pk=item_pk)
+        item.delete()
+    except (IntegrityError, _model.DoesNotExist):
+        pass
+
+
+@app.task(rate_limit="1/m")
+@transaction.atomic()
+def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
+    """If something goes wrong and you've got a lot of orphaned entries in the
+    database, then this is the task you want.
+
+    Be aware: this task pulls a list of PKs from the database which may cause
+    increased memory use in the short term.
+
+    * model is a string
+    * args and kwargs should be obvious
+    * batch_number is the number of delete tasks that get sent off in one go
+    """
+    _model = apps.get_app_config("inboxen").get_model(model)
+
+    if args is None and kwargs is None:
+        raise Exception("You need to specify some filter options!")
+    elif args is None:
+        args = []
+    elif kwargs is None:
+        kwargs = {}
+
+    items = _model.objects.only('pk').filter(*args, **kwargs)
+    items = [(model, item.pk) for item in items.iterator()]
+    if len(items) == 0:
+        return
+
+    items = delete_inboxen_item.chunks(items, batch_number).group()
+    items.skew(step=batch_number/10.0)
+    items.apply_async()
+
+
+@app.task(rate_limit="1/h")
+def clean_orphan_models():
+    # Body
+    batch_delete_items.delay("body", kwargs={"partlist__isnull": True})
+
+    # HeaderName
+    batch_delete_items.delay("headername", kwargs={"header__isnull": True})
+
+    # HeaderData
+    batch_delete_items.delay("headerdata", kwargs={"header__isnull": True})

@@ -18,7 +18,7 @@
 ##
 
 from django.core.cache import cache
-from django.db.models import Case, Count, F, IntegerField, Q, When
+from django.db.models import Case, Count, F, IntegerField, When
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.utils.timesince import timesince
@@ -28,8 +28,8 @@ import watson
 
 from inboxen import models
 from inboxen.tasks import deal_with_flags
+from inboxen.tasks import delete_inboxen_item
 from inboxen.views import base
-from queue.delete.tasks import delete_inboxen_item
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 
