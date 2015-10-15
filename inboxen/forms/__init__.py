@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,9 +17,4 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
-
-from inboxen.views import base
-
-
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+from .inbox import *

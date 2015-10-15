@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from blog.models import BlogPost
-from website.views import base
+from inboxen.views import base
 
 
 class BlogListView(base.CommonContextMixin, generic.ListView):

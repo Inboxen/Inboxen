@@ -30,7 +30,7 @@ from django.utils.translation import ugettext as _
 from django_assets import env as assets_env
 from webassets.script import GenericArgparseImplementation
 
-from website.context_processors import reduced_settings_context
+from inboxen.context_processors import reduced_settings_context
 
 # use the following to get a pipe separated list of inboxes that should be reserved
 # cat /etc/aliases | egrep "^[^#]" | awk '{gsub (":", ""); print $1}' | sort | tr "\n" "|" | sed 's/|$/\)$\n/' | sed 's/^/\^(/'
@@ -91,7 +91,7 @@ class WebAssetsOverrideMixin(object):
     Work around for https://github.com/miracle2k/django-assets/issues/44
     """
 
-    asset_modules = ["website.assets"]
+    asset_modules = ["inboxen.assets"]
 
     def disable(self, *args, **kwargs):
         ret_value = super(WebAssetsOverrideMixin, self).disable(*args, **kwargs)

@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from tickets import forms, models
-from website.views import base
+from inboxen.views import base
 
 
 class FormMixin(generic.edit.FormMixin):

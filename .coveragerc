@@ -1,13 +1,11 @@
 [run]
-source =
-    blog
-    inboxen
-    queue
-    router
-    termsofservice
-    tickets
-    website
+source = .
 omit =
     */migrations/*
     */tests.py
     */tests/*
+    env/*
+    env3/*
+    lib/*
+    lib64/*
+    manage.py

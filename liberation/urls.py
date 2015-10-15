@@ -17,9 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
+from django.conf import urls
 
-from inboxen.views import base
+from liberation import views
 
 
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
+urlpatterns = urls.patterns('',
+    urls.url(r'^$', views.LiberationView.as_view(), name='user-liberate'),
+    urls.url(r'^download$', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
+)

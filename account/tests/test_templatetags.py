@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
 #
@@ -16,10 +17,19 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+import mock
+import unittest
 
-from django.utils.translation import ugettext_lazy as _
+from django import test
+from django.template import Template, Context
 
-from inboxen.views import base
+from account.templatetags import inboxen_account
 
 
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+class AccountMenuTestCase(test.TestCase):
+
+    def test_handles_utf8(self):
+        test_dict = (("user-settings", u"☃"),)
+        with mock.patch.object(inboxen_account.AccountMenuNode, "menu", test_dict):
+            template = Template("{% load inboxen_account %}{% account_menu 'user-settings' %}")
+            template.render(Context({}))

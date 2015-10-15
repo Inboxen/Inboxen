@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,9 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
+from django import forms
 
-from inboxen.views import base
+from account import validators
 
 
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+class PasswordCheckField(forms.CharField):
+    """Field that makes sure a password is safe(ish) and not too too long"""
+    default_validators = [validators.EntropyValidation(), validators.CharClassValidation()]
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 4096)
+        kwargs.setdefault("min_length", 12)
+        kwargs.setdefault("widget", forms.PasswordInput)
+
+        super(PasswordCheckField, self).__init__(*args, **kwargs)

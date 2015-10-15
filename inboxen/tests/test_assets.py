@@ -17,9 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
+from django import test
 
-from inboxen.views import base
+from inboxen import assets
 
 
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+class AssetTest(test.TestCase):
+    def test_asset_order(self):
+        self.assertEqual(assets.js.contents[-1].contents[-1], "js/email.js")

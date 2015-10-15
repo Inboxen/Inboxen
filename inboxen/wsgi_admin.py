@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -14,12 +14,11 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
+#    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext_lazy as _
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inboxen.settings_admin")
+os.environ.setdefault("INBOXEN_ADMIN_ACCESS", "True")
 
-from inboxen.views import base
-
-
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+from inboxen.wsgi import *
