@@ -40,7 +40,6 @@ session_csrf.monkeypatch()
 urlpatterns = urls.patterns('',
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^_csp_report/', "inboxen.views.error.csp_report", name='csp_logger'),
-    urls.url(r'^huh', views.TemplateView.as_view(template_name='huh.html', headline=_('Huh?')), name='huh'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
 
     # inbox views

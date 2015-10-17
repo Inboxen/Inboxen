@@ -4,13 +4,28 @@
 
 {% block content %}
     <div class="index-heading">
-        <div><b>Emails identify you.</b></div>
-        <div class="index-subheading clear-gap"><b>They're used to sell your data.</b></div>
-        <div class="index-subheading">We can help fix that...</div>
+        <div><b>Protect your privacy</b></div>
+        <div class="index-subheading clear-gap"><b>and keep your inbox clean.</b></div>
+        <div class="index-subheading">Bam.</div>
         {% if settings.ENABLE_REGISTRATION %}
             <a href="{% url 'user-status' %}" class="btn btn-lg btn-primary">Join</a>
         {% endif%}
-        <a href="{% url 'huh' %}" class="btn btn-info btn-lg">Huh?</a>
+    </div>
+    <div class="text-center row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+            <h3>What Is {{ settings.SITE_NAME }}?</h3>
+            <p>{{ settings.SITE_NAME }} is a service that provides you with an infinite number
+            <a href="#note-1">[1]</a> of unique inboxes. It's not designed to replace your
+            personal email address, but rather complement it. Every time you sign up on a
+            new website, click the "Add Inbox" button to create another email address. This
+            leaves your personal address free from promotional offers and other junk mail.</p>
+
+            <p class="small"><a id="#note-1">[1]</a> slightly less than that, it's currently 2<sup>64</sup>-1</p>
+        </div>
+        <div class="col-sm-5 col-md-4">
+            <h3></h3>
+            <p></p>
+        </div>
     </div>
     <div class="text-center row">
         <div class="col-sm-3 col-sm-offset-3">
