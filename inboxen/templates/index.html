@@ -3,16 +3,16 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="index-heading">
-        <div><b>Protect your privacy</b></div>
-        <div class="index-subheading clear-gap"><b>and keep your inbox clean.</b></div>
+    <div class="text-center">
+        <h1 class="index-heading">Protect your privacy</h1>
+        <h1 class="index-subheading clear-gap">and keep your inbox clean.</h1>
         {% if settings.ENABLE_REGISTRATION %}
             <div class="clear-gap"><a href="{% url 'user-status' %}" class="btn btn-massive btn-primary">Join</a></div>
         {% endif%}
     </div>
     <div class="text-center row">
         <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-            <h3>What Is {{ settings.SITE_NAME }}?</h3>
+            <h2>What Is {{ settings.SITE_NAME }}?</h2>
             <p>{{ settings.SITE_NAME }} is a service that provides you with an infinite number
             of unique inboxes. It's not designed to replace your personal email address, but
             rather complement it. Every time a website asks for your email, click the
@@ -20,7 +20,7 @@
             address free from promotional offers and other junk mail.</p>
         </div>
         <div class="col-xs-12 col-sm-8 col-sm-offset-2">
-            <h3>Features</h3>
+            <h2>Features</h2>
             <div class="row">
                 <div class="col-sm-6 col-md-4">
                     <h1>P</h1>
