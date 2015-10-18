@@ -93,3 +93,10 @@ td.inbox-name > a {
 .wrap-words {
     word-wrap: break-word;
 }
+
+.btn-massive {
+    padding: 20px 32px;
+    font-size: 28px;
+    line-height: 1.33333;
+    border-radius: 6px;
+}
