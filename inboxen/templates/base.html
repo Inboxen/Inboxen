@@ -38,10 +38,12 @@
                 <div id="navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     {% if user.is_authenticated %}
+                        <li><a href="{% url 'user-home' %}">{% trans "Home" %}</a></li>
                         <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                         <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
                         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+                        <li><a href="{% url 'user-logout' %}">{% trans "Logout" %}</a></li>
                     {% else %}
                         <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
                         {% if settings.ENABLE_REGISTRATION %}
@@ -52,7 +54,6 @@
                     {% endif %}
                 </ul>
                 {% if user.is_authenticated %}
-                <p class="navbar-text"><a class="inherit-colour" href="{% url 'user-logout' %}">{% trans "Logout" %}</a></p>
                 <form
                     id="inboxen-search-box"
                     class="navbar-form navbar-right"
