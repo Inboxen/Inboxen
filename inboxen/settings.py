@@ -25,6 +25,7 @@ import warnings
 
 from django.contrib.messages import constants as message_constants
 from django.core import exceptions, urlresolvers
+from django.utils.translation import ugettext_lazy as _
 
 from kombu.common import Broadcast, Exchange, Queue
 import configobj
@@ -261,6 +262,13 @@ TEMPLATE_DEBUG = DEBUG
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
+
+LOCALE_PATHS = ["inboxen/locale"]
+
+LANGUAGES = (
+    ("en-gb", _("English")),
+    ("sv-se", _("Swedish")),
+)
 
 USE_I18N = True
 
