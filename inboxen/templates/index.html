@@ -6,7 +6,7 @@
     <div class="text-center">
         <h1 class="index-heading">Protect your privacy</h1>
         <h1 class="index-subheading clear-gap">and keep your inbox clean.</h1>
-        {% if settings.ENABLE_REGISTRATION %}
+        {% if settings.ENABLE_REGISTRATION and not request.user.is_authenticated %}
             <div class="clear-gap"><a href="{% url 'user-status' %}" class="btn btn-massive btn-primary">Join</a></div>
         {% endif%}
     </div>

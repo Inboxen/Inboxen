@@ -98,6 +98,13 @@ class IndexTestCase(test.TestCase):
     def test_index_page(self):
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
+        self.assertIn("Join", response.content)
+
+        user = factories.UserFactory()
+        assert self.client.login(username=user.username, password="123456")
+        response = self.client.get(urlresolvers.reverse("index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("Join", response.content)
 
 
 class UtilsTestCase(test.TestCase):
