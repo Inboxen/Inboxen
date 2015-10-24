@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 from two_factor.views import core as twofactor
 
 from account.forms import PlaceHolderPasswordChangeForm
+from account.decorators import anonymous_required
 from account.views import delete, login, otp, register, settings
 from inboxen import views
 
@@ -50,7 +51,7 @@ urlpatterns = urls.patterns('',
 
     urls.url(r'^delete', delete.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^username', settings.UsernameChangeView.as_view(), name='user-username'),
-    urls.url(r'^login/', login.LoginView.as_view(), name='user-login'),
+    urls.url(r'^login/', anonymous_required(login.LoginView.as_view()), name='user-login'),
     urls.url(r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
 
     # liberation app
@@ -59,7 +60,7 @@ urlpatterns = urls.patterns('',
 
 if dj_settings.ENABLE_REGISTRATION:
     urlpatterns += urls.patterns('',
-        urls.url(r'^register/status', views.TemplateView.as_view(template_name='account/register/software-status.html', headline=_('We\'re not stable!')), name='user-status'),
-        urls.url(r'^register/success', views.TemplateView.as_view(template_name='account/register/success.html', headline=_('Welcome!')), name='user-success'),
-        urls.url(r'^register/', register.UserRegistrationView.as_view(), name='user-registration'),
+        urls.url(r'^register/status', anonymous_required(views.TemplateView.as_view(template_name='account/register/software-status.html', headline=_('We\'re not stable!'))), name='user-status'),
+        urls.url(r'^register/success', anonymous_required(views.TemplateView.as_view(template_name='account/register/success.html', headline=_('Welcome!'))), name='user-success'),
+        urls.url(r'^register/', anonymous_required(register.UserRegistrationView.as_view()), name='user-registration'),
     )
