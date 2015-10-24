@@ -24,7 +24,6 @@ import mock
 
 from account import decorators
 from inboxen.tests import factories
-from inboxen.tests import utils
 
 
 class AnonRequiredTestCase(test.TestCase):
