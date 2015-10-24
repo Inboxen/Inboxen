@@ -74,7 +74,10 @@ class ModelTestCase(test.TestCase):
         # all the permutations of Inboxes that can receive
         params = (
             [True, False],
-            [0, models.Inbox.flags.deleted, models.Inbox.flags.disabled,
+            [
+                0,
+                models.Inbox.flags.deleted,
+                models.Inbox.flags.disabled,
                 models.Inbox.flags.deleted | models.Inbox.flags.disabled,
                 ~models.Inbox.flags.deleted & ~models.Inbox.flags.disabled,
             ],

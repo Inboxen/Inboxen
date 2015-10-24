@@ -17,11 +17,11 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-import mock
-import unittest
 
 from django import test
 from django.template import Template, Context
+
+import mock
 
 from account.templatetags import inboxen_account
 

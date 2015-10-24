@@ -22,6 +22,7 @@ from django.core import urlresolvers
 
 import redirect
 
+
 class RedirectTestCase(test.TestCase):
     def test_get(self):
         url = urlresolvers.reverse("redirect")

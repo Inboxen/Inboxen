@@ -25,42 +25,43 @@ from django.utils.translation import ugettext as _
 register = template.Library()
 
 FLAGS_TO_TAGS = {
-                "new": {
-                    "title": _("New messages"),
-                    "str": _("New"),
-                    "class": "label-primary",
-                    "inverse": False,
-                    },
-                "seen": {
-                    "title": _("New message"),
-                    "str": _("New"),
-                    "class": "label-primary",
-                    "inverse": True,
-                    },
-                "read": {
-                    "title": _("Unread message"),
-                    "str": _("Unread"),
-                    "class": "label-info",
-                    "inverse": True,
-                    },
-                "important": {
-                    "title": _("Message has been marked as important"),
-                    "str": _("Important"),
-                    "class": "label-danger",
-                    "inverse": False,
-                    },
-                "disabled": {
-                    "title": _("Inbox has been disabled"),
-                    "str": _("Disabled"),
-                    "class": "label-default",
-                    "inverse": False,
-                    },
-                }
+    "new": {
+        "title": _("New messages"),
+        "str": _("New"),
+        "class": "label-primary",
+        "inverse": False,
+    },
+    "seen": {
+        "title": _("New message"),
+        "str": _("New"),
+        "class": "label-primary",
+        "inverse": True,
+    },
+    "read": {
+        "title": _("Unread message"),
+        "str": _("Unread"),
+        "class": "label-info",
+        "inverse": True,
+    },
+    "important": {
+        "title": _("Message has been marked as important"),
+        "str": _("Important"),
+        "class": "label-danger",
+        "inverse": False,
+    },
+    "disabled": {
+        "title": _("Inbox has been disabled"),
+        "str": _("Disabled"),
+        "class": "label-default",
+        "inverse": False,
+    },
+}
 
 # alias certain flags
 FLAGS_TO_TAGS["unified_has_new_messages"] = FLAGS_TO_TAGS["new"]
 
 LABEL_STR = "<span class=\"label {class}\" title=\"{title}\">{str}</span>"
+
 
 @register.filter()
 def render_flags(flags_obj):

@@ -51,7 +51,7 @@ db_dict = {
     "mysql": "django.db.backends.mysql",
     "oracle": "django.db.backends.oracle",
     "sqlite": "django.db.backends.sqlite3",
-    }
+}
 
 # Shorthand for Django's default database backends
 cache_dict = {
@@ -60,7 +60,7 @@ cache_dict = {
     "file": "django.core.cache.backends.filebased.FileBasedCache",
     "localmem": "django.core.cache.backends.locmem.LocMemCache",
     "memcached": "django.core.cache.backends.memcached.PyLibMCCache",
-    }
+}
 
 is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
 
@@ -227,7 +227,7 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
     Broadcast('broadcast_tasks'),
-    )
+)
 CELERY_ROUTES = {'inboxen.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
 
 CELERY_DEFAULT_QUEUE = 'default'

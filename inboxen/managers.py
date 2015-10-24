@@ -25,7 +25,7 @@ import string
 
 from django.conf import settings
 from django.db import IntegrityError, models
-from django.db.models import F, Q, Max
+from django.db.models import Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
 from django.utils.encoding import smart_bytes

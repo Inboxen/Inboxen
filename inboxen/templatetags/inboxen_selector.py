@@ -20,11 +20,9 @@
 import re
 
 from django import template
-from django.utils import safestring
-from django.utils.translation import ugettext as _
+
 
 register = template.Library()
-
 
 SELECTOR_REGEX = re.compile(r"([:.,@|\[\]<>+])")
 

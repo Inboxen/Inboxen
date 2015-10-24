@@ -32,7 +32,7 @@ class EncodeMessage(Message):
         elif cte in ('x-uuencode', 'uuencode', 'uue', 'x-uue'):
             sfp = StringIO()
             try:
-                uu.encode(StringIO(payload+'\n'), sfp, quiet=True)
+                uu.encode(StringIO(payload + '\n'), sfp, quiet=True)
                 payload = sfp.getvalue()
             except uu.Error:
                 # Some decoding problem

@@ -21,11 +21,9 @@ import os
 
 from django.conf import settings, urls
 from django.contrib import admin
-from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
 from inboxen import views
-from inboxen.views import error
 
 urls.handler400 = "inboxen.views.error.bad_request"
 urls.handler403 = "inboxen.views.error.permission_denied"

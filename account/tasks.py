@@ -14,7 +14,7 @@ from inboxen.tasks import batch_delete_items
 log = logging.getLogger(__name__)
 
 
-@app.task(rate_limit="10/m", default_retry_delay=5*60)  # 5 minutes
+@app.task(rate_limit="10/m", default_retry_delay=5 * 60)  # 5 minutes
 @transaction.atomic()
 def disown_inbox(inbox_id):
     try:

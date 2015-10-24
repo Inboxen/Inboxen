@@ -18,7 +18,6 @@
 ##
 
 from django import test
-from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 
 import factory
@@ -47,6 +46,7 @@ class BlogPostFactory(factory.django.DjangoModelFactory):
 
     subject = factory.fuzzy.FuzzyText()
     body = factory.fuzzy.FuzzyText()
+
 
 class BlogTestCase(test.TestCase):
     def test_blog_index(self):

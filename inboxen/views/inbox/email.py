@@ -276,11 +276,11 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
-                        "email": email_dict,
-                        "plain_message": plain_message,
-                        "attachments": attachments,
-                        "ask_images": ask_images,
-                        "headersfetchall": headers_fetch_all,
-                        })
+            "email": email_dict,
+            "plain_message": plain_message,
+            "attachments": attachments,
+            "ask_images": ask_images,
+            "headersfetchall": headers_fetch_all,
+        })
 
         return context

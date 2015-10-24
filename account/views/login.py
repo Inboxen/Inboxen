@@ -36,7 +36,7 @@ class LoginView(CommonContextMixin, core.LoginView):
         ('auth', PlaceHolderAuthenticationForm),
         ('token', AuthenticationTokenForm),
         ('backup', BackupTokenForm),
-        )
+    )
 
     def get_form_kwargs(self, step):
         if step == "auth":

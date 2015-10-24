@@ -53,7 +53,7 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
         ('welcome', forms.Form),
         ('method', two_forms.MethodForm),
         ('generator', two_forms.TOTPDeviceForm),
-        )
+    )
     redirect_url = "user-security"
     qrcode_url = "user-twofactor-qrcode"
 

@@ -20,6 +20,7 @@
 from django import test
 from django.core import urlresolvers
 
+
 class SourceViewTestCase(test.TestCase):
     def test_get(self):
         url = urlresolvers.reverse("source-index")

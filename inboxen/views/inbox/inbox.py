@@ -34,11 +34,7 @@ from inboxen.views import base
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 
 
-class InboxView(
-                base.CommonContextMixin,
-                base.LoginRequiredMixin,
-                generic.ListView
-                ):
+class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListView):
     """Base class for Inbox views"""
     model = models.Email
     paginate_by = 100

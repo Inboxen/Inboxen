@@ -91,5 +91,5 @@ def diff_creator(sender, instance, **kwargs):
         instance.text.split("\n"),
         fromfile=str(last.last_modified),
         tofile=str(instance.last_modified)
-        )
+    )
     instance.diff = "".join(differ)

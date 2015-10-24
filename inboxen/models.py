@@ -29,7 +29,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
-from django_extensions.db.fields import UUIDField
 from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
@@ -343,6 +342,7 @@ user_logged_in.disconnect(update_last_login)
 # Search
 watson.register(Email, search.EmailSearchAdapter)
 watson.register(Inbox, search.InboxSearchAdapter)
+
 
 # signals
 @receiver(pre_save, sender=Request, dispatch_uid="request_decided_checker")
