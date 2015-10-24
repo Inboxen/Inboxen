@@ -100,11 +100,22 @@ class IndexTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Join", response.content)
 
+        with override_settings(ENABLE_REGISTRATION=False):
+            response = self.client.get(urlresolvers.reverse("index"))
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("Join", response.content)
+
+    def test_index_page_logged_in(self):
         user = factories.UserFactory()
         assert self.client.login(username=user.username, password="123456")
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("Join", response.content)
+
+        with override_settings(ENABLE_REGISTRATION=False):
+            response = self.client.get(urlresolvers.reverse("index"))
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("Join", response.content)
 
 
 class UtilsTestCase(test.TestCase):
