@@ -11,11 +11,6 @@
         {% assets "inboxen_css" %}
             <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css" />
         {% endassets %}
-
-        {% assets "inboxen_js" %}
-            <script src="{{ ASSET_URL }}"></script>
-        {% endassets %}
-
         {% block header %}{% endblock %}
     </head>
     <body>
@@ -96,6 +91,11 @@
                 </p>
             </div>
         {% endblock %}
+        </div>
+        <div>
+        {% assets "inboxen_js" %}
+            <script src="{{ ASSET_URL }}"></script>
+        {% endassets %}
         </div>
     </body>
 </html>
