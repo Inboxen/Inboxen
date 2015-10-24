@@ -66,14 +66,14 @@ is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-if os.path.exists(os.getenv('INBOX_CONFIG', '')):
+if is_testing:
+    CONFIG_PATH = ""
+elif os.path.exists(os.getenv('INBOX_CONFIG', '')):
     CONFIG_PATH = os.getenv('INBOX_CONFIG')
 elif os.path.exists(os.path.expanduser("~/.config/inboxen/settings.ini")):
     CONFIG_PATH = os.path.expanduser("~/.config/inboxen/settings.ini")
 elif os.path.exists(os.path.join(BASE_DIR, "settings.ini")):
     CONFIG_PATH = os.path.join(BASE_DIR, "settings.ini")
-elif is_testing:
-    CONFIG_PATH = ""
 else:
     raise exceptions.ImproperlyConfigured("You must provide a settings.ini file")
 
