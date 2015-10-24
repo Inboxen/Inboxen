@@ -121,7 +121,7 @@ class LiberateNewUserTestCase(test.TestCase):
 
     @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
-        with test.utils.override_settings(LIBERATION_PATH=self.tmp_dir):
+        with override_settings(LIBERATION_PATH=self.tmp_dir):
             form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
             self.assertTrue(form.is_valid())
             form.save()
