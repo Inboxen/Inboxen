@@ -28,4 +28,4 @@ urlpatterns = urls.patterns('',
     urls.url(r'^feed/(rss)?', views.RssFeed(), name='blog-feed-rss'),
     urls.url(r'^(?P<page>\d*)', views.BlogListView.as_view(), name='blog'),
     urls.url(r'^$', views.BlogListView.as_view(), name='blog'),
-    )
+)

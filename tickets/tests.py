@@ -97,7 +97,7 @@ class QuestionListTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("tickets-list", kwargs={"status":"!resolved"})
+        return urlresolvers.reverse("tickets-list", kwargs={"status": "!resolved"})
 
     def test_get(self):
         response = self.client.get(self.get_url())

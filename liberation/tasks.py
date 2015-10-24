@@ -17,7 +17,7 @@ from django.db import transaction
 from django.utils import safestring
 from django.utils.translation import ugettext as _
 
-from celery import task, chain, chord
+from celery import chain, chord
 from pytz import utc
 from async_messages import message_user
 

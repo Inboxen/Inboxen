@@ -19,6 +19,7 @@
 
 from annoying import fields
 
+
 class DeferAutoSingleRelatedObjectDescriptor(fields.AutoSingleRelatedObjectDescriptor):
     def __init__(self, defer_fields, related):
         self.defer_fields = defer_fields

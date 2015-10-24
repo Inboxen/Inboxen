@@ -19,6 +19,6 @@
 
 from inboxen.settings import *
 
-ALLOWED_HOSTS = list(ALLOWED_HOSTS) + ["localhost",]
+ALLOWED_HOSTS = list(ALLOWED_HOSTS) + ["localhost"]
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False

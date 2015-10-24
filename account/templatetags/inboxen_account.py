@@ -19,9 +19,11 @@
 from __future__ import unicode_literals
 
 from django import template
-from django.utils import safestring
 from django.utils.translation import ugettext as _
 from django.core import urlresolvers
+
+
+register = template.Library()
 
 
 class AccountMenuNode(template.Node):
@@ -39,13 +41,13 @@ class AccountMenuNode(template.Node):
         ("user-security", _("Security")),
         ("user-liberate", _("Liberate Data")),
         ("user-delete", _("Delete Account")),
-        )
+    )
 
     def __init__(self, url_name):
         self.container = "<{tag} class=\"{classes}\">%s</{tag}>".format(
-                                tag=self.container_tag,
-                                classes=self.container_class
-                                )
+            tag=self.container_tag,
+            classes=self.container_class
+        )
         self.active = url_name
 
     def render(self, context):
@@ -65,8 +67,6 @@ class AccountMenuNode(template.Node):
         output = self.container % output
         return output
 
-
-register = template.Library()
 
 @register.tag
 def account_menu(parser, token):

@@ -31,7 +31,7 @@ class EntropyValidation(object):
     message = _("Your password has too many repeating characters, try something more random.")
 
     def __call__(self, value):
-        entropy = len(set(value))/float(len(value))
+        entropy = len(set(value)) / float(len(value))
         if entropy < self.min_entropy:
             raise ValidationError(self.message)
 

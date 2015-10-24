@@ -29,7 +29,7 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 
 class EmailSearchAdapter(watson.SearchAdapter):
-    trunc_to_size = 2**20  # 1MB. Or two copies of 1984
+    trunc_to_size = 2 ** 20  # 1MB. Or two copies of 1984
 
     def get_bodies(self, obj):
         """Return a queryset of text/* bodies for given obj"""
@@ -39,7 +39,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
             partlist__email__id=obj.id,
             partlist__header__name__name="Content-Type",
             partlist__header__data__data__startswith="text/",
-            )
+        )
 
         if len(data) == 0:
             data = Body.objects.filter(partlist__email__id=obj.id)
@@ -74,8 +74,9 @@ class EmailSearchAdapter(watson.SearchAdapter):
                 header__part__parent__isnull=True,
                 header__name__name="Subject",
                 header__part__email__id=obj.id,
-                )
+            )
             subject = subject[0]
+
             return encoding.smart_text(subject.data, errors='replace')
         except IndexError:
             return u""
@@ -117,7 +118,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
                 header__part__parent__isnull=True,
                 header__name__name="From",
                 header__part__email__id=obj.id,
-                )[0]
+            )[0]
             from_header = encoding.smart_text(from_header.data, errors='replace')
         except IndexError:
             from_header = u""
@@ -126,7 +127,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
             "from": from_header,
             "inbox": obj.inbox.inbox,
             "domain": obj.inbox.domain.domain,
-            }
+        }
 
 
 class InboxSearchAdapter(watson.SearchAdapter):
@@ -142,4 +143,4 @@ class InboxSearchAdapter(watson.SearchAdapter):
     def get_meta(self, obj):
         return {
             "domain": obj.domain.domain,
-            }
+        }

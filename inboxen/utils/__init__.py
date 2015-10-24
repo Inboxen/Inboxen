@@ -58,7 +58,6 @@ def generate_maintenance_page():
     except OSError:
         pass
 
-
     output = open(output_path, "w")
     output.write(rendered)
     output.close()

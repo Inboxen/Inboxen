@@ -143,7 +143,7 @@ class FeederCommandTest(test.TestCase):
 
 class UrlStatsCommandTest(test.TestCase):
     def test_command(self):
-        with self.assertRaises(CommandError) as error:
+        with self.assertRaises(CommandError):
             # too few args
             call_command("url_stats")
 
@@ -162,6 +162,7 @@ class UrlStatsCommandTest(test.TestCase):
         finally:
             sys.stdin = old_in
             sys.stdout = old_out
+
 
 class RouterCommandTest(test.TestCase):
     def test_command(self):

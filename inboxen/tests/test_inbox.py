@@ -18,10 +18,8 @@
 ##
 
 import itertools
-import unittest
 
 from django import test
-from django.conf import settings
 from django.core import urlresolvers
 
 from inboxen import models

@@ -34,8 +34,7 @@ from watson import models as watson_models
 __all__ = ["SearchView", "SearchApiView"]
 
 
-class SearchView(base.LoginRequiredMixin, base.CommonContextMixin,
-                                    generic.ListView):
+class SearchView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView):
     """A specialised search view that splits results by model"""
     paginate_by = None
     template_name = "user/search.html"
