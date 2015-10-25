@@ -13,7 +13,7 @@ from shutil import rmtree
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.utils import safestring
 from django.utils.translation import ugettext as _
 
@@ -40,11 +40,16 @@ def liberate(user_id, options):
     """ Get set for liberation, expects User object """
     options['user'] = user_id
     user = get_user_model().objects.get(id=user_id)
+    lib_status = user.liberation
+
+    tar_type = TAR_TYPES[options.get('compression_type', '0')]
 
     rstr = ""
     for i in range(7):
         rstr += string.ascii_letters[random.randint(0, 50)]
-    path = "%s/%s_%s_%s_%s" % (settings.LIBERATION_PATH, time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
+    basename = "%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
+    path = os.path.join(settings.LIBERATION_PATH, basename)
+    tarname = "%s.%s" % (basename, tar_type["ext"])
 
     # Is this safe enough?
     try:
@@ -53,7 +58,14 @@ def liberate(user_id, options):
         log.info("Couldn't create dir at %s", path)
         raise liberate.retry(exc=error)
 
+    try:
+        lib_status.path = tarname
+        lib_status.save()
+    except IntegrityError:
+        os.rmdir(path)
+
     options["path"] = path
+    options["tarname"] = tarname
 
     mail_path = os.path.join(path, 'emails')
     # make maildir
@@ -76,7 +88,6 @@ def liberate(user_id, options):
 
     async_result = tasks.apply_async()
 
-    lib_status = user.liberation
     lib_status.async_result = async_result.id
     lib_status.save()
 
@@ -190,7 +201,7 @@ def liberate_tarball(result, options):
     """ Tar up and delete the dir """
 
     tar_type = TAR_TYPES[options.get('compression_type', '0')]
-    tar_name = "%s.%s" % (options["path"], tar_type["ext"])
+    tar_name = os.path.join(settings.LIBERATION_PATH, options["tarname"])
 
     try:
         tar = tarfile.open(tar_name, tar_type['writer'])
@@ -221,13 +232,10 @@ def liberation_finish(result, options):
     user = get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
     lib_status.flags.running = False
-    lib_status.payload = open(result, "r").read()
     lib_status.last_finished = datetime.now(utc)
     lib_status.content_type = int(options.get('compression_type', '0'))
 
     lib_status.save()
-
-    os.remove(result)
 
     message = _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"%s\">here</a> to download your archive.")
     message_user(user, safestring.mark_safe(message % urlresolvers.reverse("user-liberate-get")))

@@ -23,6 +23,8 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from sendfile import sendfile
+
 from liberation import forms
 from liberation.tasks import TAR_TYPES
 from inboxen.views import base
@@ -52,20 +54,24 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
 
 class LiberationDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):
-        return self.request.user.liberation
+        liberation = self.request.user.liberation
+
+        if liberation.path is None:
+            raise http.Http404
+
+        return liberation
 
     def render_to_response(self, context):
         content_type = TAR_TYPES[str(self.object.content_type)]["mime-type"]
 
-        disposition = "attachment; filename=liberated_data.{ext}"
-        disposition = disposition.format(ext=TAR_TYPES[str(self.object.content_type)]["ext"])
+        filename = "liberated_data.{ext}".format(ext=TAR_TYPES[str(self.object.content_type)]["ext"])
 
-        response = http.HttpResponse(
-            content=self.object.payload,
-            status=200
+        response = sendfile(
+            request=self.request,
+            filename=self.object.path,
+            attachment=True,
+            attachment_filename=filename,
+            mimetype=content_type
         )
-
-        response["Content-Length"] = self.object.size or len(self.object.payload)
-        response["Content-Disposition"] = disposition
-        response["Content-Type"] = content_type
+        del response["Content-Encoding"]
         return response

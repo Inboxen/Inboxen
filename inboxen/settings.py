@@ -157,9 +157,12 @@ CELERYD_CONCURRENCY = config["tasks"]["concurrency"]
 # Runs tasks synchronously
 CELERY_ALWAYS_EAGER = config["tasks"]["always_eager"]
 
-# Path where liberation data is temporarily stored
+# Path where liberation data is stored
 LIBERATION_PATH = os.path.join(BASE_DIR, config["tasks"]["liberation"]["path"])
+LIBERATION_PATH = LIBERATION_PATH.rstrip("/")
 
+# Which method should be used to accelerate liberation data downloads
+SENDFILE_BACKEND = "sendfile.backend.{}".format(config["tasks"]["liberation"]["sendfile_method"])
 
 # Databases!
 DATABASES = {

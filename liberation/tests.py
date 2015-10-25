@@ -23,21 +23,18 @@ import os
 import os.path
 import shutil
 import tempfile
-import unittest
 
 from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
+from django.core.urlresolvers import reverse
 
 from inboxen import models
 from inboxen.tests import factories
 from inboxen.utils import override_settings
 from liberation import tasks
 from liberation.forms import LiberationForm
-
-
-_database_not_psql = settings.DATABASES["default"]["ENGINE"] != 'django.db.backends.postgresql_psycopg2'
 
 
 class LiberateTestCase(test.TestCase):
@@ -60,7 +57,6 @@ class LiberateTestCase(test.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp_dir, ignore_errors=True)
 
-    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
         with override_settings(LIBERATION_PATH=self.tmp_dir):
@@ -93,14 +89,12 @@ class LiberateTestCase(test.TestCase):
         with self.assertRaises(Exception):
             tasks.liberate_message(self.mail_dir, inbox, 10000000)
 
-    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate_collect_emails(self):
-        tasks.liberate_collect_emails(None, self.mail_dir, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
+        tasks.liberate_collect_emails(None, self.mail_dir, {"user": self.user.id, "path": self.mail_dir, "tarname": self.mail_dir + ".tar.gz", "storage_type": "0", "compression_type": "0"})
 
     def test_liberate_fetch_info(self):
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
 
-    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
@@ -119,7 +113,6 @@ class LiberateNewUserTestCase(test.TestCase):
     def tearDown(self):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
-    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberate(self):
         with override_settings(LIBERATION_PATH=self.tmp_dir):
             form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
@@ -129,7 +122,6 @@ class LiberateNewUserTestCase(test.TestCase):
     def test_liberate_fetch_info(self):
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
 
-    @unittest.skipIf(_database_not_psql, "Postgres specific fields are used by this test - sorry!")
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
@@ -138,7 +130,6 @@ class LiberateNewUserTestCase(test.TestCase):
 
 class LiberateViewTestCase(test.TestCase):
     def setUp(self):
-        super(LiberateViewTestCase, self).setUp()
         self.user = factories.UserFactory()
 
         login = self.client.login(username=self.user.username, password="123456")
@@ -164,3 +155,34 @@ class LiberateViewTestCase(test.TestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
+
+
+class LiberationDownloadViewTestCase(test.TestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+        self.tmp_dir = tempfile.mkdtemp()
+
+        assert self.client.login(username=self.user.username, password="123456")
+
+    def test_sendfile_no_liberation(self):
+        response = self.client.get(reverse("user-liberate-get"))
+        self.assertEqual(response.status_code, 404)
+
+    @override_settings(SENDFILE_BACKEND="sendfile.backends.xsendfile")
+    def test_sendfile(self):
+        with override_settings(LIBERATION_PATH=self.tmp_dir):
+            self.user.liberation.path = "test.txt"
+            self.user.liberation.save()
+
+            self.assertEqual(os.path.join(self.tmp_dir, "test.txt"), self.user.liberation.path)
+
+            file_obj = open(self.user.liberation.path, "wb")
+            file_obj.write("hello\n")
+            file_obj.close()
+
+            response = self.client.get(reverse("user-liberate-get"))
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.content, "")
+            self.assertEqual(response["Content-Type"], "application/x-gzip")
+            self.assertEqual(response["Content-Disposition"], 'attachment; filename="liberated_data.tar.gz"')
+            self.assertEqual(response["X-Sendfile"], os.path.join(self.tmp_dir, "test.txt"))
