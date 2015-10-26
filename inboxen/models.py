@@ -30,7 +30,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
-from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
