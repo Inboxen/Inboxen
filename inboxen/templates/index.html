@@ -3,37 +3,58 @@
 {% load i18n %}
 
 {% block content %}
-    <div class="index-heading">
-        <div><b>Emails identify you.</b></div>
-        <div class="index-subheading clear-gap"><b>They're used to sell your data.</b></div>
-        <div class="index-subheading">We can help fix that...</div>
-        {% if settings.ENABLE_REGISTRATION %}
-            <a href="{% url 'user-status' %}" class="btn btn-lg btn-primary">Join</a>
+    <div class="text-center">
+        <h1 class="index-heading">Protect your privacy</h1>
+        <h1 class="index-subheading clear-gap">and keep your inbox clean.</h1>
+        {% if settings.ENABLE_REGISTRATION and not request.user.is_authenticated %}
+            <div class="clear-gap"><a href="{% url 'user-status' %}" class="btn btn-massive btn-primary">Join</a></div>
         {% endif%}
-        <a href="{% url 'huh' %}" class="btn btn-info btn-lg">Huh?</a>
     </div>
     <div class="text-center row">
-        <div class="col-sm-3 col-sm-offset-3">
-            <h1>P</h1>
-            <h3>Privacy</h3>
-            <h5>Create anonymous addresses.</h5>
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+            <h2>What Is {{ settings.SITE_NAME }}?</h2>
+            <p>{{ settings.SITE_NAME }} is a service that provides you with an infinite number
+            of unique inboxes. It's not designed to replace your personal email address, but
+            rather complement it. Every time a website asks for your email, click the
+            "Add Inbox" button to create another email address. This leaves your personal
+            address free from promotional offers and other junk mail.</p>
         </div>
-        <div class="col-sm-3">
-            <h1>m</h1>
-            <h3>Data minimal</h3>
-            <h5>We don't ask for or keep unneeded data.</h5>
-        </div>
-    </div>
-    <div class="text-center row">
-        <div class="col-sm-3 col-sm-offset-3">
-            <h1>L</h1>
-            <h3>Data liberation</h3>
-            <h5>Export your data in a usable format.</h5>
-        </div>
-        <div class="col-sm-3">
-            <h1>!</h1>
-            <h3>Freedom</h3>
-            <h5>Our software is licensed under AGPLv3.</h5>
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+            <h2>Features</h2>
+            <div class="row">
+                <div class="col-sm-6 col-md-4">
+                    <h1>P</h1>
+                    <h3>Privacy</h3>
+                    <h5>Create anonymous addresses. As many as you want.</h5>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <h1>m</h1>
+                    <h3>Data minimal</h3>
+                    <h5>We don't ask for or keep unneeded data.</h5>
+                </div>
+                <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-0">
+                    <h1>&infin;</h1>
+                    <h3>Forever</h3>
+                    <h5>Your inboxes are uniquely yours and will never be reused - even if you delete your account.</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6 col-md-4">
+                    <h1>D</h1>
+                    <h3>Delete your account</h3>
+                    <h5>You can delete your account at any time - for any reason.</h5>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <h1>L</h1>
+                    <h3>Data liberation</h3>
+                    <h5>Export your data in a usable format.</h5>
+                </div>
+                <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-0">
+                    <h1>!</h1>
+                    <h3>Freedom</h3>
+                    <h5>Our software is licensed under the AGPLv3.</h5>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

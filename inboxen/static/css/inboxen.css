@@ -72,12 +72,13 @@ td.inbox-name > a {
 }
 
 .index-heading {
-    text-align: center;
+    font-weight: bold;
     font-size: 75px;
     line-height: 75px;
 }
 
 .index-subheading {
+    font-weight: bold;
     font-size: 50px;
     line-height: 50px;
 }
@@ -92,4 +93,11 @@ td.inbox-name > a {
 
 .wrap-words {
     word-wrap: break-word;
+}
+
+.btn-massive {
+    padding: 20px 32px;
+    font-size: 28px;
+    line-height: 1.0;
+    border-radius: 6px;
 }
