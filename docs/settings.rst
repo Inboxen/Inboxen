@@ -199,7 +199,14 @@ liberation
 
 path
 ____
-Specifies the path where to temporarily store the liberation data.
+Specifies the path where to store the liberation data. This needs to be kept
+secure as it will contain user data.
+
+sendfile_method
+_______________
+*Default value: simple*
+
+Which method should be used to accelerate liberation data downloads.
 
 database
 --------

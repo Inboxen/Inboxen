@@ -18,6 +18,7 @@
 ##
 
 from datetime import datetime
+import os.path
 import re
 
 from django.conf import settings
@@ -29,13 +30,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
-from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
 from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
-from inboxen import fields, search
+from inboxen import search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -88,38 +88,28 @@ class Statistic(models.Model):
 class Liberation(models.Model):
     """Liberation data
 
-    `payload` is the compressed archive - it is not base64 encoded
     `async_result` is the UUID of Celery result object, which may or may not be valid
+    `_path` is relative to settings.LIBERATION_PATH
     """
-    user = fields.DeferAutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, defer_fields=["data"])
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
     flags = BitField(flags=("running", "errored"), default=0)
-    data = LargeObjectField(null=True)
     content_type = models.PositiveSmallIntegerField(default=0)
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
-    size = models.PositiveIntegerField(null=True)
+    _path = models.CharField(max_length=100, null=True, unique=True)
 
-    def set_payload(self, data):
-        if data is None:
-            self.data = None
-            return
-        elif self.data is None:
-            self.data = LargeObjectFile(0)
+    def get_path(self):
+        if self._path is None:
+            return None
+        return os.path.join(settings.LIBERATION_PATH, self._path)
 
-        file = self.data.open(mode="wb")
-        file.write(data)
-        file.close()
+    def set_path(self, path):
+        assert path[0] != "/", "path should be relative, not absolute"
+        self._path = os.path.join(settings.LIBERATION_PATH, path)
 
-        self.size = len(data)
+    path = property(get_path, set_path)
 
-    def get_payload(self):
-        with transaction.atomic():
-            if self.data is None:
-                return None
-            return buffer(self.data.open(mode="rb").read())
-
-    payload = property(get_payload, set_payload)
 
 ##
 # Inbox models

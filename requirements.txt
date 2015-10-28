@@ -16,16 +16,15 @@ django-formtools
 django-mptt
 django-otp<0.3.2
 django-ratelimit-backend
+django-sendfile
 django-two-factor-auth>=1.0.0
 django-watson>=1.1.4
-djorm-ext-pgbytea>=0.6.0
 factory-boy
 jsmin
 lxml
 markdown-newtab
 premailer
 progress
-psycopg2
 python-daemon<1.7
 pytz
 salmon-mail==2

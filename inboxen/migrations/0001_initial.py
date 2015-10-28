@@ -8,7 +8,6 @@ import mptt.fields
 import inboxen.fields
 from django.conf import settings
 import django.db.models.deletion
-import djorm_pgbytea.lobject
 import annoying.fields
 
 
@@ -86,7 +85,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('user', inboxen.fields.DeferAutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('flags', bitfield.models.BitField((b'running', b'errored'), default=0)),
-                ('data', djorm_pgbytea.lobject.LargeObjectField(null=True)),
+                ('data', inboxen.fields.LargeObjectField(null=True)),
                 ('content_type', models.PositiveSmallIntegerField(default=0)),
                 ('async_result', django_extensions.db.fields.UUIDField(auto=False, null=True)),
                 ('started', models.DateTimeField(null=True)),

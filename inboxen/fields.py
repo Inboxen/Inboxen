@@ -17,23 +17,30 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from annoying import fields
+from django.db import models
+
+from annoying import fields as annoying_fields
 
 
-class DeferAutoSingleRelatedObjectDescriptor(fields.AutoSingleRelatedObjectDescriptor):
-    def __init__(self, defer_fields, related):
-        self.defer_fields = defer_fields
-        super(DeferAutoSingleRelatedObjectDescriptor, self).__init__(related)
+class DeferAutoOneToOneField(annoying_fields.AutoOneToOneField):
+    system_check_removed_details = {
+        'msg': (
+            'The deferring option is no longer needed by Inboxen'
+            ' but this field stub is kept for historic migrations'
+        ),
+        'hint': 'Use AutoOneToOneField instead.',
+        'id': 'fields.E945',
+    }
 
-    def get_queryset(self, **db_hints):
-        qs = super(DeferAutoSingleRelatedObjectDescriptor, self).get_queryset(**db_hints)
-        return qs.defer(*self.defer_fields)
 
+class LargeObjectField(models.IntegerField):
+    def db_type(self, connection):
+        return 'oid'
 
-class DeferAutoOneToOneField(fields.AutoOneToOneField):
-    def __init__(self, *args, **kwargs):
-        self.defer_fields = list(kwargs.pop("defer_fields", []))
-        super(DeferAutoOneToOneField, self).__init__(*args, **kwargs)
-
-    def contribute_to_related_class(self, cls, related):
-        setattr(cls, related.get_accessor_name(), DeferAutoSingleRelatedObjectDescriptor(self.defer_fields, related))
+    system_check_removed_details = {
+        'msg': (
+            'No longer supported by upstream'
+        ),
+        'hint': "Don't use this field.",
+        'id': 'fields.E946',
+    }
