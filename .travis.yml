@@ -15,6 +15,13 @@ install:
     - travis_retry pip install -q codecov
     - python manage.py collectstatic --noinput --settings=inboxen.tests.settings
 
+matrix:
+  include:
+    - python: "2.7"
+      env: TOX_ENV=docs
+      install: pip install tox
+      script: tox -e $TOX_ENV
+
 script: coverage run manage.py test --settings=inboxen.tests.settings
 after_success: codecov
 
