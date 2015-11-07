@@ -22,6 +22,7 @@ from django.core import urlresolvers
 
 import redirect
 
+
 class RedirectTestCase(test.TestCase):
     def test_get(self):
         url = urlresolvers.reverse("redirect")
@@ -30,7 +31,7 @@ class RedirectTestCase(test.TestCase):
 
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(response.redirect_chain[0][0], "http://testserver/")
-        self.assertEqual(response.redirect_chain[0][1], 301)
+        self.assertEqual(response.redirect_chain[0][1], 302)
 
     def test_utils(self):
         url = "/?bizz=iss"
@@ -42,4 +43,4 @@ class RedirectTestCase(test.TestCase):
 
         self.assertEqual(len(response.redirect_chain), 1)
         self.assertEqual(response.redirect_chain[0][0], "http://testserver/?bizz=iss")
-        self.assertEqual(response.redirect_chain[0][1], 301)
+        self.assertEqual(response.redirect_chain[0][1], 302)

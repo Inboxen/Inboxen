@@ -1,7 +1,7 @@
 ##
 #
 # Copyright 2013. 2015 Jessica Tallon, Matt Molyneaux
-# 
+#
 # This file is part of Inboxen.
 #
 # Inboxen is free software: you can redistribute it and/or modify
@@ -35,7 +35,6 @@ log = logging.getLogger(__name__)
 def make_email(message, inbox):
     """Push message to the database.
     """
-    user = inbox.user
     base = message.base
     received_date = datetime.now(utc)
 

@@ -4,9 +4,12 @@ import sys
 from salmon.server import SMTPReceiver, LMTPReceiver
 
 sys.path.append('..')
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'inboxen.settings'
 
 from django.conf import settings
+import django
+
+django.setup()
 
 # where to listen for incoming messages
 if settings.SALMON_SERVER["type"] == "lmtp":

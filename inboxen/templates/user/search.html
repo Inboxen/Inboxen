@@ -1,0 +1,107 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends 'base.html' %}
+{% load assets i18n staticfiles inboxen_flags %}
+
+{% block header %}
+    {% if waiting %}
+        <noscript>
+            <meta http-equiv="refresh" content="5">
+        </noscript>
+    {% endif %}
+{% endblock %}
+
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li class="active">{% trans "Search" %}: {{ query }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+{% if search_results.inboxes %}
+<h3>{% trans "Inboxes" %}</h3>
+<div class="table-responsive">
+    <table class="table table-hover table-honeydew">
+        <thead>
+        <tr>
+            <th>{% trans "Inbox" %}</th>
+            {#<th>{% trans "Last Activity" %}</th>#}
+            <th>{% trans "Description" %}</th>
+            <th>&nbsp;</th>
+        </tr>
+        </thead>
+        {% for result in search_results.inboxes %}
+            <tr>
+                <td class="inbox-name">{% spaceless %}
+                    <a href="{% url 'single-inbox' inbox=result.object.inbox domain=result.meta.domain %}">{{ result.object.inbox }}@{{ result.meta.domain }}</a>
+                    {{ result.object.flags|render_flags }}
+                {% endspaceless %}</td>
+                {% comment %}
+                <td class="inbox-activity">
+                    {% if results.object.last_activity %}
+                        <span title="{{ result.object.last_activity|date:"r" }}">{{ result.object.last_activity|timesince }} {% trans "ago" %}</span>
+                    {% else %}
+                        <span><i>{% trans "No activity" %}</i></span>
+                    {% endif %}
+                </td>
+                {% endcomment %}
+                <td>{{ result.title }}</td>
+                <td>
+                    <a title="{% trans "Options" %}" class="close" href="{% url 'inbox-edit' inbox=result.object.inbox domain=result.meta.domain %}">
+                        <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Inbox Options" %}</span>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+{% if search_results.emails %}
+<h3>{% trans "Emails" %}</h3>
+<div class="table-responsive">
+    <table class="table table-hover table-honeydew">
+        <thead>
+        <tr>
+            <th>&nbsp;</th>
+            <th>{% trans "From" %}</th>
+            <th>{% trans "Subject" %}</th>
+            <th>{% trans "Received" %}</th>
+            <th>{% trans "Inbox" %}</th>
+        </tr>
+        </thead>
+        {% for result in search_results.emails %}
+            <tr>
+                <td>
+                    {{ result.object.flags|render_flags }}
+                </td>
+                <td>{{ result.meta.from }}</td>
+                <td><a href="{% url 'email-view' inbox=result.meta.inbox domain=result.meta.domain id=result.object.eid %}">
+                    {{ result.title }}
+                </a></td>
+                <td title="{{ result.object.received_date|date:"r" }}"><div>{{ result.object.received_date|timesince }} {% trans "ago" %}</div></td>
+                <td>
+                    <a href="{% url 'single-inbox' inbox=result.meta.inbox domain=result.meta.domain %}">
+                        {{ result.meta.inbox }}@{{ result.meta.domain }}
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+{% if not search_results.inboxes and not search_results.emails %}
+    {% if query and not waiting %}
+        <p class="alert alert-info">{% blocktrans %}There are no Inboxes or emails containing <em>{{query}}</em>.{% endblocktrans %}</p>
+    {% elif waiting %}
+    <div class="text-center" id="search-info">
+        <p>{% blocktrans %}Searching…{% endblocktrans %}</p>
+        <p><i id="search-refreshnote" data-url="{% url 'user-searchapi' q=query %}">{% blocktrans %}
+            If this page doesn't refresh automatically after 5 seconds, <a href="{{ request.path }}">click here</a>
+        {% endblocktrans %}</i></p>
+        <p><img src="{% static "imgs/throbber.gif" %}"></p>
+    </div>
+    {% else %}
+        <p class="alert alert-info">{% trans "If you search for nothing, you won't get anything." %}</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

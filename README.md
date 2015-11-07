@@ -63,9 +63,6 @@ fix #345
 touch #234
 ```
 
-Merges from `master` to `deploy` should contain a changelog, referencing GitHub
-issues as well.
-
 Deploying
 ---------
 
@@ -83,9 +80,10 @@ After this has completed, see the next section on minimum configuration. Also,
 `settings.py` is well commented and explains what various configuration options
 do.
 
-You should also tag your deployments - we use signed annotated tags (`git tag
--as deplpy-YYYYMMDD`).  This is particularly useful for rollbacks if something
-goes wrong.
+We tag our deployments (you should too) - we use signed annotated tags (`git
+tag -as deplpy-YYYYMMDD`). The tag should contain a changelog since the last
+deploy tag. This is particularly useful for rollbacks and keeps a record of
+deployments that's separate from git history.
 
 ### settings.ini
 
@@ -101,9 +99,9 @@ containing random characters.
 
 ### Webserver
 
-The WSGI script can be found at `website/wsgi.py`
+The WSGI script can be found at `inboxen/wsgi.py`
 
-There is also `website/admin-wsgi.py` - this enables the admin interface on
+There is also `inboxen/wsgi_admin.py` - this enables the admin interface on
 `/admin`. It is **highly** recommended that you protect it from the outside
 world.  Solutions such as a VPN are probably the easiest for your staff to use.
 

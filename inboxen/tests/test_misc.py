@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,14 +17,22 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from StringIO import StringIO
+import sys
+
 from django import test
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.test.client import RequestFactory
 
 from inboxen.tests import factories
 from inboxen.utils import is_reserved, override_settings
+from inboxen.views.error import ErrorView
 
 
 @override_settings(CACHE_BACKEND="locmem:///")
@@ -40,7 +48,7 @@ class LoginTestCase(test.TestCase):
         self.assertEqual(login, True)
 
         user = get_user_model().objects.get(id=self.user.id)
-        self.assertEqual(user.last_login, user.date_joined)
+        self.assertEqual(user.last_login, None)
 
     def test_normal_login(self):
         response = self.client.get(urlresolvers.reverse("user-home"))
@@ -89,7 +97,105 @@ class LoginTestCase(test.TestCase):
         self.assertIn("sessionid", response.cookies)
 
 
+class IndexTestCase(test.TestCase):
+    def test_index_page(self):
+        response = self.client.get(urlresolvers.reverse("index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Join", response.content)
+
+        with override_settings(ENABLE_REGISTRATION=False):
+            response = self.client.get(urlresolvers.reverse("index"))
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("Join", response.content)
+
+    def test_index_page_logged_in(self):
+        user = factories.UserFactory()
+        assert self.client.login(username=user.username, password="123456")
+        response = self.client.get(urlresolvers.reverse("index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("Join", response.content)
+
+        with override_settings(ENABLE_REGISTRATION=False):
+            response = self.client.get(urlresolvers.reverse("index"))
+            self.assertEqual(response.status_code, 200)
+            self.assertNotIn("Join", response.content)
+
+
 class UtilsTestCase(test.TestCase):
     def test_reserved(self):
         self.assertTrue(is_reserved("root"))
         self.assertFalse(is_reserved("root1"))
+
+
+class FeederCommandTest(test.TestCase):
+    def test_command_errors(self):
+        with self.assertRaises(CommandError) as error:
+            # too few args
+            call_command("feeder")
+
+        with self.assertRaises(CommandError) as error:
+            # non-existing mbox
+            call_command("feeder", "some_file")
+        self.assertEqual(error.exception.message, "No such path: some_file")
+
+        with self.assertRaises(CommandError) as error:
+            # non-existing inbox
+            call_command("feeder", "some_file", inbox="something@localhost")
+        self.assertEqual(error.exception.message, "Address malformed")
+
+
+class UrlStatsCommandTest(test.TestCase):
+    def test_command(self):
+        with self.assertRaises(CommandError):
+            # too few args
+            call_command("url_stats")
+
+        stdin = StringIO()
+        stdin.write("/\n")
+        stdin.seek(0)
+        stdout = StringIO()
+
+        old_in = sys.stdin
+        old_out = sys.stdout
+        sys.stdin = stdin
+        sys.stdout = stdout
+
+        try:
+            call_command("url_stats", "-")
+        finally:
+            sys.stdin = old_in
+            sys.stdout = old_out
+
+
+class RouterCommandTest(test.TestCase):
+    def test_command(self):
+        with self.assertRaises(CommandError) as error:
+            call_command("router")
+        self.assertEqual(error.exception.message, "Error: one of the arguments --start --stop --status is required")
+
+
+class ErrorViewTestCase(test.TestCase):
+    def test_view(self):
+        view_func = ErrorView.as_view(
+            error_message="some message or other",
+            error_css_class="some-css-class",
+            error_code=499,
+            headline="some headline"
+        )
+
+        request = RequestFactory().get("/")
+        response = view_func(request)
+
+        self.assertEqual(response.status_code, 499)
+        self.assertIn("some message or other", response.content)
+        self.assertIn("some headline", response.content)
+        self.assertIn("some-css-class", response.content)
+
+    def test_misconfigured(self):
+        view_obj = ErrorView()
+
+        with self.assertRaises(ImproperlyConfigured):
+            view_obj.get_error_message()
+
+        with self.assertRaises(ImproperlyConfigured):
+            view_obj.get_error_code()

@@ -19,6 +19,7 @@
 
 from django import test
 from django.core import mail, urlresolvers
+from django.db.models import Max
 
 import factory
 import factory.fuzzy
@@ -97,7 +98,7 @@ class QuestionListTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("tickets-list", kwargs={"status":"!resolved"})
+        return urlresolvers.reverse("tickets-list", kwargs={"status": "!resolved"})
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -111,9 +112,9 @@ class QuestionListTestCase(test.TestCase):
 
 
 @override_settings(ADMINS=(("admin", "root@localhost"),))
-class QuestionNoticeTestCase(test.TestCase):
+class QuestionModelTestCase(test.TestCase):
     def setUp(self):
-        super(QuestionNoticeTestCase, self).setUp()
+        super(QuestionModelTestCase, self).setUp()
         self.user = factories.UserFactory()
 
     def test_admins_emailed(self):
@@ -130,3 +131,24 @@ class QuestionNoticeTestCase(test.TestCase):
         question2.save()
 
         self.assertEqual(len(mail.outbox), 1)
+
+    def test_last_activity(self):
+        question = models.Question()
+        question.author = self.user
+        question.subject = "Hey"
+        question.body = "Sort it out!"
+        question.save()
+        question.refresh_from_db()
+
+        question_qs = models.Question.objects.annotate(last_response_date=Max("response__date"))
+        self.assertEqual(question_qs[0].last_activity, question.last_modified)
+
+        response = models.Response()
+        response.question = question
+        response.author = self.user
+        response.body = "Oook"
+        response.save()
+        response.refresh_from_db()
+
+        question_qs = models.Question.objects.annotate(last_response_date=Max("response__date"))
+        self.assertEqual(question_qs[0].last_activity, response.date)

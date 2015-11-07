@@ -26,4 +26,4 @@ urlpatterns = urls.patterns('',
     urls.url(r'^$', views.HelpView.as_view(), name='termsofservice-index'),
     urls.url(r'^tos/$', views.TOSView.as_view(), name='termsofservice-tos'),
     urls.url(r'^who/$', views.WhoView.as_view(), name='termsofservice-who'),
-    )
+)

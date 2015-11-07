@@ -18,6 +18,7 @@
 ##
 
 from datetime import datetime
+import os.path
 import re
 
 from django.conf import settings
@@ -29,15 +30,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
-from django_extensions.db.fields import UUIDField
-from djorm_pgbytea.fields import LargeObjectField, LargeObjectFile
-from model_utils.managers import PassThroughManager
 from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
 import watson
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
-from inboxen import fields, search
+from inboxen import search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -90,38 +88,28 @@ class Statistic(models.Model):
 class Liberation(models.Model):
     """Liberation data
 
-    `payload` is the compressed archive - it is not base64 encoded
     `async_result` is the UUID of Celery result object, which may or may not be valid
+    `_path` is relative to settings.LIBERATION_PATH
     """
-    user = fields.DeferAutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, defer_fields=["data"])
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
     flags = BitField(flags=("running", "errored"), default=0)
-    data = LargeObjectField(null=True)
     content_type = models.PositiveSmallIntegerField(default=0)
-    async_result = UUIDField(auto=False, null=True)
+    async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
-    size = models.PositiveIntegerField(null=True)
+    _path = models.CharField(max_length=100, null=True, unique=True)
 
-    def set_payload(self, data):
-        if data is None:
-            self.data = None
-            return
-        elif self.data is None:
-            self.data = LargeObjectFile(0)
+    def get_path(self):
+        if self._path is None:
+            return None
+        return os.path.join(settings.LIBERATION_PATH, self._path)
 
-        file = self.data.open(mode="wb")
-        file.write(data)
-        file.close()
+    def set_path(self, path):
+        assert path[0] != "/", "path should be relative, not absolute"
+        self._path = os.path.join(settings.LIBERATION_PATH, path)
 
-        self.size = len(data)
+    path = property(get_path, set_path)
 
-    def get_payload(self):
-        with transaction.atomic():
-            if self.data is None:
-                return None
-            return buffer(self.data.open(mode="rb").read())
-
-    payload = property(get_payload, set_payload)
 
 ##
 # Inbox models
@@ -137,7 +125,7 @@ class Domain(models.Model):
     enabled = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, default=None, on_delete=models.PROTECT)
 
-    objects = PassThroughManager.for_queryset_class(DomainQuerySet)()
+    objects = DomainQuerySet.as_manager()
 
     def __unicode__(self):
         return self.domain
@@ -163,7 +151,7 @@ class Inbox(models.Model):
     flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled"), default=0)
     description = models.CharField(max_length=256, null=True, blank=True)
 
-    objects = PassThroughManager.for_queryset_class(InboxQuerySet)()
+    objects = InboxQuerySet.as_manager()
 
     def __unicode__(self):
         return u"%s@%s" % (self.inbox, self.domain.domain)
@@ -209,7 +197,7 @@ class Email(models.Model):
     flags = BitField(flags=("deleted", "read", "seen", "important", "view_all_headers"), default=0)
     received_date = models.DateTimeField()
 
-    objects = PassThroughManager.for_queryset_class(EmailQuerySet)()
+    objects = EmailQuerySet.as_manager()
 
     @property
     def eid(self):
@@ -265,7 +253,7 @@ class Body(models.Model):
     data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
-    objects = PassThroughManager.for_queryset_class(BodyQuerySet)()
+    objects = BodyQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
         if self.size is None:
@@ -333,7 +321,7 @@ class Header(models.Model):
     part = models.ForeignKey(PartList)
     ordinal = models.IntegerField()
 
-    objects = PassThroughManager.for_queryset_class(HeaderQuerySet)()
+    objects = HeaderQuerySet.as_manager()
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)
@@ -348,6 +336,7 @@ user_logged_in.disconnect(update_last_login)
 # Search
 watson.register(Email, search.EmailSearchAdapter)
 watson.register(Inbox, search.InboxSearchAdapter)
+
 
 # signals
 @receiver(pre_save, sender=Request, dispatch_uid="request_decided_checker")

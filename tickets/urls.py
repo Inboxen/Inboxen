@@ -26,7 +26,7 @@ urlpatterns = urls.patterns('',
     urls.url(
         r'^$',
         views.QuestionHomeView.as_view(),
-         name='tickets-index'
+        name='tickets-index'
     ),
     urls.url(
         r'^status/(?P<status>[!]?\w+)/$',

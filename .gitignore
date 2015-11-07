@@ -4,10 +4,15 @@ docs/_*
 # inboxen specific
 /celerybeat-schedule
 /celerybeat.pid
+/env
+/env3
 /inboxen_cache
+/router/config/logging.conf
+/router/config/test_logging.conf
+/router/logs
+/router/run
 /settings.ini
 /static_content
-/env
 
 *.py[cod]
 *.sw?
