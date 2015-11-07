@@ -20,6 +20,8 @@
 import itertools
 
 from django import test
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
@@ -62,11 +64,36 @@ class SettingsTestCase(test.TestCase):
         self.assertFalse(form.is_valid())
 
     def test_form_good_data(self):
-        params = {"images": "1"}
         request = utils.MockRequest(self.user)
-        form = SettingsForm(request, data=params)
 
+        params = {"images": "1"}
+        form = SettingsForm(request, data=params)
         self.assertTrue(form.is_valid())
+        form.save()
+        self.assertFalse(form.profile.flags.ask_images)
+        self.assertTrue(form.profile.flags.display_images)
+        self.assertFalse(form.profile.flags.prefer_html_email)
+
+        params = {"images": "2"}
+        form = SettingsForm(request, data=params)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertFalse(form.profile.flags.ask_images)
+        self.assertFalse(form.profile.flags.display_images)
+        self.assertFalse(form.profile.flags.prefer_html_email)
+
+        params = {"images": "0"}
+        form = SettingsForm(request, data=params)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertTrue(form.profile.flags.ask_images)
+        self.assertFalse(form.profile.flags.prefer_html_email)
+
+        params = {"prefer_html": "on", "images": "0"}
+        form = SettingsForm(request, data=params)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.assertTrue(form.profile.flags.prefer_html_email)
 
     def test_form_domains_valid(self):
         request = utils.MockRequest(self.user)
@@ -91,18 +118,28 @@ class UsernameChangeTestCase(test.TestCase):
         return urlresolvers.reverse("user-username")
 
     def test_form_bad_data(self):
-        params = {"new_username1": self.user.username, "new_username2": self.user.username}
         request = utils.MockRequest(self.user)
-        form = UsernameChangeForm(request, data=params)
 
+        params = {"new_username1": self.user.username, "new_username2": self.user.username}
+        form = UsernameChangeForm(request, data=params)
+        self.assertFalse(form.is_valid())
+
+        params = {"new_username1": self.user.username + "1", "new_username2": self.user.username}
+        form = UsernameChangeForm(request, data=params)
         self.assertFalse(form.is_valid())
 
     def test_form_good_data(self):
+        username = self.user.username
+
         params = {"new_username1": self.user.username + "1", "new_username2": self.user.username + "1"}
         request = utils.MockRequest(self.user)
         form = UsernameChangeForm(request, data=params)
 
         self.assertTrue(form.is_valid())
+        form.save()
+
+        new_user = get_user_model().objects.get(pk=form.user.pk)
+        self.assertEqual(new_user.username, username + "1")
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -128,6 +165,10 @@ class DeleteTestCase(test.TestCase):
         form = DeleteAccountForm(request, data=params)
 
         self.assertTrue(form.is_valid())
+
+        form.save()
+
+        self.assertEqual(request.user, AnonymousUser())
 
     def test_form_bad_data(self):
         params = {"username": "derp" + self.user.username}

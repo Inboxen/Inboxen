@@ -243,6 +243,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
                         try:
                             # try to delete src first - we don't want to add a src where there wasn't one already
                             del img.attrib["src"]
+                            # replace image with 1px png
                             img.attrib["src"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="
                         except KeyError:
                             pass

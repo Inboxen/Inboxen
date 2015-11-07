@@ -23,6 +23,7 @@ from django import test
 from django.core import mail
 
 from pytz import utc
+import mock
 
 from inboxen import models, tasks
 from inboxen.tests import factories
@@ -137,3 +138,21 @@ class DeleteTestCase(test.TestCase):
 
         # test with an empty list
         tasks.delete_inboxen_item.chunks([], 500)()
+
+    def test_batch_delete_items(self):
+        with self.assertRaises(Exception):
+            tasks.batch_delete_items("email")
+
+        mock_qs = mock.Mock()
+        mock_qs.filter.return_value.iterator.return_value = []
+        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
+            tasks.batch_delete_items("email", args=[12,14])
+            self.assertTrue(mock_qs.filter.called)
+            self.assertEqual(mock_qs.filter.call_args, ((12, 14), {}))
+
+        mock_qs = mock.Mock()
+        mock_qs.filter.return_value.iterator.return_value = []
+        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
+            tasks.batch_delete_items("email", kwargs={"a":"b"})
+            self.assertTrue(mock_qs.filter.called)
+            self.assertEqual(mock_qs.filter.call_args, ((), {"a":"b"}))

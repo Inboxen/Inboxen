@@ -17,9 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.contrib.sessions.middleware import SessionMiddleware
+
 
 class MockRequest(object):
     """Mock up a request object"""
 
-    def __init__(self, user):
+    def __init__(self, user, session_id=1):
         self.user = user
+        session = SessionMiddleware()
+        self.session = session.SessionStore(session_id)

@@ -25,11 +25,14 @@ from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.test.client import RequestFactory
 
 from inboxen.tests import factories
 from inboxen.utils import is_reserved, override_settings
+from inboxen.views.error import ErrorView
 
 
 @override_settings(CACHE_BACKEND="locmem:///")
@@ -169,3 +172,30 @@ class RouterCommandTest(test.TestCase):
         with self.assertRaises(CommandError) as error:
             call_command("router")
         self.assertEqual(error.exception.message, "Error: one of the arguments --start --stop --status is required")
+
+
+class ErrorViewTestCase(test.TestCase):
+    def test_view(self):
+        view_func = ErrorView.as_view(
+            error_message="some message or other",
+            error_css_class="some-css-class",
+            error_code=499,
+            headline="some headline"
+        )
+
+        request = RequestFactory().get("/")
+        response = view_func(request)
+
+        self.assertEqual(response.status_code, 499)
+        self.assertIn("some message or other", response.content)
+        self.assertIn("some headline", response.content)
+        self.assertIn("some-css-class", response.content)
+
+    def test_misconfigured(self):
+        view_obj = ErrorView()
+
+        with self.assertRaises(ImproperlyConfigured):
+            view_obj.get_error_message()
+
+        with self.assertRaises(ImproperlyConfigured):
+            view_obj.get_error_code()

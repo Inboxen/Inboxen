@@ -54,6 +54,14 @@ class InboxFlagTestCase(test.TestCase):
 
         self.assertEqual(output, "")
 
+    def test_disabled(self):
+        flag_obj = BitHandler(5, ["new", "read", "disabled"])
+        output = inboxen_flags.render_flags(flag_obj)
+
+        self.assertIn("Inbox has been disabled", output)
+        self.assertIn("label-default", output)
+        self.assertEqual(output.count("span"), 2)
+
     def test_unicode(self):
         inboxen_flags.FLAGS_TO_TAGS["snowman"] = {
             "title": u"Snowman",
