@@ -18,40 +18,22 @@
 ##
 
 import logging
-import re
 
-from django.contrib import messages
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
 from csp.decorators import csp_replace
-from lxml import etree, html as lxml_html
-from lxml.html.clean import Cleaner
-from premailer.premailer import Premailer
 import watson
 
 from inboxen import models
 from inboxen.utils import find_body
 from inboxen.views import base
-from redirect import proxy_url
-
-HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 __all__ = ["EmailView"]
 
 _log = logging.getLogger(__name__)
-
-
-def unicode_damnit(data, charset="utf-8", errors="replace"):
-    """Makes doubley sure that we can turn the database's binary typees into
-    unicode objects
-    """
-    if isinstance(data, unicode):
-        return data
-
-    return unicode(str(data), charset, errors)
 
 
 class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DetailView):
@@ -99,7 +81,6 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
         return HttpResponseRedirect(self.get_success_url())
 
-
     def get_context_data(self, **kwargs):
         if "all-headers" in self.request.GET:
             headers = None
@@ -121,109 +102,19 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         email_dict["inbox"] = self.object.inbox
         email_dict["eid"] = self.object.eid
 
-        # iterate over MIME parts
-        html = None
-        plain = None
-        attachments = self.object.get_parts()
-        for part in attachments:
-            if html is None and part.content_type == "text/html":
-                html = part
-            elif plain is None and part.content_type == "text/plain":
-                plain = part
-
-        # set raw body
-        plain_message = find_body(self.request.user, html, plain)
-        if plain_message is None:
-            if len(attachments) == 1:
-                email_dict["body"] = unicode_damnit(attachments[0].body.data, attachments[0].charset)
-            else:
-                email_dict["body"] = u""
-            plain_message = True
-        elif plain_message:
-            email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
+        # GET params for users with `ask_image` set in their profile
+        if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
+            email_dict["display_images"] = True
+        elif self.request.user.userprofile.flags.ask_images:
+            email_dict["display_images"] = False
+            email_dict["ask_images"] = True
         else:
-            email_dict["body"] = str(html.body.data)
+            email_dict["display_images"] = self.request.user.userprofile.flags.display_images
 
-        # default to not asking - no images in plain text emails
-        ask_images = False
+        # iterate over MIME parts
+        attachments = self.object.get_parts()
 
-        if not plain_message:
-            try:
-                # anything in this try block could raise an exception that would require us
-                # to display an error and present the plain text part of a message
-                html_tree = lxml_html.fromstring(email_dict["body"])
-                charset = html.charset
-
-                # if the HTML doc says its a different encoding, use that
-                for meta_tag in html_tree.xpath("/html/head/meta"):
-                    if meta_tag.get("http-equiv", None) is "Content-Type":
-                        content = meta_tag.get("content")
-                        content = content.split(";", 1)[1]
-                        charset = dict(HEADER_PARAMS.finall(content)).get("charset", html.charset)
-                        break
-                    elif meta_tag.get("charset", None) is not None and meta_tag.get("charset", None) is not "":
-                        charset = meta_tag.get("charset")
-                        break
-
-                # GET params for users with `ask_image` set in their profile
-                if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
-                    img_display = True
-                elif self.request.user.userprofile.flags.ask_images:
-                    img_display = False
-                    ask_images = True
-                else:
-                    img_display = self.request.user.userprofile.flags.display_images
-
-                try:
-                    html_tree = Premailer(html_tree).transform()
-                except Exception as exc:
-                    # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
-                    messages.info(self.request, _("Part of this message could not be parsed - it may not display correctly"))
-                    _log.exception(exc)
-
-                # Mail Pile uses this, give back if you come up with something better
-                cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
-                                scripts=True, frames=True, embedded=True, safe_attrs_only=True)
-                cleaner.kill_tags = [
-                    "style",  # remove style tags, not attrs
-                    "base",
-                ]
-
-                html_tree = cleaner.clean_html(html_tree)
-
-                # filter images if we need to
-                if not img_display:
-                    for img in html_tree.xpath("//img"):
-                        try:
-                            # try to delete src first - we don't want to add a src where there wasn't one already
-                            del img.attrib["src"]
-                            # replace image with 1px png
-                            img.attrib["src"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="
-                        except KeyError:
-                            pass
-
-                for link in html_tree.xpath("//a"):
-                    try:
-                        # proxy link
-                        url = link.attrib["href"]
-                        link.attrib["href"] = proxy_url(url)
-
-                        # open link in tab
-                        link.attrib["target"] = "_blank"
-                    except KeyError:
-                        pass
-
-                # finally, export to unicode
-                email_dict["body"] = unicode_damnit(etree.tostring(html_tree), charset)
-            except (etree.LxmlError, ValueError):
-                if plain is not None and len(plain.body.data) > 0:
-                    email_dict["body"] = unicode_damnit(plain.body.data, plain.charset)
-                else:
-                    email_dict["body"] = u""
-
-                plain_message = True
-                ask_images = False
-                messages.error(self.request, _("This email contained invalid HTML and could not be displayed"))
+        find_body(self.request, email_dict, attachments)
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
@@ -232,9 +123,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
             "email": email_dict,
-            "plain_message": plain_message,
             "attachments": attachments,
-            "ask_images": ask_images,
             "headersfetchall": headers_fetch_all,
         })
 

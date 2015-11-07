@@ -23,7 +23,7 @@ from django.core import urlresolvers
 
 from inboxen import models
 from inboxen.tests import factories
-from inboxen.views.inbox.email import unicode_damnit
+from inboxen.utils import unicode_damnit
 
 
 BODY = """<html>
