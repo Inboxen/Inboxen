@@ -125,17 +125,17 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         html = None
         plain = None
         attachments = self.object.get_parts()
-        for part, headers in attachments:
-            if html is None and headers["content_type"][0] == "text/html":
+        for part in attachments:
+            if html is None and part.content_type == "text/html":
                 html = part
-            elif plain is None and headers["content_type"][0] == "text/plain":
+            elif plain is None and part.content_type == "text/plain":
                 plain = part
 
         # set raw body
         plain_message = find_body(self.request.user, html, plain)
         if plain_message is None:
             if len(attachments) == 1:
-                email_dict["body"] = unicode_damnit(attachments[0][0].body.data, attachments[0][0].charset)
+                email_dict["body"] = unicode_damnit(attachments[0].body.data, attachments[0].charset)
             else:
                 email_dict["body"] = u""
             plain_message = True

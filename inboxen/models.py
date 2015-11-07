@@ -208,19 +208,29 @@ class Email(models.Model):
         return u"{0}".format(self.eid)
 
     def get_parts(self):
-        """Return a list of (<part>, <content headers>)"""
-        attachments = []
-        for part in self.parts.all():
-            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
-            part_head["content_type"] = part_head.pop("Content-Type", "").split(";", 1)
+        """Returns a QuerySet of all the MIME parts of this email
 
-            if part_head["content_type"][0].startswith("multipart") or part_head["content_type"][0].startswith("message"):
+        It also annotates objects with useful attributes, such as charset and parent
+        (which is a reference to that object in the same queryset rather than a copy as
+        Django would do it)
+        """
+        part_list = self.parts.all()
+        parents = {}
+        for part in part_list:
+            part.parent = parents.get(part.parent_id, None)
+            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
+            content_header = part_head.pop("Content-Type", "").split(";", 1)
+            part.content_type = content_header[0]
+            content_params = content_header[1] if len(content_header) > 1 else ""
+
+            if not part.is_leaf_node():
+                parents[part.id] = part
                 continue
 
             dispos = part_head.pop("Content-Disposition", "")
 
             try:
-                params = dict(HEADER_PARAMS.findall(part_head["content_type"][1]))
+                params = dict(HEADER_PARAMS.findall(content_params))
             except IndexError:
                 params = {}
             params.update(dict(HEADER_PARAMS.findall(dispos)))
@@ -236,9 +246,7 @@ class Email(models.Model):
             # grab charset
             part.charset = params.get("charset", "utf-8")
 
-            attachments.append((part, part_head))
-
-        return attachments
+        return part_list
 
 
 class Body(models.Model):
