@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block content %}
-{% if ask_images %}
+{% if email.ask_images %}
 <p class="alert alert-warning">
     <a class="alert-link" href="{{ request.path }}?imgDisplay=1">{% trans "Click here to view images" %}</a>
 </p>
@@ -56,17 +56,7 @@
 {% endif %}
 
 <strong>{% trans "Message" %}:</strong><br />
-<div id="email-body">
-{% if plain_message %}
-    <pre>
-{% endif %}
-
-{{ email.body|safe }}
-
-{% if plain_message %}
-    </pre>
-{% endif %}
-</div>
+<div id="email-body">{{ email.body|safe }}</div>
 <br />
 <strong>{% trans "Attachments" %}</strong>:<br />
 <div class="form">

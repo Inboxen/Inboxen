@@ -250,3 +250,6 @@ def find_body(request, email, attachments):
             email["ask_images"] = False
             messages.error(request, _("This email contained invalid HTML and could not be displayed"))
             _log.exception(exc)
+
+    if email["plain_message"]:
+        email["body"] = u"<pre>{}</pre>".format(email["body"])
