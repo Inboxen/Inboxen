@@ -110,7 +110,8 @@ class EmailViewTestCase(test.TestCase):
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertIn(u"http://example.com/coolface.jpg", content)
@@ -122,7 +123,8 @@ class EmailViewTestCase(test.TestCase):
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertNotIn(u"http://example.com/coolface.jpg", content)
@@ -157,7 +159,8 @@ class EmailViewTestCase(test.TestCase):
     def test_html_a(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
 
     # TODO: test body choosing with multipart emails
@@ -202,7 +205,8 @@ class BadEmailTestCase(test.TestCase):
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertIn(u"http://example.com/coolface.jpg", content)
@@ -213,7 +217,8 @@ class BadEmailTestCase(test.TestCase):
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
         self.assertNotIn(u"http://example.com/coolface.jpg", content)
@@ -224,7 +229,8 @@ class BadEmailTestCase(test.TestCase):
     def test_body_with_no_meta(self):
         response = self.client.get(self.get_url(self.email_metaless) + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>$$$</p>", content)
         self.assertIn(u"http://example.com/coolface.jpg", content)
@@ -242,7 +248,8 @@ class BadEmailTestCase(test.TestCase):
     def test_html_a(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
-        content = response.context["email"]["body"]
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        content = response.context["email"]["bodies"][0]
         self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
 
 

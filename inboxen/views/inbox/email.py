@@ -28,7 +28,7 @@ from csp.decorators import csp_replace
 import watson
 
 from inboxen import models
-from inboxen.utils import find_body
+from inboxen.utils import find_bodies
 from inboxen.views import base
 
 __all__ = ["EmailView"]
@@ -114,11 +114,14 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         # iterate over MIME parts
         attachments = self.object.get_parts()
 
-        find_body(self.request, email_dict, attachments)
+        email_dict["bodies"] = []
+
+        find_bodies(self.request, email_dict, attachments)
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
-        assert isinstance(email_dict["body"], unicode), "body is %r" % type(email_dict["body"])
+        for body in email_dict["bodies"]:
+            assert isinstance(body, unicode), "body is %r" % type(body)
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({

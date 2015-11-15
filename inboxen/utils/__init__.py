@@ -189,12 +189,15 @@ def clean_html_body(request, email, body, charset):
             pass
 
     # finally, export to unicode
-    email["body"] = unicode_damnit(etree.tostring(html_tree), charset)
+    return unicode_damnit(etree.tostring(html_tree), charset)
 
 
-def find_body(request, email, attachments):
+def _render_body(request, email, attachments):
     """Updates `email` with the correct body
     """
+    plain_message = True
+    ask_images = False
+
     html = None
     plain = None
 
@@ -211,45 +214,110 @@ def find_body(request, email, attachments):
     # work out what we've got and what to do with it
     if html is None and plain is None:
         # no valid parts found, either has no body or is a non-MIME email
-        email["plain_message"] = True
-        if len(attachments) == 1:
-            email["body"] = unicode_damnit(attachments[0].body.data, attachments[0].charset)
-        else:
-            email["body"] = u""
-
-        email["ask_images"] = False
-
-        return  # nothing else needs doing
+        plain_message = True
     elif html is None:
-        email["plain_message"] = True
+        plain_message = True
     elif plain is None:
-        email["plain_message"] = False
+        plain_message = False
     elif html.parent_id == plain.parent_id:
         # basically multiple/alternative
-        email["plain_message"] = not request.user.userprofile.flags.prefer_html_email
+        plain_message = not request.user.userprofile.flags.prefer_html_email
     # which ever has the lower lft value will win
     elif html.lft < plain.lft:
-        email["plain_message"] = False
+        plain_message = False
     else:  # html.lft > plain.lft
-        email["plain_message"] = True
+        plain_message = True
 
     # finally, set the body to something
-    if email["plain_message"]:
-        email["body"] = unicode_damnit(plain.body.data, plain.charset)
-        email["ask_images"] = False
+    if plain_message:
+        if plain:
+            body = unicode_damnit(plain.body.data, plain.charset)
+        elif len(attachments) == 1:
+            body = unicode_damnit(attachments[0].body.data, attachments[0].charset)
+        else:
+            body = u""
+
+        ask_images = False
     else:
         try:
-            clean_html_body(request, email, str(html.body.data), html.charset)
+            body = clean_html_body(request, email, str(html.body.data), html.charset)
         except (etree.LxmlError, ValueError) as exc:
             if plain is not None and len(plain.body.data) > 0:
-                email["body"] = unicode_damnit(plain.body.data, plain.charset)
+                body = unicode_damnit(plain.body.data, plain.charset)
             else:
-                email["body"] = u""
+                body = u""
 
-            email["plain_message"] = True
-            email["ask_images"] = False
-            messages.error(request, _("This email contained invalid HTML and could not be displayed"))
+            plain_message = True
+            ask_images = False
+            messages.error(request, _("Some parts of this email contained invalid HTML and could not be displayed"))
             _log.exception(exc)
 
-    if email["plain_message"]:
-        email["body"] = u"<pre>{}</pre>".format(email["body"])
+    if plain_message:
+        body = u"<pre>{}</pre>".format(body)
+
+    if ask_images:
+        email["ask_images"] = True
+
+    return body
+
+
+def _get_children(parent, attachments):
+    """Finds child parts in `attachments`
+
+    `attachments` should be ordered by lft"""
+    try:
+        parent_index = attachments.index(parent)
+    except ValueError:
+        pass
+    else:
+        attachments = attachments[parent_index+1:]
+
+    children = []
+    for part in attachments:
+        if part.rght < parent.rght:
+            children.append(part)
+        else:
+            break
+
+    return children
+
+
+def find_bodies(request, email, attachments, depth=0):
+    """Find bodies that should be inlined and add them to email["bodies"]"""
+    while len(attachments) > 0:
+        part = attachments[0]
+        index = 0
+
+        try:
+            main, sub = part.content_type.split("/", 1)
+        except ValueError:
+            if len(attachments) == 1 and depth == 0:
+                email["bodies"] = [_render_body(request, email, attachments)]
+            return
+        if part.parent:
+            parent_main, partent_sub = part.parent.content_type.split("/", 1)
+        else:
+            parent_main, parent_sub = ("", "")
+
+        # go into multiparts, unless parent is digest or alternative
+        if main == "multipart" and \
+                not (parent_main == "multipart" and parent_sub in ["digest", "alternative"]):
+            children = _get_children(part, attachments)
+            body_count = len(email["bodies"])
+
+            # apply this function to children
+            find_bodies(request, email, children, depth=depth+1)
+            index = attachments.index(children[-1])
+
+            if sub == "alternative":
+                alts = email["bodies"][body_count:]
+                email["bodies"] = email["bodies"][:-body_count]
+                email["bodies"].append(_render_body(request, email, alts))
+
+        # add stuff for alternatives, we'll deal with them later
+        elif part.parent and part.parent.content_type == "multipart/alternative":
+            email["bodies"].append(part)
+        else:
+            email["bodies"].append(_render_body(request, email, [part]))
+
+        attachments = attachments[index+1:]

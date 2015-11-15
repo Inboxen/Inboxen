@@ -56,7 +56,9 @@
 {% endif %}
 
 <strong>{% trans "Message" %}:</strong><br />
-<div id="email-body">{{ email.body|safe }}</div>
+{% for body in email.bodies %}
+<div id="email-body">{{ body|safe }}</div>
+{% endfor %}
 <br />
 <strong>{% trans "Attachments" %}</strong>:<br />
 <div class="form">
