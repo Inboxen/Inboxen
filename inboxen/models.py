@@ -214,7 +214,7 @@ class Email(models.Model):
         (which is a reference to that object in the same queryset rather than a copy as
         Django would do it)
         """
-        part_list = self.parts.all()
+        part_list = list(self.parts.all())
         parents = {}
         for part in part_list:
             part.parent = parents.get(part.parent_id, None)

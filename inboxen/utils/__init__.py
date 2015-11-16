@@ -283,7 +283,9 @@ def _get_children(parent, attachments):
 
 
 def find_bodies(request, email, attachments, depth=0):
-    """Find bodies that should be inlined and add them to email["bodies"]"""
+    """Find bodies that should be inlined and add them to email["bodies"]
+
+    `attachments` should a list like object (i.e. have the method `index`)"""
     while len(attachments) > 0:
         part = attachments[0]
         index = 0
@@ -295,7 +297,7 @@ def find_bodies(request, email, attachments, depth=0):
                 email["bodies"] = [_render_body(request, email, attachments)]
             return
         if part.parent:
-            parent_main, partent_sub = part.parent.content_type.split("/", 1)
+            parent_main, parent_sub = part.parent.content_type.split("/", 1)
         else:
             parent_main, parent_sub = ("", "")
 
@@ -317,7 +319,14 @@ def find_bodies(request, email, attachments, depth=0):
         # add stuff for alternatives, we'll deal with them later
         elif part.parent and part.parent.content_type == "multipart/alternative":
             email["bodies"].append(part)
-        else:
+        elif part.parent and part.parent.content_type == "multipart/digest":
+            children = _get_children(part, attachments)
+
+            if len(children) == 1:
+                email["bodies"].append(_render_body(request, email, children))
+            index = attachments.index(children[-1])
+
+        elif part.is_leaf_node():
             email["bodies"].append(_render_body(request, email, [part]))
 
         attachments = attachments[index+1:]
