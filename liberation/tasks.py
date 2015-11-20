@@ -63,6 +63,7 @@ def liberate(user_id, options):
         lib_status.save()
     except IntegrityError:
         os.rmdir(path)
+        raise
 
     options["path"] = path
     options["tarname"] = tarname

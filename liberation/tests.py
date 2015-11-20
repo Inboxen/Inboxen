@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from importlib import import_module
 import itertools
 import mailbox
 import os
@@ -167,6 +168,11 @@ class LiberationDownloadViewTestCase(test.TestCase):
     def test_sendfile_no_liberation(self):
         response = self.client.get(reverse("user-liberate-get"))
         self.assertEqual(response.status_code, 404)
+
+    def test_default_backend(self):
+        module = import_module(settings.SENDFILE_BACKEND)
+        self.assertTrue(hasattr(module, "sendfile"))  # function that django-senfile
+        self.assertTrue(hasattr(module.sendfile, "__call__"))  # callable
 
     @override_settings(SENDFILE_BACKEND="sendfile.backends.xsendfile")
     def test_sendfile(self):

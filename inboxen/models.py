@@ -97,7 +97,7 @@ class Liberation(models.Model):
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
-    _path = models.CharField(max_length=100, null=True, unique=True)
+    _path = models.CharField(max_length=255, null=True, unique=True)
 
     def get_path(self):
         if self._path is None:
