@@ -28,7 +28,7 @@ from csp.decorators import csp_replace
 import watson
 
 from inboxen import models
-from inboxen.utils import find_bodies
+from inboxen.utils.email import find_bodies
 from inboxen.views import base
 
 __all__ = ["EmailView"]

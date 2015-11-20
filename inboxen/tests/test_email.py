@@ -24,7 +24,7 @@ from salmon import mail
 
 from inboxen import models
 from inboxen.tests import factories
-from inboxen.utils import unicode_damnit
+from inboxen.utils.email import _unicode_damnit
 from router.app.helpers import make_email
 
 
@@ -458,10 +458,10 @@ class RealExamplesTestCase(test.TestCase):
 class UtilityTestCase(test.TestCase):
     def test_is_unicode(self):
         string = "Hey there!"
-        self.assertTrue(isinstance(unicode_damnit(string), unicode))
+        self.assertTrue(isinstance(_unicode_damnit(string), unicode))
 
     def test_unicode_passthrough(self):
         already_unicode = u"€"
 
         # if this doesn't passthrough, it will error
-        unicode_damnit(already_unicode, "ascii", "strict")
+        _unicode_damnit(already_unicode, "ascii", "strict")
