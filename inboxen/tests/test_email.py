@@ -82,7 +82,6 @@ List-Subscribe: <http://lists.centos.org/mailman/listinfo/centos-announce>,
  <mailto:centos-announce-request@centos.org?subject=subscribe>
 Sender: centos-announce-bounces@centos.org
 Errors-To: centos-announce-bounces@centos.org
-X-Evolution-Source: 1373376044.1477.3@orpheus
 
 
 --===============1488510984==
@@ -224,6 +223,285 @@ CentOS-announce@centos.org
 http://lists.centos.org/mailman/listinfo/centos-announce
 
 --===============1488510984==--
+"""
+
+
+EXAMPLE_ALT = """Return-Path: <newsletter@gog.com>
+Delivered-To: <moggers87@thewarof1812.moggers.co.uk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gog.com; s=klucz;
+ t=1447440216; bh=l0Buq2T4lA4iqsJXfCC7G7rWIFHCulVCxCZqR2SZ+fM=;
+ h=Message-ID:Date:Subject:From:To:MIME-Version:Content-Type;
+ b=juTZflTGwCds0wFc3buBIBf9BEcXXVHgccqqj9jYORHZIvDyk/BAsP3QtGVqjx26x
+ uC03bainzJUEhkyIglgArcuC23qmv8MCQ2koRs4VG4FT6QZvhdSOK6fwPNyF5IvyJx
+ klNUMrdiwvF4mkFp3FdZeHcFLXxD1p/mIRF/FOpk=
+Message-ID: <1447440216.56462f5827cb6@swift.generated>
+Date: Fri, 13 Nov 2015 20:43:36 +0200
+Subject: The Big Fall Sale Finale starts now! Only 48 hours left!
+From: "GOG.com Team" <newsletter@gog.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="_=_swift_v4_144744021656462f582810e_=_"
+To: example@example.com
+
+
+--_=_swift_v4_144744021656462f582810e_=_
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+If you can see this text it means that your email client couldn't displa=
+y our newsletter properly.
+Please visit this link to view the newsle=
+tter on our website: http://www.gog.com/newsletter/fall_promo_finale_131=
+115_en
+
+- GOG.com Team
+
+
+--_=_swift_v4_144744021656462f582810e_=_
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+                                        =
+<html>
+                                            <head>
+                                                <title>The Big Fall Sale Fin=
+ale starts now! Only 48 hours left!</title>
+                                                <meta http-e=
+quiv=3D"content-type" content=3D"text/html;charset=3Dutf-8" />
+                                                <=
+/head><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://w=
+ww.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns=3D"http://w=
+ww.w3.org/1999/xhtml">
+ <head>
+ <meta http-equiv=3D"Content-Ty=
+pe" content=3D"text/html; charset=3Dutf-8" />
+ <meta name=3D"viewport"=
+ content=3D"width=3D720, initial-scale=3D1.0" />
+ <style>table a, tabl=
+e a:link, table a:visited { color: #808080; boder: none; } img { border:=
+none; } body { background: #2d2d2d; line-height: 0px;} </style>
+ </he=
+ad>
+ <body>
+ <!-- ---WEB--- -->
+ <table bgcolor=3D"#2d2d2d"=
+ style=3D"background-color: #2d2d2d; text-align: center; margin: 0px auto;=
+ padding: 0px;" width=3D"99%">
+ <tr>
+ <td> </td>
+ <td alig=
+n=3D"center" width=3D"600" >
+ <table cellpadding=3D"0" cellspacing=
+=3D"0" width=3D"600" style=3D"COLOR: #7b7b7b; line-height: 11px; font-fami=
+ly: Tahoma, Verdana, Arial, Helvetica, sans-serif; margin: 0px; padding:=
+ 0px">
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0;">
+ <t=
+d width=3D"600" height=3D"66" colspan=3D"2">
+ <table cellpadding=3D"=
+0" cellspacing=3D"0" width=3D"600" class=3D"wwwno">
+ <tr valign=3D"t=
+op" style=3D"margin: 0; padding: 0;">
+ <td width=3D"48" align=3D"le=
+ft"><a href=3D"http://www.gog.com"><img style=3D"border: 0;" src=3D"http:/=
+/static.gog.com/upload/newsletters/img/gog-logo-white-41.jpg" height=3D"46=
+" /></a></td>
+ <td width=3D"10" style=3D"font-size: 0; width: 10px;"=
+>=C2=A0</td>
+ <td width=3D"542" valign=3D"middle" align=3D"right=
+">
+ <span style=3D"margin: 0px; padding: 0px; color: #808080; font-siz=
+e: 11px; line-height: 11px; font-family: Tahoma, Verdana, Arial, Helveti=
+ca, sans-serif;">Up to 90% off<br /><a style=3D"color: #808080; cursor: po=
+inter; text-decoration: underline; font-weight: normal;" href=3D"http://ww=
+w.gog.com/newsletter/fall_promo_finale_131115_en?utm_source=3Dnewsletter&u=
+tm_medium=3Demail&utm_content=3Dgame_subject&utm_campaign=3DBig_Fall_Final=
+e_Main_EN">Problems viewing this email?</a></span>
+ </td>
+ </tr>=
+
+ </table>
+ </td>
+ </tr>
+ <tr valign=3D"top" style=
+=3D"margin: 0; padding: 0; line-height: 0px;">
+ <td width=3D"600" st=
+yle=3D"font-size: 0;">
+ <a href=3D"http://www.gog.com?utm_source=3Dnew=
+sletter&utm_medium=3Demail&utm_content=3Dgame_subject&utm_campaign=3DBig_F=
+all_Finale_Main_EN">
+ <img src=3D"http://static.gog.com/upload/newslet=
+ters/fall_promo_finale_131115_en/en/img/fpf_03.jpg" height=3D"214" alt=
+=3D"" style=3D"display:block; border:0;"/>
+ </a>
+ </td>
+ =
+</tr>
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0; line-heigh=
+t: 0px;">
+ <td width=3D"600" style=3D"font-size: 0;">
+ <a hr=
+ef=3D"http://www.gog.com?utm_source=3Dnewsletter&utm_medium=3Demail&utm_co=
+ntent=3Dgame_subject&utm_campaign=3DBig_Fall_Finale_Main_EN">
+ <img =
+src=3D"http://static.gog.com/upload/newsletters/fall_promo_finale_131115_e=
+n/en/img/fpf_05.jpg" height=3D"215" alt=3D"" style=3D"display:block; borde=
+r:0;"/>
+ </a>
+ </td>
+ </tr>
+ <tr valign=3D"top" styl=
+e=3D"margin: 0; padding: 0; line-height: 0px;">
+ <td width=3D"600" s=
+tyle=3D"font-size: 0;">
+ <a href=3D"http://www.gog.com?utm_source=3Dne=
+wsletter&utm_medium=3Demail&utm_content=3Dgame_subject&utm_campaign=3DBig_=
+Fall_Finale_Main_EN">
+ <img src=3D"http://static.gog.com/upload/newsle=
+tters/fall_promo_finale_131115_en/en/img/fpf_06.jpg" height=3D"214" al=
+t=3D"" style=3D"display:block; border:0;"/>
+ </a>
+ </td>
+ =
+</tr>
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0; line-heigh=
+t: 0px;">
+ <td width=3D"600" height=3D"45" style=3D"font-size: 0;"> </=
+td>
+ </tr>
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0; li=
+ne-height: 0px;">
+ <td width=3D"600" style=3D"font-size: 0;">
+ <=
+a href=3D"http://www.gog.com?utm_source=3Dnewsletter&utm_medium=3Demail&ut=
+m_content=3Dgame_subject&utm_campaign=3DBig_Fall_Finale_EN">
+ <img s=
+rc=3D"http://static.gog.com/upload/newsletters/fall_promo_finale_131115_en=
+/en/img/fpf_08.jpg" height=3D"142" alt=3D"" style=3D"display:block; border=
+:0;"/>
+ </a>
+ </td>
+ </tr>
+ <tr valign=3D"top" styl=
+e=3D"margin: 0; padding: 0; line-height: 0px;">
+ <td width=3D"600" s=
+tyle=3D"font-size: 0;">
+ <a href=3D"http://www.gog.com?utm_source=3Dne=
+wsletter&utm_medium=3Demail&utm_content=3Dgame_subject&utm_campaign=3DBig_=
+Fall_Finale_EN">
+ <img src=3D"http://static.gog.com/upload/newsletters=
+/fall_promo_finale_131115_en/en/img/fpf_09.jpg" height=3D"102" alt=3D"" =
+style=3D"display:block; border:0;"/>
+ </a>
+ </td>
+ </tr=
+>
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0; line-height: 0=
+px;">
+ <td width=3D"600" height=3D"45" style=3D"font-size: 0;"> </=
+td>
+ </tr>
+=20
+ <tr valign=3D"top" style=3D"margin: 0; paddi=
+ng: 0; line-height: 0px;">
+ <td width=3D"600" style=3D"font-size: 0;=
+">
+ <a href=3D"http://www.gog.com?utm_source=3Dnewsletter&utm_medium=
+=3Demail&utm_content=3Dgame_subject&utm_campaign=3DBig_Fall_Finale_EN"=
+>
+ <img src=3D"http://static.gog.com/upload/newsletters/fall_promo_fin=
+ale_131115_en/en/img/fpf_11.jpg" height=3D"318" alt=3D"" style=3D"display:=
+block; border:0;"/>
+ </a>
+ </td>
+ </tr>
+ <tr valig=
+n=3D"top" style=3D"margin: 0; padding: 0; line-height: 0px;">
+ <td w=
+idth=3D"600" style=3D"font-size: 0;">
+ <a href=3D"http://www.gog.com?u=
+tm_source=3Dnewsletter&utm_medium=3Demail&utm_content=3Dgame_subject&utm_c=
+ampaign=3DBig_Fall_Finale_EN">
+ <img src=3D"http://static.gog.com/up=
+load/newsletters/fall_promo_finale_131115_en/en/img/fpf_12.jpg" height=3D"=
+232" alt=3D"" style=3D"display:block; border:0;"/>
+ </a>
+ </=
+td>
+ </tr>
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0; li=
+ne-height: 0px;">
+ <td width=3D"600" style=3D"font-size: 0;">
+ <=
+a href=3D"http://www.gog.com?utm_source=3Dnewsletter&utm_medium=3Demail&ut=
+m_content=3Dgame_subject&utm_campaign=3DBig_Fall_Finale_EN">
+ <img s=
+rc=3D"http://static.gog.com/upload/newsletters/fall_promo_finale_131115_en=
+/en/img/fpf_13.jpg" height=3D"162" alt=3D"" style=3D"display:block; border=
+:0;"/>
+ </a>
+ </td>
+ </tr>
+ <tr valign=3D"top" styl=
+e=3D"margin: 0; padding: 0; line-height: 0px;">
+ <td width=3D"600" h=
+eight=3D"20" style=3D"font-size: 0;"> </td>
+ </tr>
+ <tr valig=
+n=3D"top" style=3D"margin: 0; padding: 0;">
+ <td width=3D"600" alig=
+n=3D"left" valign=3D"top" style=3D"font-size: 9px; font-family: Tahoma, Ve=
+rdana, Arial, Helvetica, sans-serif; text-align: left; color:#7B7B7B=
+;">
+ <a href=3D"http://www.gog.com" style=3D"text-decoration:none; cu=
+rsor:default; color:#7B7B7B;">GOG.com</a> =C2=A9 2015. Part of CD PROJEKT=
+ group.<br/> All other trademarks and copyrights are properties of their=
+ respective owners.<br/>
+ <span class=3D"wwwno">If you prefer not to r=
+eceive newsletters from <a href=3D"http://www.gog.com" style=3D"text-dec=
+oration:none; cursor:default; color:#7B7B7B;">GOG.com</a> <a style=3D"colo=
+r: #7b7b7b; cursor: pointer; text-decoration: underline;" href=3D"http://w=
+ww.gog.com/unsubscribe/6cX9ZIMVnDyHyR7kgc3H8k1lL5Oir1oIwTE|">click here<=
+/a>.</span><br/>
+ <span class=3D"wwwno">GOG Ltd, 7 Florinis Str., Greg=
+ Tower, 6th Floor, 1065 Nicosia, Cyprus</span>
+ </td>
+ </tr>=
+
+ <tr valign=3D"top" style=3D"margin: 0; padding: 0; line-height: 0p=
+x;">
+ <td width=3D"600" height=3D"20" style=3D"font-size: 0;"> </t=
+d>
+ </tr>
+ </table>
+ </td>
+ <td> </td>
+ </tr>=
+
+ </table>
+ <!-- ---WEB--- -->
+ <!-- Litmus -->
+ <sty=
+le>@media print{ #_t { background-image: url('https://orx6fbfm.emltrk.co=
+m/orx6fbfm?p&d=3D6cX9ZIMVnDyHyR7kgc3H8k1lL5Oir1oIwTE|');}} div.OutlookMess=
+ageHeader {background-image:url('https://orx6fbfm.emltrk.com/orx6fbfm?f&=
+d=3D6cX9ZIMVnDyHyR7kgc3H8k1lL5Oir1oIwTE|')} table.moz-email-headers-table =
+{background-image:url('https://orx6fbfm.emltrk.com/orx6fbfm?f&d=3D6cX9ZIMV=
+nDyHyR7kgc3H8k1lL5Oir1oIwTE|')} blockquote #_t {background-image:url('ht=
+tps://orx6fbfm.emltrk.com/orx6fbfm?f&d=3D6cX9ZIMVnDyHyR7kgc3H8k1lL5Oir1oIw=
+TE|')} #MailContainerBody #_t {background-image:url('https://orx6fbfm.em=
+ltrk.com/orx6fbfm?f&d=3D6cX9ZIMVnDyHyR7kgc3H8k1lL5Oir1oIwTE|')}</style><di=
+v id=3D"_t"></div>
+ <img src=3D"https://orx6fbfm.emltrk.com/orx6fbfm=
+?d=3D6cX9ZIMVnDyHyR7kgc3H8k1lL5Oir1oIwTE|" width=3D"1" height=3D"1" border=
+=3D"0" />
+ <!-- /Litmus -->
+ </body>
+</html>=20
+
+--_=_swift_v4_144744021656462f582810e_=_--
+
 """
 
 
@@ -452,7 +730,16 @@ class RealExamplesTestCase(test.TestCase):
         # this email should display all leaves
         leaf_part_count = len([i for i in self.email.get_parts() if i.is_leaf_node()])
         self.assertEqual(len(response.context["email"]["bodies"]), leaf_part_count)
-        content = response.context["email"]["bodies"][0]
+
+    def test_alterative(self):
+        self.msg = mail.MailRequest("", "", "", EXAMPLE_ALT)
+        make_email(self.msg, self.inbox)
+        self.email = models.Email.objects.get()
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
 
 
 class UtilityTestCase(test.TestCase):
