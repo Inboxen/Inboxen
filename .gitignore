@@ -7,6 +7,7 @@ docs/_*
 /env
 /env3
 /inboxen_cache
+/liberation_store
 /router/config/logging.conf
 /router/config/test_logging.conf
 /router/logs

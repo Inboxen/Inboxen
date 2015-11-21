@@ -83,16 +83,6 @@ class RequestReportTestCase(test.TestCase):
         models.Request.objects.create(amount=200, date=now, succeeded=True, requester=self.user, authorizer=self.user)
         self.waiting = models.Request.objects.create(amount=200, date=now, requester=self.user)
 
-    def test_fetch(self):
-        results = tasks.requests_fetch.delay().get()
-
-        self.assertEqual(len(results), 1)
-        self.assertItemsEqual(
-            results[0],
-            ("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount"),
-        )
-        self.assertEqual(results[0]["id"], self.waiting.id)
-
     def test_report(self):
         tasks.requests.delay().get()
 

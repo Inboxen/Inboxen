@@ -63,6 +63,7 @@ def liberate(user_id, options):
         lib_status.save()
     except IntegrityError:
         os.rmdir(path)
+        raise
 
     options["path"] = path
     options["tarname"] = tarname
@@ -156,7 +157,7 @@ def liberate_message(mail_path, inbox, email_id):
     except Exception, exc:
         msg_id = hex(int(email_id))[2:]
         log.warning("Exception processing %s", msg_id, exc_info=exc)
-        raise Exception(msg_id)
+        return msg_id
 
 
 @app.task()
@@ -267,11 +268,9 @@ def liberate_user_profile(user_id, email_results):
 
     data['errors'] = []
     email_results = email_results or []
-    for results in email_results:
-        results = results or []
-        for result in results:
-            if result is not None:
-                data['errors'].append(str(result))
+    for result in email_results:
+        if result:
+            data['errors'].append(str(result))
 
     return json.dumps(data)
 

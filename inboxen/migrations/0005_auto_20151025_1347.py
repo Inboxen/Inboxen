@@ -16,5 +16,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(kill_liberations),
+        migrations.RunPython(kill_liberations, reverse_code=kill_liberations),
     ]

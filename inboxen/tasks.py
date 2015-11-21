@@ -126,18 +126,13 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
         inbox_new_flag.delay(user_id)
 
 
-@app.task()
-def requests_fetch():
+@app.task(ignore_result=True)
+def requests():
     """Check for unresolved Inbox allocation requests"""
     requests = models.Request.objects.filter(succeeded__isnull=True)
     requests = requests.select_related("requester").order_by("-date")
     requests = requests.values("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount")
-    return list(requests)
 
-
-@app.task(ignore_result=True)
-def requests_report(requests):
-    """Send an email to admins if there are any still pending"""
     if len(requests) == 0:
         return
 
@@ -157,13 +152,6 @@ def requests_report(requests):
     output = "\n\n".join(output)
 
     mail.mail_admins("Inbox Allocation Requests", output)
-
-
-@app.task(ignore_result=True)
-def requests():
-    """Send out an email to admins if there are waiting Inbox allocation requests"""
-    request = requests_fetch.s() | requests_report.s()
-    request.delay()
 
 
 @app.task(rate_limit="100/s")

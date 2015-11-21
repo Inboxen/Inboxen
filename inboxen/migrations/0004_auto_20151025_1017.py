@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='liberation',
             name='_path',
-            field=models.CharField(max_length=100, unique=True, null=True),
+            field=models.CharField(max_length=255, unique=True, null=True),
         ),
         migrations.AlterField(
             model_name='liberation',
