@@ -85,10 +85,11 @@ class LiberateTestCase(test.TestCase):
     def test_liberate_message(self):
         inbox = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)["folder"]
         email = self.inboxes[0].email_set.all()[0]
-        tasks.liberate_message(self.mail_dir, inbox, email.id)
+        ret_val = tasks.liberate_message(self.mail_dir, inbox, email.id)
+        self.assertEqual(ret_val, None)
 
-        with self.assertRaises(Exception):
-            tasks.liberate_message(self.mail_dir, inbox, 10000000)
+        ret_val = tasks.liberate_message(self.mail_dir, inbox, 10000000)
+        self.assertEqual(ret_val, hex(10000000)[2:])
 
     def test_liberate_collect_emails(self):
         tasks.liberate_collect_emails(None, self.mail_dir, {"user": self.user.id, "path": self.mail_dir, "tarname": self.mail_dir + ".tar.gz", "storage_type": "0", "compression_type": "0"})
