@@ -116,7 +116,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
 
         email_dict["bodies"] = []
 
-        find_bodies(self.request, email_dict, attachments)
+        find_bodies(self.request, email_dict, attachments[:1])
 
         self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 

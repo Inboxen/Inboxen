@@ -208,7 +208,7 @@ class Email(models.Model):
         return u"{0}".format(self.eid)
 
     def get_parts(self):
-        """Returns a QuerySet of all the MIME parts of this email
+        """Returns a list of all the MIME parts of this email
 
         It also annotates objects with useful attributes, such as charset and parent
         (which is a reference to that object in the same queryset rather than a copy as
@@ -222,6 +222,11 @@ class Email(models.Model):
             content_header = part_head.pop("Content-Type", "").split(";", 1)
             part.content_type = content_header[0]
             content_params = content_header[1] if len(content_header) > 1 else ""
+
+            part.childs = []
+
+            if part.parent:
+                part.parent.childs.append(part)
 
             if not part.is_leaf_node():
                 parents[part.id] = part
