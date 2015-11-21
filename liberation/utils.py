@@ -1,8 +1,9 @@
-import binascii
-import uu
 from cStringIO import StringIO
 from email import encoders
+from email.header import Header
 from email.message import Message
+import binascii
+import uu
 
 
 class EncodeMessage(Message):
@@ -53,7 +54,7 @@ def make_message(message):
 
         header_set = part.header_set.order_by("ordinal").select_related("name__name", "data__data")
         for header in header_set:
-            msg[header.name.name] = header.data.data
+            msg[header.name.name] = Header(header.data.data, "utf-8").encode()
 
         if part.is_leaf_node():
             msg.set_payload(str(part.body.data))

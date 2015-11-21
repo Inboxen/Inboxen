@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 ##
 #    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
 #
@@ -49,7 +50,7 @@ class LiberateTestCase(test.TestCase):
         for email in self.emails:
             part = factories.PartListFactory(email=email)
             factories.HeaderFactory(part=part, name="From")
-            factories.HeaderFactory(part=part, name="Subject")
+            factories.HeaderFactory(part=part, name="Subject", data="ßssss!")
 
         self.tmp_dir = tempfile.mkdtemp()
         self.mail_dir = os.path.join(self.tmp_dir, "isdabizda")
