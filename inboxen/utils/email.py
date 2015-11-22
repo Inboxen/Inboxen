@@ -58,12 +58,12 @@ def _clean_html_body(request, email, body, charset):
 
     # if the HTML doc says its a different encoding, use that
     for meta_tag in html_tree.xpath("/html/head/meta"):
-        if meta_tag.get("http-equiv", None) is "Content-Type":
+        if meta_tag.get("http-equiv", None) == "Content-Type":
             content = meta_tag.get("content")
             content = content.split(";", 1)[1]
-            charset = dict(HEADER_PARAMS.finall(content)).get("charset", charset)
+            charset = dict(HEADER_PARAMS.findall(content)).get("charset", charset)
             break
-        elif meta_tag.get("charset", None) is not None and meta_tag.get("charset", None) is not "":
+        elif meta_tag.get("charset", None):
             charset = meta_tag.get("charset")
             break
 
