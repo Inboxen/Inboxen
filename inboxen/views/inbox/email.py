@@ -105,16 +105,19 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         # GET params for users with `ask_image` set in their profile
         if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
             email_dict["display_images"] = True
+            email_dict["ask_images"] = False
         elif self.request.user.userprofile.flags.ask_images:
             email_dict["display_images"] = False
             email_dict["ask_images"] = True
         else:
             email_dict["display_images"] = self.request.user.userprofile.flags.display_images
+            email_dict["ask_images"] = False
 
         # iterate over MIME parts
         attachments = self.object.get_parts()
 
         email_dict["bodies"] = []
+        email_dict["has_images"] = False
 
         find_bodies(self.request, email_dict, attachments[:1])
 

@@ -92,6 +92,7 @@ def _clean_html_body(request, email, body, charset):
                 del img.attrib["src"]
                 # replace image with 1px png
                 img.attrib["src"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="
+                email["has_images"] = True
             except KeyError:
                 pass
 
@@ -114,8 +115,6 @@ def _render_body(request, email, attachments):
     """Updates `email` with the correct body
     """
     plain_message = True
-    ask_images = False
-
     html = None
     plain = None
 
@@ -154,8 +153,6 @@ def _render_body(request, email, attachments):
             body = _unicode_damnit(attachments[0].body.data, attachments[0].charset)
         else:
             body = u""
-
-        ask_images = False
     else:
         try:
             body = _clean_html_body(request, email, str(html.body.data), html.charset)
@@ -166,15 +163,11 @@ def _render_body(request, email, attachments):
                 body = u""
 
             plain_message = True
-            ask_images = False
             messages.error(request, _("Some parts of this email contained invalid HTML and could not be displayed"))
             _log.exception(exc)
 
     if plain_message:
         body = u"<pre>{}</pre>".format(body)
-
-    if ask_images:
-        email["ask_images"] = True
 
     return body
 

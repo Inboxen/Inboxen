@@ -1036,9 +1036,14 @@ class EmailViewTestCase(test.TestCase):
         self.assertFalse(headersfetchall)
 
     def test_body_encoding_with_imgDisplay(self):
+        self.user.userprofile.flags.ask_images = True
+        self.user.userprofile.save()
+
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertFalse(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
+
         content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
@@ -1049,9 +1054,32 @@ class EmailViewTestCase(test.TestCase):
         self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
 
     def test_body_encoding_without_imgDisplay(self):
+        self.user.userprofile.flags.ask_images = True
+        self.user.userprofile.save()
+
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertTrue(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
+
+        content = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", content)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
+        self.assertNotIn(u"http://example.com/coolface.jpg", content)
+        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", content)
+
+        # premailer should have worked fine
+        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+
+    def test_body_no_ask_images(self):
+        self.user.userprofile.flags.ask_images = False
+        self.user.userprofile.save()
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertFalse(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
+
         content = response.context["email"]["bodies"][0]
         self.assertIn(u"<p>&#160;</p>", content)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)

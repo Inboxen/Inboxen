@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block content %}
-{% if email.ask_images %}
+{% if email.ask_images and email.has_images %}
 <p class="alert alert-warning">
     <a class="alert-link" href="{{ request.path }}?imgDisplay=1">{% trans "Click here to view images" %}</a>
 </p>
