@@ -23,7 +23,7 @@ BODY = """<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
-p {color: #ffffff;}
+p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
 </style>
 </head>
 <body>
@@ -39,7 +39,7 @@ p {color: #ffffff;}
 METALESS_BODY = """<html>
 <head>
 <style type="text/css">
-p {color: #ffffff;}
+p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
 </style>
 </head>
 <body>
@@ -52,7 +52,7 @@ p {color: #ffffff;}
 """
 
 
-# example email that is causing issue #47
+# example email that was causing issue #47
 EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; s=key1;
  d=server8839.e-activist.com;
