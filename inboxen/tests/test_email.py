@@ -24,40 +24,16 @@ from salmon import mail
 
 from inboxen import models
 from inboxen.tests import factories
+from inboxen.tests.example_emails import (
+    BODY,
+    EXAMPLE_ALT,
+    EXAMPLE_DIGEST,
+    EXAMPLE_PREMAILER_BROKEN_CSS,
+    EXAMPLE_SIGNED_FORWARDED_DIGEST,
+    METALESS_BODY,
+)
 from inboxen.utils.email import _unicode_damnit
 from router.app.helpers import make_email
-from inboxen.tests.example_emails import EXAMPLE_ALT, EXAMPLE_DIGEST, EXAMPLE_SIGNED_FORWARDED_DIGEST
-
-
-BODY = """<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<style type="text/css">
-p {color: #ffffff;}
-</style>
-</head>
-<body>
-<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
-<p>&nbsp;</p>
-<p>£££</p><p><a href="http://example.com/?q=thing">link</a></p>
-</body>
-</html>
-"""
-
-
-METALESS_BODY = """<html>
-<head>
-<style type="text/css">
-p {color: #ffffff;}
-</style>
-</head>
-<body>
-<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
-<p>&nbsp;</p>
-<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
-</body>
-</html>
-"""
 
 
 class EmailViewTestCase(test.TestCase):
@@ -119,14 +95,14 @@ class EmailViewTestCase(test.TestCase):
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertFalse(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
 
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", content)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
-        self.assertIn(u"http://example.com/coolface.jpg", content)
-        self.assertNotIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", body)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"http://example.com/coolface.jpg", body)
+        self.assertNotIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", body)
 
         # premailer should have worked fine
-        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
     def test_body_encoding_without_imgDisplay(self):
         self.user.userprofile.flags.ask_images = True
@@ -137,14 +113,14 @@ class EmailViewTestCase(test.TestCase):
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertTrue(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
 
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", content)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
-        self.assertNotIn(u"http://example.com/coolface.jpg", content)
-        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", body)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertNotIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", body)
 
         # premailer should have worked fine
-        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
     def test_body_no_ask_images(self):
         self.user.userprofile.flags.ask_images = False
@@ -155,14 +131,14 @@ class EmailViewTestCase(test.TestCase):
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertFalse(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
 
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", content)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
-        self.assertNotIn(u"http://example.com/coolface.jpg", content)
-        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", body)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertNotIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", body)
 
         # premailer should have worked fine
-        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
     def test_attachments_get(self):
         part = self.email.parts.get()
@@ -191,8 +167,8 @@ class EmailViewTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', body)
 
     # TODO: test body choosing with multipart emails
 
@@ -237,37 +213,37 @@ class BadEmailTestCase(test.TestCase):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", content)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
-        self.assertIn(u"http://example.com/coolface.jpg", content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", body)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"http://example.com/coolface.jpg", body)
 
         # premailer should have worked fine
-        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", content)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", content)
-        self.assertNotIn(u"http://example.com/coolface.jpg", content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", body)
+        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertNotIn(u"http://example.com/coolface.jpg", body)
 
         # premailer should have worked fine
-        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
     def test_body_with_no_meta(self):
         response = self.client.get(self.get_url(self.email_metaless) + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", content)
-        self.assertIn(u"<p>$$$</p>", content)
-        self.assertIn(u"http://example.com/coolface.jpg", content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u"<p>&#160;</p>", body)
+        self.assertIn(u"<p>$$$</p>", body)
+        self.assertIn(u"http://example.com/coolface.jpg", body)
 
         # premailer should have worked fine
-        self.assertNotIn(u"Part of this message could not be parsed - it may not display correctly", content)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
     def test_attachments_get(self):
         part = self.email.parts.get()
@@ -280,8 +256,8 @@ class BadEmailTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        content = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', content)
+        body = response.context["email"]["bodies"][0]
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', body)
 
 
 class RealExamplesTestCase(test.TestCase):
@@ -335,6 +311,17 @@ class RealExamplesTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
+
+    def test_bad_css(self):
+        """This test uses an example email that causes issue #47"""
+        self.msg = mail.MailRequest("", "", "", EXAMPLE_PREMAILER_BROKEN_CSS)
+        make_email(self.msg, self.inbox)
+        self.email = models.Email.objects.get()
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
 
 class UtilityTestCase(test.TestCase):

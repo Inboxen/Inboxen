@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
 #
@@ -16,6 +17,1188 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+
+
+BODY = """<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+p {color: #ffffff;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+<p>£££</p><p><a href="http://example.com/?q=thing">link</a></p>
+<p><a>Ha!</a><img width=10 height=10></p>
+</body>
+</html>
+"""
+
+
+METALESS_BODY = """<html>
+<head>
+<style type="text/css">
+p {color: #ffffff;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
+<p><a>Ha!</a><img width=10 height=10></p>
+</body>
+</html>
+"""
+
+
+# example email that is causing issue #47
+EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; s=key1;
+ d=server8839.e-activist.com;
+ h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type;
+ bh=1jrlURfYD1LWHl2z3K44WJaUuaq04WhJz2dFSEV0NiI=;
+ b=Bi9w2cPlpPuXsWCHX3rgIQfm/fZnk7yHsbl6yEZIETTYDDGc5lJc5mBoAQRZ4CiOsiw2XvP6MPvi
+ ysDFXeKVq7TcgaD53BPDsvW3m/ECP5iwvxowiisCo8jA++TVCcTThCoXSIQqMQz2dfb5YfY/X7/D
+ /56XO4Ye7msiPGlUZ1c=
+Date: Fri, 20 Nov 2015 07:02:04 -0500 (EST)
+From: Ruth Coustick-Deal -ORG <ruth@openrightsgroup.org>
+To: example@example.com
+Message-ID: <2004200797.99171901448020924829.JavaMail.root@server9849>
+Subject: ORG News: Spotlight on the IPB
+MIME-Version: 1.0
+Content-Type: multipart/related;  boundary="----=_Part_29748710_445134290.1448020924829"
+campaignerId: 5180535
+broadcastSendId: 95540;
+X-Auto-Response-Suppress: OOF
+
+
+------=_Part_29748710_445134290.1448020924829
+Content-Type: multipart/alternative;  boundary="----=_Part_29748709_1445524343.1448020924829"
+
+
+------=_Part_29748709_1445524343.1448020924829
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+Dear Matt Molyneaux,
+
+Here's your newsletter from the frontline of digital
+rights: defending and promoting citizens' rights in the digital age.
+This update and previous versions are now available from our website: https=
+://www.openrightsgroup.org/support-org/
+
+
+PARIS ATTACK
+We'd planned to send an email about the Investigatory Powers Bill earlier t=
+his
+week. After the horrific attacks on Friday, it just didn't feel right. We d=
+idn't
+really want to campaign or comment on surveillance in the UK.
+
+But over the last couple of days, we've heard politicians call for the IPB =
+to be
+fast tracked through Parliament and we=E2=80=99ve been asked what we think =
+of this. We
+understand that people are rightly concerned about surveillance powers in t=
+he
+UK, but this is not the time to rush through legislation.
+
+The Paris attacks were not just brutal murders but an assault on our freedo=
+m and
+liberty. We cannot let terrorists undermine our fundamental values through =
+a
+knee-jerk reaction to these terrible events.
+
+Interestingly, we appear to be in agreement with the Home Secretary, Theres=
+a May
+who said this week:
+
+'The draft Investigatory Powers Bill is a significant measure that we expec=
+t to
+stand the test of time. We do not want future Governments to have to change
+investigatory powers legislation constantly, so it is important that we get=
+ it
+right. It is therefore important that the Bill receives proper scrutiny and=
+ that
+it has support across the House, given the nature of it.'
+
+So we're sending this email because it's important that we get on and scrut=
+inise
+this Bill and speak out against that the parts that undermine our fundament=
+al
+rights. As ever, we are going to need your help to do this.
+
+
+WHAT'S THE STATUS OF THE IPB?
+Although some politicians, like Lord Carlisle, called for the Investigatory
+Powers Bill to be fast-tracked this week, it is currently scheduled to stil=
+l
+follow the proper process.
+
+This means that there is an opportunity for the a full discussion about
+surveillance, the one we've been calling for these past years.
+
+What happens next is that a committee of MPs and Lords will scrutinise the =
+Bill.
+ORG will provide evidence to that Committee, and we=E2=80=99ll help you do =
+so too.
+
+When that stage is over, they will report in the new year with suggestions =
+for
+changes to the Bill.
+
+We then expect MPs to vote on the final version in spring. This is why it i=
+s
+important to start talking to them now
+; so they are aware of the concerns that their constituents have about the
+Bill, and to get them to pay attention to this huge piece of surveillance l=
+aw.
+[https://www.openrightsgroup.org/campaigns/investigatory-powers-bill-email-=
+your-mp]=20
+
+TAKE ACTION TODAY!
+
+The people scrutinising the law are not working in a bubble. They listen to
+colleagues and their leadership. They listen to the voices around them and =
+how
+the public is thinking.
+
+You can help influence them by asking your MP to talk to members of those
+committees. We all need to start talking to MPs now to get them thinking ab=
+out
+the IPB.
+
+You can tell your MP why they should be concerned about the Bill here:
+
+[https://www.openrightsgroup.org/campaigns/investigatory-powers-bill-email-=
+your-mp]
+
+This is only the start of the campaign. We've already been talking to
+politicians and the media about the IPB. We met with Andy Burnham, Shadow H=
+ome
+Secretary and other Labour politicians this week to discuss our concerns.
+In the coming months, we'll be working together with you to rip out the
+dangerous parts of this Bill. We can do this!
+
+WHAT'S IN THE BILL?
+The Investigatory Powers Bill is a new law on surveillance that was present=
+ed to
+parliament in November 2015. Unlike the Communications Data Bill, the IPB c=
+overs
+both the police and security services=E2=80=99 powers.
+
+Key issues in the Bill
+
+-It clarifies the powers of security agencies to break into our laptops and
+mobile phones, including powers for mass hacking. The Bill also forces inte=
+rnet
+companies to help in hacking their customers.
+
+-It forces Internet Service Providers to collect and keep a record of all t=
+he
+websites that their customers visit.
+
+-It does not limit the mass surveillance revealed by Edward Snowden, but in=
+stead
+puts those abilities into law.
+
+This includes powers of bulk collection and analysis of data collected by
+tapping Internet cables, ie. ' Tempora [https://wiki.openrightsgroup.org/wi=
+ki/Tempora] '.
+We=E2=80=99ll be publishing a full briefing on the Bill to help you talk to=
+ your MP.OUR BIRTHDAY PARTY
+ORG has worked hard over the last 10 years to ensure that everyone=E2=80=99=
+s rights are
+protected (You can see a whole timeline of our successes here)=20
+[https://www.openrightsgroup.org/ourwork/successes/].
+
+Now we=E2=80=99re celebrating that history with a small party in London, an=
+d we=E2=80=99d love
+it if you could make it to celebrate with us! RSVP:
+[http://www.meetup.com/ORG-London/events/226537708/]
+
+Date: November 27th
+Time: 7.00 - 10.00pm
+Location: Newspeak House
+[http://maps.google.com/maps?f=3Dq&hl=3Den&q=3D133-135+Bethnal+Green+Road%2=
+C+E2+7DG%2C+London%2C+gb] , 133-135 Bethnal Green Road, E2 7DG, London
+Cost: =C2=A35 Hear from an excellent speaker and enjoy some birthday cake a=
+t the
+brand new Newspeak House in Shoreditch for our 10th anniversary!
+
+GET INVOLVED
+It=E2=80=99s our job to stand up for your rights online. If you have a mome=
+nt to spare
+can you help us by becoming a member of ORG [http://www.openrightsgroup.org=
+/join] ?
+
+You can find out about more ways to get involved here:
+[https://www.openrightsgroup.org/get-involved]
+
+QUICK FIRE NEWS
+
+We'd like to welcome our latest corporate supporters, Isotoma [https://www.=
+isotoma.com/] , Uno [https://www.uno.net.uk/] , Numbergroup [http://www.num=
+bergroup.com/] and VPN Compare [https://www.vpncompare.co.uk/],
+and thank them for supporting us in our campaigning for digital rights.=20
+
+Our groups in Sheffield and Edinburgh have been meeting this week to discus=
+s the Investigatory Powers Bill and plan local campaigns together.
+
+ORG OUT AND ABOUT
+ORG's 10th Anniversary Party
+[http://www.meetup.com/ORG-London/events/226537708/]
+Friday 27th November
+7 PM to 10:00 PM
+Newspeak House
+[http://maps.google.com/maps?f=3Dq&hl=3Den&q=3D133-135+Bethnal+Green+Road%2=
+C+E2+7DG%2C+London%2C+gb] , 133-135 Bethnal Green Road, E2 7DG, London
+
+Thank you for supporting digital rights.
+Best wishes,
+Ruth=20
+
+
+Follow us on Twitter [https://twitter.com/openrightsgroup] | Find us on Fac=
+ebook [https://www.facebook.com/openrightsgroup] | Add us on Google+ [https=
+://plus.google.com/116543318055985390327/posts] We need your help [https://=
+www.openrightsgroup.org/volunteer] to fight for your rights and to keep the=
+ web open and free. Our mailing address is: 12 Tileyard Road
+London
+N7 9AH This email was delivered to: moggers87@m87.co.uk; If you wish to opt=
+ out
+of future emails, you can do so here [https://www.openrightsgroup.org/unsub=
+scribe] . | Join ORG [https://www.openrightsgroup.org/join]
+------=_Part_29748709_1445524343.1448020924829
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+=09<title></title>
+</head>
+<body><!-- Facebook sharing information tags -->
+<style type=3D"text/css"><!--
+=09=09=09/* Client-specific Styles */
+=09=09=09#outlook a{padding:0;} /* Force Outlook to provide a "view in brow=
+ser" button. */
+=09=09=09body{width:100% !important;} .ReadMsgBody{width:100%;} .ExternalCl=
+ass{width:100%;} /* Force Hotmail to display emails at full width */
+=09=09=09body{-webkit-text-size-adjust:none;} /* Prevent Webkit platforms f=
+rom changing default text sizes. */
+=09=09=09
+=09=09=09/* Reset Styles */g
+=09=09=09body{margin:0; padding:0;}
+=09=09=09img{border:0; height:auto; line-height:100%; outline:none; text-de=
+coration:none;}
+=09=09=09table td{border-collapse:collapse;}
+=09=09=09#backgroundTable{height:100% !important; margin:0; padding:0; widt=
+h:100% !important;}
+=09=09=09
+=09=09=09/* Template Styles */
+
+=09=09=09/* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: COMMON PAGE ELEMENTS /\/=
+\/\/\/\/\/\/\/\/\ */
+
+=09=09=09/**
+=09=09=09* @tab Page
+=09=09=09* @section background color
+=09=09=09* @tip Set the background color for your email. You may want to ch=
+oose one that matches your company's branding.
+=09=09=09* @theme page
+=09=09=09*/
+=09=09=09body, #backgroundTable{
+=09=09=09=09/*@editable*/ background-color:#FAFAFA;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Page
+=09=09=09* @section email border
+=09=09=09* @tip Set the border for your email.
+=09=09=09*/
+=09=09=09#templateContainer{
+=09=09=09=09/*@editable*/ border: 1px solid #DDDDDD;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Page
+=09=09=09* @section heading 1
+=09=09=09* @tip Set the styling for all first-level headings in your emails=
+. These should be the largest of your headings.
+=09=09=09* @style heading 1
+=09=09=09*/
+=09=09=09h1, .h1{
+=09=09=09=09/*@editable*/ color:#202020;
+=09=09=09=09display:block;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:34px;
+=09=09=09=09/*@editable*/ font-weight:bold;
+=09=09=09=09/*@editable*/ line-height:100%;
+=09=09=09=09margin-top:0;
+=09=09=09=09margin-right:0;
+=09=09=09=09margin-bottom:10px;
+=09=09=09=09margin-left:0;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Page
+=09=09=09* @section heading 2
+=09=09=09* @tip Set the styling for all second-level headings in your email=
+s.
+=09=09=09* @style heading 2
+=09=09=09*/
+=09=09=09h2, .h2{
+=09=09=09=09/*@editable*/ color:#202020;
+=09=09=09=09display:block;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:30px;
+=09=09=09=09/*@editable*/ font-weight:bold;
+=09=09=09=09/*@editable*/ line-height:100%;
+=09=09=09=09margin-top:0;
+=09=09=09=09margin-right:0;
+=09=09=09=09margin-bottom:10px;
+=09=09=09=09margin-left:0;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Page
+=09=09=09* @section heading 3
+=09=09=09* @tip Set the styling for all third-level headings in your emails=
+.
+=09=09=09* @style heading 3
+=09=09=09*/
+=09=09=09h3, .h3{
+=09=09=09=09/*@editable*/ color:#202020;
+=09=09=09=09display:block;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:26px;
+=09=09=09=09/*@editable*/ font-weight:bold;
+=09=09=09=09/*@editable*/ line-height:100%;
+=09=09=09=09margin-top:0;
+=09=09=09=09margin-right:0;
+=09=09=09=09margin-bottom:10px;
+=09=09=09=09margin-left:0;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Page
+=09=09=09* @section heading 4
+=09=09=09* @tip Set the styling for all fourth-level headings in your email=
+s. These should be the smallest of your headings.
+=09=09=09* @style heading 4
+=09=09=09*/
+=09=09=09h4, .h4{
+=09=09=09=09/*@editable*/ color:#202020;
+=09=09=09=09display:block;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:22px;
+=09=09=09=09/*@editable*/ font-weight:bold;
+=09=09=09=09/*@editable*/ line-height:100%;
+=09=09=09=09margin-top:0;
+=09=09=09=09margin-right:0;
+=09=09=09=09margin-bottom:10px;
+=09=09=09=09margin-left:0;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+
+=09=09=09/* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: PREHEADER /\/\/\/\/\/\/\=
+/\/\/\ */
+
+=09=09=09/**
+=09=09=09* @tab Header
+=09=09=09* @section preheader style
+=09=09=09* @tip Set the background color for your email's preheader area.
+=09=09=09* @theme page
+=09=09=09*/
+=09=09=09#templatePreheader{
+=09=09=09=09/*@editable*/ background-color:#FAFAFA;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Header
+=09=09=09* @section preheader text
+=09=09=09* @tip Set the styling for your email's preheader text. Choose a s=
+ize and color that is easy to read.
+=09=09=09*/
+=09=09=09.preheaderContent div{
+=09=09=09=09/*@editable*/ color:#505050;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:10px;
+=09=09=09=09/*@editable*/ line-height:100%;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Header
+=09=09=09* @section preheader link
+=09=09=09* @tip Set the styling for your email's preheader links. Choose a =
+color that helps them stand out from your text.
+=09=09=09*/
+=09=09=09.preheaderContent div a:link, .preheaderContent div a:visited, /* =
+Yahoo! Mail Override */ .preheaderContent div a .yshortcuts /* Yahoo! Mail =
+Override */{
+=09=09=09=09/*@editable*/ color:#336699;
+=09=09=09=09/*@editable*/ font-weight:normal;
+=09=09=09=09/*@editable*/ text-decoration:underline;
+=09=09=09}
+
+=09=09=09/* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: HEADER /\/\/\/\/\/\/\/\/=
+\/\ */
+
+=09=09=09/**
+=09=09=09* @tab Header
+=09=09=09* @section header style
+=09=09=09* @tip Set the background color and border for your email's header=
+ area.
+=09=09=09* @theme header
+=09=09=09*/
+=09=09=09#templateHeader{
+=09=09=09=09/*@editable*/ background-color:#FFFFFF;
+=09=09=09=09/*@editable*/ border-bottom:0;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Header
+=09=09=09* @section header text
+=09=09=09* @tip Set the styling for your email's header text. Choose a size=
+ and color that is easy to read.
+=09=09=09*/
+=09=09=09.headerContent{
+=09=09=09=09/*@editable*/ color:#202020;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:34px;
+=09=09=09=09/*@editable*/ font-weight:bold;
+=09=09=09=09/*@editable*/ line-height:100%;
+=09=09=09=09/*@editable*/ padding:0;
+=09=09=09=09/*@editable*/ text-align:center;
+=09=09=09=09/*@editable*/ vertical-align:middle;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Header
+=09=09=09* @section header link
+=09=09=09* @tip Set the styling for your email's header links. Choose a col=
+or that helps them stand out from your text.
+=09=09=09*/
+=09=09=09.headerContent a:link, .headerContent a:visited, /* Yahoo! Mail Ov=
+erride */ .headerContent a .yshortcuts /* Yahoo! Mail Override */{
+=09=09=09=09/*@editable*/ color:#336699;
+=09=09=09=09/*@editable*/ font-weight:normal;
+=09=09=09=09/*@editable*/ text-decoration:underline;
+=09=09=09}
+
+=09=09=09#headerImage{
+=09=09=09=09height:auto;
+=09=09=09=09max-width:600px;
+=09=09=09}
+
+=09=09=09/* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: MAIN BODY /\/\/\/\/\/\/\=
+/\/\/\ */
+
+=09=09=09/**
+=09=09=09* @tab Body
+=09=09=09* @section body style
+=09=09=09* @tip Set the background color for your email's body area.
+=09=09=09*/
+=09=09=09#templateContainer, .bodyContent{
+=09=09=09=09/*@editable*/ background-color:#FFFFFF;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Body
+=09=09=09* @section body text
+=09=09=09* @tip Set the styling for your email's main content text. Choose =
+a size and color that is easy to read.
+=09=09=09* @theme main
+=09=09=09*/
+=09=09=09.bodyContent div, .bodyContent div p{
+=09=09=09=09/*@editable*/ color:#505050;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:14px;
+=09=09=09=09/*@editable*/ line-height:150%;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Body
+=09=09=09* @section body link
+=09=09=09* @tip Set the styling for your email's main content links. Choose=
+ a color that helps them stand out from your text.
+=09=09=09*/
+=09=09=09.bodyContent div a:link, .bodyContent div a:visited, /* Yahoo! Mai=
+l Override */ .bodyContent div a .yshortcuts /* Yahoo! Mail Override */{
+=09=09=09=09/*@editable*/ color:#336699;
+=09=09=09=09/*@editable*/ font-weight:normal;
+=09=09=09=09/*@editable*/ text-decoration:underline;
+=09=09=09}
+=09=09=09
+=09=09=09.bodyContent img{
+=09=09=09=09display:inline;
+=09=09=09=09height:auto;
+=09=09=09}
+=09=09=09
+=09=09=09/* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: SIDEBAR /\/\/\/\/\/\/\/\=
+/\/\ */
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Sidebar
+=09=09=09* @section sidebar style
+=09=09=09* @tip Set the background color and border for your email's sideba=
+r area.
+=09=09=09*/
+=09=09=09#templateSidebar{
+=09=09=09=09/*@editable*/ background-color:#FFFFFF;
+=09=09=09=09/*@editable*/ border-left:0;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Sidebar
+=09=09=09* @section sidebar text
+=09=09=09* @tip Set the styling for your email's sidebar text. Choose a siz=
+e and color that is easy to read.
+=09=09=09*/
+=09=09=09.sidebarContent div{
+=09=09=09=09/*@editable*/ color:#505050;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:12px;
+=09=09=09=09/*@editable*/ line-height:150%;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Sidebar
+=09=09=09* @section sidebar link
+=09=09=09* @tip Set the styling for your email's sidebar links. Choose a co=
+lor that helps them stand out from your text.
+=09=09=09*/
+=09=09=09.sidebarContent div a:link, .sidebarContent div a:visited, /* Yaho=
+o! Mail Override */ .sidebarContent div a .yshortcuts /* Yahoo! Mail Overri=
+de */{
+=09=09=09=09/*@editable*/ color:#336699;
+=09=09=09=09/*@editable*/ font-weight:normal;
+=09=09=09=09/*@editable*/ text-decoration:underline;
+=09=09=09}
+=09=09=09
+=09=09=09.sidebarContent img{
+=09=09=09=09display:inline;
+=09=09=09=09height:auto;
+=09=09=09}
+=09=09=09
+=09=09=09/* /\/\/\/\/\/\/\/\/\/\ STANDARD STYLING: FOOTER /\/\/\/\/\/\/\/\/=
+\/\ */
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section footer style
+=09=09=09* @tip Set the background color and top border for your email's fo=
+oter area.
+=09=09=09* @theme footer
+=09=09=09*/
+=09=09=09#templateFooter{
+=09=09=09=09/*@editable*/ background-color:#FFFFFF;
+=09=09=09=09/*@editable*/ border-top:0;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section footer text
+=09=09=09* @tip Set the styling for your email's footer text. Choose a size=
+ and color that is easy to read.
+=09=09=09* @theme footer
+=09=09=09*/
+=09=09=09.footerContent div{
+=09=09=09=09/*@editable*/ color:#707070;
+=09=09=09=09/*@editable*/ font-family:Arial;
+=09=09=09=09/*@editable*/ font-size:12px;
+=09=09=09=09/*@editable*/ line-height:125%;
+=09=09=09=09/*@editable*/ text-align:left;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section footer link
+=09=09=09* @tip Set the styling for your email's footer links. Choose a col=
+or that helps them stand out from your text.
+=09=09=09*/
+=09=09=09.footerContent div a:link, .footerContent div a:visited, /* Yahoo!=
+ Mail Override */ .footerContent div a .yshortcuts /* Yahoo! Mail Override =
+*/{
+=09=09=09=09/*@editable*/ color:#336699;
+=09=09=09=09/*@editable*/ font-weight:normal;
+=09=09=09=09/*@editable*/ text-decoration:underline;
+=09=09=09}
+=09=09=09
+=09=09=09.footerContent img{
+=09=09=09=09display:inline;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section social bar style
+=09=09=09* @tip Set the background color and border for your email's footer=
+ social bar.
+=09=09=09* @theme footer
+=09=09=09*/
+=09=09=09#social{
+=09=09=09=09/*@editable*/ background-color:#FAFAFA;
+=09=09=09=09/*@editable*/ border:0;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section social bar style
+=09=09=09* @tip Set the background color and border for your email's footer=
+ social bar.
+=09=09=09*/
+=09=09=09#social div{
+=09=09=09=09/*@editable*/ text-align:center;
+=09=09=09}
+=09=09=09
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section utility bar style
+=09=09=09* @tip Set the background color and border for your email's footer=
+ utility bar.
+=09=09=09* @theme footer
+=09=09=09*/
+=09=09=09#utility{
+=09=09=09=09/*@editable*/ background-color:#FFFFFF;
+=09=09=09=09/*@editable*/ border:0;
+=09=09=09}
+
+=09=09=09/**
+=09=09=09* @tab Footer
+=09=09=09* @section utility bar style
+=09=09=09* @tip Set the background color and border for your email's footer=
+ utility bar.
+=09=09=09*/
+=09=09=09#utility div{
+=09=09=09=09/*@editable*/ text-align:center;
+=09=09=09}
+=09=09=09
+=09=09=09#monkeyRewards img{
+=09=09=09=09max-width:190px;
+=09=09=09}
+-->
+</style>
+<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" height=3D"100%" id=
+=3D"backgroundTable" width=3D"100%">
+=09<tbody>
+=09=09<tr>
+=09=09=09<td align=3D"center" valign=3D"top"><!-- // Begin Template Prehead=
+er \\ -->
+=09=09=09<table border=3D"0" cellpadding=3D"10" cellspacing=3D"0" id=3D"tem=
+platePreheader" width=3D"600">
+=09=09=09=09<tbody>
+=09=09=09=09=09<tr>
+=09=09=09=09=09=09<td class=3D"preheaderContent" valign=3D"top"><!-- // Beg=
+in Module: Standard Preheader \ -->
+=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"10" cellspacing=3D"0" =
+width=3D"100%">
+=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09<td valign=3D"top">
+=09=09=09=09=09=09=09=09=09<div>Dear Matt Molyneaux,&nbsp;here&#39;s your n=
+ewsletter from the frontline of digital rights: defending and promoting cit=
+izens&#39; rights in the digital age.<br />
+=09=09=09=09=09=09=09=09=09This update and previous versions are now availa=
+ble from our website: <a href=3D"https://www.openrightsgroup.org/support-or=
+g/">https://www.openrightsgroup.org/support-org/</a></div>
+=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09<!-- *|IFNOT:ARCHIVE_PAGE|* -->
+=09=09=09=09=09=09=09=09=09<td valign=3D"top" width=3D"190">
+=09=09=09=09=09=09=09=09=09<div>&nbsp;</div>
+=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09<!-- *|END:IF|* -->
+=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09</table>
+=09=09=09=09=09=09<!-- // End Module: Standard Preheader \ --></td>
+=09=09=09=09=09</tr>
+=09=09=09=09</tbody>
+=09=09=09</table>
+=09=09=09<!-- // End Template Preheader \\ -->
+
+=09=09=09<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" id=3D"temp=
+lateContainer" width=3D"600">
+=09=09=09=09<tbody>
+=09=09=09=09=09<tr>
+=09=09=09=09=09=09<td align=3D"center" valign=3D"top"><!-- // Begin Templat=
+e Header \\ -->
+=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" i=
+d=3D"templateHeader" width=3D"600">
+=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09<td class=3D"headerContent"><!-- // Begin Module=
+: Standard Header Image \\ --><img border=3D"0" id=3D"headerImage campaign-=
+icon" src=3D"http://www.openrightsgroup.org/assets/images/email/org-email.g=
+if" style=3D"max-width: 600px;" /> <!-- // End Module: Standard Header Imag=
+e \\ --></td>
+=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09</table>
+=09=09=09=09=09=09<!-- // End Template Header \\ --></td>
+=09=09=09=09=09</tr>
+=09=09=09=09=09<tr>
+=09=09=09=09=09=09<td align=3D"center" valign=3D"top"><!-- // Begin Templat=
+e Body \\ -->
+=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" i=
+d=3D"templateBody" width=3D"600">
+=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09<td valign=3D"top">
+=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"0" cellspacin=
+g=3D"0">
+=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<td class=3D"bodyContent" valign=3D"top=
+">
+=09=09=09=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"20" =
+cellspacing=3D"0" height=3D"1706" width=3D"414">
+=09=09=09=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<style type=3D"text/css"><!--
+P { margin-bottom: 0.21cm; }A:link {  }
+-->
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</style>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<style type=3D"text/css"><!--
+ /* Font Definitions */
+@font-face
+=09{font-family:Times;
+=09panose-1:2 0 5 0 0 0 0 0 0 0;
+=09mso-font-charset:0;
+=09mso-generic-font-family:auto;
+=09mso-font-pitch:variable;
+=09mso-font-signature:3 0 0 0 1 0;}
+@font-face
+=09{font-family:"=C3=AF=C2=BC=C2=AD=C3=AF=C2=BC=C2=B3 =C3=A6=CB=9C=C5=BD=C3=
+=A6=C5=93=C2=9D";
+=09mso-font-charset:78;
+=09mso-generic-font-family:auto;
+=09mso-font-pitch:variable;
+=09mso-font-signature:1 134676480 16 0 131072 0;}
+@font-face
+=09{font-family:"Cambria Math";
+=09panose-1:2 4 5 3 5 4 6 3 2 4;
+=09mso-font-charset:0;
+=09mso-generic-font-family:auto;
+=09mso-font-pitch:variable;
+=09mso-font-signature:-536870145 1107305727 0 0 415 0;}
+@font-face
+=09{font-family:Cambria;
+=09panose-1:2 4 5 3 5 4 6 3 2 4;
+=09mso-font-charset:0;
+=09mso-generic-font-family:auto;
+=09mso-font-pitch:variable;
+=09mso-font-signature:-536870145 1073743103 0 0 415 0;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+=09{mso-style-unhide:no;
+=09mso-style-qformat:yes;
+=09mso-style-parent:"";
+=09margin:0cm;
+=09margin-bottom:.0001pt;
+=09mso-pagination:widow-orphan;
+=09font-size:12.0pt;
+=09font-family:Cambria;
+=09mso-ascii-font-family:Arial;
+=09mso-ascii-theme-font:minor-latin;
+=09mso-fareast-font-family:"=C3=AF=C2=BC=C2=AD=C3=AF=C2=BC=C2=B3 =C3=A6=CB=
+=9C=C5=BD=C3=A6=C5=93=C2=9D";
+=09mso-fareast-theme-font:minor-fareast;
+=09mso-hansi-font-family:Cambria;
+=09mso-hansi-theme-font:minor-latin;
+=09mso-bidi-font-family:"Times New Roman";
+=09mso-bidi-theme-font:minor-bidi;
+=09mso-ansi-language:EN-US;}
+p
+=09{mso-style-priority:99;
+=09mso-margin-top-alt:auto;
+=09margin-right:0cm;
+=09mso-margin-bottom-alt:auto;
+=09margin-left:0cm;
+=09mso-pagination:widow-orphan;
+=09font-size:14px;
+=09font-family:Arial;
+=09mso-fareast-font-family:"=C3=AF=C2=BC=C2=AD=C3=AF=C2=BC=C2=B3 =C3=A6=CB=
+=9C=C5=BD=C3=A6=C5=93=C2=9D";
+=09mso-fareast-theme-font:minor-fareast;
+=09mso-bidi-font-family:"Times New Roman";}
+.MsoChpDefault
+=09{mso-style-type:export-only;
+=09mso-default-props:yes;
+=09font-family:Cambria;
+=09mso-ascii-font-family:Cambria;
+=09mso-ascii-theme-font:minor-latin;
+=09mso-fareast-font-family:"=C3=AF=C2=BC=C2=AD=C3=AF=C2=BC=C2=B3 =C3=A6=CB=
+=9C=C5=BD=C3=A6=C5=93=C2=9D";
+=09mso-fareast-theme-font:minor-fareast;
+=09mso-hansi-font-family:Cambria;
+=09mso-hansi-theme-font:minor-latin;
+=09mso-bidi-font-family:"Times New Roman";
+=09mso-bidi-theme-font:minor-bidi;
+=09mso-ansi-language:EN-US;}
+@page WordSection1
+=09{size:612.0pt 792.0pt;
+=09margin:72.0pt 90.0pt 72.0pt 90.0pt;
+=09mso-header-margin:36.0pt;
+=09mso-footer-margin:36.0pt;
+=09mso-paper-source:0;}
+div.WordSection1
+=09{page:WordSection1;}
+-->
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</style>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h2>Paris attack</h2>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09We&#39;d planned to send an em=
+ail about the Investigatory Powers Bill earlier this week. After the horrif=
+ic attacks on Friday, it just didn&#39;t feel right. We didn&#39;t really w=
+ant to campaign or comment on surveillance in the UK.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09But over the last couple of da=
+ys, we&#39;ve heard politicians call for the IPB to be fast tracked through=
+ Parliament and we&rsquo;ve been asked what we think of this. We understand=
+ that people are rightly concerned about surveillance powers in the UK, but=
+ this is not the time to rush through legislation.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09The Paris attacks were not jus=
+t brutal murders but an assault on our freedom and liberty. We cannot let t=
+errorists undermine our fundamental values through a knee-jerk reaction to =
+these terrible events.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Interestingly, we appear to be=
+ in agreement with the Home Secretary, Theresa May who said this week:<br /=
+>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<em>&#39;The draft Investigato=
+ry Powers Bill is a significant measure that we expect to stand the test of=
+ time. We do not want future Governments to have to change investigatory po=
+wers legislation constantly, so it is important that we get it right. It is=
+ therefore important that the Bill receives proper scrutiny and that it has=
+ support across the House, given the nature of it.&#39;</em><br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09So we&#39;re sending this emai=
+l because it&#39;s important that we get on and scrutinise this Bill and sp=
+eak out against that the parts that undermine our fundamental rights. As ev=
+er, we are going to need your help to do this.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h2>What&#39;s the status of t=
+he IPB?</h2>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Although some politicians, lik=
+e Lord Carlisle, called for the Investigatory Powers Bill to be fast-tracke=
+d this week, it is currently scheduled to still follow the proper process.<=
+br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09This means that there is an op=
+portunity for the a full discussion about surveillance, the one we&#39;ve b=
+een calling for these past years.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09What happens next is that a co=
+mmittee of MPs and Lords will scrutinise the Bill. ORG will provide evidenc=
+e to that Committee, and we&rsquo;ll help you do so too.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09When that stage is over, they =
+will report in the new year with suggestions for changes to the Bill.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09We then expect MPs to vote on =
+the final version in spring. This is why it is important to <a href=3D"http=
+s://www.openrightsgroup.org/campaigns/investigatory-powers-bill-email-your-=
+mp">start talking to them now</a>; so they are aware of the concerns that t=
+heir constituents have about the Bill, and to get them to pay attention to =
+this huge piece of surveillance law.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h2>Take action today!</h2>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09The people scrutinising the la=
+w are not working in a bubble. They listen to colleagues and their leadersh=
+ip. They listen to the voices around them and how the public is thinking.<b=
+r />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09You can help influence them by=
+ asking your MP to talk to members of those committees. We all need to star=
+t talking to MPs now to get them thinking about the IPB.&nbsp;<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09You can tell your MP why they =
+should be concerned about the Bill here:<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<a href=3D"https://www.openrig=
+htsgroup.org/campaigns/investigatory-powers-bill-email-your-mp">https://www=
+.openrightsgroup.org/campaigns/investigatory-powers-bill-email-your-mp</a><=
+br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09This is only the start of the =
+campaign. We&#39;ve already been talking to politicians and the media about=
+ the IPB. We met with Andy Burnham, Shadow Home Secretary and other Labour =
+politicians this week to discuss our concerns.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09In the coming months, we&#39;l=
+l be working together with you to rip out the dangerous parts of this Bill.=
+ We can do this! &nbsp;<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h2 dir=3D"ltr">What&#39;s in =
+the Bill?</h2>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09The Investigatory Powers Bill =
+is a new law on surveillance that was presented to parliament in November 2=
+015. Unlike the Communications Data Bill, the IPB covers both the police an=
+d security services&rsquo; powers. &nbsp;<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>Key issues in the Bill=
+</strong> &nbsp;<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09-It clarifies the powers of se=
+curity agencies to break into our laptops and mobile phones, including powe=
+rs for mass hacking. The Bill also forces internet companies to help in hac=
+king their customers.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09-It forces Internet Service Pr=
+oviders to collect and keep a record of all the websites that their custome=
+rs visit.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09-It does not limit the mass su=
+rveillance revealed by Edward Snowden, but instead puts those abilities int=
+o law.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09This includes powers of bulk c=
+ollection and analysis of data collected by tapping Internet cables, ie. &#=
+39;<a href=3D"https://wiki.openrightsgroup.org/wiki/Tempora">Tempora</a>&#3=
+9;.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09We&rsquo;ll be publishing a fu=
+ll briefing on the Bill to help you talk to your MP.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h2 dir=3D"ltr">Our Birthday p=
+arty</h2>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09ORG has worked hard over the l=
+ast 10 years to ensure that everyone&rsquo;s rights are protected (You can =
+see a whole timeline of our successes <a data-mce-href=3D"ourwork/successes=
+/" href=3D"https://www.openrightsgroup.org/ourwork/successes/">here)</a>.<b=
+r />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Now we&rsquo;re celebrating th=
+at history with a small party in London, and we&rsquo;d love it if you coul=
+d make it to celebrate with us! RSVP:<a data-mce-href=3D"http://www.meetup.=
+com/ORG-London/events/226537708/" href=3D"http://www.meetup.com/ORG-London/=
+events/226537708/"> http://www.meetup.com/ORG-London/events/226537708/</a><=
+br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Date: November 27th<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Time: 7.00 - 10.00pm<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Location:<a data-mce-href=3D"h=
+ttp://maps.google.com/maps?f=3Dq&amp;hl=3Den&amp;q=3D133-135+Bethnal+Green+=
+Road%2C+E2+7DG%2C+London%2C+gb" href=3D"http://maps.google.com/maps?f=3Dq&a=
+mp;hl=3Den&amp;q=3D133-135+Bethnal+Green+Road%2C+E2+7DG%2C+London%2C+gb"> N=
+ewspeak House</a>, 133-135 Bethnal Green Road, E2 7DG, London<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Cost: &pound;5 Hear from an ex=
+cellent speaker and enjoy some birthday cake at the brand new Newspeak Hous=
+e in Shoreditch for our 10th anniversary!
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br></br>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h1><strong>Get Involved</stro=
+ng></h1>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09It&rsquo;s our job to stand up=
+ for your rights online. If you have a moment to spare can you help us by <=
+a _mce_href=3D"http://www.openrightsgroup.org/join" href=3D"http://www.open=
+rightsgroup.org/join">becoming a member of ORG</a>?<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09You can find out about more wa=
+ys to get involved here:<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<a href=3D"https://www.openrig=
+htsgroup.org/get-involved">https://www.openrightsgroup.org/get-involved</a>=
+<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Thank you for supporting digit=
+al rights.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Best wishes,<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Ruth&nbsp;&nbsp; &nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09=09<!-- // End Module: Standard Content \\=
+ --></td>
+=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09<!-- // Begin Sidebar \\  -->
+=09=09=09=09=09=09=09=09=09<td id=3D"templateSidebar" valign=3D"top" width=
+=3D"200">
+=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"0" cellspacin=
+g=3D"0" width=3D"200">
+=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<td class=3D"sidebarContent" valign=3D"=
+top"><!-- // Begin Module: Social Block with Icons \\ -->
+=09=09=09=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"0" c=
+ellspacing=3D"0" width=3D"100%">
+=09=09=09=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td style=3D"padding-top: 10px=
+; padding-right: 20px; padding-left: 20px;" valign=3D"top">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpaddin=
+g=3D"0" cellspacing=3D"4">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"left" va=
+lign=3D"middle" width=3D"16"><img border=3D"0" src=3D"https://gallery.mailc=
+himp.com/653153ae841fd11de66ad181a/images/sfs_icon_facebook.png" style=3D"m=
+argin: 0 !important;" /></td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"left" va=
+lign=3D"top">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<div><a href=3D"https=
+://www.facebook.com/openrightsgroup">Find us on Facebook</a></div>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"left" va=
+lign=3D"middle" width=3D"16"><img border=3D"0" src=3D"http://gallery.mailch=
+imp.com/653153ae841fd11de66ad181a/images/sfs_icon_twitter.png" style=3D"mar=
+gin: 0 !important;" /></td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"left" va=
+lign=3D"top">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<div><a href=3D"https=
+://twitter.com/openrightsgroup">Follow us on Twitter</a></div>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"left" va=
+lign=3D"middle" width=3D"16"><img border=3D"0" height=3D"16" src=3D"https:/=
+/www.openrightsgroup.org/assets/images/social/g+250.png" style=3D"margin: 0=
+px ! important; border: 0px none;" width=3D"16" /></td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td align=3D"left" va=
+lign=3D"top">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<div><a href=3D"https=
+://plus.google.com/116543318055985390327/posts">Add us on Google+</a></div>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09=09<!-- // End Module: Social Block with I=
+cons \\ --><!-- // Begin Module: Top Image with Content \\ -->
+
+=09=09=09=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"20" =
+cellspacing=3D"0" height=3D"1541" width=3D"213">
+=09=09=09=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top">
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h2>Quick Fire News</h2>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>We&#39;d like to welco=
+me our latest corporate supporters, </strong><a href=3D"https://www.isotoma=
+.com/">Isotoma</a>, <a href=3D"https://www.uno.net.uk/">Uno</a>, <a href=3D=
+"http://www.numbergroup.com/">Numbergroup</a> and <a href=3D"https://www.vp=
+ncompare.co.uk/">VPN Compare</a>, and thank them for supporting us in our c=
+ampaigning for digital rights.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong>Our groups in Sheffiel=
+d and Edinburgh</strong> have been meeting this week to discuss the Investi=
+gatory Powers Bill and plan local campaigns together.<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<h3><strong>ORG out and about<=
+/strong></h3>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<strong><a href=3D"http://www.=
+meetup.com/ORG-London/events/226537708/">ORG&#39;s 10th Anniversary Party</=
+a></strong><br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09Friday 27th November<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<span class=3D"subtext">7 PM</=
+span> <span class=3D"subtext">to</span> <span class=3D"subtext">10:00 PM</s=
+pan><br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<a data-mce-href=3D"http://map=
+s.google.com/maps?f=3Dq&amp;hl=3Den&amp;q=3D133-135+Bethnal+Green+Road%2C+E=
+2+7DG%2C+London%2C+gb" href=3D"http://maps.google.com/maps?f=3Dq&amp;hl=3De=
+n&amp;q=3D133-135+Bethnal+Green+Road%2C+E2+7DG%2C+London%2C+gb">Newspeak Ho=
+use</a>, 133-135 Bethnal Green Road, E2 7DG, London<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09<br />
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09=09&nbsp;</td>
+=09=09=09=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09=09=09=09<!-- // End Module: Top Image with Cont=
+ent \\ --></td>
+=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09<!-- // End Sidebar \\ -->
+=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09</table>
+=09=09=09=09=09=09<!-- // End Template Body \\ --></td>
+=09=09=09=09=09</tr>
+=09=09=09=09=09<tr>
+=09=09=09=09=09=09<td align=3D"center" valign=3D"top"><!-- // Begin Templat=
+e Footer \\ -->
+=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"10" cellspacing=3D"0" =
+id=3D"templateFooter" width=3D"600">
+=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09<td class=3D"footerContent" valign=3D"top"><!-- =
+// Begin Module: Standard Footer \\ -->
+=09=09=09=09=09=09=09=09=09<table border=3D"0" cellpadding=3D"10" cellspaci=
+ng=3D"0" width=3D"100%">
+=09=09=09=09=09=09=09=09=09=09<tbody>
+=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<td colspan=3D"2" id=3D"social" valign=
+=3D"middle">
+=09=09=09=09=09=09=09=09=09=09=09=09<div>&nbsp;<a href=3D"https://twitter.c=
+om/openrightsgroup">Follow us on Twitter</a> | <a href=3D"https://www.faceb=
+ook.com/openrightsgroup">Find us on Facebook</a> | <a href=3D"https://plus.=
+google.com/116543318055985390327/posts">Add us on Google+</a> &nbsp;</div>
+=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<td valign=3D"top" width=3D"350">
+=09=09=09=09=09=09=09=09=09=09=09=09<div><a href=3D"https://www.openrightsg=
+roup.org/volunteer" title=3D"Volunteer">We need your help</a> to fight for =
+your rights and to keep the web open and free.</div>
+=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09=09<td id=3D"monkeyRewards" valign=3D"top"=
+ width=3D"190">
+=09=09=09=09=09=09=09=09=09=09=09=09<div><strong>Our mailing address is:</s=
+trong></div>
+
+=09=09=09=09=09=09=09=09=09=09=09=09<div>12 Tileyard Road<br />
+=09=09=09=09=09=09=09=09=09=09=09=09London<br />
+=09=09=09=09=09=09=09=09=09=09=09=09N7 9AH</div>
+=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09=09<tr>
+=09=09=09=09=09=09=09=09=09=09=09=09<td colspan=3D"2" id=3D"utility" valign=
+=3D"middle">
+=09=09=09=09=09=09=09=09=09=09=09=09<div>This email was delivered to: mogge=
+rs87@m87.co.uk; If you wish to opt out of future emails, you can do so <a h=
+ref=3D"https://www.openrightsgroup.org/unsubscribe">here</a>.&nbsp;| <a hre=
+f=3D"https://www.openrightsgroup.org/join">Join ORG</a>&nbsp;</div>
+=09=09=09=09=09=09=09=09=09=09=09=09</td>
+=09=09=09=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09=09=09=09</table>
+=09=09=09=09=09=09=09=09=09<!-- // End Module: Standard Footer \\ --></td>
+=09=09=09=09=09=09=09=09</tr>
+=09=09=09=09=09=09=09</tbody>
+=09=09=09=09=09=09</table>
+=09=09=09=09=09=09<!-- // End Template Footer \\ --></td>
+=09=09=09=09=09</tr>
+=09=09=09=09</tbody>
+=09=09=09</table>
+=09=09=09</td>
+=09=09</tr>
+=09</tbody>
+</table>
+</body>
+</html>
+<img alt=3D"supporter" src=3D"https://www.e-activist.com/ea-action/broadcas=
+t.record.message.open.do?ea.broadcast.id=3D95540&ea.campaigner.id=3DvYXku28=
+i3E4=3D&ea.client.id=3D1422"/>
+------=_Part_29748709_1445524343.1448020924829--
+
+------=_Part_29748710_445134290.1448020924829--
+"""
 
 
 EXAMPLE_DIGEST = """Content-Type: multipart/mixed; boundary="===============1488510984=="
