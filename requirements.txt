@@ -29,4 +29,4 @@ python-daemon<1.7
 pytz
 salmon-mail==2
 simplejson
-git+https://github.com/moggers87/django-session-csrf.git
+git+https://github.com/moggers87/django-session-csrf.git@1e52c9db7a2103d68ec860bd8790e37ce6ba4c9f
