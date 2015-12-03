@@ -25,7 +25,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from csp.decorators import csp_replace
-import watson
+from watson import search
 
 from inboxen import models
 from inboxen.utils.email import find_bodies
@@ -44,7 +44,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
     @csp_replace(STYLE_SRC=["'self'", "'unsafe-inline'"])
     def get(self, *args, **kwargs):
 
-        with watson.skip_index_update():
+        with search.skip_index_update():
             out = super(EmailView, self).get(*args, **kwargs)
             if "all-headers" in self.request.GET:
                 self.object.flags.view_all_headers = bool(int(self.request.GET["all-headers"]))
@@ -75,7 +75,7 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         obj = self.get_object()
 
         if "important-toggle" in self.request.POST:
-            with watson.skip_index_update():
+            with search.skip_index_update():
                 obj.flags.important = not bool(obj.flags.important)
                 obj.save(update_fields=["flags"])
 

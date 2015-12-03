@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from django.utils.timesince import timesince
 from django.views import generic
 
-import watson
+from watson import search
 
 from inboxen import models
 from inboxen.tasks import deal_with_flags
@@ -71,7 +71,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             except self.model.DoesNotExist, ValueError:
                 raise Http404
 
-            with watson.skip_index_update():
+            with search.skip_index_update():
                 email.flags.important = not email.flags.important
                 email.save(update_fields=["flags"])
 
@@ -95,7 +95,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
         email_ids = list(emails.values_list('id', flat=True))
         emails = self.model.objects.filter(id__in=email_ids).only("id")
 
-        with watson.skip_index_update():
+        with search.skip_index_update():
             if "unimportant" in self.request.POST:
                 emails.update(flags=F('flags').bitand(~self.model.flags.important))
             elif "important" in self.request.POST:
@@ -213,7 +213,7 @@ class SingleInboxView(InboxView):
         context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
         if self.inbox_obj.flags.new:
-            with watson.skip_index_update():
+            with search.skip_index_update():
                 self.inbox_obj.flags.new = False
                 self.inbox_obj.save(update_fields=["flags"])
 

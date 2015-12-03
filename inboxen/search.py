@@ -22,13 +22,13 @@ import re
 from django.core import exceptions
 from django.utils import encoding
 
-import watson
+from watson import search
 
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 
-class EmailSearchAdapter(watson.SearchAdapter):
+class EmailSearchAdapter(search.SearchAdapter):
     trunc_to_size = 2 ** 20  # 1MB. Or two copies of 1984
 
     def get_bodies(self, obj):
@@ -130,7 +130,7 @@ class EmailSearchAdapter(watson.SearchAdapter):
         }
 
 
-class InboxSearchAdapter(watson.SearchAdapter):
+class InboxSearchAdapter(search.SearchAdapter):
     def get_title(self, obj):
         return obj.description or ""
 

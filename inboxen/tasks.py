@@ -12,7 +12,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Avg, Count, F, Max, Min, StdDev, Sum
 
 from pytz import utc
-import watson
+from watson import search as watson_search
 
 from inboxen import models
 from inboxen.celery import app
@@ -98,7 +98,7 @@ def inbox_new_flag(user_id, inbox_id=None):
         profile.flags.unified_has_new_messages = False
         profile.save(update_fields=["flags"])
     else:
-        with watson.skip_index_update():
+        with watson_search.skip_index_update():
             inbox = models.Inbox.objects.get(user__id=user_id, id=inbox_id)
             inbox.flags.new = False
             inbox.save(update_fields=["flags"])
@@ -110,7 +110,7 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     "new" flags on affected Inbox objects
     """
     with transaction.atomic():
-        with watson.skip_index_update():
+        with watson_search.skip_index_update():
             # update seen flags
             models.Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(models.Email.flags.seen))
 
@@ -161,8 +161,8 @@ def search(user_id, search_term):
     inbox_subquery = models.Inbox.objects.viewable(user_id)
 
     results = {
-        "emails": list(watson.search(search_term, models=(email_subquery,)).values_list("id", flat=True)),
-        "inboxes": list(watson.search(search_term, models=(inbox_subquery,)).values_list("id", flat=True)),
+        "emails": list(watson_search.search(search_term, models=(email_subquery,)).values_list("id", flat=True)),
+        "inboxes": list(watson_search.search(search_term, models=(inbox_subquery,)).values_list("id", flat=True)),
     }
 
     key = u"{0}-{1}".format(user_id, search_term)

@@ -32,7 +32,7 @@ from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey
 from pytz import utc
-import watson
+from watson import search as watson_search
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import search
@@ -343,8 +343,8 @@ from django.contrib.auth.models import update_last_login
 user_logged_in.disconnect(update_last_login)
 
 # Search
-watson.register(Email, search.EmailSearchAdapter)
-watson.register(Inbox, search.InboxSearchAdapter)
+watson_search.register(Email, search.EmailSearchAdapter)
+watson_search.register(Inbox, search.InboxSearchAdapter)
 
 
 # signals

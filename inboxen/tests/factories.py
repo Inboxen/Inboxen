@@ -24,7 +24,7 @@ from django.contrib.auth import get_user_model
 from pytz import utc
 import factory
 import factory.fuzzy
-import watson
+from watson import search
 
 from inboxen import models
 
@@ -107,7 +107,7 @@ class FullEmailFactory(EmailFactory):
     """
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        with watson.update_index():
+        with search.update_index():
             email = super(FullEmailFactory, cls)._create(model_class, *args, **kwargs)
             body = BodyFactory(data="This mail body is searchable")
             part = PartListFactory(body=body)
