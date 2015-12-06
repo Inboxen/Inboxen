@@ -26,7 +26,7 @@ from redirect import views
 urlpatterns = urls.patterns('',
     urls.url(
         r'^$',
-        views.RedirectView.as_view(),
+        views.RedirectView.as_view(permanent=False),
         name='redirect',
     ),
 )

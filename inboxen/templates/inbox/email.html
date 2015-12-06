@@ -1,0 +1,85 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block header %}
+    <meta name="referrer" content="no-referrer">
+{% endblock %}
+
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li><a href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox }}</a></li>
+        <li class="active">{{ email.headers.Subject|default:_("No Subject") }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+{% if email.ask_images and email.has_images %}
+<p class="alert alert-warning">
+    <a class="alert-link" href="{{ request.path }}?imgDisplay=1">{% trans "Click here to view images" %}</a>
+</p>
+{% endif %}
+
+<div class="pull-right">
+    <form class="inline-buttons" action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST">
+        {% csrf_token %}
+        <button class="btn btn-default" type="submit" value="{{ email.eid }}" name="delete-single">{% trans "Delete" %}</button>
+    </form>
+    <form class="inline-buttons" action="{{ request.path }}" method="POST">
+        {% csrf_token %}
+        <button class="btn btn-default" type="submit" name="important-toggle">
+        {% if object.flags.important %}{# email isn't actually the email object #}
+            {% trans "Unmark as important" %}
+        {% else %}
+            {% trans "Mark as important" %}
+        {% endif %}
+        </button>
+    </form>
+    {% if headersfetchall %}
+    <a class="btn btn-default" href="{{ request.path }}?all-headers=0">
+        {% trans "Hide headers" %}
+    {% else %}
+    <a class="btn btn-default" href="{{ request.path }}?all-headers=1">
+        {% trans "Show headers" %}
+    {% endif %}
+    </a>
+</div>
+
+<strong>{% trans "From" %}:</strong> {{ email.headers.From }} <br />
+<strong>{% trans "Received" %}:</strong> <span title="{{ email.date|date:"r" }}">{{ email.date|timesince }} {% trans "ago" %}</span>
+<br />
+{% if headersfetchall %}
+<strong>{% trans "Raw Headers" %}:</strong>
+<pre>{% for name, value in email.headers.items %}{{ name }}: {{ value }}
+{% endfor %}</pre>
+{% endif %}
+
+<strong>{% trans "Message" %}:</strong><br />
+{% for body in email.bodies %}
+<div id="email-body">{{ body|safe }}</div>
+{% endfor %}
+<br />
+<strong>{% trans "Attachments" %}</strong>:<br />
+<div class="form">
+{% for attachment in attachments %}
+{% if attachment.is_leaf_node %}
+    <div class="col-sm-4 col-md-3 col-lg-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group btn-group-justified" role="group">
+                    <a href="{% url 'email-attachment' attachmentid=attachment.id method='download' %}" class="btn btn-default">
+                        {% trans "Download" %}
+                    </a>
+                    <a href="{% url 'email-attachment' attachmentid=attachment.id method='view' %}" class="btn btn-default">
+                        {% trans "View" %}
+                    </a>
+                </div>
+            </div>
+            <div class="panel-body wrap-words">{{ attachment.filename }} ({{ attachment.content_type|default:"text/plain" }})</div>
+        </div>
+    </div>
+{% endif %}
+{% endfor %}
+</div>
+{% endblock %}

@@ -23,9 +23,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
-from model_utils.managers import PassThroughManager
-
 from tickets import managers, tasks
+
 
 class Question(models.Model):
     # status contants
@@ -51,7 +50,7 @@ class Question(models.Model):
 
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=NEW, db_index=True)
 
-    objects = PassThroughManager.for_queryset_class(managers.QuestionQuerySet)()
+    objects = managers.QuestionQuerySet.as_manager()
 
     @property
     def last_activity(self):
@@ -59,7 +58,8 @@ class Question(models.Model):
 
         Expects the attribute "last_response_date" to be annotated
         """
-        if self.last_response_date is not None and self.last_response_date > self.last_modified:
+        # TODO turn this property into an annotation
+        if getattr(self, "last_response_date", None) is not None and self.last_response_date > self.last_modified:
             return self.last_response_date
         else:
             return self.last_modified

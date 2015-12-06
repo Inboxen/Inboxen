@@ -1,7 +1,7 @@
 ##
 #
 # Copyright 2013. 2015 Jessica Tallon, Matt Molyneaux
-# 
+#
 # This file is part of Inboxen.
 #
 # Inboxen is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@ from datetime import datetime
 import logging
 
 from pytz import utc
-import watson
+from watson import search
 
 from inboxen.models import Body, Email, Header, PartList
 
@@ -31,11 +31,10 @@ from inboxen.models import Body, Email, Header, PartList
 log = logging.getLogger(__name__)
 
 
-@watson.update_index()
+@search.update_index()
 def make_email(message, inbox):
     """Push message to the database.
     """
-    user = inbox.user
     base = message.base
     received_date = datetime.now(utc)
 

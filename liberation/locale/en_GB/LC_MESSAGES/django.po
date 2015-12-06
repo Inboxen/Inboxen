@@ -1,0 +1,107 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-10-22 09:34+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: liberation/forms.py:37
+msgid "Maildir"
+msgstr ""
+
+#: liberation/forms.py:38
+msgid "Mailbox .mbox"
+msgstr ""
+
+#: liberation/forms.py:43
+msgid "Tarball (gzip compressed)"
+msgstr ""
+
+#: liberation/forms.py:44
+msgid "Tarball (bzip2 compression)"
+msgstr ""
+
+#: liberation/forms.py:45
+msgid "Tarball (no compression)"
+msgstr ""
+
+#: liberation/tasks.py:232
+#, python-format
+msgid ""
+"Your request for your personal data has been completed. Click <a class="
+"\"alert-link\" href=\"%s\">here</a> to download your archive."
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:11
+msgid "Data liberation is currently running"
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:12
+#, python-format
+msgid ""
+"\n"
+"        Liberation was requested %(started)s ago and is still pending.\n"
+"    "
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:15
+msgid "What's happening right now:"
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:17
+msgid "Archiving your emails"
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:18
+msgid ""
+"Grabbing a list of your Inboxes and associated data (e.g. description, when "
+"they were created)"
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:19
+msgid "Collecting miscellaneous information we hold about you"
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:21
+msgid ""
+"If you have a lot of emails, this could take a while. We will notify you "
+"once your data is ready for downloading."
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:26
+#, python-format
+msgid ""
+"\n"
+"                Your data is available for download. It was generated "
+"%(finished)s ago.\n"
+"            "
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:29
+msgid "Download"
+msgstr ""
+
+#: liberation/templates/liberation/liberate.html:36
+msgid "Liberate!"
+msgstr ""
+
+#: liberation/views.py:36
+msgid "Liberate your data"
+msgstr ""
+
+#: liberation/views.py:49
+msgid "Fetching all your data. This may take a while, so check back later!"
+msgstr ""

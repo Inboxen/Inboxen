@@ -99,9 +99,9 @@ containing random characters.
 
 ### Webserver
 
-The WSGI script can be found at `website/wsgi.py`
+The WSGI script can be found at `inboxen/wsgi.py`
 
-There is also `website/admin-wsgi.py` - this enables the admin interface on
+There is also `inboxen/wsgi_admin.py` - this enables the admin interface on
 `/admin`. It is **highly** recommended that you protect it from the outside
 world.  Solutions such as a VPN are probably the easiest for your staff to use.
 

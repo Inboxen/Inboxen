@@ -1,7 +1,7 @@
 ##
 #
 # Copyright 2013, 2015 Jessica Tallon, Matt Molyneaux
-# 
+#
 # This file is part of Inboxen.
 #
 # Inboxen is free software: you can redistribute it and/or modify
@@ -19,13 +19,11 @@
 #
 ##
 
-from datetime import datetime
-
 from salmon.routing import nolocking, route, stateless
 from salmon.server import SMTPError
 
 from django.db import DatabaseError, transaction
-import watson
+from watson import search
 
 from app.helpers import make_email
 from inboxen.models import Inbox
@@ -47,7 +45,7 @@ def START(message, inbox=None, domain=None):
 
         make_email(message, inbox)
 
-        with watson.skip_index_update():
+        with search.skip_index_update():
             inbox.flags.new = True
             inbox.save(update_fields=["flags"])
 

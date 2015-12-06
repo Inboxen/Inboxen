@@ -24,7 +24,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from tickets import forms, models
-from website.views import base
+from inboxen.views import base
 
 
 class FormMixin(generic.edit.FormMixin):
@@ -72,8 +72,9 @@ class QuestionHomeView(base.LoginRequiredMixin, base.CommonContextMixin, generic
     def get_queryset(self):
         qs = super(QuestionHomeView, self).get_queryset()
         qs = qs.filter(author=self.request.user).select_related("author")
+        qs = qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
-        return qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
+        return qs
 
     def get_success_url(self):
         return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})

@@ -1,0 +1,39 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends 'account/index.html' %}
+{% load i18n inboxen_account bootstrap %}
+
+{% block navigation %}
+    {% account_menu 'user-liberate' %}
+{% endblock %}
+
+{% block form %}
+{% if object.flags.running %}
+    <h4>{% trans "Data liberation is currently running" %}</h4>
+    <p>{% blocktrans with started=object.started|timesince %}
+        Liberation was requested {{ started }} ago and is still pending.
+    {% endblocktrans %}</p>
+    <p>{% trans "What's happening right now:" %}</p>
+    <ul>
+        <li>{% trans "Archiving your emails" %}</li>
+        <li>{% trans "Grabbing a list of your Inboxes and associated data (e.g. description, when they were created)" %}</li>
+        <li>{% trans "Collecting miscellaneous information we hold about you" %}</li>
+    </ul>
+    <p>{% trans "If you have a lot of emails, this could take a while. We will notify you once your data is ready for downloading." %}</p>
+{% else %}
+    {% if object.last_finished %}
+    <div class="panel panel-primary">
+        <div class="panel-body">
+            <p>{% blocktrans with finished=object.last_finished|timesince %}
+                Your data is available for download. It was generated {{ finished }} ago.
+            {% endblocktrans %}</p>
+            <a class="btn btn-primary" href="{% url 'user-liberate-get' %}">{% trans "Download" %}</a>
+        </div>
+    </div>
+    {% endif %}
+    <form class="form" action="{% url 'user-liberate' %}" method="POST">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+        <button class="btn btn-primary">{% trans "Liberate!" %}</button>
+    </form>
+{% endif %}
+{% endblock %}

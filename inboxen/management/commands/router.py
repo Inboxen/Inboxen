@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -21,14 +21,11 @@ import os
 
 from django.core.management.base import BaseCommand, CommandError
 
-try:
-    from subprocess import check_output, CalledProcessError
-except ImportError:
-    from inboxen.utils.subprocess import check_output, CalledProcessError
+from subprocess import check_output, CalledProcessError
 
 
 class Command(BaseCommand):
-    args = "<start/stop/status>"
+    can_import_settings = True
     help = "Start and stop Salmon router"
 
     def __init__(self, *args, **kwargs):
@@ -41,24 +38,17 @@ class Command(BaseCommand):
             {'pid': 'run/router.pid', 'boot': 'config.boot'},
         ]
 
-    def handle(self, *args, **options):
-        if not args:
-            self.stdout.write(self.help)
-            return
-        elif not self.can_import_settings:
-            raise CommandError("I can't work under these conditions! Where is settings.py?!")
+    def add_arguments(self, parser):
+        daemon_parser = parser.add_mutually_exclusive_group(required=True)
+        daemon_parser.add_argument("--start", action='store_const', dest="cmd", const=self.salmon_start)
+        daemon_parser.add_argument("--stop", action='store_const', dest="cmd", const=self.salmon_stop)
+        daemon_parser.add_argument("--status", action='store_const', dest="cmd", const=self.salmon_status)
 
+    def handle(self, **options):
         try:
-            if args[0] == "start":
-                output = self.salmon_start()
-            elif args[0] == "stop":
-                output = self.salmon_stop()
-            elif args[0] == "status":
-                output = self.salmon_status()
-            else:
-                raise CommandError("No such command, %s" % args[0])
+            output = options["cmd"]()
         except OSError:
-            raise Exception("OSError from subprocess, salmon is probably not in your path.")
+            raise CommandError("OSError from subprocess, salmon is probably not in your path.")
 
         self.stdout.write("".join(output))
 
