@@ -24,8 +24,9 @@ It's in "utils" because "domain.py" would get confusing :P """
 import re
 import logging
 
-from django.utils.translation import ugettext as _
 from django.contrib import messages
+from django.utils import html as html_utils, safestring
+from django.utils.translation import ugettext as _
 
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
@@ -108,7 +109,8 @@ def _clean_html_body(request, email, body, charset):
             pass
 
     # finally, export to unicode
-    return _unicode_damnit(etree.tostring(html_tree), charset)
+    body = _unicode_damnit(etree.tostring(html_tree), charset)
+    return safestring.mark_safe(body)
 
 
 def _render_body(request, email, attachments):
@@ -167,7 +169,9 @@ def _render_body(request, email, attachments):
             _log.exception(exc)
 
     if plain_message:
+        body = html_utils.escape(body)
         body = u"<pre>{}</pre>".format(body)
+        body = safestring.mark_safe(body)
 
     return body
 
