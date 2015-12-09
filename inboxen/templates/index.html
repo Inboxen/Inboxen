@@ -2,6 +2,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block extra-messages %}
+    {% if user.is_authenticated %}
+        <div class="alert alert-info">You're already signed up and logged in. <a class="alert-link" href="{% url 'user-home' %}">Click here</a> to view your inboxes</div>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     <div class="text-center">
         <h1 class="index-heading">Protect your privacy</h1>
