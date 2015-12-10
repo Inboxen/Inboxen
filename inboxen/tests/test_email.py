@@ -146,6 +146,11 @@ class EmailViewTestCase(test.TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+        part_id = part.id + 1000
+        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part_id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_post(self):
         important = self.email.flags.important
 

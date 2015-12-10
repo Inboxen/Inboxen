@@ -17,7 +17,7 @@
 
 import re
 
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.views import generic
 
 from inboxen import models
@@ -36,7 +36,11 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
     def get_object(self):
         qs = models.PartList.objects.select_related('body')
         qs = qs.filter(email__flags=~models.Email.flags.deleted)
-        return qs.get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
+
+        try:
+            return qs.get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
+        except models.PartList.DoesNotExist:
+            raise Http404
 
     def get(self, *args, **kwargs):
         if kwargs.get("method", "download") == "download":
