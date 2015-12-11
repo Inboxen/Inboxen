@@ -202,6 +202,9 @@ LOGIN_URL = urlresolvers.reverse_lazy("user-login")
 LOGOUT_URL = urlresolvers.reverse_lazy("user-logout")
 LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 
+
+LOGOUT_MSG = _("Have a nice day and come visit us again soon!")
+
 # CSP settings
 CSP_REPORT_ONLY = True
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
