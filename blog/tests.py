@@ -77,12 +77,20 @@ class BlogTestCase(test.TestCase):
         self.assertEqual(post.body, BODY)
         self.assertEqual(post.date, None)
 
+        url = urlresolvers.reverse('blog-post', kwargs={"slug": post.slug})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
         old_mod = post.modified
         post.draft = False
         post.save()
         post = models.BlogPost.objects.get()
         self.assertNotEqual(post.date, None)
         self.assertNotEqual(post.modified, old_mod)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_feeds(self):
         user = factories.UserFactory()
