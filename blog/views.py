@@ -42,7 +42,6 @@ class BlogListView(base.CommonContextMixin, generic.ListView):
 class BlogDetailView(base.CommonContextMixin, generic.DetailView):
     context_object_name = "post"
     model = BlogPost
-    pk_url_kwarg = "slug"
     template_name = "blog/post.html"
 
     def get_queryset(self):
