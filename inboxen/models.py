@@ -22,6 +22,8 @@ import os.path
 import re
 
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.signals import user_logged_out
 from django.db import models, transaction
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -361,3 +363,9 @@ def decided_checker(sender, instance=None, **kwargs):
         instance.authorizer = None
         instance.succeeded = None
         instance.date_decided = None
+
+
+@receiver(user_logged_out)
+def logout_message(sender, request, **kwargs):
+    msg = getattr(request, "_logout_message", settings.LOGOUT_MSG)
+    messages.add_message(request, messages.INFO, msg)

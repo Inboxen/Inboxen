@@ -169,6 +169,8 @@ class DeleteTestCase(test.TestCase):
         form.save()
 
         self.assertEqual(request.user, AnonymousUser())
+        messages = list(request._messages)
+        self.assertEqual(str(messages[0]), "Account deleted. Thanks for using our service.")
 
     def test_form_bad_data(self):
         params = {"username": "derp" + self.user.username}
