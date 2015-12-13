@@ -19,6 +19,7 @@
 ##
 
 from django import test
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
 
@@ -99,7 +100,7 @@ class EmailViewTestCase(test.TestCase):
         self.assertIn(u"<p>&#160;</p>", body)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
         self.assertIn(u"http://example.com/coolface.jpg", body)
-        self.assertNotIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", body)
+        self.assertNotIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
@@ -117,7 +118,7 @@ class EmailViewTestCase(test.TestCase):
         self.assertIn(u"<p>&#160;</p>", body)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
         self.assertNotIn(u"http://example.com/coolface.jpg", body)
-        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", body)
+        self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
@@ -135,7 +136,7 @@ class EmailViewTestCase(test.TestCase):
         self.assertIn(u"<p>&#160;</p>", body)
         self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
         self.assertNotIn(u"http://example.com/coolface.jpg", body)
-        self.assertIn(u"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=", body)
+        self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
