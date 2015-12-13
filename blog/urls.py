@@ -23,7 +23,7 @@ from blog import views
 
 # If you're debugging regex, test it out on http://www.debuggex.com/ first - M
 urlpatterns = urls.patterns('',
-    urls.url(r'^post/(?P<postid>\d+)', views.BlogDetailView.as_view(), name='blog-post'),
+    urls.url(r'^post/(?P<slug>[-\w]+)', views.BlogDetailView.as_view(), name='blog-post'),
     urls.url(r'^feed/atom', views.AtomFeed(), name='blog-feed-atom'),
     urls.url(r'^feed/(rss)?', views.RssFeed(), name='blog-feed-rss'),
     urls.url(r'^(?P<page>\d*)', views.BlogListView.as_view(), name='blog'),

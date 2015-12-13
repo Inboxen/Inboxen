@@ -38,7 +38,6 @@ __all__ = [
 
 
 class DeleteAccountForm(forms.Form):
-
     username = forms.CharField(
         label=_("Please type your username to confirm"),
         widget=forms.TextInput(attrs={'placeholder': _('Username')}),
@@ -60,6 +59,7 @@ class DeleteAccountForm(forms.Form):
     def save(self):
         # Dispatch task and logout
         delete_account.delay(self.user.id)
+        self.request._logout_message = _("Account deleted. Thanks for using our service.")
         auth.logout(self.request)
         return self.user
 

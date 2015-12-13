@@ -25,6 +25,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import safestring
 
+from django_extensions.db.fields import AutoSlugField
 from markdown_newtab import NewTabExtension
 from pytz import utc
 import markdown
@@ -39,6 +40,8 @@ class BlogPost(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)
 
+    slug = AutoSlugField(populate_from="subject", max_length=64)
+
     @property
     def rendered_body(self):
         """Render MarkDown to HTML"""
@@ -48,7 +51,7 @@ class BlogPost(models.Model):
         draft = ""
         if self.draft:
             draft = " (draft)"
-        return u"%s%s" % (self.date, draft)
+        return u"%s%s" % (self.slug, draft)
 
     class Meta:
         ordering = ["-date"]

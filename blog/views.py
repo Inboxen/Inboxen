@@ -42,7 +42,6 @@ class BlogListView(base.CommonContextMixin, generic.ListView):
 class BlogDetailView(base.CommonContextMixin, generic.DetailView):
     context_object_name = "post"
     model = BlogPost
-    pk_url_kwarg = "postid"
     template_name = "blog/post.html"
 
     def get_queryset(self):
@@ -67,7 +66,7 @@ class RssFeed(Feed):
         return item.rendered_body
 
     def item_link(self, item):
-        return reverse('blog-post', kwargs={"postid": item.id})
+        return reverse('blog-post', kwargs={"slug": item.slug})
 
     def description(self):
         return _("The latest news and updates for {0}").format(settings.SITE_NAME)

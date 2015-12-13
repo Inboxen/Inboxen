@@ -43,6 +43,13 @@ class LoginTestCase(test.TestCase):
         self.user = factories.UserFactory()
         cache.clear()
 
+    def test_logout_message(self):
+        login = self.client.login(username=self.user.username, password="123456")
+        self.assertEqual(login, True)
+
+        response = self.client.get(dj_settings.LOGOUT_URL, follow=True)
+        self.assertIn("You are now logged out. Have a nice day!", response.content)
+
     def test_last_login(self):
         login = self.client.login(username=self.user.username, password="123456")
         self.assertEqual(login, True)
