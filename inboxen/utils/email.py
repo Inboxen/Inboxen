@@ -25,6 +25,7 @@ import re
 import logging
 
 from django.contrib import messages
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils import html as html_utils, safestring
 from django.utils.translation import ugettext as _
 
@@ -92,7 +93,7 @@ def _clean_html_body(request, email, body, charset):
                 # try to delete src first - we don't want to add a src where there wasn't one already
                 del img.attrib["src"]
                 # replace image with 1px png
-                img.attrib["src"] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgYAAAAAMAASsJTYQAAAAASUVORK5CYII="
+                img.attrib["src"] = staticfiles_storage.url("imgs/placeholder.svg")
                 email["has_images"] = True
             except KeyError:
                 pass
