@@ -164,14 +164,25 @@ class RenderBodyTestCase(test.TestCase):
         obj = MockModel("")
         self.assertEqual(obj.render_body(), "")
 
+    def assertHtmlEqual(self, first, second, *args):
+        """Normalise HTML and compare
+
+        LXML seems to deal with whitespace differently on different systems, so
+        we strip it out before comparing
+        """
+        first = "".join(first.split())
+        second = "".join(second.split())
+
+        self.assertEqual(first, second, *args)
+
     def test_normal_html(self):
         original = "Hi\n\nAnother < 12\n\n* this one\n* that one"""
         expected = "<div><p>Hi</p>\n<p>Another &lt; 12</p>\n<ul>\n<li>this one</li>\n<li>that one</li>\n</ul></div>"
         obj = MockModel(original)
-        self.assertEqual(obj.render_body(), expected)
+        self.assertHtmlEqual(obj.render_body(), expected)
 
     def test_bad_html(self):
         original = "<p class='hide'>Hi</p>\n\n<sometag> </>"
         expected = "<div><p>Hi</p>\n\n<p> &gt;</p></div>"
         obj = MockModel(original)
-        self.assertEqual(obj.render_body(), expected)
+        self.assertHtmlEqual(obj.render_body(), expected)
