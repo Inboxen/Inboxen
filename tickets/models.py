@@ -21,12 +21,32 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import safestring
 from django.utils.translation import ugettext_lazy as _
+
+from lxml.html.clean import Cleaner
+import markdown
 
 from tickets import managers, tasks
 
 
-class Question(models.Model):
+class RenderBodyMixin(object):
+    def render_body(self):
+        if not self.body:
+            return ""
+
+        cleaner = Cleaner(
+            allow_tags=["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre", "code"],
+            safe_attrs=["href"],
+            remove_unknown_tags=False,
+            safe_attrs_only=True,
+        )
+        body = markdown.markdown(self.body)
+        body = cleaner.clean_html(body)
+        return safestring.mark_safe(body)
+
+
+class Question(models.Model, RenderBodyMixin):
     # status contants
     NEW = 0
     IN_PROGRESS = 1
@@ -68,7 +88,7 @@ class Question(models.Model):
         ordering = ["-date"]
 
 
-class Response(models.Model):
+class Response(models.Model, RenderBodyMixin):
     question = models.ForeignKey(Question)
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField(auto_now_add=True)

@@ -44,6 +44,11 @@ class ResponseFactory(factory.django.DjangoModelFactory):
     body = factory.fuzzy.FuzzyText()
 
 
+class MockModel(models.RenderBodyMixin):
+    def __init__(self, body):
+        self.body = body
+
+
 class QuestionViewTestCase(test.TestCase):
     def setUp(self):
         super(QuestionViewTestCase, self).setUp()
@@ -152,3 +157,21 @@ class QuestionModelTestCase(test.TestCase):
 
         question_qs = models.Question.objects.annotate(last_response_date=Max("response__date"))
         self.assertEqual(question_qs[0].last_activity, response.date)
+
+
+class RenderBodyTestCase(test.TestCase):
+    def test_empty_body(self):
+        obj = MockModel("")
+        self.assertEqual(obj.render_body(), "")
+
+    def test_normal_html(self):
+        original = "Hi\n\nAnother < 12\n\n* this one\n* that one"""
+        expected = "<div><p>Hi</p>\n<p>Another &lt; 12</p>\n<ul>\n<li>this one</li>\n<li>that one</li>\n</ul></div>"
+        obj = MockModel(original)
+        self.assertEqual(obj.render_body(), expected)
+
+    def test_bad_html(self):
+        original = "<p class='hide'>Hi</p>\n\n<sometag> </>"
+        expected = "<div><p>Hi</p>\n\n<p> &gt;</p></div>"
+        obj = MockModel(original)
+        self.assertEqual(obj.render_body(), expected)

@@ -20,7 +20,7 @@
     <br />
         <b>{% trans "Status" %}:</b> {{ object.get_status_display }}
 </p>
-<p>{{ object.body }}</p>
+<p>{{ object.render_body }}</p>
 
 <small><a href="#lastreply">{% trans "Latest reply" %} &raquo;</a><br />
 <a href="#response-form">{% trans "Reply form" %} &raquo;</a></small>
@@ -28,7 +28,7 @@
 <hr>
 {% for response in responses %}
     <p {% if forloop.last %}id="lastreply"{% endif %}>{{ response.author.username }} {% trans "says" %}:</p>
-    <p>{{ response.body }}</p>
+    <p>{{ response.render_body }}</p>
     <hr>
 {% endfor %}
 
