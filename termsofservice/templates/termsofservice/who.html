@@ -5,7 +5,7 @@
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
-        <li class="active">{% trans "The People Behind The Inbox" %}</li>
+        <li class="active">{% blocktrans with settings.SITE_NAME as name %}The People Behind {{ name }}{% endblocktrans %}</li>
     </ul>
 {% endblock %}
 
