@@ -82,19 +82,18 @@ def statistics():
 @app.task(ignore_result=True)
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
-    emails = models.Email.objects.order_by("-received_date").only('id')
+    emails = models.Email.objects.order_by("-received_date")
     emails = emails.filter(inbox__user__id=user_id, inbox__flags=~models.Inbox.flags.exclude_from_unified)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
-    emails = [email.id for email in emails[:100]]  # number of emails on page
+    emails = list(emails.values_list("id", flat=True)[:100])  # number of emails on page
     emails = models.Email.objects.filter(id__in=emails, flags=~models.Email.flags.seen)
 
-    # if some emails haven't been seen yet, we have nothing else to do
     if emails.count() > 0:
+        # if some emails haven't been seen yet, we have nothing else to do
         return
-
-    if inbox_id is None:
-        profile = get_user_model().objects.select_related("userprofile").get(id=user_id).userprofile
+    elif inbox_id is None:
+        profile = models.UserProfile.objects.get_or_create(user_id=user_id)[0]
         profile.flags.unified_has_new_messages = False
         profile.save(update_fields=["flags"])
     else:
