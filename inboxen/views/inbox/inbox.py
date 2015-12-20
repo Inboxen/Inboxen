@@ -49,6 +49,8 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
 
         # ugly!
         # see https://code.djangoproject.com/ticket/19513
+        # tl;dr Django uses a subquery when doing an `update` on a queryset,
+        # but it doesn't strip out annotations
         if self.request.method != "POST":
             qs = qs.annotate(important=Count(Case(When(flags=models.Email.flags.important, then=1), output_field=IntegerField())))
             qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
