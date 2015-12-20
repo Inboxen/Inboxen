@@ -56,6 +56,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 
+    @search.skip_index_update()
     def post(self, *args, **kwargs):
         qs = self.get_queryset()
 
@@ -77,9 +78,8 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             except self.model.DoesNotExist, ValueError:
                 raise Http404
 
-            with search.skip_index_update():
-                email.flags.important = not email.flags.important
-                email.save(update_fields=["flags"])
+            email.flags.important = not email.flags.important
+            email.save(update_fields=["flags"])
 
             return HttpResponseRedirect(self.get_success_url())
 
@@ -97,17 +97,16 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             return HttpResponseRedirect(self.get_success_url())
 
         qs = qs.filter(id__in=emails).order_by("id")
-        with search.skip_index_update():
-            if "unimportant" in self.request.POST:
-                qs.update(flags=F('flags').bitand(~self.model.flags.important))
-            elif "important" in self.request.POST:
-                qs.update(flags=F('flags').bitor(self.model.flags.important))
-            elif "delete" in self.request.POST:
-                email_ids = [("email", email.id) for email in qs]
-                qs.update(flags=F('flags').bitor(self.model.flags.deleted))
-                delete_task = delete_inboxen_item.chunks(email_ids, 500).group()
-                delete_task.skew(step=50)
-                delete_task.apply_async()
+        if "unimportant" in self.request.POST:
+            qs.update(flags=F('flags').bitand(~self.model.flags.important))
+        elif "important" in self.request.POST:
+            qs.update(flags=F('flags').bitor(self.model.flags.important))
+        elif "delete" in self.request.POST:
+            email_ids = [("email", email.id) for email in qs]
+            qs.update(flags=F('flags').bitor(self.model.flags.deleted))
+            delete_task = delete_inboxen_item.chunks(email_ids, 500).group()
+            delete_task.skew(step=50)
+            delete_task.apply_async()
 
         return HttpResponseRedirect(self.get_success_url())
 
