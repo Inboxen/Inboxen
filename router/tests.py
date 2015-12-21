@@ -26,6 +26,7 @@ from django.db import DatabaseError
 
 from salmon.mail import MailRequest
 from salmon.server import SMTPError
+from salmon.routing import Router
 
 from inboxen import models
 from inboxen.tests import factories
@@ -87,7 +88,9 @@ class RouterTestCase(test.TestCase):
 
     def test_config_import(self):
         """Very simple test to verify we can import settings module"""
-        import router.config.settings
+        self.assertNotIn("app.server", Router.HANDLERS)
+        from config import boot
+        self.assertIn("app.server", Router.HANDLERS)
 
     def test_exceptions(self):
         # import here, that way we don't have to fiddle with sys.path in the global scope
