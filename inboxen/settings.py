@@ -158,6 +158,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'async_messages.middleware.AsyncMiddleware',
     'inboxen.middleware.RateLimitMiddleware',
+    'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
 )

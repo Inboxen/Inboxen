@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2015 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -30,3 +30,11 @@ class RateLimitMiddleware(object):
         if isinstance(exception, RateLimitException):
             messages.warning(request, _("Too many login attempts, further login attempts will be ignored."))
             return redirect("user-login")
+
+
+class ExtendSessionMiddleware(object):
+    """Extends the expiry of sessions for logged in users"""
+    def process_request(self, request):
+        if request.user.is_authenticated():
+            request.session.set_expiry(None)
+            request.session.modified = True
