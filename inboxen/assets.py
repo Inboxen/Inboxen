@@ -32,17 +32,14 @@ css = Bundle(
 
 
 js = Bundle(
-    "js/copying-js.txt",
-    Bundle(
-        "js/jquery.js",
-        "js/bootstrap.js",
-        "js/menu.js",
-        "js/home.js",
-        "js/search.js",
-        "js/inbox.js",
-        "js/email.js",  # make sure this one is last
-        filters="jsmin",
-    ),
+    "thirdparty/jquery/dist/jquery.js",
+    "thirdparty/bootstrap-sass/assets/javascripts/bootstrap.js",
+    "js/menu.js",
+    "js/home.js",
+    "js/search.js",
+    "js/inbox.js",
+    "js/email.js",  # make sure this one is last
+    filters="jsmin",
     output="compiled/js/website.%(version)s.js",
 )
 
