@@ -1,20 +1,27 @@
-/*
+$icon-font-path: "bootstrap-sass/assets/fonts/bootstrap/";
+@import "bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Inboxen styles
+
+/*!
  * Copyright (c) 2013-2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
+
 body {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
 }
+
 #footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 30px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
 }
 
 .table-honeydew {
@@ -66,9 +73,9 @@ td.inbox-name > a {
 }
 
 @media (min-width: 768px) {
-  .navbar {
-    border-radius: 0;
-  }
+    .navbar {
+        border-radius: 0;
+    }
 }
 
 .index-heading {

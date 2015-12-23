@@ -17,16 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django_assets import Bundle, register
+import os
 
+from django.conf import settings
+
+from django_assets import Bundle, register
+from webassets.filter import get_filter
+
+thirdparty_path = os.path.join(settings.BASE_DIR, "node_modules")
 
 css = Bundle(
-    "css/copying-css.txt",
-    Bundle(
-        "css/bootstrap.css",
-        "css/inboxen.css",
-        filters="cssutils",
-    ),
+    "css/inboxen.scss",
+    filters=(get_filter('scss', load_paths=(thirdparty_path,)),),
     output="compiled/css/website.%(version)s.css",
 )
 
