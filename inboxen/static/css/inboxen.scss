@@ -1,20 +1,27 @@
-/*
+$icon-font-path: "bootstrap-sass/assets/fonts/bootstrap/";
+@import "bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Inboxen styles
+
+/*!
  * Copyright (c) 2013-2015 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
+
 body {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
 }
+
 #footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 30px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
 }
 
 .table-honeydew {
@@ -32,14 +39,14 @@ body {
 
 a.soon {
     cursor: not-allowed;
-    color: #999999;
+    color: $gray-light;
     text-decoration: none;
 }
 
 tr.inbox-disabled {
     font-style: italic;
-    color: #555 !important;
-    background-color: #EEE;
+    color: $gray !important;
+    background-color: $gray-lighter;
 }
 
 tr.inbox-disabled .label {
@@ -52,23 +59,20 @@ td.inbox-name > a {
 
 .close {
     opacity: 0.3;
+
+    &:hover, &:focus {
+        opacity: 0.6;
+    }
 }
 
-.close:hover, .close:focus {
-    opacity: 0.6;
-}
-
-@media (min-width:768px){
+@media (min-width: $screen-sm-min){
     .navbar-form .input-group-btn,
     .navbar-form .input-group-addon {
         width: auto;
     }
-}
-
-@media (min-width: 768px) {
-  .navbar {
-    border-radius: 0;
-  }
+    .navbar {
+        border-radius: 0;
+    }
 }
 
 .index-heading {
@@ -96,8 +100,5 @@ td.inbox-name > a {
 }
 
 .btn-massive {
-    padding: 20px 32px;
-    font-size: 28px;
-    line-height: 1.0;
-    border-radius: 6px;
+    @include button-size(20px, 32px, 28px, 1.0, 6px);
 }

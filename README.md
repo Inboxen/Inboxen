@@ -16,16 +16,26 @@ See also: <https://etherpad.mozilla.org/inboxen>
 Developing
 ----------
 
+You'll need the following tools:
+
+* Git
+* Python (we strongly recommend you use virtualenv too)
+* NodeJS
+* Sass
+
 Set yourself up with a virtual environment and run the following:
 
 ```
 git clone https://github.com/Inboxen/Inboxen.git
 cd Inboxen
 pip install -r requirements-dev.txt
+mkdir node_modules
+npm update
 ```
 
 When you've made your changes, remember to run `flake8` against Python files
-you've changed and run unit tests. To run the tests, do the following:
+you've changed (and `jshint` on JS files) and run unit tests. To run the tests,
+do the following:
 
 ```
 DB=sqlite python manage.py test --settings=inboxen.tests.settings
@@ -66,14 +76,21 @@ touch #234
 Deploying
 ---------
 
+You'll need the following tools:
+
+* Git
+* Python (we strongly recommend you use virtualenv too)
+* NodeJS
+* Sass
+
 Set yourself up with a virtual environment and run the following:
 
 ```
-git clone https://github.com/Inboxen/Inboxen.git
+git clone -b deploy https://github.com/Inboxen/Inboxen.git
 cd Inboxen
-# optional step
-#git checkout deploy
 pip install -r requirements.txt
+mkdir node_modules
+npm update
 ```
 
 After this has completed, see the next section on minimum configuration. Also,
