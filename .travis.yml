@@ -11,7 +11,7 @@ before_script:
 
 install:
     - mkdir node_modules
-    - npm install bootstrap-sass jquery
+    - npm update
     - if [[ $DB == postgres ]]; then travis_retry pip install -q psycopg2; fi
     - travis_retry pip install -q -r requirements.txt
     - travis_retry pip install -q codecov
