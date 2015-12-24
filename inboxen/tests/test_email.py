@@ -71,6 +71,9 @@ class EmailViewTestCase(test.TestCase):
         button = button % self.email.eid
         self.assertIn(button, response.content)
 
+        # check that premailer removes invalid CSS
+        self.assertNotIn("awesomebar-sprite.png", response.content)
+
         # check for no-referrer
         self.assertIn('<meta name="referrer" content="no-referrer">', response.content)
 
@@ -158,6 +161,13 @@ class EmailViewTestCase(test.TestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        # csp
+        self.assertNotIn("srcipt-src", response["content-security-policy"])
+        self.assertIn("default-src 'self';", response["content-security-policy"])
+        self.assertIn("img-src 'self' https:;", response["content-security-policy"])
+        self.assertIn("media-src https:;", response["content-security-policy"])
+        self.assertIn("style-src 'self' 'unsafe-inline' https:;", response["content-security-policy"])
 
         part_id = part.id + 1000
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part_id})
