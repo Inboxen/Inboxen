@@ -71,6 +71,9 @@ class EmailViewTestCase(test.TestCase):
         button = button % self.email.eid
         self.assertIn(button, response.content)
 
+        # check that premailer removes invalid CSS
+        self.assertNotIn("awesomebar-sprite.png", response.content)
+
         # check for no-referrer
         self.assertIn('<meta name="referrer" content="no-referrer">', response.content)
 
@@ -105,6 +108,10 @@ class EmailViewTestCase(test.TestCase):
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
+        # csp
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertIn("img-src 'self' https:;", response["content-security-policy"])
+
     def test_body_encoding_without_imgDisplay(self):
         self.user.userprofile.flags.ask_images = True
         self.user.userprofile.save()
@@ -122,6 +129,10 @@ class EmailViewTestCase(test.TestCase):
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
+
+        # csp
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertNotIn("img-src", response["content-security-policy"])
 
     def test_body_no_ask_images(self):
         self.user.userprofile.flags.ask_images = False
@@ -141,11 +152,22 @@ class EmailViewTestCase(test.TestCase):
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
+        # csp
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertNotIn("img-src", response["content-security-policy"])
+
     def test_attachments_get(self):
         part = self.email.parts.get()
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        # csp
+        self.assertNotIn("srcipt-src", response["content-security-policy"])
+        self.assertIn("default-src 'self';", response["content-security-policy"])
+        self.assertIn("img-src 'self' https:;", response["content-security-policy"])
+        self.assertIn("media-src https:;", response["content-security-policy"])
+        self.assertIn("style-src 'self' 'unsafe-inline' https:;", response["content-security-policy"])
 
         part_id = part.id + 1000
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part_id})
