@@ -111,5 +111,5 @@ bad_request = ErrorView.as_view(
 @require_POST
 def csp_report(request):
     """Simple CSP report view"""
-    _log.critical("CSP Report: ", request.body)
+    _log.critical("CSP Report: %s", request.body)
     return HttpResponse("")

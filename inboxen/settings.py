@@ -240,3 +240,61 @@ try:
         os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
+
+
+## LOGGING
+if DEBUG:
+    log_level = "INFO"
+else:
+    log_level = "WARNING"
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'inboxen': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'account': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'blog': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'liberation': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'redirect': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'router': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'source': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'termsofservice': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'tickets': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+    },
+}
