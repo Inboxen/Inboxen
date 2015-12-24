@@ -115,6 +115,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    ("thirdparty", os.path.join(BASE_DIR, "node_modules")),
+]
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -158,6 +162,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'async_messages.middleware.AsyncMiddleware',
     'inboxen.middleware.RateLimitMiddleware',
+    'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'csp.middleware.CSPMiddleware',
 )
@@ -206,7 +211,7 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
 # CSP settings
-CSP_REPORT_ONLY = True
+CSP_REPORT_ONLY = False
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 
 # csrf
@@ -235,3 +240,61 @@ try:
         os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
+
+
+## LOGGING
+if DEBUG:
+    log_level = "INFO"
+else:
+    log_level = "WARNING"
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'inboxen': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'account': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'blog': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'liberation': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'redirect': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'router': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'source': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'termsofservice': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+        'tickets': {
+            'handlers': ['console'],
+            'level': log_level,
+        },
+    },
+}

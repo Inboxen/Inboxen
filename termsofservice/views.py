@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.conf import settings
 from django.http import Http404
 from django.views import generic
 from django.utils.translation import ugettext as _
@@ -40,7 +41,7 @@ class TOSView(base.CommonContextMixin, generic.DetailView):
 
 
 class WhoView(base.CommonContextMixin, generic.ListView):
-    headline = _("The People Behind The Inbox")
+    headline = _("The People Behind %(name)s") % {"name": settings.SITE_NAME}
     model = models.StaffProfile
     template_name = "termsofservice/who.html"
 

@@ -49,6 +49,18 @@ class InboxTestAbstract(object):
         count = models.Email.objects.filter(flags=models.Email.flags.important).count()
         self.assertEqual(count, 2)
 
+        # and then mark them as unimportant again
+        params = {"unimportant": ""}
+
+        for email in self.emails[:2]:
+            params[email.eid] = "email"
+
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 302)
+
+        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        self.assertEqual(count, 0)
+
     def test_get_read(self):
         count = models.Email.objects.filter(flags=models.Email.flags.read).count()
         self.assertEqual(count, 0)
@@ -65,8 +77,9 @@ class InboxTestAbstract(object):
         self.assertEqual(count, 2)
 
     def test_post_delete(self):
-        count_1st = len(self.emails)
+        count_1st = len(self.emails) + 1
         params = dict([(email.eid, "email") for email in self.emails[:10]])
+        params[self.not_mine.eid] = "email"  # this email should get ignored
         params["delete"] = ""
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
@@ -75,13 +88,28 @@ class InboxTestAbstract(object):
         self.assertEqual(count_1st - 10, count_2nd)
 
     def test_post_single_delete(self):
-        email_id = self.emails[0].id
-        response = self.client.post(self.get_url(), {"delete-single": email_id})
+        email = self.emails[0]
+        response = self.client.post(self.get_url(), {"delete-single": email.eid})
         self.assertEqual(response.status_code, 302)
 
         # second time around, it's already deleted but we don't want an error
-        response = self.client.post(self.get_url(), {"delete-single": email_id})
+        response = self.client.post(self.get_url(), {"delete-single": email.eid})
         self.assertEqual(response.status_code, 302)
+
+        with self.assertRaises(models.Email.DoesNotExist):
+            models.Email.objects.get(id=email.id)
+
+    def test_post_single_important(self):
+        email = self.emails[0]
+        response = self.client.post(self.get_url(), {"important-single": email.eid})
+        self.assertEqual(response.status_code, 302)
+        email.refresh_from_db()
+        self.assertTrue(bool(email.flags.important))
+
+        response = self.client.post(self.get_url(), {"important-single": email.eid})
+        self.assertEqual(response.status_code, 302)
+        email.refresh_from_db()
+        self.assertFalse(bool(email.flags.important))
 
     def test_important_first(self):
         # mark some emails as important
@@ -117,6 +145,7 @@ class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
 
         self.inbox = factories.InboxFactory(user=self.user)
         self.emails = factories.EmailFactory.create_batch(150, inbox=self.inbox)
+        self.not_mine = factories.EmailFactory.create(inbox__user=self.user)
 
         for email in self.emails:
             part = factories.PartListFactory(email=email)
@@ -139,6 +168,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
             raise Exception("Could not log in")
 
         self.emails = factories.EmailFactory.create_batch(150, inbox__user=self.user)
+        self.not_mine = factories.EmailFactory.create()
 
         for email in self.emails:
             part = factories.PartListFactory(email=email)

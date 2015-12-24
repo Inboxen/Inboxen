@@ -2,9 +2,11 @@ import logging
 import logging.config
 import os
 
-from config import settings
+from django.conf import settings as dj_settings
 from salmon import queue
 from salmon.routing import Router
+
+from config import settings
 
 __all__ = ["settings"]
 
@@ -18,10 +20,11 @@ try:
 except OSError:
     pass
 
-if os.path.exists("config/logging.conf"):
-    logging.config.fileConfig("config/logging.conf")
-else:
-    logging.config.fileConfig("config/logging.conf.default")
+logconfig_path = os.path.join(dj_settings.BASE_DIR, "router", "config", "logging.conf")
+if not os.path.exists(logconfig_path):
+    logconfig_path = os.path.join(dj_settings.BASE_DIR, "router", "config", "logging.conf.default")
+
+logging.config.fileConfig(logconfig_path)
 
 Router.load(['app.server'])
 Router.RELOAD = False

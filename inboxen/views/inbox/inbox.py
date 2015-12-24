@@ -46,10 +46,17 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
     def get_queryset(self, *args, **kwargs):
         qs = super(InboxView, self).get_queryset(*args, **kwargs)
         qs = qs.viewable(self.request.user)
-        qs = qs.annotate(important=Count(Case(When(flags=models.Email.flags.important, then=1), output_field=IntegerField())))
-        qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
+
+        # ugly!
+        # see https://code.djangoproject.com/ticket/19513
+        # tl;dr Django uses a subquery when doing an `update` on a queryset,
+        # but it doesn't strip out annotations
+        if self.request.method != "POST":
+            qs = qs.annotate(important=Count(Case(When(flags=models.Email.flags.important, then=1), output_field=IntegerField())))
+            qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 
+    @search.skip_index_update()
     def post(self, *args, **kwargs):
         qs = self.get_queryset()
 
@@ -71,9 +78,8 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             except self.model.DoesNotExist, ValueError:
                 raise Http404
 
-            with search.skip_index_update():
-                email.flags.important = not email.flags.important
-                email.save(update_fields=["flags"])
+            email.flags.important = not email.flags.important
+            email.save(update_fields=["flags"])
 
             return HttpResponseRedirect(self.get_success_url())
 
@@ -90,22 +96,17 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             # nothing was selected, return early
             return HttpResponseRedirect(self.get_success_url())
 
-        # Something between Bitfield and Django's ORM doesn't like our complex queries
-        emails = qs.filter(id__in=emails).order_by("id").only("id")
-        email_ids = list(emails.values_list('id', flat=True))
-        emails = self.model.objects.filter(id__in=email_ids).only("id")
-
-        with search.skip_index_update():
-            if "unimportant" in self.request.POST:
-                emails.update(flags=F('flags').bitand(~self.model.flags.important))
-            elif "important" in self.request.POST:
-                emails.update(flags=F('flags').bitor(self.model.flags.important))
-            elif "delete" in self.request.POST:
-                emails.update(flags=F('flags').bitor(self.model.flags.deleted))
-                emails = [("email", email.id) for email in emails]
-                emails = delete_inboxen_item.chunks(emails, 500).group()
-                emails.skew(step=50)
-                emails.apply_async()
+        qs = qs.filter(id__in=emails).order_by("id")
+        if "unimportant" in self.request.POST:
+            qs.update(flags=F('flags').bitand(~self.model.flags.important))
+        elif "important" in self.request.POST:
+            qs.update(flags=F('flags').bitor(self.model.flags.important))
+        elif "delete" in self.request.POST:
+            email_ids = [("email", email.id) for email in qs]
+            qs.update(flags=F('flags').bitor(self.model.flags.deleted))
+            delete_task = delete_inboxen_item.chunks(email_ids, 500).group()
+            delete_task.skew(step=50)
+            delete_task.apply_async()
 
         return HttpResponseRedirect(self.get_success_url())
 

@@ -26,12 +26,12 @@
     <div class="col-sm-4 col-md-2">
     {% if who_exists %}
         <h3><a href="{% url 'termsofservice-who' %}">
-            {% trans "The People Behind The Inbox" %}
+            {% blocktrans with settings.SITE_NAME as name %}The People Behind {{ name }}{% endblocktrans %}
         </a></h3>
         <h5>{% trans "Who runs this service?" %}</h5>
     {% else %}
         <h3><a class="soon" href="#">
-            {% trans "The People Behind The Inbox" %}
+            {% blocktrans with settings.SITE_NAME as name %}The People Behind {{ name }}{% endblocktrans %}
         </a></h3>
         <h5>{% trans "Soon." %}</h5>
     {% endif %}

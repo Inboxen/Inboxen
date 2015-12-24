@@ -20,6 +20,8 @@ import re
 from django.http import Http404, HttpResponse
 from django.views import generic
 
+from csp.decorators import csp_replace
+
 from inboxen import models
 from inboxen.views import base
 
@@ -42,6 +44,10 @@ class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailV
         except models.PartList.DoesNotExist:
             raise Http404
 
+    # csp should allow images, media, and style sheets over https.
+    # *Do not* do the same for script-src, that will make bypassing CPS on the
+    # rest of the site trivial!
+    @csp_replace(STYLE_SRC=["'self'", "'unsafe-inline'", "https:"], IMG_SRC=["'self'", "https:"], MEDIA_SRC=["https:"])
     def get(self, *args, **kwargs):
         if kwargs.get("method", "download") == "download":
             self.file_attachment = True

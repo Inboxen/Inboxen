@@ -24,7 +24,6 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from csp.decorators import csp_replace
 from watson import search
 
 from inboxen import models
@@ -41,7 +40,6 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
     pk_url_kwarg = "id"
     template_name = 'inbox/email.html'
 
-    @csp_replace(STYLE_SRC=["'self'", "'unsafe-inline'"])
     def get(self, *args, **kwargs):
 
         with search.skip_index_update():
@@ -52,6 +50,12 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
             self.object.flags.read = True
             self.object.flags.seen = True
             self.object.save(update_fields=["flags"])
+
+        # pretend to be @csp_replace
+        out._csp_replace = {"style-src": ["'self'", "'unsafe-inline'"]}
+        if getattr(self, "_has_images", False):
+            # if we have images to display, allow loading over https
+            out._csp_replace["img-src"] = ["'self'", "https:"]
         return out
 
     def get_object(self, *args, **kwargs):
@@ -133,4 +137,6 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
             "headersfetchall": headers_fetch_all,
         })
 
+
+        self._has_images = email_dict["display_images"]
         return context

@@ -17,32 +17,33 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import os
+
+from django.conf import settings
+
 from django_assets import Bundle, register
+from webassets.filter import get_filter
+
+thirdparty_path = os.path.join(settings.BASE_DIR, "node_modules")
+sass = get_filter('scss', style="compressed", load_paths=(thirdparty_path,))
 
 
 css = Bundle(
-    "css/copying-css.txt",
-    Bundle(
-        "css/bootstrap.css",
-        "css/inboxen.css",
-        filters="cssutils",
-    ),
+    "css/inboxen.scss",
+    filters=(sass,),
     output="compiled/css/website.%(version)s.css",
 )
 
 
 js = Bundle(
-    "js/copying-js.txt",
-    Bundle(
-        "js/jquery.js",
-        "js/bootstrap.js",
-        "js/menu.js",
-        "js/home.js",
-        "js/search.js",
-        "js/inbox.js",
-        "js/email.js",  # make sure this one is last
-        filters="jsmin",
-    ),
+    "thirdparty/jquery/dist/jquery.js",
+    "thirdparty/bootstrap-sass/assets/javascripts/bootstrap.js",
+    "js/menu.js",
+    "js/home.js",
+    "js/search.js",
+    "js/inbox.js",
+    "js/email.js",  # make sure this one is last
+    filters="jsmin",
     output="compiled/js/website.%(version)s.js",
 )
 

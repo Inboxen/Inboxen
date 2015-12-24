@@ -23,6 +23,7 @@ import sys
 from django import test
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -30,9 +31,10 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
 
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
+from inboxen.middleware import ExtendSessionMiddleware
 
 
 @override_settings(CACHE_BACKEND="locmem:///")
@@ -126,6 +128,20 @@ class IndexTestCase(test.TestCase):
             response = self.client.get(urlresolvers.reverse("index"))
             self.assertEqual(response.status_code, 200)
             self.assertNotIn("Join", response.content)
+
+
+class ExtendSessionMiddlewareTestCase(test.TestCase):
+    def test_get_set(self):
+        user = factories.UserFactory()
+        request = utils.MockRequest(user)
+        ExtendSessionMiddleware().process_request(request)
+        self.assertTrue(request.session.modified)
+
+    def test_with_anon(self):
+        user = AnonymousUser()
+        request = utils.MockRequest(user)
+        ExtendSessionMiddleware().process_request(request)
+        self.assertFalse(request.session.modified)
 
 
 class UtilsTestCase(test.TestCase):

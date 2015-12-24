@@ -24,4 +24,4 @@ from inboxen import assets
 
 class AssetTest(test.TestCase):
     def test_asset_order(self):
-        self.assertEqual(assets.js.contents[-1].contents[-1], "js/email.js")
+        self.assertEqual(assets.js.contents[-1], "js/email.js")

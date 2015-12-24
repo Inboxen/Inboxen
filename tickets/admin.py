@@ -27,7 +27,7 @@ from tickets import models
 class ResponseInline(admin.TabularInline):
     model = models.Response
     extra = 0
-    readonly_fields = ("date",)
+    readonly_fields = ("render_body", "date",)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'author':
@@ -40,7 +40,7 @@ class ResponseInline(admin.TabularInline):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("subject", "author", "status")
     inlines = (ResponseInline,)
-    readonly_fields = ("date", "last_modified")
+    readonly_fields = ("date", "last_modified", "render_body")
 
     def get_readonly_fields(self, request, obj=None):
         if obj is not None:
