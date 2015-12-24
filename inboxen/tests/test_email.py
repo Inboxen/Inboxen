@@ -105,6 +105,10 @@ class EmailViewTestCase(test.TestCase):
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
+        # csp
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertIn("img-src 'self' https:;", response["content-security-policy"])
+
     def test_body_encoding_without_imgDisplay(self):
         self.user.userprofile.flags.ask_images = True
         self.user.userprofile.save()
@@ -123,6 +127,10 @@ class EmailViewTestCase(test.TestCase):
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
 
+        # csp
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertNotIn("img-src", response["content-security-policy"])
+
     def test_body_no_ask_images(self):
         self.user.userprofile.flags.ask_images = False
         self.user.userprofile.save()
@@ -140,6 +148,10 @@ class EmailViewTestCase(test.TestCase):
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
+
+        # csp
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertNotIn("img-src", response["content-security-policy"])
 
     def test_attachments_get(self):
         part = self.email.parts.get()
