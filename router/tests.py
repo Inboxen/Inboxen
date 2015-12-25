@@ -18,6 +18,7 @@
 ##
 
 import mock
+import shutil
 import sys
 
 from django import test
@@ -85,6 +86,9 @@ class RouterTestCase(test.TestCase):
 
     def tearDown(self):
         sys.path.pop()
+        # clean up log and run dirs
+        shutil.rmtree("logs", ignore_errors=True)
+        shutil.rmtree("run", ignore_errors=True)
 
     def test_config_import(self):
         """Very simple test to verify we can import settings module"""
