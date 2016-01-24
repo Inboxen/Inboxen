@@ -21,9 +21,9 @@ from django.conf import urls
 
 from termsofservice import views
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
+
+urlpatterns = [
     urls.url(r'^$', views.HelpView.as_view(), name='termsofservice-index'),
     urls.url(r'^tos/$', views.TOSView.as_view(), name='termsofservice-tos'),
     urls.url(r'^who/$', views.WhoView.as_view(), name='termsofservice-who'),
-)
+]

@@ -21,8 +21,8 @@ from django.conf import urls
 
 from tickets import views
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
+
+urlpatterns = [
     urls.url(
         r'^$',
         views.QuestionHomeView.as_view(),
@@ -43,4 +43,4 @@ urlpatterns = urls.patterns('',
         views.QuestionDetailView.as_view(),
         name='tickets-detail'
     ),
-)
+]

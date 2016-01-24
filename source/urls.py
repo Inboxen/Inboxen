@@ -22,11 +22,10 @@ from django.conf import urls
 from source import views
 
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
+urlpatterns = [
     urls.url(
         r'^$',
         views.index,
         name='source-index',
     ),
-)
+]
