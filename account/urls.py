@@ -18,6 +18,7 @@
 ##
 
 from django.conf import settings as dj_settings, urls
+from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 
@@ -29,10 +30,9 @@ from account.views import delete, login, otp, register, settings
 from inboxen import views
 
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
+urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
-    urls.url(r'^security/password', 'django.contrib.auth.views.password_change',
+    urls.url(r'^security/password', auth_views.password_change,
         {
             'template_name': 'user/account/password.html',
             'post_change_redirect': reverse_lazy('user-security'),
@@ -52,15 +52,15 @@ urlpatterns = urls.patterns('',
     urls.url(r'^delete', delete.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^username', settings.UsernameChangeView.as_view(), name='user-username'),
     urls.url(r'^login/', anonymous_required(login.LoginView.as_view()), name='user-login'),
-    urls.url(r'^logout/', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='user-logout'),
+    urls.url(r'^logout/', auth_views.logout, {'next_page': '/'}, name='user-logout'),
 
     # liberation app
     urls.url(r'^liberate/', urls.include("liberation.urls")),
-)
+]
 
 if dj_settings.ENABLE_REGISTRATION:
-    urlpatterns += urls.patterns('',
+    urlpatterns += [
         urls.url(r'^register/status', anonymous_required(views.TemplateView.as_view(template_name='account/register/software-status.html', headline=_('We\'re not stable!'))), name='user-status'),
         urls.url(r'^register/success', anonymous_required(views.TemplateView.as_view(template_name='account/register/success.html', headline=_('Welcome!'))), name='user-success'),
         urls.url(r'^register/', anonymous_required(register.UserRegistrationView.as_view()), name='user-registration'),
-    )
+    ]

@@ -64,7 +64,7 @@ class AnonRequiredTestCase(test.TestCase):
         for url in urls:
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
-            self.assertEqual(response["Location"], "http://testserver{}".format(reverse("user-home")))
+            self.assertEqual(response["Location"], reverse("user-home"))
 
     def test_urls_logged_out(self):
         urls = [reverse("user-registration"), reverse("user-status"), reverse("user-success"), reverse("user-login")]

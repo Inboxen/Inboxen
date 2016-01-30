@@ -180,14 +180,14 @@ class EmailViewTestCase(test.TestCase):
         params = {"important-toggle": ""}
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        self.assertEqual(response["Location"], self.get_url())
         email = models.Email.objects.get(pk=self.email.pk)
         self.assertNotEqual(email.flags.important, important)
 
         important = not important
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        self.assertEqual(response["Location"], self.get_url())
         email = models.Email.objects.get(pk=self.email.pk)
         self.assertNotEqual(email.flags.important, important)
 

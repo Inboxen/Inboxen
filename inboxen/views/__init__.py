@@ -20,3 +20,4 @@ from .inbox import *
 from .index import *
 from .stats import *
 from .user import *
+import error

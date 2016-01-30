@@ -25,7 +25,7 @@ from django.contrib.messages.storage.session import SessionStorage
 class MockRequest(HttpRequest):
     """Mock up a request object"""
 
-    def __init__(self, user, session_id=1):
+    def __init__(self, user, session_id="12345678"):
         super(MockRequest, self).__init__()
         self.user = user
         session = SessionMiddleware()

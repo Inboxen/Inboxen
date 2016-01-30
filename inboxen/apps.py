@@ -18,13 +18,7 @@
 ##
 
 from django.apps import AppConfig
-from django.contrib.auth.models import update_last_login
-from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models.signals import pre_save
-
-from watson import search as watson_search
-
-from inboxen import search, signals
 
 
 class InboxenConfig(AppConfig):
@@ -32,6 +26,12 @@ class InboxenConfig(AppConfig):
     verbose_name = "Inboxen Core"
 
     def ready(self):
+        from django.contrib.auth.models import update_last_login
+        from django.contrib.auth.signals import user_logged_in, user_logged_out
+        from watson import search as watson_search
+
+        from inboxen import search, signals
+
         Inbox = self.get_model("Inbox")
         Email = self.get_model("Email")
         Request = self.get_model("Request")

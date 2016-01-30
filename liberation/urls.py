@@ -22,8 +22,7 @@ from django.conf import urls
 from liberation import views
 
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
+urlpatterns = [
     urls.url(r'^$', views.LiberationView.as_view(), name='user-liberate'),
     urls.url(r'^download$', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
-)
+]

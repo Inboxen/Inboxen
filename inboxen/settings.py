@@ -94,8 +94,6 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-TEMPLATE_DEBUG = DEBUG
-
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
@@ -131,26 +129,31 @@ AUTHENTICATION_BACKENDS = (
     'inboxen.backends.RateLimitWithSettings',
 )
 
-# Make sure all custom template tags are thread safe
-# https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/#template-tag-thread-safety
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "session_csrf.context_processor",
-    "django.contrib.messages.context_processors.messages",
-    "inboxen.context_processors.reduced_settings_context"
-)
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'OPTIONS': {
+        'context_processors': [
+            "django.contrib.auth.context_processors.auth",
+            "django.core.context_processors.debug",
+            "django.core.context_processors.i18n",
+            "django.core.context_processors.static",
+            "django.core.context_processors.tz",
+            "django.core.context_processors.request",
+            "session_csrf.context_processor",
+            "django.contrib.messages.context_processors.messages",
+            "inboxen.context_processors.reduced_settings_context"
+        ],
+        'loaders': [
+            # Make sure all custom template tags are thread safe
+            # https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/#template-tag-thread-safety
+            ('django.template.loaders.cached.Loader', (
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            )),
+        ],
+        'debug': DEBUG,
+    },
+}]
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
