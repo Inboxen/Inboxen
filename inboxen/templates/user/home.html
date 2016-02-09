@@ -10,52 +10,47 @@
 {% endblock %}
 
 {% block content %}
-<div class="table-responsive">
-<table id="home" class="table table-hover table-honeydew">
-    <thead>
-    <tr>
-        <th>{% trans "Inbox" %}</th>
-        <th>{% trans "Last activity" %}</th>
-        <th>{% trans "Description" %}</th>
-        <th>&nbsp;</th>
-    </tr>
-    </thead>
-    <tr id="unified" class="warning">
-        <td class="inbox-name">{% spaceless %}
-            <a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a>
-            {{ user.userprofile.flags|render_flags }}
-        {% endspaceless %}</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-    </tr>
+{% with col0="col-md-3 col-xs-5" col1="col-md-2 col-xs-3" col2="col-md-2 col-xs-3" col3="col-md-1 col-md-push-4 col-xs-1" col4="col-md-4 col-md-pull-1 col-xs-12" %}
+<div id="home" class="honeydew">
+    <div class="row title">
+        <div class="{{ col0 }}">{% trans "Inbox" %}</div>
+        <div class="{{ col1 }}">&nbsp;</div>
+        <div class="{{ col2 }}">{% trans "Last activity" %}</div>
+        <div class="{{ col4 }}">&nbsp;</div>
+        <div class="{{ col3 }}">&nbsp;</div>
+    </div>
+    <div id="unified" class="row">
+        <div class="inbox-name {{ col0 }}"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
+        <div class="inbox-flags {{ col1 }}">{{ user.userprofile.flags|render_flags }}</div>
+        <div class="{{ col2 }}">&nbsp;</div>
+        <div class="{{ col3 }}">&nbsp;</div>
+        <div class="{{ col4 }}">&nbsp;</div>
+    </div>
     {% for inbox in page_obj.object_list %}
-        <tr id="{{ inbox.inbox }}@{{ inbox.domain.domain }}"{% if inbox.flags.disabled %} class="inbox-disabled"{% endif %}>
-            <td class="inbox-name">{% spaceless %}
-                <a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">{{ inbox.inbox }}@{{ inbox.domain.domain }}</a>
-                {{ inbox.flags|render_flags }}
-            {% endspaceless %}</td>
-            <td class="inbox-activity">
+        <div id="{{ inbox.inbox }}@{{ inbox.domain.domain }}" class="row{% if inbox.flags.disabled %} inbox-disabled{% endif %}">
+            <div class="inbox-name {{ col0 }}"><a href="{% url 'single-inbox' inbox=inbox.inbox domain=inbox.domain.domain %}">{{ inbox.inbox }}@{{ inbox.domain.domain }}</a></div>
+            <div class="inbox-flags {{ col1 }}">{{ inbox.flags|render_flags }}</div>
+            <div class="inbox-activity {{ col2 }}">
                 {% if inbox.last_activity %}
                     <span title="{{ inbox.last_activity|date:"r" }}">{{ inbox.last_activity|timesince }} {% trans "ago" %}</span>
                 {% else %}
                     <span><i>{% trans "No activity" %}</i></span>
                 {% endif %}
-            </td>
-            <td class="inbox-description">{{ inbox.description|default:"&nbsp;" }}</td>
-            <td class="inbox-options">
+            </div>
+            <div class="inbox-options {{ col3 }}">
                 <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}">
                     <span aria-hidden="true">&#9997;</span><span class="sr-only">{% trans "Inbox Options" %}</span>
                 </a>
-            </td>
-        </tr>
+            </div>
+            <div class="inbox-description {{ col4 }}">{{ inbox.description|default:"&nbsp;" }}</div>
+        </div>
     {% empty %}
-        <tr>
-            <td colspan="5"><b><a href="{% url 'inbox-add' %}">{% trans "Click here to add an Inbox" %}</a></b></td>
-        </tr>
+        <div class="row">
+            <div class="col-xs-12"><b><a href="{% url 'inbox-add' %}">{% trans "Click here to add an Inbox" %}</a></b></div>
+        </div>
     {% endfor %}
-</table>
 </div>
+{% endwith %}
 <ul class="pager">
     {% if page_obj.has_previous %}
         <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
