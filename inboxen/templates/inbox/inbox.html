@@ -39,14 +39,14 @@
                 <div title="{{ email.received_date|date:"r" }}" class="email-reveived col-xs-3 col-md-1 col-md-push-5"><div>{{ email.timesince }} {% trans "ago" %}</div></div>
                 <div class="email-buttons col-xs-2 col-md-1 col-md-push-5">
                     <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">
-                        <span aria-hidden="true">&#9733;</span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
+                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
                     </button>
                     <button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ email.eid }}">
-                        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
+                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>
                     </button>
                     {% if not inbox %}
                         <a class="close" title="{% trans "Inbox" %}" href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">
-                            <span aria-hidden="true">Inbox</span><span class="sr-only">{% trans "Inbox" %}</span>
+                            <span class="glyphicon glyphicon-inbox" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox" %}</span>
                         </a>
                     {% endif %}
                 </div>
