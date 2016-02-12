@@ -187,6 +187,8 @@ class UnifiedInboxView(InboxView):
             profile.flags.unified_has_new_messages = False
             profile.save(update_fields=["flags"])
 
+        kwargs["unified"] = True
+
         return super(UnifiedInboxView, self).get_context_data(*args, **kwargs)
 
     def post(self, *args, **kwargs):

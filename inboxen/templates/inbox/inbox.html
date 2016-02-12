@@ -27,35 +27,7 @@
     <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
     <div class="honeydew">
         {% for email in page_obj.object_list %}
-            <div id="email-{{ email.eid }}" class="row">
-                <div class="col-xs-2">
-                    <div class="row">
-                        <div class="email-checkbox col-xs-4"><input type="checkbox" value="email" name="{{ email.eid }}" /></div>
-                        <div class="email-flags col-xs-8">{{ email.flags|render_flags }}</div>
-                    </div>
-                </div>
-                <div class="email-sender col-xs-5 col-md-3">{{ email.sender }}</div>
-                {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
-                <div title="{{ email.received_date|date:"r" }}" class="email-reveived col-xs-3 col-md-1 col-md-push-5"><div>{{ email.timesince }} {% trans "ago" %}</div></div>
-                <div class="email-buttons col-xs-2 col-md-1 col-md-push-5">
-                    <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">
-                        <span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
-                    </button>
-                    <button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ email.eid }}">
-                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>
-                    </button>
-                    {% if not inbox %}
-                        <a class="close" title="{% trans "Inbox" %}" href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">
-                            <span class="glyphicon glyphicon-inbox" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox" %}</span>
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="email-subject col-xs-12 col-md-5 col-md-pull-2">{% if email.subject %}
-                    <a href="{{ email_url }}"> {{ email.subject }} </a>
-                {% else %}
-                    <i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i>
-                {% endif %}</div>
-            </div>
+            {% include "includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
         {% empty %}
             <div>
                 <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
