@@ -1,4 +1,4 @@
-{# Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% load i18n inboxen_flags %}
 <div id="{{ inbox }}@{{ domain }}" class="row{% if flags.disabled %} inbox-disabled{% endif %}">
 	<div class="inbox-name {{ col0 }}"><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></div>
