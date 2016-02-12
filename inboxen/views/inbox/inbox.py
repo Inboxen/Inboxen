@@ -21,7 +21,6 @@ from django.core.cache import cache
 from django.db.models import Case, Count, F, IntegerField, When
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
-from django.utils.timesince import timesince
 from django.views import generic
 
 from watson import search
@@ -131,23 +130,10 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
             headers.update(missing_headers)
             cache.set_many(missing_headers, version="email-header", timeout=None)
 
-        timesinces = cache.get_many(object_id_list, version="email-timesince")
-        timesince_cache_miss = {}
-
         for email in object_list:
             header_set = headers[email.id]
             email.subject = header_set.get("Subject")
             email.sender = header_set["From"]
-
-            if email.id in timesinces:
-                email.timesince = timesinces[email.id]
-            else:
-                # cache miss
-                since = timesince(email.received_date)
-                email.timesince = since
-                timesince_cache_miss[email.id] = since
-
-        cache.set_many(timesince_cache_miss, version="email-timesince")
 
         inbox = getattr(self, 'inbox_obj', None)
         if inbox is not None:
