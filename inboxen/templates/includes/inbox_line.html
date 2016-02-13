@@ -3,13 +3,9 @@
 <div id="{{ inbox }}@{{ domain }}" class="row{% if flags.disabled %} inbox-disabled{% endif %}">
 	<div class="inbox-name {{ col0 }}"><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></div>
 	<div class="inbox-flags {{ col1 }}">{{ flags|render_flags }}</div>
-	<div class="inbox-activity {{ col2 }}">
-		{% if last_activity %}
-			<span title="{{ last_activity|date:"r" }}">{{ last_activity|timesince }} {% trans "ago" %}</span>
-		{% else %}
-			<span><i>{% trans "No activity" %}</i></span>
-		{% endif %}
-	</div>
+	{% if last_activity %}<div class="inbox-activity {{ col2 }}">
+		<span title="{{ last_activity|date:"r" }}">{{ last_activity|timesince }} {% trans "ago" %}</span>
+	</div>{% endif %}
 	<div class="inbox-options {{ col3 }}">
 		<a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
 			<span class="glyphicon glyphicon-edit" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
