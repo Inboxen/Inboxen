@@ -216,6 +216,7 @@ class EmailViewTestCase(test.TestCase):
         body = response.context["email"]["bodies"][0]
         self.assertNotIn(u"onClick=\"alert('Idiot!')\"", body)
         self.assertIn(u"<p style=\"color:#fff\">Click me!</p>", body)
+        self.assertNotIn(u"<p id=\"email-17\">", body)
 
     # TODO: test body choosing with multipart emails
 

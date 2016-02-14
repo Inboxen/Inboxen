@@ -29,7 +29,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </head>
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
-<p>&nbsp;</p>
+<p id="email-17">&nbsp;</p>
 <p>£££</p><p><a href="http://example.com/?q=thing">link</a></p>
 <p><a>Ha!</a><img width=10 height=10></p>
 <p onClick="alert('Idiot!')">Click me!</p>
