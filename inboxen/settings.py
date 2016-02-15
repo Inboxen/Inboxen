@@ -201,9 +201,6 @@ INSTALLED_APPS = (
     'tickets',
 )
 
-if DEBUG:
-    INSTALLED_APPS += ('debug_toolbar',)
-
 ROOT_URLCONF = 'inboxen.urls'
 
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")
@@ -216,6 +213,11 @@ LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 # CSP settings
 CSP_REPORT_ONLY = False
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
+
+if DEBUG:
+    # local dev made easy
+    INSTALLED_APPS += ('debug_toolbar',)
+    CSP_REPORT_ONLY = True
 
 # csrf
 ANON_AS_LOGGED_IN = True
