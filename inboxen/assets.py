@@ -42,7 +42,6 @@ js = Bundle(
     "js/home.js",
     "js/search.js",
     "js/inbox.js",
-    "js/email.js",  # make sure this one is last
     filters="jsmin",
     output="compiled/js/website.%(version)s.js",
 )

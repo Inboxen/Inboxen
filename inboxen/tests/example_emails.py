@@ -25,12 +25,14 @@ BODY = """<html>
 <style type="text/css">
 p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
 </style>
+<script><!-- console.log("I'm a bad email") --></script>
 </head>
 <body>
 <p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
-<p>&nbsp;</p>
+<p id="email-17">&nbsp;</p>
 <p>£££</p><p><a href="http://example.com/?q=thing">link</a></p>
 <p><a>Ha!</a><img width=10 height=10></p>
+<p onClick="alert('Idiot!')">Click me!</p>
 </body>
 </html>
 """
