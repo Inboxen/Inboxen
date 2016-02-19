@@ -11,11 +11,11 @@
 	{% url 'email-view' inbox=inbox domain=domain id=eid as email_url %}
 	<div title="{{ received_date|date:"r" }}" class="email-reveived col-xs-3 col-md-1 col-md-push-5">{{ received_date|timesince }} {% trans "ago" %}</div>
 	<div class="email-buttons col-xs-2 col-md-1 col-md-push-5">
-		<button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ eid }}">
-			<span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
-		</button>
 		<button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ eid }}">
 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>
+		</button>
+		<button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ eid }}">
+			<span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
 		</button>
 		{% if unified %}
 			<a class="close" title="{% trans "Inbox" %}" href="{% url 'single-inbox' inbox=inbox domain=domain %}">

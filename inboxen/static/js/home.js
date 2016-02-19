@@ -33,26 +33,26 @@ function initForm($form) {
             url: $this.attr('action'),
             data: $this.serializeArray(),
             complete: function(xhr, statusText) {
-                var $row = $("#" + inbox + " + tr");
+                var $row = $("#" + inbox + " + .row");
 
                 if (xhr.status === 204) {
                     var $inbox_row = $("#" + inbox);
-                    var $description_cell = $inbox_row.children("td.inbox-description");
+                    var $description_cell = $inbox_row.children(".inbox-description");
 
                     $description_cell.text(description);
 
                     if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
                         $inbox_row.addClass("inbox-disabled");
-                        $inbox_row.find("td.inbox-name  span.label").remove();
-                        $inbox_row.find("td.inbox-name").append("<span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span>");
+                        $inbox_row.find(".inbox-flags  span.label").remove();
+                        $inbox_row.find(".inbox-flags").append("<span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span>");
                     } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
                         $inbox_row.removeClass("inbox-disabled");
-                        $inbox_row.find("td.inbox-name span.label-default").remove();
+                        $inbox_row.find(".inbox-flags span.label-default").remove();
                     }
 
                     $row.remove();
                 } else {
-                    var $form = $row.children("td");
+                    var $form = $row.children("div");
                     if (xhr.status === 200) {
                         $form.html(xhr.responseText);
                     } else {
@@ -64,18 +64,18 @@ function initForm($form) {
         });
     });
     $("#form-" + inbox + " > a").click(function() {
-        var $row = $("#" + inbox + " + tr");
+        var $row = $("#" + inbox + " + .row");
         $row.remove();
     });
 }
 
 // adds event listeners for inline forms to be popped in
 $(document).ready(function() {
-    var $optionButtons = $("table#home td.inbox-options > a");
+    var $optionButtons = $("#home .inbox-options a");
 
     $optionButtons.click(function() {
         var $this = $(this);
-        var $row = $this.parents("tr:has(td.inbox-name)");
+        var $row = $this.parents("div.row:has(.inbox-name)");
         var formURL = "/forms/inbox/edit/" + $row.attr("id") + "/";
 
         if (!$row.next().hasClass("inbox-edit-form-row")) {
@@ -93,7 +93,7 @@ $(document).ready(function() {
             $.get(formURL, function(data) {
                 // double check
                 if (!$row.next().hasClass("inbox-edit-form-row")) {
-                    $row.after("<tr class=\"inbox-edit-form-row\"><td colspan=\"4\">" + data + "</td></tr>");
+                    $row.after("<div class=\"inbox-edit-form-row row\"><div class=\"col-xs-12\">" + data + "</div></div>");
                     initForm($row.next().find("form"));
                 }
             });

@@ -38,7 +38,7 @@
 <h3>{% trans "Emails" %}</h3>
     <div class="honeydew">
         {% for result in search_results.emails %}
-            {% include "includes/email_line.html" with eid=result.object.eid flags=result.object.flags inbox=result.meta.inbox domain=result.meta.domain received_date=result.object.received_date subject=result.title sender=result.meta.from %}
+            {% include "includes/email_line.html" with unified=True eid=result.object.eid flags=result.object.flags inbox=result.meta.inbox domain=result.meta.domain received_date=result.object.received_date subject=result.title sender=result.meta.from %}
         {% endfor %}
     </div>
 {% endif %}
