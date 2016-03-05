@@ -43,11 +43,11 @@ function initForm($form) {
 
                     if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
                         $inbox_row.addClass("inbox-disabled");
-                        $inbox_row.find(".inbox-flags  span.label").remove();
-                        $inbox_row.find(".inbox-flags").append("<span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span>");
+                        $inbox_row.find(".inbox-flags").empty();
+                        $inbox_row.find(".inbox-flags").append("<div class=\"inline-block__wrapper\"><span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span></div>");
                     } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
                         $inbox_row.removeClass("inbox-disabled");
-                        $inbox_row.find(".inbox-flags span.label-default").remove();
+                        $inbox_row.find(".inbox-flags").empty();
                     }
 
                     $row.remove();
@@ -71,7 +71,7 @@ function initForm($form) {
 
 // adds event listeners for inline forms to be popped in
 $(document).ready(function() {
-    var $optionButtons = $("#home .inbox-options a");
+    var $optionButtons = $("#inbox-list .inbox-options a");
 
     $optionButtons.click(function() {
         var $this = $(this);

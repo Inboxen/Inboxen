@@ -3,7 +3,7 @@
 <div id="email-{{ eid }}" class="row">
 	<div class="col-xs-2">
 		<div class="row">
-			<div class="email-checkbox col-xs-4"><input type="checkbox" value="email" name="{{ eid }}" /></div>
+			{% if not search_results %}<div class="email-checkbox col-xs-4"><input type="checkbox" value="email" name="{{ eid }}" /></div>{% endif %}
 			<div class="email-flags col-xs-8">{{ flags|render_flags }}</div>
 		</div>
 	</div>
