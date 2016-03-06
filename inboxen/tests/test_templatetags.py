@@ -52,7 +52,7 @@ class InboxFlagTestCase(test.TestCase):
         flag_obj = BitHandler(2, ["new", "read"])
         output = inboxen_flags.render_flags(flag_obj)
 
-        self.assertEqual(output, "")
+        self.assertEqual(output, "&nbsp;")
 
     def test_disabled(self):
         flag_obj = BitHandler(5, ["new", "read", "disabled"])

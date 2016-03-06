@@ -60,7 +60,7 @@ FLAGS_TO_TAGS = {
 # alias certain flags
 FLAGS_TO_TAGS["unified_has_new_messages"] = FLAGS_TO_TAGS["new"]
 
-LABEL_STR = "<span class=\"label {class}\" title=\"{title}\">{str}</span>"
+LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
 
 
 @register.filter()
@@ -83,4 +83,4 @@ def render_flags(flags_obj):
         flags = "".join(flags)
         return safestring.mark_safe(flags)
     else:
-        return ""
+        return safestring.mark_safe("&nbsp;")

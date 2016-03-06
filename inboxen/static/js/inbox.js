@@ -8,7 +8,7 @@ $(document).ready(function() {
 
     function ToggleImportant($row) {
         if ($row.find("span.label-danger").length === 0) {
-           $row.find("td.email-flags").append(important_label);
+           $row.find("div.email-flags").append(important_label);
         } else {
             $row.find("span.label-danger").remove();
         }
@@ -16,7 +16,7 @@ $(document).ready(function() {
 
     function MarkImportant($row) {
         if ($row.find("span.label-danger").length === 0) {
-           $row.find("td.email-flags").append(important_label);
+           $row.find("div.email-flags").append(important_label);
         }
     }
 
@@ -81,7 +81,7 @@ $(document).ready(function() {
                     });
                 } else {
                     var $messageBlock = $("#alertmessages");
-                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button></div>';
+                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
             }

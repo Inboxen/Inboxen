@@ -20,58 +20,21 @@
 {% endblock %}
 
 {% block content %}
-<div class="table-responsive">
-    <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}">
+<form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}">
     {% csrf_token %}
     <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
     <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
     <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
-        <table class="table table-hover table-honeydew">
-        <thead>
-        <tr>
-            <th>&nbsp;</th>
-            <th>&nbsp;</th>
-            <th>{% trans "From" %}</th>
-            <th>{% trans "Subject" %}</th>
-            {% if not inbox %}<th>{% trans "Inbox" %}</th>{% endif %}
-            <th>{% trans "Received" %}</th>
-            <th>&nbsp;</th>
-        </tr>
-        </thead>
+    <div class="honeydew">
         {% for email in page_obj.object_list %}
-            <tr id="email-{{ email.eid }}">
-                <td class="email-checkbox"><input type="checkbox" value="email" name="{{ email.eid }}" /></td>
-                <td class="email-flags">{% spaceless %}
-                    {{ email.flags|render_flags }}
-                {% endspaceless %}</td>
-                <td class="email-sender">{{ email.sender }}</td>
-                {% url 'email-view' inbox=email.inbox.inbox domain=email.inbox.domain.domain id=email.eid as email_url %}
-                {% if email.subject %}
-                    <td class="email-subject"><a href="{{ email_url }}"> {{ email.subject }} </a></td>
-                {% else %}
-                    <td class="email-subject"><i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i></td>
-                {% endif %}
-                {% if not inbox %}<td class="email-inbox"><a href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox.inbox}}@{{ email.inbox.domain.domain }}</a></td>{% endif %}
-                <td title="{{ email.received_date|date:"r" }}" class="email-reveived"><div>{{ email.timesince }} {% trans "ago" %}</div></td>
-                <td class="email-buttons">
-                    <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ email.eid }}">
-                        <span aria-hidden="true">&#9733;</span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
-                    </button>
-                    <button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ email.eid }}">
-                        <span aria-hidden="true">&times;</span><span class="sr-only">{% trans "Delete" %}</span>
-                    </button>
-                </td>
-            </tr>
+            {% include "includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
         {% empty %}
-            <tr>
-                <td colspan="6">{% blocktrans %}
-                    This Inbox is <span title="The opposite of full.">empty</span>.
-                {% endblocktrans %}</td>
-            </tr>
+            <div>
+                <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
+            </div>
         {% endfor %}
-        </table>
-    </form>
-</div>
+    </div>
+</form>
 <ul class="pager">
     {% if page_obj.has_previous %}
         <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">

@@ -4,7 +4,7 @@ $icon-font-path: "../../thirdparty/bootstrap-sass/assets/fonts/bootstrap/";
 // Inboxen styles
 
 /*!
- * Copyright (c) 2013-2015 Jessica Tallon & Matt Molyneaux
+ * Copyright (c) 2013-2016 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
@@ -24,36 +24,71 @@ body {
     height: 30px;
 }
 
-.table-honeydew {
-    border:1px solid #ddd;
-    border-collapse:collapse;
-    -webkit-border-radius:4px;
-    -moz-border-radius:4px;
+.honeydew {
+    border: 1px solid $table-border-color;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
     border-radius:4px;
     margin-top: 20px;
+
+    & > div {
+        border-top: 1px solid $table-border-color;
+
+        &:first-child {
+            border-top: 0px;
+        }
+
+        &.title {
+            font-weight: 700;
+        }
+    }
+
+    .row {
+        margin-left: initial;
+        margin-right: initial;
+
+        & > div {
+            padding: $table-cell-padding;
+        }
+    }
+
+    .row:hover {
+        background-color: $table-bg-hover;
+    }
+
+    .row.title:hover {
+        background-color: initial;
+    }
+}
+
+#unified {
+    background-color: $state-warning-bg;
+
+    &:hover {
+        background-color: darken($state-warning-bg, 5%);
+    }
 }
 
 .inherit-colour {
     color: inherit;
 }
 
-a.soon {
-    cursor: not-allowed;
-    color: $gray-light;
-    text-decoration: none;
+// wrap around an inline element to prevent "shrink-wrap"
+.inline-block__wrapper {
+    display: inline-block;
 }
 
-tr.inbox-disabled {
+.inbox-disabled {
     font-style: italic;
     color: $gray !important;
     background-color: $gray-lighter;
 }
 
-tr.inbox-disabled .label {
+.inbox-disabled .label {
     font-style: normal;
 }
 
-td.inbox-name > a {
+.inbox-name > a {
     padding-right: 0.5em;
 }
 
@@ -63,6 +98,19 @@ td.inbox-name > a {
     &:hover, &:focus {
         opacity: 0.6;
     }
+}
+
+.email-buttons, .inbox-options {
+    .close {
+        margin-left: 5px;
+        margin-bottom: 5px;
+    }
+}
+
+a.soon {
+    cursor: not-allowed;
+    color: $gray-light;
+    text-decoration: none;
 }
 
 @media (min-width: $screen-sm-min){
