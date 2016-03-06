@@ -1,15 +1,15 @@
 {# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% load i18n inboxen_flags %}
 <div id="{{ inbox }}@{{ domain }}" class="row{% if flags.disabled %} inbox-disabled{% endif %}">
-	<div class="inbox-name {{ col0 }}"><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></div>
-	<div class="inbox-flags {{ col1 }}">{{ flags|render_flags }}</div>
-	{% if last_activity %}<div class="inbox-activity {{ col2 }}">
-		<span title="{{ last_activity|date:"r" }}">{{ last_activity|timesince }} {% trans "ago" %}</span>
-	</div>{% endif %}
-	<div class="inbox-options {{ col3 }}">
-		<a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
-			<span class="glyphicon glyphicon-edit" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
-		</a>
-	</div>
-	<div class="inbox-description {{ col4 }}">{{ desc|default:"&nbsp;" }}</div>
+    <div class="inbox-name {{ col0 }}"><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></div>
+    <div class="inbox-flags {{ col1 }}">{{ flags|render_flags }}</div>
+    {% if last_activity %}<div class="inbox-activity {{ col2 }}">
+        <span title="{{ last_activity|date:"r" }}">{{ last_activity|timesince }} {% trans "ago" %}</span>
+    </div>{% endif %}
+    <div class="inbox-options {{ col3 }}">
+        <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
+        </a>
+    </div>
+    <div class="inbox-description {{ col4 }}">{{ desc|default:"&nbsp;" }}</div>
 </div>
