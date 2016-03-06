@@ -1,14 +1,15 @@
 {# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% load i18n inboxen_flags %}
 <div id="email-{{ eid }}" class="row">
-	<div class="col-md-2 col-xs-6">
+	<div class="col-md-2 col-xs-5">
 		<div class="row">
-			{% if not search_results %}<div class="email-checkbox col-xs-4"><input type="checkbox" value="email" name="{{ eid }}" /></div>{% endif %}
-			<div class="email-flags col-xs-8">{{ flags|render_flags }}</div>
+			{% if not search_results %}<div class="email-checkbox col-sm-4 col-xs-12"><input type="checkbox" value="email" name="{{ eid }}" /></div>
+            <div class="clearfix visible-xs-block"></div>{% endif %}
+			<div class="email-flags col-sm-8 col-xs-12">{{ flags|render_flags }}</div>
 		</div>
 	</div>
 	{% url 'email-view' inbox=inbox domain=domain id=eid as email_url %}
-	<div title="{{ received_date|date:"r" }}" class="email-reveived col-xs-4 col-md-1 col-md-push-8">{{ received_date|timesince }} {% trans "ago" %}</div>
+	<div title="{{ received_date|date:"r" }}" class="email-reveived col-xs-5 col-md-1 col-md-push-8">{{ received_date|timesince }} {% trans "ago" %}</div>
 	<div class="email-buttons col-xs-2 col-md-1 col-md-push-8">
 		<button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ eid }}">
 			<span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>
@@ -22,9 +23,10 @@
 			</a>
 		{% endif %}
 	</div>
-	<div class="email-sender col-xs-12 col-md-3 col-md-pull-2">{{ sender }}</div>
-	<div class="email-subject col-xs-12 col-md-5 col-md-pull-2">{% if subject %}
-		<a href="{{ email_url }}"> {{ subject }} </a>
+    <div class="clearfix visible-sm-block"></div>
+	<div class="email-sender col-xs-12 col-sm-6 col-md-3 col-md-pull-2">{{ sender }}</div>
+	<div class="email-subject col-xs-12 col-sm-6 col-md-5 col-md-pull-2">{% if subject %}
+        <a href="{{ email_url }}">{{ subject }}</a>
 	{% else %}
 		<i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i>
 	{% endif %}</div>
