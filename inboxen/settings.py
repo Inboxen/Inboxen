@@ -210,6 +210,8 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
+X_FRAME_OPTIONS = "DENY"
+
 # CSP settings
 CSP_REPORT_ONLY = False
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
