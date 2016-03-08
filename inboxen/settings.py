@@ -205,6 +205,12 @@ INSTALLED_APPS = (
     'tickets',
 )
 
+SILENCED_SYSTEM_CHECKS = [
+    "security.W003",  # we're using a 3rd party csrf package
+    "security.W004",  # HSTS should be done via the HTTPd
+    "security.W007",  # doesn't affect Firefox and Chrome?
+]
+
 ROOT_URLCONF = 'inboxen.urls'
 
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")

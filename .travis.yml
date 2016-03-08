@@ -25,7 +25,10 @@ matrix:
       install: pip install tox
       script: tox -e $TOX_ENV
 
-script: coverage run manage.py test --settings=inboxen.tests.settings
+script:
+    - coverage run manage.py test --settings=inboxen.tests.settings
+    - python manage.py check
+
 after_success: codecov
 
 notifications:
