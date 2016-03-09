@@ -27,7 +27,6 @@ matrix:
 
 script:
     - coverage run manage.py test --settings=inboxen.tests.settings
-    - python manage.py check
 
 after_success: codecov
 
