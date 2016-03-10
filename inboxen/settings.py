@@ -49,6 +49,7 @@ if not DEBUG:
     # These security settings are annoying while debugging
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
 ##
 # Celery options
@@ -125,6 +126,8 @@ STATICFILES_FINDERS = (
 
 STATICFILES_STORAGE = 'inboxen.storage.InboxenStaticFilesStorage'
 
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 AUTHENTICATION_BACKENDS = (
     'inboxen.backends.RateLimitWithSettings',
 )
@@ -156,6 +159,7 @@ TEMPLATES = [{
 }]
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -200,6 +204,12 @@ INSTALLED_APPS = (
     'termsofservice',
     'tickets',
 )
+
+SILENCED_SYSTEM_CHECKS = [
+    "security.W003",  # we're using a 3rd party csrf package
+    "security.W004",  # HSTS should be done via the HTTPd
+    "security.W007",  # doesn't affect Firefox and Chrome?
+]
 
 ROOT_URLCONF = 'inboxen.urls'
 
@@ -254,6 +264,7 @@ if DEBUG:
     log_level = "INFO"
 else:
     log_level = "WARNING"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

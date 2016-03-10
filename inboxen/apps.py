@@ -30,7 +30,7 @@ class InboxenConfig(AppConfig):
         from django.contrib.auth.signals import user_logged_in, user_logged_out
         from watson import search as watson_search
 
-        from inboxen import search, signals
+        from inboxen import checks, search, signals
 
         Inbox = self.get_model("Inbox")
         Email = self.get_model("Email")
