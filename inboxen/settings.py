@@ -99,12 +99,7 @@ TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
 
-LOCALE_PATHS = ["inboxen/locale"]
-
-LANGUAGES = (
-    ("en-gb", _("English")),
-    ("sv-se", _("Swedish")),
-)
+LANGUAGE_CODE = "en-gb"
 
 USE_I18N = True
 

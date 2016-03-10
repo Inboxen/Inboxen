@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-22 09:34+0000\n"
+"POT-Creation-Date: 2016-03-10 23:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,29 +18,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: termsofservice/models.py:38
+#: termsofservice/models.py:32
 msgid "Text of TOS, Rendered with Markdown"
 msgstr ""
 
-#: termsofservice/models.py:53
+#: termsofservice/models.py:47
 msgid "Their name, as they're known to the public"
 msgstr ""
 
-#: termsofservice/models.py:54
+#: termsofservice/models.py:48
 msgid "Tell us about this a member of staff. Rendered with Markdown"
 msgstr ""
 
 #: termsofservice/templates/termsofservice/index.html:7
 #: termsofservice/templates/termsofservice/tos.html:7
 #: termsofservice/templates/termsofservice/who.html:7
-#: termsofservice/views.py:53
+#: termsofservice/views.py:54
 msgid "Help"
 msgstr ""
 
 #: termsofservice/templates/termsofservice/index.html:16
 #: termsofservice/templates/termsofservice/index.html:21
 #: termsofservice/templates/termsofservice/tos.html:8
-#: termsofservice/views.py:29
+#: termsofservice/views.py:30
 msgid "Terms Of Service"
 msgstr ""
 
@@ -56,8 +56,9 @@ msgstr ""
 #: termsofservice/templates/termsofservice/index.html:29
 #: termsofservice/templates/termsofservice/index.html:34
 #: termsofservice/templates/termsofservice/who.html:8
-#: termsofservice/views.py:43
-msgid "The People Behind The Inbox"
+#: termsofservice/views.py:44
+#, python-format
+msgid "The People Behind %(name)s"
 msgstr ""
 
 #: termsofservice/templates/termsofservice/index.html:31

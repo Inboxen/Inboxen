@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-22 09:34+0000\n"
+"POT-Creation-Date: 2016-03-10 23:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Tarball (no compression)"
 msgstr ""
 
-#: liberation/tasks.py:232
+#: liberation/tasks.py:241
 #, python-format
 msgid ""
 "Your request for your personal data has been completed. Click <a class="
@@ -98,10 +98,10 @@ msgstr ""
 msgid "Liberate!"
 msgstr ""
 
-#: liberation/views.py:36
+#: liberation/views.py:38
 msgid "Liberate your data"
 msgstr ""
 
-#: liberation/views.py:49
+#: liberation/views.py:51
 msgid "Fetching all your data. This may take a while, so check back later!"
 msgstr ""

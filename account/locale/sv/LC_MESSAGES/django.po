@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-22 09:34+0000\n"
+"POT-Creation-Date: 2016-03-10 23:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,16 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: account/forms.py:43
+
+#: account/forms.py:42
 msgid "Please type your username to confirm"
 msgstr ""
 
-#: account/forms.py:44
+#: account/forms.py:43
 msgid "Username"
 msgstr ""
 
-#: account/forms.py:56
+#: account/forms.py:55
 msgid "The username entered does not match your username"
+msgstr ""
+
+#: account/forms.py:62
+msgid "Account deleted. Thanks for using our service."
 msgstr ""
 
 #: account/forms.py:75
@@ -210,7 +215,7 @@ msgstr ""
 msgid "I accept! Let me join!"
 msgstr ""
 
-#: account/templates/account/register/success.html:9 account/urls.py:63
+#: account/templates/account/register/success.html:9 account/urls.py:64
 msgid "Welcome!"
 msgstr ""
 
@@ -218,18 +223,18 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"    Welcome to %(name)s, your registration was successful. We're glad you've "
-"come to help us test this service we're making! If you notice any problems "
-"or think of some improvements we could be doing can you head over to <a href="
-"\"https://github.com/Inboxen/Inboxen/issues/\">here</a> and let us know!\n"
+"    Welcome to %(site_name)s, your registration was successful. We're glad "
+"you've come to help us test this service we're making! If you notice any "
+"problems or think of some improvements we could be doing can you head over "
+"<a href=\"%(source_link)s\">here</a> and let us know!\n"
 "    <br />\n"
 "    <br />\n"
 "    You can login and begin using the service. Some tips on how to use this "
 "service effectively:\n"
 "    <ul>\n"
 "        <li>Don't give an Inbox to more than one site or person</li>\n"
-"        <li>Remember an Inbox or keep one on your phone so you can give it "
-"to people when you're away from your computer </li>\n"
+"        <li>We recommend you set up two factor authentication to protect "
+"your account</li>\n"
 "    </ul>\n"
 "\n"
 "    If you like us, recomend us to a friend!\n"
@@ -400,27 +405,27 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: account/templatetags/inboxen_account.py:38 account/views/settings.py:35
+#: account/templatetags/inboxen_account.py:40 account/views/settings.py:35
 msgid "Settings"
 msgstr ""
 
-#: account/templatetags/inboxen_account.py:39 account/views/otp.py:34
+#: account/templatetags/inboxen_account.py:41 account/views/otp.py:34
 msgid "Security"
 msgstr ""
 
-#: account/templatetags/inboxen_account.py:40
+#: account/templatetags/inboxen_account.py:42
 msgid "Liberate Data"
 msgstr ""
 
-#: account/templatetags/inboxen_account.py:41 account/views/delete.py:36
+#: account/templatetags/inboxen_account.py:43 account/views/delete.py:36
 msgid "Delete Account"
 msgstr ""
 
-#: account/urls.py:40
+#: account/urls.py:41
 msgid "Change Password"
 msgstr ""
 
-#: account/urls.py:62
+#: account/urls.py:63
 msgid "We're not stable!"
 msgstr ""
 
