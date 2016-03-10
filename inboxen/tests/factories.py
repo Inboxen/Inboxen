@@ -33,7 +33,7 @@ class FuzzyBinary(factory.fuzzy.FuzzyText):
     """Fuzzes a byte string, works the same as FuzzyText"""
     def fuzz(self):
         fuzz = super(FuzzyBinary, self).fuzz()
-        return fuzz.encode("utf8")
+        return fuzz.encode("utf-8")
 
 
 class UserFactory(factory.django.DjangoModelFactory):
