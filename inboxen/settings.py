@@ -232,7 +232,7 @@ if DEBUG:
     CSP_REPORT_ONLY = True
 
 # csrf
-ANON_AS_LOGGED_IN = True
+ANON_ALWAYS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
 # Python dotted path to the WSGI application used by Django's runserver.

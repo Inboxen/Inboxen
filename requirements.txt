@@ -10,13 +10,13 @@ django-bootstrap-form
 django-braces
 django-celery
 django-csp
-django-csrf-session
 django-extensions
 django-formtools
 django-mptt
 django-otp
 django-ratelimit-backend
 django-sendfile
+django-session-csrf
 django-two-factor-auth>=1.0.0
 django-watson>=1.2.0
 factory-boy
