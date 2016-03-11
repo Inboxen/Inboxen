@@ -178,7 +178,7 @@ class UrlStatsCommandTest(test.TestCase):
             call_command("url_stats")
 
         stdin = StringIO()
-        stdin.write("/\n")
+        stdin.write("/\n/\n")
         stdin.seek(0)
         stdout = StringIO()
 
@@ -227,6 +227,14 @@ class RouterCommandTest(test.TestCase):
 
         output = mgmt_command.salmon_stop()
         self.assertEqual(output, ["Exit code -1: test"])
+
+    @mock.patch("inboxen.management.commands.router.check_output")
+    def test_start_message(self, check_mock):
+        check_mock.return_value = "test"
+        mgmt_command = router.Command()
+
+        output = mgmt_command.salmon_start()
+        self.assertEqual(output, ["Starting Salmon handler: boot\n"])
 
 
 class ErrorViewTestCase(test.TestCase):
