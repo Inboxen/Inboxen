@@ -18,6 +18,7 @@
 ##
 
 from StringIO import StringIO
+from subprocess import CalledProcessError
 import sys
 
 from django import test
@@ -31,10 +32,13 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
 
+import mock
+
+from inboxen.management.commands import router
+from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
-from inboxen.middleware import ExtendSessionMiddleware
 
 
 @override_settings(CACHE_BACKEND="locmem:///")
@@ -195,6 +199,34 @@ class RouterCommandTest(test.TestCase):
         with self.assertRaises(CommandError) as error:
             call_command("router")
         self.assertEqual(error.exception.message, "Error: one of the arguments --start --stop --status is required")
+
+    def test_handle(self):
+        def func():
+            raise OSError
+
+        mgmt_command = router.Command()
+
+        with self.assertRaises(CommandError) as error:
+            mgmt_command.handle(cmd=func)
+        self.assertEqual(error.exception.message, "OSError from subprocess, salmon is probably not in your path.")
+
+        mgmt_command.stdout = StringIO()
+        mgmt_command.handle(cmd=lambda: "test")
+        self.assertEqual(mgmt_command.stdout.getvalue(), "test")
+
+    @mock.patch("inboxen.management.commands.router.check_output")
+    def test_process_error(self, check_mock):
+        check_mock.side_effect = CalledProcessError(-1, "salmon", "test")
+        mgmt_command = router.Command()
+
+        output = mgmt_command.salmon_start()
+        self.assertEqual(output, ["Exit code -1: test"])
+
+        output = mgmt_command.salmon_status()
+        self.assertEqual(output, ["Exit code -1: test"])
+
+        output = mgmt_command.salmon_stop()
+        self.assertEqual(output, ["Exit code -1: test"])
 
 
 class ErrorViewTestCase(test.TestCase):
