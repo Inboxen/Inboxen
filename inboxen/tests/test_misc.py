@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from email.message import Message
 from StringIO import StringIO
 from subprocess import CalledProcessError
 import sys
@@ -154,6 +155,48 @@ class UtilsTestCase(test.TestCase):
 
 
 class FeederCommandTest(test.TestCase):
+    class MboxMock(dict):
+        def __init__(self, *args, **kwargs):
+            self._removed = {}
+            dict.__init__(self, *args, **kwargs)
+
+        def lock(self):
+            self._locked = True
+
+        def close(self):
+            self._locked = False
+
+        def remove(self, key):
+            self._removed[key] = self[key]
+            del self[key]
+
+    @mock.patch("inboxen.management.commands.feeder.smtplib.SMTP")
+    def test_command(self, smtp_mock):
+        messages = self.MboxMock()
+        messages["a"] = Message()
+        messages["a"]["To"] = "me@exmaple.com"
+        messages["a"]["From"] = "me@exmaple.com"
+
+        with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
+            mock_box.return_value = messages
+            call_command("feeder", "/")
+
+    @mock.patch("inboxen.management.commands.feeder.smtplib.SMTP")
+    def test_command_inbox(self, smtp_mock):
+        inbox = factories.InboxFactory()
+
+        messages = self.MboxMock()
+        messages["a"] = Message()
+        messages["a"]["To"] = "me@exmaple.com"
+        messages["a"]["From"] = "me@exmaple.com"
+        # if you specify an inbox, you don't need a To header
+        messages["b"] = Message()
+        messages["b"]["From"] = "me@exmaple.com"
+
+        with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
+            mock_box.return_value = messages
+            call_command("feeder", "/", inbox=str(inbox))
+
     def test_command_errors(self):
         with self.assertRaises(CommandError) as error:
             # too few args
