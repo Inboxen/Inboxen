@@ -17,7 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from email.message import Message
 from StringIO import StringIO
+from subprocess import CalledProcessError
 import sys
 
 from django import test
@@ -31,11 +33,13 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
 
+import mock
+
+from inboxen.management.commands import router, feeder, url_stats
+from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
-from inboxen.middleware import ExtendSessionMiddleware
-
 
 @override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
@@ -151,6 +155,48 @@ class UtilsTestCase(test.TestCase):
 
 
 class FeederCommandTest(test.TestCase):
+    class MboxMock(dict):
+        def __init__(self, *args, **kwargs):
+            self._removed = {}
+            dict.__init__(self, *args, **kwargs)
+
+        def lock(self):
+            self._locked = True
+
+        def close(self):
+            self._locked = False
+
+        def remove(self, key):
+            self._removed[key] = self[key]
+            del self[key]
+
+    @mock.patch("inboxen.management.commands.feeder.smtplib.SMTP")
+    def test_command(self, smtp_mock):
+        messages = self.MboxMock()
+        messages["a"] = Message()
+        messages["a"]["To"] = "me@exmaple.com"
+        messages["a"]["From"] = "me@exmaple.com"
+
+        with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
+            mock_box.return_value = messages
+            call_command("feeder", "/")
+
+    @mock.patch("inboxen.management.commands.feeder.smtplib.SMTP")
+    def test_command_inbox(self, smtp_mock):
+        inbox = factories.InboxFactory()
+
+        messages = self.MboxMock()
+        messages["a"] = Message()
+        messages["a"]["To"] = "me@exmaple.com"
+        messages["a"]["From"] = "me@exmaple.com"
+        # if you specify an inbox, you don't need a To header
+        messages["b"] = Message()
+        messages["b"]["From"] = "me@exmaple.com"
+
+        with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
+            mock_box.return_value = messages
+            call_command("feeder", "/", inbox=str(inbox))
+
     def test_command_errors(self):
         with self.assertRaises(CommandError) as error:
             # too few args
@@ -166,6 +212,47 @@ class FeederCommandTest(test.TestCase):
             call_command("feeder", "some_file", inbox="something@localhost")
         self.assertEqual(error.exception.message, "Address malformed")
 
+        with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
+            mock_box.return_value = mock.Mock()
+            mock_box.return_value.__len__ = lambda x: 0
+
+            with self.assertRaises(CommandError) as error:
+                call_command("feeder", "/")
+            self.assertEqual(error.exception.message, "Your mbox is empty!")
+
+    def test_get_address(self):
+        mgmt_command = feeder.Command()
+
+        address = mgmt_command._get_address("myself <me@example.com>")
+        self.assertEqual(address, "<me@example.com>")
+
+        address = mgmt_command._get_address("you@example.com")
+        self.assertEqual(address, "<you@example.com>")
+
+        with self.assertRaises(CommandError):
+            mgmt_command._get_address("me <>")
+
+    @mock.patch("inboxen.management.commands.feeder.smtplib.LMTP")
+    @mock.patch("inboxen.management.commands.feeder.smtplib.SMTP")
+    def test_get_server(self, smtp_mock, lmtp_mock):
+        mgmt_command = feeder.Command()
+
+        self.assertEqual(mgmt_command._server, None)
+        server = mgmt_command._get_server()
+        self.assertEqual(mgmt_command._server, server)
+        self.assertTrue(smtp_mock.called)
+        self.assertFalse(lmtp_mock.called)
+
+        smtp_mock.reset_mock()
+        lmtp_mock.reset_mock()
+        mgmt_command._server = None
+
+        with self.settings(SALMON_SERVER={"type": "lmtp", "path": "/fake/path"}):
+            server = mgmt_command._get_server()
+            self.assertEqual(mgmt_command._server, server)
+            self.assertTrue(lmtp_mock.called)
+            self.assertFalse(smtp_mock.called)
+
 
 class UrlStatsCommandTest(test.TestCase):
     def test_command(self):
@@ -174,7 +261,7 @@ class UrlStatsCommandTest(test.TestCase):
             call_command("url_stats")
 
         stdin = StringIO()
-        stdin.write("/\n")
+        stdin.write("/\n/\n")
         stdin.seek(0)
         stdout = StringIO()
 
@@ -189,12 +276,70 @@ class UrlStatsCommandTest(test.TestCase):
             sys.stdin = old_in
             sys.stdout = old_out
 
+        self.assertTrue(len(stdout.getvalue()) > 0)
+
+    def test_count_urls(self):
+        mgmt_command = url_stats.Command()
+
+        url_list = StringIO()
+        url_list.write("%s\n" % urlresolvers.reverse("single-inbox", kwargs={"inbox": "123", "domain": "example.com"}))
+        url_list.write("%s\n" % urlresolvers.reverse("single-inbox", kwargs={"inbox": "321", "domain": "example.com"}))
+        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.write("/dfsdfsdf/sdfsdss/111\n")
+        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.seek(0)
+
+        urls, non_matches = mgmt_command.count_urls(url_list)
+
+        self.assertEqual(len(urls), 2)
+        self.assertEqual(len(non_matches), 1)
+
+        self.assertEqual(urls["single-inbox"], 2)
+        self.assertEqual(urls["unified-inbox"], 3)
+
 
 class RouterCommandTest(test.TestCase):
     def test_command(self):
         with self.assertRaises(CommandError) as error:
             call_command("router")
         self.assertEqual(error.exception.message, "Error: one of the arguments --start --stop --status is required")
+
+    def test_handle(self):
+        def func():
+            raise OSError
+
+        mgmt_command = router.Command()
+
+        with self.assertRaises(CommandError) as error:
+            mgmt_command.handle(cmd=func)
+        self.assertEqual(error.exception.message, "OSError from subprocess, salmon is probably not in your path.")
+
+        mgmt_command.stdout = StringIO()
+        mgmt_command.handle(cmd=lambda: "test")
+        self.assertEqual(mgmt_command.stdout.getvalue(), "test")
+
+    @mock.patch("inboxen.management.commands.router.check_output")
+    def test_process_error(self, check_mock):
+        check_mock.side_effect = CalledProcessError(-1, "salmon", "test")
+        mgmt_command = router.Command()
+
+        output = mgmt_command.salmon_start()
+        self.assertEqual(output, ["Exit code -1: test"])
+
+        output = mgmt_command.salmon_status()
+        self.assertEqual(output, ["Exit code -1: test"])
+
+        output = mgmt_command.salmon_stop()
+        self.assertEqual(output, ["Exit code -1: test"])
+
+    @mock.patch("inboxen.management.commands.router.check_output")
+    def test_start_message(self, check_mock):
+        check_mock.return_value = "test"
+        mgmt_command = router.Command()
+
+        output = mgmt_command.salmon_start()
+        self.assertEqual(output, ["Starting Salmon handler: boot\n"])
 
 
 class ErrorViewTestCase(test.TestCase):
