@@ -34,7 +34,7 @@ from django.test.client import RequestFactory
 
 import mock
 
-from inboxen.management.commands import router
+from inboxen.management.commands import router, feeder
 from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
@@ -169,6 +169,47 @@ class FeederCommandTest(test.TestCase):
             # non-existing inbox
             call_command("feeder", "some_file", inbox="something@localhost")
         self.assertEqual(error.exception.message, "Address malformed")
+
+        with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
+            mock_box.return_value = mock.Mock()
+            mock_box.return_value.__len__ = lambda x: 0
+
+            with self.assertRaises(CommandError) as error:
+                call_command("feeder", "/")
+            self.assertEqual(error.exception.message, "Your mbox is empty!")
+
+    def test_get_address(self):
+        mgmt_command = feeder.Command()
+
+        address = mgmt_command._get_address("myself <me@example.com>")
+        self.assertEqual(address, "<me@example.com>")
+
+        address = mgmt_command._get_address("you@example.com")
+        self.assertEqual(address, "<you@example.com>")
+
+        with self.assertRaises(CommandError):
+            mgmt_command._get_address("me <>")
+
+    @mock.patch("inboxen.management.commands.feeder.smtplib.LMTP")
+    @mock.patch("inboxen.management.commands.feeder.smtplib.SMTP")
+    def test_get_server(self, smtp_mock, lmtp_mock):
+        mgmt_command = feeder.Command()
+
+        self.assertEqual(mgmt_command._server, None)
+        server = mgmt_command._get_server()
+        self.assertEqual(mgmt_command._server, server)
+        self.assertTrue(smtp_mock.called)
+        self.assertFalse(lmtp_mock.called)
+
+        smtp_mock.reset_mock()
+        lmtp_mock.reset_mock()
+        mgmt_command._server = None
+
+        with self.settings(SALMON_SERVER={"type": "lmtp", "path": "/fake/path"}):
+            server = mgmt_command._get_server()
+            self.assertEqual(mgmt_command._server, server)
+            self.assertTrue(lmtp_mock.called)
+            self.assertFalse(smtp_mock.called)
 
 
 class UrlStatsCommandTest(test.TestCase):
