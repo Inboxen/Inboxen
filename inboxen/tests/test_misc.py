@@ -34,12 +34,11 @@ from django.test.client import RequestFactory
 
 import mock
 
-from inboxen.management.commands import router, feeder
+from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
-
 
 @override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
@@ -233,6 +232,28 @@ class UrlStatsCommandTest(test.TestCase):
         finally:
             sys.stdin = old_in
             sys.stdout = old_out
+
+        self.assertTrue(len(stdout.getvalue()) > 0)
+
+    def test_count_urls(self):
+        mgmt_command = url_stats.Command()
+
+        url_list = StringIO()
+        url_list.write("%s\n" % urlresolvers.reverse("single-inbox", kwargs={"inbox": "123", "domain": "example.com"}))
+        url_list.write("%s\n" % urlresolvers.reverse("single-inbox", kwargs={"inbox": "321", "domain": "example.com"}))
+        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.write("/dfsdfsdf/sdfsdss/111\n")
+        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.seek(0)
+
+        urls, non_matches = mgmt_command.count_urls(url_list)
+
+        self.assertEqual(len(urls), 2)
+        self.assertEqual(len(non_matches), 1)
+
+        self.assertEqual(urls["single-inbox"], 2)
+        self.assertEqual(urls["unified-inbox"], 3)
 
 
 class RouterCommandTest(test.TestCase):
