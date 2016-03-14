@@ -25,6 +25,13 @@
     <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
     <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
     <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
+
+    {% if inbox %}
+        <a class="btn btn-default" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
+            {% trans "Inbox Options" %}
+        </a>
+    {% endif %}
+
     <div class="honeydew">
         {% for email in page_obj.object_list %}
             {% include "includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
