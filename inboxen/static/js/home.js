@@ -3,14 +3,13 @@
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
-function initForm($form) {
-    var inbox = $form.data("inbox-selector");
-
+function initForm($form, completeCallback) {
     $form.submit(function(event) {
         event.preventDefault();
-        var description, is_disabled, $this;
+        var $this;
 
         $this = $(this);
+        $this.inboxSelector = $form.data("inbox-selector");
 
         if ($this.data("sending") === "yes") {
             return false;
@@ -25,48 +24,47 @@ function initForm($form) {
             $this.find("a.btn").removeClass("disabled");
         }, 3000);
 
-        description = $this.find("#id_description").val();
-        is_disabled = $this.find("#id_disable_inbox").prop("checked");
-
         $.ajax({
             type: "POST",
             url: $this.attr('action'),
             data: $this.serializeArray(),
-            complete: function(xhr, statusText) {
-                var $row = $("#" + inbox + " + .row");
-
-                if (xhr.status === 204) {
-                    var $inbox_row = $("#" + inbox);
-                    var $description_cell = $inbox_row.children(".inbox-description");
-
-                    $description_cell.text(description);
-
-                    if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
-                        $inbox_row.addClass("inbox-disabled");
-                        $inbox_row.find(".inbox-flags").empty();
-                        $inbox_row.find(".inbox-flags").append("<div class=\"inline-block__wrapper\"><span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span></div>");
-                    } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
-                        $inbox_row.removeClass("inbox-disabled");
-                        $inbox_row.find(".inbox-flags").empty();
-                    }
-
-                    $row.remove();
-                } else {
-                    var $form = $row.children("div");
-                    if (xhr.status === 200) {
-                        $form.html(xhr.responseText);
-                    } else {
-                        $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-                        console.log("Form for " + inbox + " failed to POST (" + xhr.status + ")");
-                    }
-                }
-            }
+            complete: completeCallback.bind($this)
         });
     });
-    $("#form-" + inbox + " > a").click(function() {
-        var $row = $("#" + inbox + " + .row");
+}
+
+function homeFormComplete(xhr, statusText) {
+    var description, is_disabled, $row;
+
+    $row = $("#" + this.inboxSelector + " + .row");
+    description = this.find("#id_description").val();
+    is_disabled = this.find("#id_disable_inbox").prop("checked");
+
+    if (xhr.status === 204) {
+        var $inbox_row = $("#" + this.inboxSelector);
+        var $description_cell = $inbox_row.children(".inbox-description");
+
+        $description_cell.text(description);
+
+        if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
+            $inbox_row.addClass("inbox-disabled");
+            $inbox_row.find(".inbox-flags").empty();
+            $inbox_row.find(".inbox-flags").append("<div class=\"inline-block__wrapper\"><span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span></div>");
+        } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
+            $inbox_row.removeClass("inbox-disabled");
+            $inbox_row.find(".inbox-flags").empty();
+        }
+
         $row.remove();
-    });
+    } else {
+        var $form = $row.children("div");
+        if (xhr.status === 200) {
+            $form.html(xhr.responseText);
+        } else {
+            $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+            console.log("Form for " + this.inboxSelector + " failed to POST (" + xhr.status + ")");
+        }
+    }
 }
 
 // adds event listeners for inline forms to be popped in
@@ -94,7 +92,10 @@ $(document).ready(function() {
                 // double check
                 if (!$row.next().hasClass("inbox-edit-form-row")) {
                     $row.after("<div class=\"inbox-edit-form-row row\"><div class=\"col-xs-12\">" + data + "</div></div>");
-                    initForm($row.next().find("form"));
+                    initForm($row.next().find("form"), homeFormComplete);
+                    $row.next().find("a").click(function() {
+                        $row.next().remove();
+                    });
                 }
             });
         } else if ($row.next().hasClass("inbox-edit-form-row")) {
