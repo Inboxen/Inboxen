@@ -67,9 +67,8 @@ function homeFormComplete(xhr, statusText) {
 
 // adds event listeners for inline forms to be popped in
 $(document).ready(function() {
-    var $optionButtons = $("#inbox-list .inbox-options a");
-
-    $optionButtons.click(function() {
+    $("#inbox-list .inbox-options a").click(function() {
+        // option buttons on inbox list
         var $this = $(this);
         var $row = $this.parents("div.row:has(.inbox-name)");
         var formURL = "/forms/inbox/edit/" + $row.attr("id") + "/";
