@@ -9,7 +9,7 @@ function initForm($form, completeCallback) {
         var $this;
 
         $this = $(this);
-        $this.inboxSelector = $form.data("inbox-selector");
+        $this.$form = $form;
 
         if ($this.data("sending") === "yes") {
             return false;
@@ -34,14 +34,15 @@ function initForm($form, completeCallback) {
 }
 
 function homeFormComplete(xhr, statusText) {
-    var description, is_disabled, $row;
+    var description, inboxSelector, is_disabled, $row;
 
-    $row = $("#" + this.inboxSelector + " + .row");
+    inboxSelector = this.$form.data("inbox-selector");
+    $row = $("#" + inboxSelector + " + .row");
     description = this.find("#id_description").val();
     is_disabled = this.find("#id_disable_inbox").prop("checked");
 
     if (xhr.status === 204) {
-        var $inbox_row = $("#" + this.inboxSelector);
+        var $inbox_row = $("#" + inboxSelector);
         var $description_cell = $inbox_row.children(".inbox-description");
 
         $description_cell.text(description);
@@ -56,14 +57,11 @@ function homeFormComplete(xhr, statusText) {
         }
 
         $row.remove();
+    } else if (xhr.status === 200) {
+        this.$form.html(xhr.responseText);
     } else {
-        var $form = $row.children("div");
-        if (xhr.status === 200) {
-            $form.html(xhr.responseText);
-        } else {
-            $form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-            console.log("Form for " + this.inboxSelector + " failed to POST (" + xhr.status + ")");
-        }
+        this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+        console.log("Form for " + inboxSelector + " failed to POST (" + xhr.status + ")");
     }
 }
 
