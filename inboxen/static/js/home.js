@@ -65,6 +65,19 @@ function homeFormComplete(xhr, statusText) {
     }
 }
 
+function inboxFormComplete(xhr, statusText) {
+    if (xhr.status === 204) {
+        this.$form.remove()
+    } else {
+        if (xhr.status === 200) {
+            this.$form.html(xhr.responseText);
+        } else {
+            this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+            console.log("Form failed to POST (" + xhr.status + ")");
+        }
+    }
+}
+
 // adds event listeners for inline forms to be popped in
 $(document).ready(function() {
     $("#inbox-list .inbox-options a").click(function() {
@@ -97,6 +110,40 @@ $(document).ready(function() {
             });
         } else if ($row.next().hasClass("inbox-edit-form-row")) {
             $row.next().remove();
+        }
+        return false;
+    });
+
+    $("#email-list .inbox-edit").click(function() {
+        // option button on inbox page
+        var $this = $(this);
+        var $table = $(".honeydew");
+        var formURL = "/forms/inbox/edit/" + $this.data("inbox-id") + "/";
+
+        if (!$table.children(":first").hasClass("inbox-edit-form-row")) {
+            if ($this.data("clicked") === "yes") {
+                return false;
+            } else {
+                $this.data("clicked", "yes");
+                $this.addClass("disabled");
+                setTimeout(function() {
+                    $this.data("clicked", "no");
+                    $this.removeClass("disabled");
+                }, 3000);
+            }
+
+            $.get(formURL, function(data) {
+                // double check
+                if (!$table.children(":first").hasClass("inbox-edit-form-row")) {
+                    $table.prepend("<div class=\"inbox-edit-form-row row\"><div class=\"col-xs-12\">" + data + "</div></div>");
+                    initForm($table.children(":first").find("form"), inboxFormComplete);
+                    $table.children(":first").find("a").click(function() {
+                        $table.children(":first").remove();
+                    });
+                }
+            });
+        } else if ($table.children(":first").hasClass("inbox-edit-form-row")) {
+            $table.children(":first").remove();
         }
         return false;
     });
