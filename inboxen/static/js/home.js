@@ -67,7 +67,7 @@ function homeFormComplete(xhr, statusText) {
 
 function inboxFormComplete(xhr, statusText) {
     if (xhr.status === 204) {
-        this.$form.remove()
+        this.$form.parents(".inbox-edit-form-row").remove()
     } else {
         if (xhr.status === 200) {
             this.$form.html(xhr.responseText);
