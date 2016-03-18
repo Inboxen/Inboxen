@@ -25,9 +25,8 @@
     <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
     <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
     <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
-
     {% if inbox %}
-        <a class="btn btn-default inbox-edit" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
+        <a class="btn btn-default inbox-edit pull-right undo-pull-right-sm" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
                 data-inbox-id="{{ inbox }}@{{ domain }}">
             {% trans "Inbox Options" %}
         </a>
