@@ -22,6 +22,7 @@
 {% block content %}
 <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}">
     {% csrf_token %}
+    <div class="inbox-btn-group">
     <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
     <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
     <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
@@ -31,6 +32,7 @@
             {% trans "Inbox Options" %}
         </a>
     {% endif %}
+    </div>
 
     <div class="honeydew">
         {% for email in page_obj.object_list %}
