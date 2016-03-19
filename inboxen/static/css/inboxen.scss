@@ -113,7 +113,8 @@ a.soon {
     text-decoration: none;
 }
 
-@media (min-width: $screen-sm-min){
+@media (min-width: $screen-sm-min) {
+    // nav
     .navbar-form .input-group-btn,
     .navbar-form .input-group-addon {
         width: auto;
@@ -121,6 +122,17 @@ a.soon {
     .navbar {
         border-radius: 0;
     }
+}
+
+@media (max-width: $screen-sm-min) {
+    // undo pull right on smaller screens
+    .undo-pull-right-sm {
+        float: none !important;
+    }
+}
+
+.inbox-btn-group .btn {
+    margin-bottom: 5px;
 }
 
 .index-heading {
