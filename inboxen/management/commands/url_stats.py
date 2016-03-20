@@ -42,16 +42,26 @@ class Command(BaseCommand):
         parser.add_argument("file", help="file or '-' for stdin")
 
     def handle(self, **options):
+        pp = pprint.PrettyPrinter(indent=5)
+
         if options["file"].strip() == "-":
             file_obj = sys.stdin
         else:
             file_obj = open(options["file"], "r")
 
-        pp = pprint.PrettyPrinter(indent=5)
+        urls, non_match = self.count_urls(file_obj)
 
+        self.stdout.write("URLs:\n")
+        pp.pprint(urls)
+
+        self.stdout.write("\nNon-matches:\n")
+        pp.pprint(non_match)
+
+    def count_urls(self, file_obj):
         urls = {}
         non_match = set()
-        for url in file_obj.readline():
+        for url in file_obj:
+            url = url.strip()
             try:
                 name = resolve(url).url_name
             except Resolver404:
@@ -63,8 +73,4 @@ class Command(BaseCommand):
             else:
                 urls[name] = 1
 
-        self.stdout.write("URLs:\n")
-        pp.pprint(urls)
-
-        self.stdout.write("\nNon-matches:\n")
-        pp.pprint(non_match)
+        return urls, non_match

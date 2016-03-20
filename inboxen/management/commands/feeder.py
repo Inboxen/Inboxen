@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from email.utils import parseaddr
 import mailbox
 import os
 import smtplib
@@ -84,18 +85,12 @@ class Command(BaseCommand):
             self.mbox.remove(key)
 
     def _get_address(self, address):
-        # i have this awful feeling that i'm reimplementing something in the stdlib
-        start = address.find("<")
-        end = address.rfind(">")
+        name, email = parseaddr(address)
 
-        if start * end < 0:
-            raise CommandError("One of your messages has malformed address, aborting")
-        elif start < 0:
-            address = "<{0}>".format(address)
-        else:
-            address = address[start:end+1]
+        if email == "":
+            raise CommandError("Address malformed, aborting: %s" % address)
 
-        return address
+        return "<{0}>".format(email)
 
     def _get_server(self):
         try:

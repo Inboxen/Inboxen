@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014, 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -77,12 +77,14 @@ def _clean_html_body(request, email, body, charset):
         _log.exception(exc)
 
     # Mail Pile uses this, give back if you come up with something better
-    cleaner = Cleaner(page_structure=True, meta=True, links=True, javascript=True,
-                    scripts=True, frames=True, embedded=True, safe_attrs_only=True)
-    cleaner.kill_tags = [
-        "style",  # remove style tags, not attrs
-        "base",
-    ]
+    cleaner = Cleaner(
+        allow_tags=["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre", "code", "img"],
+        kill_tags = ["style"],  # remove style tags, not attrs
+        remove_unknown_tags=False,
+        safe_attrs=["style", "title", "href", "src", "height", "width"],
+        safe_attrs_only=True,
+        style=False,  # keep style attrs
+    )
 
     html_tree = cleaner.clean_html(html_tree)
 
@@ -103,9 +105,6 @@ def _clean_html_body(request, email, body, charset):
             # proxy link
             url = link.attrib["href"]
             link.attrib["href"] = proxy_url(url)
-
-            # open link in tab
-            link.attrib["target"] = "_blank"
         except KeyError:
             pass
 

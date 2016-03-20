@@ -30,7 +30,7 @@ class RedirectTestCase(test.TestCase):
         response = self.client.get(url, follow=True)
 
         self.assertEqual(len(response.redirect_chain), 1)
-        self.assertEqual(response.redirect_chain[0][0], "http://testserver/")
+        self.assertEqual(response.redirect_chain[0][0], "/")
         self.assertEqual(response.redirect_chain[0][1], 302)
 
     def test_utils(self):
@@ -42,5 +42,5 @@ class RedirectTestCase(test.TestCase):
         response = self.client.get(proxied, follow=True)
 
         self.assertEqual(len(response.redirect_chain), 1)
-        self.assertEqual(response.redirect_chain[0][0], "http://testserver/?bizz=iss")
+        self.assertEqual(response.redirect_chain[0][0], "/?bizz=iss")
         self.assertEqual(response.redirect_chain[0][1], 302)

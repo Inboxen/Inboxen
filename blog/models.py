@@ -17,17 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils import safestring
 
 from django_extensions.db.fields import AutoSlugField
 from markdown_newtab import NewTabExtension
-from pytz import utc
 import markdown
 
 
@@ -55,9 +50,3 @@ class BlogPost(models.Model):
 
     class Meta:
         ordering = ["-date"]
-
-
-@receiver(pre_save, sender=BlogPost, dispatch_uid="blog_date_draft_checker")
-def published_checker(sender, instance=None, **kwargs):
-    if not instance.draft and instance.date is None:
-        instance.date = datetime.now(utc)

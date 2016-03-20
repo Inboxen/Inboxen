@@ -25,19 +25,19 @@ from django.utils.translation import ugettext as _
 
 from inboxen import views
 
-urls.handler400 = "inboxen.views.error.bad_request"
-urls.handler403 = "inboxen.views.error.permission_denied"
-urls.handler404 = "inboxen.views.error.not_found"
-urls.handler500 = "inboxen.views.error.server_error"
+urls.handler400 = views.error.bad_request
+urls.handler403 = views.error.permission_denied
+urls.handler404 = views.error.not_found
+urls.handler500 = views.error.server_error
 
 # csrf stuff
 import session_csrf
 session_csrf.monkeypatch()
 
-# If you're debugging regex, test it out on http://www.debuggex.com/ first - M
-urlpatterns = urls.patterns('',
+
+urlpatterns = [
     urls.url(r'^$', views.Index.as_view(), name='index'),
-    urls.url(r'^_csp_report/', "inboxen.views.error.csp_report", name='csp_logger'),
+    urls.url(r'^_csp_report/', views.error.csp_report, name='csp_logger'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
 
     # inbox views
@@ -71,11 +71,11 @@ urlpatterns = urls.patterns('',
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
-)
+]
 
 if ("INBOXEN_ADMIN_ACCESS" in os.environ and os.environ["INBOXEN_ADMIN_ACCESS"]) or settings.DEBUG:
     admin.autodiscover()
 
-    urlpatterns += urls.patterns('',
+    urlpatterns += [
         urls.url(r'^admin/', urls.include(admin.site.urls)),
-    )
+    ]

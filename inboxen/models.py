@@ -17,27 +17,19 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
 import os.path
 import re
 
 from django.conf import settings
-from django.contrib import messages
-from django.contrib.auth.signals import user_logged_out
 from django.db import models, transaction
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey
-from pytz import utc
-from watson import search as watson_search
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
-from inboxen import search
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -178,7 +170,8 @@ class Request(models.Model):
     succeeded = models.NullBooleanField("accepted", default=None, help_text=_("has the request been accepted?"))
     date = models.DateTimeField("requested", auto_now_add=True, help_text=_("date requested"))
     date_decided = models.DateTimeField(null=True, help_text=_("date staff accepted/rejected request"))
-    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
+    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer",
+        blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
     result = models.CharField("comment", max_length=1024, blank=True, null=True)
 
@@ -336,36 +329,3 @@ class Header(models.Model):
 
     def __unicode__(self):
         return u"{0}".format(self.name.name)
-
-# Unregister update_last_login handler
-# See https://github.com/Inboxen/website/issues/156
-from django.contrib.auth.signals import user_logged_in
-from django.contrib.auth.models import update_last_login
-
-user_logged_in.disconnect(update_last_login)
-
-# Search
-watson_search.register(Email, search.EmailSearchAdapter)
-watson_search.register(Inbox, search.InboxSearchAdapter)
-
-
-# signals
-@receiver(pre_save, sender=Request, dispatch_uid="request_decided_checker")
-def decided_checker(sender, instance=None, **kwargs):
-    if instance.date_decided is None and instance.succeeded is not None and instance.authorizer is not None:
-        instance.date_decided = datetime.now(utc)
-        if instance.succeeded is True:
-            profile = instance.requester.userprofile
-            profile.pool_amount = models.F("pool_amount") + instance.amount
-            profile.save(update_fields=["pool_amount"])
-    elif instance.authorizer is None or instance.succeeded is None:
-        # either authorizer or succeeded is missing, so we'll bug out
-        instance.authorizer = None
-        instance.succeeded = None
-        instance.date_decided = None
-
-
-@receiver(user_logged_out)
-def logout_message(sender, request, **kwargs):
-    msg = getattr(request, "_logout_message", settings.LOGOUT_MSG)
-    messages.add_message(request, messages.INFO, msg)

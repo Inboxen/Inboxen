@@ -100,9 +100,10 @@ class EmailViewTestCase(test.TestCase):
         self.assertFalse(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
 
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", body)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#160;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#163;&#163;&#163;</p>", body)
         self.assertIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"img width=\"10\" height=\"10\"", body)
         self.assertNotIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
@@ -122,9 +123,10 @@ class EmailViewTestCase(test.TestCase):
         self.assertTrue(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
 
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", body)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#160;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#163;&#163;&#163;</p>", body)
         self.assertNotIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"img width=\"10\" height=\"10\"", body)
         self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
@@ -144,9 +146,10 @@ class EmailViewTestCase(test.TestCase):
         self.assertFalse(response.context["email"]["ask_images"] and response.context["email"]["has_images"])
 
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", body)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#160;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#163;&#163;&#163;</p>", body)
         self.assertNotIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"img width=\"10\" height=\"10\"", body)
         self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
@@ -180,14 +183,14 @@ class EmailViewTestCase(test.TestCase):
         params = {"important-toggle": ""}
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        self.assertEqual(response["Location"], self.get_url())
         email = models.Email.objects.get(pk=self.email.pk)
         self.assertNotEqual(email.flags.important, important)
 
         important = not important
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "http://testserver%s" % self.get_url())
+        self.assertEqual(response["Location"], self.get_url())
         email = models.Email.objects.get(pk=self.email.pk)
         self.assertNotEqual(email.flags.important, important)
 
@@ -196,7 +199,24 @@ class EmailViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', body)
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing">link</a>', body)
+
+    def test_not_allowed_tag(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        body = response.context["email"]["bodies"][0]
+        self.assertNotIn(u"script", body)
+        self.assertNotIn(u"I'm a bad email", body)
+
+    def test_not_allowed_attr(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        body = response.context["email"]["bodies"][0]
+        self.assertNotIn(u"onClick=\"alert('Idiot!')\"", body)
+        self.assertIn(u"<p style=\"color:#fff\">Click me!</p>", body)
+        self.assertNotIn(u"<p id=\"email-17\">", body)
 
     # TODO: test body choosing with multipart emails
 
@@ -242,9 +262,10 @@ class BadEmailTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", body)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#160;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#163;&#163;&#163;</p>", body)
         self.assertIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
@@ -254,9 +275,10 @@ class BadEmailTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", body)
-        self.assertIn(u"<p>&#163;&#163;&#163;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#160;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#163;&#163;&#163;</p>", body)
         self.assertNotIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
@@ -266,9 +288,10 @@ class BadEmailTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u"<p>&#160;</p>", body)
-        self.assertIn(u"<p>$$$</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">&#160;</p>", body)
+        self.assertIn(u"<p style=\"color:#fff\">$$$</p>", body)
         self.assertIn(u"http://example.com/coolface.jpg", body)
+        self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
@@ -285,7 +308,7 @@ class BadEmailTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank">link</a>', body)
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing">link</a>', body)
 
 
 class RealExamplesTestCase(test.TestCase):

@@ -16,6 +16,7 @@ postgres_user = os.environ.get('PG_USER', 'postgres')
 
 SECRET_KEY = "This is a test, you don't need secrets"
 ENABLE_REGISTRATION = True
+SECURE_SSL_REDIRECT = False
 
 if db == "sqlite":
     DATABASES = {

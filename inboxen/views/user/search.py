@@ -20,6 +20,7 @@
 import urllib
 
 from django import http
+from django.conf import settings
 from django.core.cache import cache
 from django.utils.translation import ugettext as _
 from django.views import generic
@@ -58,7 +59,7 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListV
 
         Raises TimeoutError if results aren't ready by self.timeout"""
         result = cache.get(self.get_cache_key())
-        if result is None:
+        if result is None or settings.CELERY_ALWAYS_EAGER:
             search_task = tasks.search.apply_async(args=[self.request.user.id, self.query])
             result = {"task": search_task.id}
             cache.set(self.get_cache_key(), result, tasks.SEARCH_TIMEOUT)

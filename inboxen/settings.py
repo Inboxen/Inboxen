@@ -49,6 +49,7 @@ if not DEBUG:
     # These security settings are annoying while debugging
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
 ##
 # Celery options
@@ -94,17 +95,15 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-TEMPLATE_DEBUG = DEBUG
-
 TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
 
-LOCALE_PATHS = ["inboxen/locale"]
+LANGUAGE_CODE = "en-gb"
 
 LANGUAGES = (
-    ("en-gb", _("English")),
-    ("sv-se", _("Swedish")),
+    ("en-gb", "English"),
+    ("sv", "Svenska"),
 )
 
 USE_I18N = True
@@ -127,35 +126,43 @@ STATICFILES_FINDERS = (
 
 STATICFILES_STORAGE = 'inboxen.storage.InboxenStaticFilesStorage'
 
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 AUTHENTICATION_BACKENDS = (
     'inboxen.backends.RateLimitWithSettings',
 )
 
-# Make sure all custom template tags are thread safe
-# https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/#template-tag-thread-safety
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "session_csrf.context_processor",
-    "django.contrib.messages.context_processors.messages",
-    "inboxen.context_processors.reduced_settings_context"
-)
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'OPTIONS': {
+        'context_processors': [
+            "django.contrib.auth.context_processors.auth",
+            "django.core.context_processors.debug",
+            "django.core.context_processors.i18n",
+            "django.core.context_processors.static",
+            "django.core.context_processors.tz",
+            "django.core.context_processors.request",
+            "session_csrf.context_processor",
+            "django.contrib.messages.context_processors.messages",
+            "inboxen.context_processors.reduced_settings_context"
+        ],
+        'loaders': [
+            # Make sure all custom template tags are thread safe
+            # https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/#template-tag-thread-safety
+            ('django.template.loaders.cached.Loader', (
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            )),
+        ],
+        'debug': DEBUG,
+    },
+}]
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'session_csrf.CsrfMiddleware',
     'django_otp.middleware.OTPMiddleware',
@@ -198,8 +205,11 @@ INSTALLED_APPS = (
     'tickets',
 )
 
-if DEBUG:
-    INSTALLED_APPS += ('debug_toolbar',)
+SILENCED_SYSTEM_CHECKS = [
+    "security.W003",  # we're using a 3rd party csrf package
+    "security.W004",  # HSTS should be done via the HTTPd
+    "security.W007",  # doesn't affect Firefox and Chrome?
+]
 
 ROOT_URLCONF = 'inboxen.urls'
 
@@ -210,12 +220,19 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
+X_FRAME_OPTIONS = "DENY"
+
 # CSP settings
 CSP_REPORT_ONLY = False
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 
+if DEBUG:
+    # local dev made easy
+    INSTALLED_APPS += ('debug_toolbar',)
+    CSP_REPORT_ONLY = True
+
 # csrf
-ANON_AS_LOGGED_IN = True
+ANON_ALWAYS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -247,6 +264,7 @@ if DEBUG:
     log_level = "INFO"
 else:
     log_level = "WARNING"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

@@ -17,17 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-import difflib
-
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils import safestring
 from django.utils.translation import ugettext_lazy as _
 
-from pytz import utc
 import markdown
 
 
@@ -62,34 +56,3 @@ class StaffProfile(models.Model):
 
     def __unicode__(self):
         return u"Staff profile of %s" % self.user
-
-
-@receiver(pre_save, sender=TOS, dispatch_uid="termsofservice_diff_creator")
-def diff_creator(sender, instance, **kwargs):
-    if instance.last_modified is None:
-        modified = datetime.now(utc)
-    else:
-        modified = instance.last_modified
-
-    try:
-        last = sender.objects.exclude(id=instance.id, last_modified__gte=modified)
-        last = last.filter(published=True).only("text", "last_modified").latest()
-    except sender.DoesNotExist:
-        class last_object(object):
-            text = ""
-            last_modified = None
-        last = last_object()
-
-    # make sure we have a new line at the end - always
-    if len(last.text) > 0 and last.text[-1] != "\n":
-        last.text = last.text + "\n"
-    if len(instance.text) == 0 or instance.text[-1] != "\n":
-        instance.text = instance.text + "\n"
-
-    differ = difflib.unified_diff(
-        last.text.split("\n"),
-        instance.text.split("\n"),
-        fromfile=str(last.last_modified),
-        tofile=str(instance.last_modified)
-    )
-    instance.diff = "".join(differ)
