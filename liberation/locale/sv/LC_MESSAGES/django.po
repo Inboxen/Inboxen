@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-10 23:35+0000\n"
+"POT-Creation-Date: 2016-03-20 08:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,9 +40,7 @@ msgstr ""
 
 #: liberation/tasks.py:241
 #, python-format
-msgid ""
-"Your request for your personal data has been completed. Click <a class="
-"\"alert-link\" href=\"%s\">here</a> to download your archive."
+msgid "Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"%s\">here</a> to download your archive."
 msgstr ""
 
 #: liberation/templates/liberation/liberate.html:11
@@ -66,9 +64,7 @@ msgid "Archiving your emails"
 msgstr ""
 
 #: liberation/templates/liberation/liberate.html:18
-msgid ""
-"Grabbing a list of your Inboxes and associated data (e.g. description, when "
-"they were created)"
+msgid "Grabbing a list of your Inboxes and associated data (e.g. description, when they were created)"
 msgstr ""
 
 #: liberation/templates/liberation/liberate.html:19
@@ -76,17 +72,14 @@ msgid "Collecting miscellaneous information we hold about you"
 msgstr ""
 
 #: liberation/templates/liberation/liberate.html:21
-msgid ""
-"If you have a lot of emails, this could take a while. We will notify you "
-"once your data is ready for downloading."
+msgid "If you have a lot of emails, this could take a while. We will notify you once your data is ready for downloading."
 msgstr ""
 
 #: liberation/templates/liberation/liberate.html:26
 #, python-format
 msgid ""
 "\n"
-"                Your data is available for download. It was generated "
-"%(finished)s ago.\n"
+"                Your data is available for download. It was generated %(finished)s ago.\n"
 "            "
 msgstr ""
 

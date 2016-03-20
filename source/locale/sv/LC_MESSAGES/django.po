@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-10 23:35+0000\n"
+"POT-Creation-Date: 2016-03-20 08:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,7 @@ msgstr ""
 
 #: source/templates/source/index.html:9
 #, python-format
-msgid ""
-"%(SITE_NAME)s is licensed under the Affero General Public License, version 3."
+msgid "%(SITE_NAME)s is licensed under the Affero General Public License, version 3."
 msgstr ""
 
 #: source/templates/source/index.html:10
@@ -36,12 +35,9 @@ msgstr ""
 #: source/templates/source/index.html:11
 msgid ""
 "\n"
-"            That means you have the right to read our source code (either as "
-"a user of this service or someone who has already received a copy),\n"
-"            send it to your friends, makes changes to it and run it on your "
-"own server. You also have a responsibility to grant these same rights\n"
-"            to your users. The full text of this licence can be found with "
-"the source code linked to on this page.\n"
+"            That means you have the right to read our source code (either as a user of this service or someone who has already received a copy),\n"
+"            send it to your friends, makes changes to it and run it on your own server. You also have a responsibility to grant these same rights\n"
+"            to your users. The full text of this licence can be found with the source code linked to on this page.\n"
 "        "
 msgstr ""
 
@@ -53,17 +49,13 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            %(SITE_NAME)s uses a number of third party libraries (we don't "
-"believe in reinventing the wheel). Checkout our source code to see their "
-"respective licences.\n"
+"            %(SITE_NAME)s uses a number of third party libraries (we don't believe in reinventing the wheel). Checkout our source code to see their respective licences.\n"
 "        "
 msgstr ""
 
 #: source/templates/source/index.html:24
 #, python-format
-msgid ""
-"You can find the source code <a target=\"_blank\" href=\"%(SOURCE_LINK)s"
-"\">here</a>."
+msgid "You can find the source code <a href=\"%(SOURCE_LINK)s\">here</a>."
 msgstr ""
 
 #: source/templates/source/index.html:26

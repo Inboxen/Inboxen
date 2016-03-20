@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-10 23:35+0000\n"
+"POT-Creation-Date: 2016-03-20 08:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,7 +183,7 @@ msgstr ""
 msgid "Click here to view images"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:27 inboxen/templates/inbox/inbox.html:27
+#: inboxen/templates/inbox/email.html:27 inboxen/templates/inbox/inbox.html:28
 #: inboxen/templates/includes/email_line.html:14
 #: inboxen/templates/includes/email_line.html:15
 msgid "Delete"
@@ -243,24 +243,29 @@ msgstr ""
 msgid "Unified Inbox"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:25
+#: inboxen/templates/inbox/inbox.html:26
 #: inboxen/templatetags/inboxen_flags.py:48
 msgid "Important"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:26
+#: inboxen/templates/inbox/inbox.html:27
 msgid "Unimportant"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:33
+#: inboxen/templates/inbox/inbox.html:32
+#: inboxen/templates/includes/inbox_line.html:11
+msgid "Inbox Options"
+msgstr ""
+
+#: inboxen/templates/inbox/inbox.html:42
 msgid "This Inbox is <span title=\"The opposite of full.\">empty</span>."
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:41 inboxen/templates/user/home.html:40
+#: inboxen/templates/inbox/inbox.html:50 inboxen/templates/user/home.html:40
 msgid "Previous"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:47 inboxen/templates/user/home.html:46
+#: inboxen/templates/inbox/inbox.html:56 inboxen/templates/user/home.html:46
 msgid "Next"
 msgstr ""
 
@@ -279,15 +284,9 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: inboxen/templates/includes/inbox_line.html:11
-msgid "Inbox Options"
-msgstr ""
-
 #: inboxen/templates/index.html:8
 #, python-format
-msgid ""
-"You're already signed up and logged in. <a class=\"alert-link\" href="
-"\"%(home_url)s\">Click here</a> to view your inboxes"
+msgid "You're already signed up and logged in. <a class=\"alert-link\" href=\"%(home_url)s\">Click here</a> to view your inboxes"
 msgstr ""
 
 #: inboxen/templates/index.html:14
@@ -314,14 +313,10 @@ msgstr ""
 #, python-format
 msgid ""
 "%(SITE_NAME)s is a\n"
-"            service that provides you with an infinite number of unique "
-"inboxes.  It's not\n"
-"            designed to replace your personal email address, but rather "
-"complement it.\n"
-"            Every time a website asks for your email, click the \"Add Inbox"
-"\" button to\n"
-"            create another email address. This leaves your personal address "
-"free from\n"
+"            service that provides you with an infinite number of unique inboxes.  It's not\n"
+"            designed to replace your personal email address, but rather complement it.\n"
+"            Every time a website asks for your email, click the \"Add Inbox\" button to\n"
+"            create another email address. This leaves your personal address free from\n"
 "            promotional offers and other junk mail."
 msgstr ""
 
@@ -350,9 +345,7 @@ msgid "Forever"
 msgstr ""
 
 #: inboxen/templates/index.html:46
-msgid ""
-"Your inboxes are uniquely yours and will never be reused - even if you "
-"delete your account."
+msgid "Your inboxes are uniquely yours and will never be reused - even if you delete your account."
 msgstr ""
 
 #: inboxen/templates/index.html:52
@@ -448,7 +441,7 @@ msgstr ""
 msgid "Last activity"
 msgstr ""
 
-#: inboxen/templates/user/home.html:18
+#: inboxen/templates/user/home.html:19
 msgid "Description"
 msgstr ""
 
@@ -469,8 +462,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            If this page doesn't refresh automatically after 5 seconds, <a "
-"href=\"%(request.path)s\">click here</a>\n"
+"            If this page doesn't refresh automatically after 5 seconds, <a href=\"%(request.path)s\">click here</a>\n"
 "        "
 msgstr ""
 
@@ -519,9 +511,8 @@ msgstr ""
 msgid "Part of this message could not be parsed - it may not display correctly"
 msgstr ""
 
-#: inboxen/utils/email.py:171
-msgid ""
-"Some parts of this email contained invalid HTML and could not be displayed"
+#: inboxen/utils/email.py:168
+msgid "Some parts of this email contained invalid HTML and could not be displayed"
 msgstr ""
 
 #: inboxen/views/error.py:39
@@ -545,9 +536,7 @@ msgid "Permission Denied"
 msgstr ""
 
 #: inboxen/views/error.py:95
-msgid ""
-"There has been an error with our software. Our administrators have been "
-"notified."
+msgid "There has been an error with our software. Our administrators have been notified."
 msgstr ""
 
 #: inboxen/views/error.py:98
@@ -555,9 +544,7 @@ msgid "Error"
 msgstr ""
 
 #: inboxen/views/error.py:103
-msgid ""
-"I have no idea what you were trying to do, but you probably shouldn't be "
-"doing it!"
+msgid "I have no idea what you were trying to do, but you probably shouldn't be doing it!"
 msgstr ""
 
 #: inboxen/views/error.py:106
@@ -594,9 +581,7 @@ msgid "We've had a few new users today!"
 msgstr ""
 
 #: inboxen/views/stats.py:35
-msgid ""
-"I think we've had a mention on a podcast - we've had a lot of new users "
-"today."
+msgid "I think we've had a mention on a podcast - we've had a lot of new users today."
 msgstr ""
 
 #: inboxen/views/stats.py:36
@@ -652,9 +637,7 @@ msgid "It looks like most emails are going to one Inbox!"
 msgstr ""
 
 #: inboxen/views/stats.py:53
-msgid ""
-"I think someone has signed themselves up to every mailing list they could "
-"find."
+msgid "I think someone has signed themselves up to every mailing list they could find."
 msgstr ""
 
 #: inboxen/views/stats.py:54
@@ -662,9 +645,7 @@ msgid "Most Inboxes on this server are empty."
 msgstr ""
 
 #: inboxen/views/stats.py:55
-msgid ""
-"We keep things fair and have an equal number of emails in each Inbox. Some "
-"are more equal than others."
+msgid "We keep things fair and have an equal number of emails in each Inbox. Some are more equal than others."
 msgstr ""
 
 #: inboxen/views/user/home.py:35

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-10 23:35+0000\n"
+"POT-Creation-Date: 2016-03-20 08:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
 
 #: account/forms.py:42
 msgid "Please type your username to confirm"
@@ -76,8 +75,7 @@ msgid "Display options for HTML emails"
 msgstr ""
 
 #: account/forms.py:111
-msgid ""
-"Warning: Images in HTML emails can be used to track if you read an email!"
+msgid "Warning: Images in HTML emails can be used to track if you read an email!"
 msgstr ""
 
 #: account/forms.py:113
@@ -103,8 +101,7 @@ msgstr ""
 #: account/templates/account/delete.html:10
 msgid ""
 "\n"
-"        Once you delete your account, you will be unable to access your "
-"Inboxes\n"
+"        Once you delete your account, you will be unable to access your Inboxes\n"
 "        ever again. Please make sure you no longer need them!\n"
 "    "
 msgstr ""
@@ -113,8 +110,7 @@ msgstr ""
 msgid ""
 "\n"
 "        Your emails and profile will deleted, as well as meta-data on your\n"
-"        Inboxes (owner, description and creation time). We keep a record of "
-"Inboxes\n"
+"        Inboxes (owner, description and creation time). We keep a record of Inboxes\n"
 "        that have been previously used to prevent them being given to other\n"
 "        users after your account has been deleted.\n"
 "    "
@@ -134,8 +130,7 @@ msgstr ""
 
 #: account/templates/account/index.html:18
 #, python-format
-msgid ""
-"You can change your username here. You current username is <b>%(name)s</b>."
+msgid "You can change your username here. You current username is <b>%(name)s</b>."
 msgstr ""
 
 #: account/templates/account/index.html:19
@@ -181,30 +176,20 @@ msgstr ""
 
 #: account/templates/account/register/software-status.html:10
 #, python-format
-msgid ""
-" %(SITE_NAME)s is currently in heavy development, we're currently "
-"<strong>not</strong> feature complete. We expect there to be bugs. Please be "
-"aware of the following things:"
+msgid " %(SITE_NAME)s is currently in heavy development, we're currently <strong>not</strong> feature complete. We expect there to be bugs. Please be aware of the following things:"
 msgstr ""
 
 #: account/templates/account/register/software-status.html:12
-msgid ""
-"The software <strong>may</strong> contain critical bugs (which may result in "
-"data loss, non-functioning parts of the code, etc...)"
+msgid "The software <strong>may</strong> contain critical bugs (which may result in data loss, non-functioning parts of the code, etc...)"
 msgstr ""
 
 #: account/templates/account/register/software-status.html:13
-msgid ""
-"The infrastruture is also being tested and developed, this means we may have "
-"server problems and even downtime"
+msgid "The infrastruture is also being tested and developed, this means we may have server problems and even downtime"
 msgstr ""
 
 #: account/templates/account/register/software-status.html:17
 #, python-format
-msgid ""
-" Please only continue if you accept these could occur while using this "
-"service. We're constantly working on %(SITE_NAME)s, in the future the risks "
-"will be much lower and we will have a stable, reliable service."
+msgid " Please only continue if you accept these could occur while using this service. We're constantly working on %(SITE_NAME)s, in the future the risks will be much lower and we will have a stable, reliable service."
 msgstr ""
 
 #: account/templates/account/register/software-status.html:20
@@ -223,18 +208,13 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"    Welcome to %(site_name)s, your registration was successful. We're glad "
-"you've come to help us test this service we're making! If you notice any "
-"problems or think of some improvements we could be doing can you head over "
-"<a href=\"%(source_link)s\">here</a> and let us know!\n"
+"    Welcome to %(site_name)s, your registration was successful. We're glad you've come to help us test this service we're making! If you notice any problems or think of some improvements we could be doing can you head over <a href=\"%(source_link)s\">here</a> and let us know!\n"
 "    <br />\n"
 "    <br />\n"
-"    You can login and begin using the service. Some tips on how to use this "
-"service effectively:\n"
+"    You can login and begin using the service. Some tips on how to use this service effectively:\n"
 "    <ul>\n"
 "        <li>Don't give an Inbox to more than one site or person</li>\n"
-"        <li>We recommend you set up two factor authentication to protect "
-"your account</li>\n"
+"        <li>We recommend you set up two factor authentication to protect your account</li>\n"
 "    </ul>\n"
 "\n"
 "    If you like us, recomend us to a friend!\n"
@@ -257,8 +237,7 @@ msgstr ""
 #: account/templates/account/security.html:19
 msgid ""
 "\n"
-"        If you wish to disable two factor authentication on this account, "
-"click\n"
+"        If you wish to disable two factor authentication on this account, click\n"
 "        the button below.\n"
 "    "
 msgstr ""
@@ -268,9 +247,7 @@ msgid "Disable Two Factor Authentication"
 msgstr ""
 
 #: account/templates/account/security.html:27
-msgid ""
-"If you don't have you device with you, you can access your account using "
-"backup tokens."
+msgid "If you don't have you device with you, you can access your account using backup tokens."
 msgstr ""
 
 #: account/templates/account/security.html:29
@@ -317,12 +294,9 @@ msgstr ""
 #: account/templates/account/twofactor-backup.html:10
 msgid ""
 "\n"
-"    Backup tokens can be used when your usual method isn't available. The "
-"backup\n"
-"    tokens below can be used for login verification. If you've used up all "
-"your\n"
-"    backup tokens, you can generate a new set of backup tokens. Only the "
-"backup\n"
+"    Backup tokens can be used when your usual method isn't available. The backup\n"
+"    tokens below can be used for login verification. If you've used up all your\n"
+"    backup tokens, you can generate a new set of backup tokens. Only the backup\n"
 "    tokens shown below will be valid.\n"
 msgstr ""
 
@@ -345,8 +319,7 @@ msgstr ""
 #: account/templates/account/twofactor-disable.html:10
 msgid ""
 "\n"
-"    You are about to disable two-factor authentication. You can re-enalbe it "
-"at\n"
+"    You are about to disable two-factor authentication. You can re-enalbe it at\n"
 "    any time.\n"
 msgstr ""
 
@@ -357,8 +330,7 @@ msgstr ""
 #: account/templates/account/twofactor-setup.html:10
 msgid ""
 "\n"
-"        You are about to take your account security to the next level. "
-"Follow\n"
+"        You are about to take your account security to the next level. Follow\n"
 "        the steps in this wizard to enable two-factor authentication.\n"
 "    "
 msgstr ""
@@ -373,10 +345,8 @@ msgstr ""
 #: account/templates/account/twofactor-setup.html:19
 msgid ""
 "\n"
-"        To start using a token generator you will need an application that "
-"read\n"
-"        TOTP QR codes. <i>FreeOTP</i> is a good example and is Free "
-"Software\n"
+"        To start using a token generator you will need an application that read\n"
+"        TOTP QR codes. <i>FreeOTP</i> is a good example and is Free Software\n"
 "        too! Scan in the image below and enter the number your\n"
 "        applications displays.\n"
 "    "
@@ -387,8 +357,7 @@ msgstr ""
 msgid ""
 "\n"
 "        Alternatively, if you're unable to use QR codes,\n"
-"        <a href=\"%(request.path)s?qr=0\">click here</a> to view the code "
-"as\n"
+"        <a href=\"%(request.path)s?qr=0\">click here</a> to view the code as\n"
 "        letters and numbers.\n"
 "    "
 msgstr ""
@@ -396,8 +365,7 @@ msgstr ""
 #: account/templates/account/twofactor-setup.html:32
 msgid ""
 "\n"
-"        Manually type this code into your token generator (or copy and paste "
-"it if you prefer):\n"
+"        Manually type this code into your token generator (or copy and paste it if you prefer):\n"
 "    "
 msgstr ""
 
@@ -430,15 +398,12 @@ msgid "We're not stable!"
 msgstr ""
 
 #: account/validators.py:31
-msgid ""
-"Your password has too many repeating characters, try something more random."
+msgid "Your password has too many repeating characters, try something more random."
 msgstr ""
 
 #: account/validators.py:51
 #, python-brace-format
-msgid ""
-"You password should contain at least {0} of the following: letters, numbers, "
-"spaces, punctuation."
+msgid "You password should contain at least {0} of the following: letters, numbers, spaces, punctuation."
 msgstr ""
 
 #: account/views/otp.py:51
