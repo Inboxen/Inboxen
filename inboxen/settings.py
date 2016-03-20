@@ -101,6 +101,11 @@ TWO_FACTOR_PATCH_ADMIN = False
 
 LANGUAGE_CODE = "en-gb"
 
+LANGUAGES = (
+    ("en-gb", "English"),
+    ("sv", "Svenska"),
+)
+
 USE_I18N = True
 
 USE_L10N = True
