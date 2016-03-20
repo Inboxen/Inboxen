@@ -101,7 +101,7 @@ body {
 }
 
 .email-buttons, .inbox-options {
-    .close {
+    .close + .close {
         margin-left: 5px;
         margin-bottom: 5px;
     }
