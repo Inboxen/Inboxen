@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import os
 
 os.environ['INBOX_TESTING'] = '1'
-os.environ["INBOXEN_ADMIN_ACCESS"] = '1'
 from inboxen.settings import *
 
 CACHES = {
@@ -11,7 +10,7 @@ CACHES = {
     }
 }
 
-db = os.environ.get('DB')
+db = os.environ.get('DB', "sqlite")
 postgres_user = os.environ.get('PG_USER', 'postgres')
 
 SECRET_KEY = "This is a test, you don't need secrets"

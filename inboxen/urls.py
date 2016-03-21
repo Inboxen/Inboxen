@@ -25,14 +25,20 @@ from django.utils.translation import ugettext as _
 
 from inboxen import views
 
+
 urls.handler400 = views.error.bad_request
 urls.handler403 = views.error.permission_denied
 urls.handler404 = views.error.not_found
 urls.handler500 = views.error.server_error
 
+
 # csrf stuff
 import session_csrf
 session_csrf.monkeypatch()
+
+
+# admin
+admin.autodiscover()
 
 
 urlpatterns = [
@@ -71,11 +77,7 @@ urlpatterns = [
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
+
+    # admin
+    urls.url(r'^admin/', urls.include(admin.site.urls)),
 ]
-
-if ("INBOXEN_ADMIN_ACCESS" in os.environ and os.environ["INBOXEN_ADMIN_ACCESS"]) or settings.DEBUG:
-    admin.autodiscover()
-
-    urlpatterns += [
-        urls.url(r'^admin/', urls.include(admin.site.urls)),
-    ]

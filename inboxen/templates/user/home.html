@@ -9,18 +9,21 @@
 {% endblock %}
 
 {% block content %}
-{% with col0="col-md-3 col-xs-5" col1="col-md-2 col-xs-3" col2="col-md-2 col-xs-3" col3="col-md-1 col-md-push-4 col-xs-1" col4="col-md-4 col-md-pull-1 col-xs-12" %}
+{% with col0="col-md-5 col-xs-8" col2="col-md-2 col-xs-3" col3="col-md-1 col-md-push-4 col-xs-1" col4="col-md-4 col-md-pull-1 col-xs-12" %}
 <div id="inbox-list" class="honeydew">
     <div class="row title">
         <div class="{{ col0 }}">{% trans "Inbox" %}</div>
-        <div class="{{ col1 }}">&nbsp;</div>
         <div class="{{ col2 }}">{% trans "Last activity" %}</div>
         <div class="{{ col3 }} hidden-xs hidden-sm">&nbsp;</div>
         <div class="{{ col4 }} hidden-xs hidden-sm">{% trans "Description" %}</div>
     </div>
     <div id="unified" class="row">
-        <div class="inbox-name {{ col0 }}"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
-        <div class="inbox-flags {{ col1 }}">{{ user.userprofile.flags|render_flags }}</div>
+        <div class="{{ col0 }}">
+            <div class="row">
+                <div class="inbox-name col-xs-12 col-sm-8"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
+                <div class="inbox-flags col-xs-12 col-sm-4">{{ user.userprofile.flags|render_flags }}</div>
+            </div>
+        </div>
         <div class="{{ col2 }}">&nbsp;</div>
         <div class="{{ col3 }}">&nbsp;</div>
         <div class="{{ col4 }}">&nbsp;</div>

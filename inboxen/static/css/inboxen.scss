@@ -43,7 +43,7 @@ body {
         }
     }
 
-    .row {
+    & > .row {
         margin-left: initial;
         margin-right: initial;
 
@@ -58,6 +58,10 @@ body {
 
     .row.title:hover {
         background-color: initial;
+    }
+
+    .email-sender, .email-subject {
+        word-wrap: break-word;
     }
 }
 
