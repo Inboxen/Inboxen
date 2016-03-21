@@ -3,9 +3,9 @@
 <div id="email-{{ eid }}" class="row">
     <div class="col-md-2 col-xs-5">
         <div class="row">
-            {% if not search_results %}<div class="email-checkbox col-sm-4 col-xs-12"><input type="checkbox" value="email" name="{{ eid }}" /></div>
+            {% if not search_results %}<div class="email-checkbox col-sm-2 col-xs-12"><input type="checkbox" value="email" name="{{ eid }}" /></div>
             <div class="clearfix visible-xs-block"></div>{% endif %}
-            <div class="email-flags col-sm-8 col-xs-12">{{ flags|render_flags }}</div>
+            <div class="email-flags col-sm-10 col-xs-12">{{ flags|render_flags }}</div>
         </div>
     </div>
     {% url 'email-view' inbox=inbox domain=domain id=eid as email_url %}
@@ -24,8 +24,8 @@
         {% endif %}
     </div>
     <div class="clearfix visible-sm-block"></div>
-    <div class="email-sender col-xs-12 col-sm-6 col-md-3 col-md-pull-2">{{ sender }}</div>
-    <div class="email-subject col-xs-12 col-sm-6 col-md-5 col-md-pull-2">{% if subject %}
+    <div class="email-sender col-xs-12 col-sm-5 col-md-3 col-md-pull-2">{{ sender }}</div>
+    <div class="email-subject col-xs-12 col-sm-7 col-md-5 col-md-pull-2">{% if subject %}
         <a href="{{ email_url }}">{{ subject }}</a>
     {% else %}
         <i><a href="{{ email_url }}">{% trans "No Subject" %}</a></i>

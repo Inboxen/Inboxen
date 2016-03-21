@@ -59,6 +59,10 @@ body {
     .row.title:hover {
         background-color: initial;
     }
+
+    .email-sender, .email-subject {
+        word-wrap: break-word;
+    }
 }
 
 #unified {
