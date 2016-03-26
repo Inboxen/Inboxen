@@ -54,7 +54,7 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
         ('method', two_forms.MethodForm),
         ('generator', two_forms.TOTPDeviceForm),
     )
-    redirect_url = "user-security"
+    redirect_url = "user-twofactor-backup"
     qrcode_url = "user-twofactor-qrcode"
 
     def done(self, *args, **kwargs):
