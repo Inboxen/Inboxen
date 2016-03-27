@@ -67,7 +67,7 @@ class UserProfile(models.Model):
         return left
 
     def __unicode__(self):
-        return self.user.username
+        return unicode(self.user)
 
 
 class Statistic(models.Model):
@@ -174,6 +174,9 @@ class Request(models.Model):
         blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
     result = models.CharField("comment", max_length=1024, blank=True, null=True)
+
+    def __unicode__(self):
+        return u"Request for %s (%s)" % (self.requester, succeeded)
 
 ##
 # Email models
