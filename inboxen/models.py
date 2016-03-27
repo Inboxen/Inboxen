@@ -67,7 +67,7 @@ class UserProfile(models.Model):
         return left
 
     def __unicode__(self):
-        return unicode(self.user)
+        return u"Profile for %s" % self.user
 
 
 class Statistic(models.Model):
@@ -176,7 +176,7 @@ class Request(models.Model):
     result = models.CharField("comment", max_length=1024, blank=True, null=True)
 
     def __unicode__(self):
-        return u"Request for %s (%s)" % (self.requester, succeeded)
+        return u"Request for %s (%s)" % (self.requester, self.succeeded)
 
 ##
 # Email models

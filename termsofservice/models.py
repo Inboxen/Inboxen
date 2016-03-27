@@ -55,4 +55,4 @@ class StaffProfile(models.Model):
         return safestring.mark_safe(markdown.markdown(self.bio))
 
     def __unicode__(self):
-        return unicode(self.user)
+        return u"Staff profile for %s" % self.user
