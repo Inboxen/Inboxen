@@ -58,6 +58,9 @@ class InboxenAdmin(admin.AdminSite):
     site_title = ugettext_lazy("{site_name} Admin").format(site_name=settings.SITE_NAME)
     index_title = ugettext_lazy("Instance Administration")
 
+    def has_permission(self, request):
+        return super(InboxenAdmin, self).has_permission(request) and request.user.is_verified()
+
     def login(self, request, extra_context=None):
         if REDIRECT_FIELD_NAME in request.GET:
             url = request.GET[REDIRECT_FIELD_NAME]
