@@ -268,50 +268,60 @@ else:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
+    'handlers': {
+        'console': {
             'level': log_level,
+            'class': 'logging.StreamHandler',
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
         'inboxen': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'account': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'blog': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'liberation': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'redirect': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'router': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'source': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'termsofservice': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
         'tickets': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
     },
