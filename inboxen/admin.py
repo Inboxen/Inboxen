@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -19,13 +19,13 @@
 
 from urllib import urlencode
 
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
-from django.contrib.auth.admin import UserAdmin as OriginalUserAdmin
-from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import redirect
+from django.utils.translation import ugettext_lazy
 
 from inboxen import models
 
@@ -53,44 +53,34 @@ class RequestAdmin(admin.ModelAdmin):
         return super(RequestAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class UserAdmin(OriginalUserAdmin):
-    actions = None
+class InboxenAdmin(admin.AdminSite):
+    site_header = ugettext_lazy("{site_name} Admin").format(site_name=settings.SITE_NAME)
+    site_title = ugettext_lazy("{site_name} Admin").format(site_name=settings.SITE_NAME)
+    index_title = ugettext_lazy("Instance Administration")
 
-    def user_change_password(self, request, *args, **kwargs):
-        if request.user.is_superuser:
-            return super(UserAdmin, self).user_change_password(request, *args, **kwargs)
+    def has_permission(self, request):
+        return super(InboxenAdmin, self).has_permission(request) and request.user.is_verified()
+
+    def login(self, request, extra_context=None):
+        if REDIRECT_FIELD_NAME in request.GET:
+            url = request.GET[REDIRECT_FIELD_NAME]
         else:
-            raise PermissionDenied
+            url = request.get_full_path()
+        return redirect('%s?%s' % (
+            reverse('user-login'),
+            urlencode({REDIRECT_FIELD_NAME: url})
+        ))
 
-    def get_queryset(self, request):
-        qs = super(UserAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(Q(is_staff=True) | Q(is_superuser=True))
+    def logout(self, *args, **kwargs):
+        return redirect(reverse("user-logout"))
 
-    def get_readonly_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            return self.readonly_fields
-        return self.readonly_fields + (
-            "date_joined", "last_login", "groups", "is_active", "is_staff",
-            "is_superuser", "password", "user_permissions", "username",
-        )
+    def password_change(self, *args, **kwargs):
+        return redirect(reverse("user-password"))
+
+    def password_change_done(self, *args, **kwargs):
+        return redirect(reverse('admin:index', current_app=self.name))
 
 
-def login(self, request, extra_context=None):
-    if REDIRECT_FIELD_NAME in request.GET:
-        url = request.GET[REDIRECT_FIELD_NAME]
-    else:
-        url = request.get_full_path()
-    return redirect('%s?%s' % (
-        reverse('user-login'),
-        urlencode({REDIRECT_FIELD_NAME: url})
-    ))
-
-admin.AdminSite.login = login
-
-admin.site.register(models.Domain, DomainAdmin)
-admin.site.register(models.Request, RequestAdmin)
-
-admin.site.unregister(get_user_model())
-admin.site.register(get_user_model(), UserAdmin)
+site = InboxenAdmin()
+site.register(models.Domain, DomainAdmin)
+site.register(models.Request, RequestAdmin)

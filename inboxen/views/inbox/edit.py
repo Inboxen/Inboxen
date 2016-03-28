@@ -31,7 +31,7 @@ __all__ = ["InboxEditView", "FormInboxEditView"]
 
 class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
     form_class = forms.InboxEditForm
-    template_name = "inbox/edit.html"
+    template_name = "inboxen/inbox/edit.html"
     success_views = ["user-home", "unified-inbox", "single-inbox"]
 
     def get_headline(self):
@@ -62,7 +62,7 @@ class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Up
 
 
 class FormInboxEditView(InboxEditView):
-    template_name = "forms/inbox/edit.html"
+    template_name = "inboxen/forms/inbox/edit.html"
 
     def form_valid(self, form):
         response = super(FormInboxEditView, self).form_valid(form)

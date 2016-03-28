@@ -34,7 +34,7 @@ urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^security/password', auth_views.password_change,
         {
-            'template_name': 'user/account/password.html',
+            'template_name': 'account/password.html',
             'post_change_redirect': reverse_lazy('user-security'),
             'password_change_form': PlaceHolderPasswordChangeForm,
             'extra_context': {

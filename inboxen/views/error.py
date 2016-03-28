@@ -37,7 +37,7 @@ class ErrorView(base.TemplateView):
     error_code = None
 
     headline = _("Some sort of error or something")
-    template_name = "error.html"
+    template_name = "inboxen/error.html"
 
     def dispatch(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

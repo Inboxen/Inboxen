@@ -23,7 +23,7 @@ from inboxen.views import base
 
 
 class StatsView(base.CommonContextMixin, generic.DetailView):
-    template_name = "stats.html"
+    template_name = "inboxen/stats.html"
     headline = _("Server Statistics")
     model = models.Statistic
 

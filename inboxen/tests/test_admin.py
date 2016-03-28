@@ -18,9 +18,11 @@
 ##
 
 from django import test
-from django.contrib import admin
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core import urlresolvers
+
+from inboxen import admin
+from inboxen.tests import factories
 
 
 class AdminTestCase(test.TestCase):
@@ -32,3 +34,38 @@ class AdminTestCase(test.TestCase):
         response = admin.site.login(request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "%s?%s" % (urlresolvers.reverse("user-login"), "next=%2Fhello"))
+
+    def test_logout_redirects(self):
+        request = self.factory.get("/")
+        response = admin.site.logout(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "%s" % urlresolvers.reverse("user-logout"))
+
+    def test_password_change_redirects(self):
+        request = self.factory.get("/")
+        response = admin.site.password_change(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "%s" % urlresolvers.reverse("user-password"))
+
+        response = admin.site.password_change_done(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "%s" % urlresolvers.reverse("admin:index", current_app=admin.site.name))
+
+    def test_has_permission(self):
+        request = self.factory.get("/")
+        request.user = factories.UserFactory()
+        request.user.is_verified = lambda: True
+        request.user.is_staff = True
+
+        response = admin.site.admin_view(admin.site.index)(request)
+        self.assertEqual(response.status_code, 200)
+
+        request.user.is_verified = lambda: False
+        request.user.is_staff = True
+        response = admin.site.admin_view(admin.site.index)(request)
+        self.assertEqual(response.status_code, 302)
+
+        request.user.is_verified = lambda: True
+        request.user.is_staff = False
+        response = admin.site.admin_view(admin.site.index)(request)
+        self.assertEqual(response.status_code, 302)

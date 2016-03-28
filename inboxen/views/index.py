@@ -20,5 +20,5 @@ from . import TemplateView
 
 
 class Index(TemplateView):
-    template_name = "index.html"
+    template_name = "inboxen/index.html"
     headline = _("Welcome")

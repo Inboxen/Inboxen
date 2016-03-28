@@ -38,7 +38,7 @@ __all__ = ["SearchView", "SearchApiView"]
 class SearchView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView):
     """A specialised search view that splits results by model"""
     paginate_by = None
-    template_name = "user/search.html"
+    template_name = "inboxen/user/search.html"
     filter_limit = 10
     timeout = 1  # time to wait for results
     model = None  # will be useful later, honest!

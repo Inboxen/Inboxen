@@ -1,5 +1,5 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% extends 'base.html' %}
+{% extends 'inboxen/base.html' %}
 {% load i18n inboxen_flags %}
 
 {% if inbox %}
@@ -36,7 +36,7 @@
 
     <div class="honeydew">
         {% for email in page_obj.object_list %}
-            {% include "includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
+            {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
         {% empty %}
             <div class="row">
                 <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
