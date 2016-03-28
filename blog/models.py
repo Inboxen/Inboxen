@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2013, 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -22,7 +23,6 @@ from django.db import models
 from django.utils import safestring
 
 from django_extensions.db.fields import AutoSlugField
-from markdown_newtab import NewTabExtension
 import markdown
 
 
@@ -40,13 +40,21 @@ class BlogPost(models.Model):
     @property
     def rendered_body(self):
         """Render MarkDown to HTML"""
-        return safestring.mark_safe(markdown.markdown(self.body, extensions=[NewTabExtension()]))
+        return safestring.mark_safe(markdown.markdown(self.body))
 
     def __unicode__(self):
         draft = ""
         if self.draft:
-            draft = " (draft)"
-        return u"%s%s" % (self.slug, draft)
+            draft = u" (draft)"
+
+        if not self.subject:
+            subject = u"(untitled)"
+        elif len(self.subject) > 64:
+            subject = u"%s…" % self.subject[:63]
+        else:
+            subject = self.subject
+
+        return u"%s%s" % (subject, draft)
 
     class Meta:
         ordering = ["-date"]

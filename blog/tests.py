@@ -76,6 +76,7 @@ class BlogTestCase(test.TestCase):
         self.assertEqual(post.subject, SUBJECT)
         self.assertEqual(post.body, BODY)
         self.assertEqual(post.date, None)
+        self.assertEqual(type(post.__unicode__()), unicode)
 
         url = urlresolvers.reverse('blog-post', kwargs={"slug": post.slug})
 

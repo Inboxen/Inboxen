@@ -82,6 +82,9 @@ class Question(models.Model, RenderBodyMixin):
         else:
             return self.last_modified
 
+    def __unicode__(self):
+        return u"%s from %s" % (self.subject, self.author)
+
     class Meta:
         ordering = ["-date"]
 
@@ -95,3 +98,6 @@ class Response(models.Model, RenderBodyMixin):
 
     class Meta:
         ordering = ["date"]
+
+    def __unicode__(self):
+        return u"Response to %s from %s" %(self.question, self.author)

@@ -33,6 +33,7 @@ class QuestionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Question
 
+    author = factory.SubFactory(factories.UserFactory)
     subject = factory.fuzzy.FuzzyText()
     body = factory.fuzzy.FuzzyText()
 
@@ -41,7 +42,9 @@ class ResponseFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Response
 
+    author = factory.SubFactory(factories.UserFactory)
     body = factory.fuzzy.FuzzyText()
+    question = factory.SubFactory(QuestionFactory)
 
 
 class MockModel(models.RenderBodyMixin):
@@ -157,6 +160,13 @@ class QuestionModelTestCase(test.TestCase):
 
         question_qs = models.Question.objects.annotate(last_response_date=Max("response__date"))
         self.assertEqual(question_qs[0].last_activity, response.date)
+
+    def test_unicode(self):
+        question = QuestionFactory(author=self.user)
+        self.assertEqual(type(question.__unicode__()), unicode)
+
+        response = ResponseFactory(question=question, author=self.user)
+        self.assertEqual(type(response.__unicode__()), unicode)
 
 
 class RenderBodyTestCase(test.TestCase):
