@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from tickets import models
+from inboxen.admin import site
 
 
 class ResponseInline(admin.TabularInline):
@@ -38,6 +39,7 @@ class ResponseInline(admin.TabularInline):
 
 
 class QuestionAdmin(admin.ModelAdmin):
+    actions = None
     list_display = ("subject", "author", "status")
     inlines = (ResponseInline,)
     readonly_fields = ("date", "last_modified", "render_body")
@@ -48,4 +50,4 @@ class QuestionAdmin(admin.ModelAdmin):
         return self.readonly_fields
 
 
-admin.site.register(models.Question, QuestionAdmin)
+site.register(models.Question, QuestionAdmin)

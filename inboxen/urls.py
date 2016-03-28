@@ -20,10 +20,9 @@
 import os
 
 from django.conf import settings, urls
-from django.contrib import admin
 from django.utils.translation import ugettext as _
 
-from inboxen import views
+from inboxen import admin, views
 
 
 urls.handler400 = views.error.bad_request
@@ -35,10 +34,6 @@ urls.handler500 = views.error.server_error
 # csrf stuff
 import session_csrf
 session_csrf.monkeypatch()
-
-
-# admin
-admin.autodiscover()
 
 
 urlpatterns = [
