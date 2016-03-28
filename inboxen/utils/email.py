@@ -38,6 +38,13 @@ from redirect import proxy_url
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
+HTML_SAFE_ATTRS = ["style", "title", "href", "src", "height", "width"]
+
+HTML_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre",
+    "code", "img", "div", "span", "table", "tr", "th", "td", "thead", "tbody",
+    "tfooter", "br"]
+
+
 _log = logging.getLogger(__name__)
 
 
@@ -78,10 +85,10 @@ def _clean_html_body(request, email, body, charset):
 
     # Mail Pile uses this, give back if you come up with something better
     cleaner = Cleaner(
-        allow_tags=["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre", "code", "img"],
+        allow_tags=HTML_ALLOW_TAGS,
         kill_tags = ["style"],  # remove style tags, not attrs
         remove_unknown_tags=False,
-        safe_attrs=["style", "title", "href", "src", "height", "width"],
+        safe_attrs=HTML_SAFE_ATTRS,
         safe_attrs_only=True,
         style=False,  # keep style attrs
     )
