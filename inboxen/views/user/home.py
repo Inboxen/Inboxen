@@ -31,7 +31,7 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     """ The user's home which lists the inboxes """
     allow_empty = True
     paginate_by = 100
-    template_name = "user/home.html"
+    template_name = "inboxen/user/home.html"
     headline = _("Home")
 
     def get_queryset(self):

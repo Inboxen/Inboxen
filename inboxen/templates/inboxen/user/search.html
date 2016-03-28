@@ -1,5 +1,5 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% extends 'base.html' %}
+{% extends 'inboxen/base.html' %}
 {% load assets i18n staticfiles inboxen_flags %}
 
 {% block header %}
@@ -23,7 +23,7 @@
 {% with col0="col-md-6 col-xs-10" col3="col-md-1 col-md-push-5 col-xs-2" col4="col-md-5 col-md-pull-1 col-xs-12" %}
     <div id="inbox-list" class="honeydew">
         {% for result in search_results.inboxes %}
-            {% include "includes/inbox_line.html" with inbox=result.object.inbox domain=result.meta.domain flags=result.object.flags last_activity=False desc=result.title %}
+            {% include "inboxen/includes/inbox_line.html" with inbox=result.object.inbox domain=result.meta.domain flags=result.object.flags last_activity=False desc=result.title %}
         {% endfor %}
     </div>
 {% endwith %}
@@ -32,7 +32,7 @@
 <h3>{% trans "Emails" %}</h3>
     <div id="email-list" class="honeydew">
         {% for result in search_results.emails %}
-            {% include "includes/email_line.html" with unified=True eid=result.object.eid flags=result.object.flags inbox=result.meta.inbox domain=result.meta.domain received_date=result.object.received_date subject=result.title sender=result.meta.from %}
+            {% include "inboxen/includes/email_line.html" with unified=True eid=result.object.eid flags=result.object.flags inbox=result.meta.inbox domain=result.meta.domain received_date=result.object.received_date subject=result.title sender=result.meta.from %}
         {% endfor %}
     </div>
 {% endif %}
