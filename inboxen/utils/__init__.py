@@ -44,7 +44,7 @@ _log = logging.getLogger(__name__)
 def generate_maintenance_page():
     """Render maintenance page into static files"""
     template_name = "maintenance.html"
-    template = loader.get_template(template_name)
+    template = loader.get_template("inboxen/%s" % template_name)
 
     output_dir = os.path.join(settings.STATIC_ROOT, "pages")
     output_path = os.path.join(output_dir, template_name)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-20 08:15+0000\n"
+"POT-Creation-Date: 2016-03-28 20:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: inboxen/admin.py:57 inboxen/admin.py:58
+#, python-brace-format
+msgid "{site_name} Admin"
+msgstr ""
+
+#: inboxen/admin.py:59
+msgid "Instance Administration"
+msgstr ""
 
 #: inboxen/forms/inbox.py:33 inboxen/forms/inbox.py:87
 msgid "Exclude from Unified Inbox"
@@ -76,96 +85,101 @@ msgstr ""
 msgid "who accepted (or rejected) this request?"
 msgstr ""
 
-#: inboxen/settings.py:216
+#: inboxen/settings.py:221
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
-#: inboxen/templates/base.html:18
+#: inboxen/templates/inboxen/base.html:18
 msgid "Skip to alerts"
 msgstr ""
 
-#: inboxen/templates/base.html:19
+#: inboxen/templates/inboxen/base.html:19
 msgid "Skip to content"
 msgstr ""
 
-#: inboxen/templates/base.html:25
+#: inboxen/templates/inboxen/base.html:25
 msgid "Toggle navigation"
 msgstr ""
 
-#: inboxen/templates/base.html:36 inboxen/templates/inbox/add.html.py:7
-#: inboxen/views/inbox/add.py:35
+#: inboxen/templates/inboxen/base.html:36
+#: inboxen/templates/inboxen/inbox/add.html:7 inboxen/views/inbox/add.py:35
 msgid "Add Inbox"
 msgstr ""
 
-#: inboxen/templates/base.html:37 inboxen/templates/base.html.py:46
+#: inboxen/templates/inboxen/base.html:37
+#: inboxen/templates/inboxen/base.html:46
 msgid "Blog"
 msgstr ""
 
-#: inboxen/templates/base.html:38
+#: inboxen/templates/inboxen/base.html:38
 msgid "Account"
 msgstr ""
 
-#: inboxen/templates/base.html:39 inboxen/templates/base.html.py:47
+#: inboxen/templates/inboxen/base.html:39
+#: inboxen/templates/inboxen/base.html:47
 msgid "Help"
 msgstr ""
 
-#: inboxen/templates/base.html:40
+#: inboxen/templates/inboxen/base.html:40
 msgid "Logout"
 msgstr ""
 
-#: inboxen/templates/base.html:42
+#: inboxen/templates/inboxen/base.html:42
 msgid "Login"
 msgstr ""
 
-#: inboxen/templates/base.html:44
+#: inboxen/templates/inboxen/base.html:44
 msgid "Register"
 msgstr ""
 
-#: inboxen/templates/base.html:58
+#: inboxen/templates/inboxen/base.html:58
 msgid "Search emails and inboxes"
 msgstr ""
 
-#: inboxen/templates/base.html:61 inboxen/templates/user/search.html.py:16
+#: inboxen/templates/inboxen/base.html:61
+#: inboxen/templates/inboxen/user/search.html:16
 #: inboxen/views/user/search.py:113
 msgid "Search"
 msgstr ""
 
-#: inboxen/templates/base.html:91
+#: inboxen/templates/inboxen/base.html:91
 #, python-format
 msgid "%(SITE_NAME)s is Free Software"
 msgstr ""
 
-#: inboxen/templates/base.html:92
+#: inboxen/templates/inboxen/base.html:92
 msgid "Stats for nerds"
 msgstr ""
 
-#: inboxen/templates/forms/inbox/edit.html:10
-#: inboxen/templates/inbox/edit.html:22
+#: inboxen/templates/inboxen/forms/inbox/edit.html:10
+#: inboxen/templates/inboxen/inbox/edit.html:22
 msgid "Danger Area"
 msgstr ""
 
-#: inboxen/templates/forms/inbox/edit.html:16
-#: inboxen/templates/inbox/edit.html:28
+#: inboxen/templates/inboxen/forms/inbox/edit.html:16
+#: inboxen/templates/inboxen/inbox/edit.html:28
 msgid "Save"
 msgstr ""
 
-#: inboxen/templates/forms/inbox/edit.html:17
-#: inboxen/templates/inbox/edit.html:29
+#: inboxen/templates/inboxen/forms/inbox/edit.html:17
+#: inboxen/templates/inboxen/inbox/edit.html:29
 msgid "Cancel"
 msgstr ""
 
-#: inboxen/templates/inbox/add.html:6 inboxen/templates/inbox/edit.html.py:6
-#: inboxen/templates/inbox/email.html:11 inboxen/templates/inbox/inbox.html:13
-#: inboxen/templates/user/search.html:15
+#: inboxen/templates/inboxen/inbox/add.html:6
+#: inboxen/templates/inboxen/inbox/edit.html:6
+#: inboxen/templates/inboxen/inbox/email.html:11
+#: inboxen/templates/inboxen/inbox/inbox.html:13
+#: inboxen/templates/inboxen/user/search.html:15
 #, python-format
 msgid " %(user)s's Home "
 msgstr ""
 
-#: inboxen/templates/inbox/add.html:18
+#: inboxen/templates/inboxen/inbox/add.html:18
 msgid "Add"
 msgstr ""
 
-#: inboxen/templates/inbox/edit.html:7
+#: inboxen/templates/inboxen/inbox/edit.html:7
 #, python-format
 msgid ""
 "\n"
@@ -173,143 +187,147 @@ msgid ""
 "        "
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:13
-#: inboxen/templates/includes/email_line.html:31
+#: inboxen/templates/inboxen/inbox/email.html:13
+#: inboxen/templates/inboxen/includes/email_line.html:31
 #: inboxen/views/inbox/email.py:128
 msgid "No Subject"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:20
+#: inboxen/templates/inboxen/inbox/email.html:20
 msgid "Click here to view images"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:27 inboxen/templates/inbox/inbox.html:28
-#: inboxen/templates/includes/email_line.html:14
-#: inboxen/templates/includes/email_line.html:15
+#: inboxen/templates/inboxen/inbox/email.html:27
+#: inboxen/templates/inboxen/inbox/inbox.html:28
+#: inboxen/templates/inboxen/includes/email_line.html:14
+#: inboxen/templates/inboxen/includes/email_line.html:15
 msgid "Delete"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:33
+#: inboxen/templates/inboxen/inbox/email.html:33
 msgid "Unmark as important"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:35
+#: inboxen/templates/inboxen/inbox/email.html:35
 msgid "Mark as important"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:41
+#: inboxen/templates/inboxen/inbox/email.html:41
 msgid "Hide headers"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:44
+#: inboxen/templates/inboxen/inbox/email.html:44
 msgid "Show headers"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:49
+#: inboxen/templates/inboxen/inbox/email.html:49
 msgid "From"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:50
+#: inboxen/templates/inboxen/inbox/email.html:50
 msgid "Received"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:50
-#: inboxen/templates/includes/email_line.html:12
-#: inboxen/templates/includes/inbox_line.html:7
+#: inboxen/templates/inboxen/inbox/email.html:50
+#: inboxen/templates/inboxen/includes/email_line.html:12
+#: inboxen/templates/inboxen/includes/inbox_line.html:11
 msgid "ago"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:53
+#: inboxen/templates/inboxen/inbox/email.html:53
 msgid "Raw Headers"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:58
+#: inboxen/templates/inboxen/inbox/email.html:58
 msgid "Message"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:63
+#: inboxen/templates/inboxen/inbox/email.html:63
 msgid "Attachments"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:72
+#: inboxen/templates/inboxen/inbox/email.html:72
 msgid "Download"
 msgstr ""
 
-#: inboxen/templates/inbox/email.html:75
+#: inboxen/templates/inboxen/inbox/email.html:75
 msgid "View"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:17 inboxen/templates/user/home.html:22
+#: inboxen/templates/inboxen/inbox/inbox.html:17
+#: inboxen/templates/inboxen/user/home.html:23
 msgid "Unified Inbox"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:26
+#: inboxen/templates/inboxen/inbox/inbox.html:26
 #: inboxen/templatetags/inboxen_flags.py:48
 msgid "Important"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:27
+#: inboxen/templates/inboxen/inbox/inbox.html:27
 msgid "Unimportant"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:32
-#: inboxen/templates/includes/inbox_line.html:11
+#: inboxen/templates/inboxen/inbox/inbox.html:32
+#: inboxen/templates/inboxen/includes/inbox_line.html:15
 msgid "Inbox Options"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:42
+#: inboxen/templates/inboxen/inbox/inbox.html:42
 msgid "This Inbox is <span title=\"The opposite of full.\">empty</span>."
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:50 inboxen/templates/user/home.html:40
+#: inboxen/templates/inboxen/inbox/inbox.html:50
+#: inboxen/templates/inboxen/user/home.html:43
 msgid "Previous"
 msgstr ""
 
-#: inboxen/templates/inbox/inbox.html:56 inboxen/templates/user/home.html:46
+#: inboxen/templates/inboxen/inbox/inbox.html:56
+#: inboxen/templates/inboxen/user/home.html:49
 msgid "Next"
 msgstr ""
 
-#: inboxen/templates/includes/email_line.html:17
-#: inboxen/templates/includes/email_line.html:18
+#: inboxen/templates/inboxen/includes/email_line.html:17
+#: inboxen/templates/inboxen/includes/email_line.html:18
 msgid "Toggle Importantance"
 msgstr ""
 
-#: inboxen/templates/includes/email_line.html:21
-#: inboxen/templates/includes/email_line.html:22
-#: inboxen/templates/user/home.html:15 inboxen/views/inbox/inbox.py:170
+#: inboxen/templates/inboxen/includes/email_line.html:21
+#: inboxen/templates/inboxen/includes/email_line.html:22
+#: inboxen/templates/inboxen/user/home.html:15 inboxen/views/inbox/inbox.py:170
 msgid "Inbox"
 msgstr ""
 
-#: inboxen/templates/includes/inbox_line.html:10
+#: inboxen/templates/inboxen/includes/inbox_line.html:14
 msgid "Options"
 msgstr ""
 
-#: inboxen/templates/index.html:8
+#: inboxen/templates/inboxen/index.html:8
 #, python-format
 msgid "You're already signed up and logged in. <a class=\"alert-link\" href=\"%(home_url)s\">Click here</a> to view your inboxes"
 msgstr ""
 
-#: inboxen/templates/index.html:14
+#: inboxen/templates/inboxen/index.html:14
 msgctxt "index heading first line"
 msgid "Protect your privacy"
 msgstr ""
 
-#: inboxen/templates/index.html:15
+#: inboxen/templates/inboxen/index.html:15
 msgctxt "index heading second line"
 msgid "and keep your inbox clean."
 msgstr ""
 
-#: inboxen/templates/index.html:17
+#: inboxen/templates/inboxen/index.html:17
 msgctxt "signup link"
 msgid "Join"
 msgstr ""
 
-#: inboxen/templates/index.html:22
+#: inboxen/templates/inboxen/index.html:22
 #, python-format
 msgid "What Is %(SITE_NAME)s?"
 msgstr ""
 
-#: inboxen/templates/index.html:23
+#: inboxen/templates/inboxen/index.html:23
 #, python-format
 msgid ""
 "%(SITE_NAME)s is a\n"
@@ -320,145 +338,147 @@ msgid ""
 "            promotional offers and other junk mail."
 msgstr ""
 
-#: inboxen/templates/index.html:31
+#: inboxen/templates/inboxen/index.html:31
 msgid "Features"
 msgstr ""
 
-#: inboxen/templates/index.html:35
+#: inboxen/templates/inboxen/index.html:35
 msgid "Privacy"
 msgstr ""
 
-#: inboxen/templates/index.html:36
+#: inboxen/templates/inboxen/index.html:36
 msgid "Create anonymous addresses. As many as you want."
 msgstr ""
 
-#: inboxen/templates/index.html:40
+#: inboxen/templates/inboxen/index.html:40
 msgid "Data minimal"
 msgstr ""
 
-#: inboxen/templates/index.html:41
+#: inboxen/templates/inboxen/index.html:41
 msgid "We don't ask for or keep unneeded data."
 msgstr ""
 
-#: inboxen/templates/index.html:45
+#: inboxen/templates/inboxen/index.html:45
 msgid "Forever"
 msgstr ""
 
-#: inboxen/templates/index.html:46
+#: inboxen/templates/inboxen/index.html:46
 msgid "Your inboxes are uniquely yours and will never be reused - even if you delete your account."
 msgstr ""
 
-#: inboxen/templates/index.html:52
+#: inboxen/templates/inboxen/index.html:52
 msgid "Delete your account"
 msgstr ""
 
-#: inboxen/templates/index.html:53
+#: inboxen/templates/inboxen/index.html:53
 msgid "You can delete your account at any time - for any reason."
 msgstr ""
 
-#: inboxen/templates/index.html:57
+#: inboxen/templates/inboxen/index.html:57
 msgid "Data liberation"
 msgstr ""
 
-#: inboxen/templates/index.html:58
+#: inboxen/templates/inboxen/index.html:58
 msgid "Export your data in a usable format."
 msgstr ""
 
-#: inboxen/templates/index.html:62
+#: inboxen/templates/inboxen/index.html:62
 msgid "Freedom"
 msgstr ""
 
-#: inboxen/templates/index.html:63
+#: inboxen/templates/inboxen/index.html:63
 msgid "Our software is licensed under the AGPLv3."
 msgstr ""
 
-#: inboxen/templates/maintenance.html:9
+#: inboxen/templates/inboxen/maintenance.html:9
 msgid "We'll be back soon"
 msgstr ""
 
-#: inboxen/templates/maintenance.html:10
+#: inboxen/templates/inboxen/maintenance.html:10
 msgid "We're down for maintenance. We'll be back later!"
 msgstr ""
 
-#: inboxen/templates/stats.html:19
+#: inboxen/templates/inboxen/stats.html:19
 msgid "Users"
 msgstr ""
 
-#: inboxen/templates/stats.html:22
+#: inboxen/templates/inboxen/stats.html:22
 msgid "User count"
 msgstr ""
 
-#: inboxen/templates/stats.html:25
+#: inboxen/templates/inboxen/stats.html:25
 msgid "With Inboxes:"
 msgstr ""
 
-#: inboxen/templates/stats.html:29
+#: inboxen/templates/inboxen/stats.html:29
 msgid "New users today"
 msgstr ""
 
-#: inboxen/templates/stats.html:33 inboxen/templates/user/search.html.py:22
+#: inboxen/templates/inboxen/stats.html:33
+#: inboxen/templates/inboxen/user/search.html:22
 msgid "Inboxes"
 msgstr ""
 
-#: inboxen/templates/stats.html:37
+#: inboxen/templates/inboxen/stats.html:37
 msgid "Total number of inboxes"
 msgstr ""
 
-#: inboxen/templates/stats.html:42
+#: inboxen/templates/inboxen/stats.html:42
 msgid "Average number of inboxes per user"
 msgstr ""
 
-#: inboxen/templates/stats.html:47
+#: inboxen/templates/inboxen/stats.html:47
 msgid "Standard deviation of inboxes per user"
 msgstr ""
 
-#: inboxen/templates/stats.html:52 inboxen/templates/user/search.html.py:32
+#: inboxen/templates/inboxen/stats.html:52
+#: inboxen/templates/inboxen/user/search.html:32
 msgid "Emails"
 msgstr ""
 
-#: inboxen/templates/stats.html:56
+#: inboxen/templates/inboxen/stats.html:56
 msgid "Total number of emails"
 msgstr ""
 
-#: inboxen/templates/stats.html:61
+#: inboxen/templates/inboxen/stats.html:61
 msgid "Average number of emails per inbox"
 msgstr ""
 
-#: inboxen/templates/stats.html:66
+#: inboxen/templates/inboxen/stats.html:66
 msgid "Standard deviation of emails per inbox"
 msgstr ""
 
-#: inboxen/templates/stats.html:73
+#: inboxen/templates/inboxen/stats.html:73
 msgid "Sorry, we don't seem to have any statistics."
 msgstr ""
 
-#: inboxen/templates/user/home.html:7
+#: inboxen/templates/inboxen/user/home.html:7
 #, python-format
 msgid "%(user)s's Home"
 msgstr ""
 
-#: inboxen/templates/user/home.html:17
+#: inboxen/templates/inboxen/user/home.html:16
 msgid "Last activity"
 msgstr ""
 
-#: inboxen/templates/user/home.html:19
+#: inboxen/templates/inboxen/user/home.html:18
 msgid "Description"
 msgstr ""
 
-#: inboxen/templates/user/home.html:32
+#: inboxen/templates/inboxen/user/home.html:35
 msgid "Click here to add an Inbox"
 msgstr ""
 
-#: inboxen/templates/user/search.html:41
+#: inboxen/templates/inboxen/user/search.html:41
 #, python-format
 msgid "There are no Inboxes or emails containing <em>%(query)s</em>."
 msgstr ""
 
-#: inboxen/templates/user/search.html:44
+#: inboxen/templates/inboxen/user/search.html:44
 msgid "Searching…"
 msgstr ""
 
-#: inboxen/templates/user/search.html:45
+#: inboxen/templates/inboxen/user/search.html:45
 #, python-format
 msgid ""
 "\n"
@@ -466,7 +486,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: inboxen/templates/user/search.html:51
+#: inboxen/templates/inboxen/user/search.html:51
 msgid "If you search for nothing, you won't get anything."
 msgstr ""
 

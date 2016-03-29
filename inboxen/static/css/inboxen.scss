@@ -50,14 +50,14 @@ body {
         & > div {
             padding: $table-cell-padding;
         }
-    }
 
-    .row:hover {
-        background-color: $table-bg-hover;
-    }
+        &:hover {
+            background-color: $table-bg-hover;
+        }
 
-    .row.title:hover {
-        background-color: initial;
+        &.title:hover {
+            background-color: initial;
+        }
     }
 
     .email-sender, .email-subject {

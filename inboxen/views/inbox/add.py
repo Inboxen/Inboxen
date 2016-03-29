@@ -36,7 +36,7 @@ class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Cre
     success_url = reverse_lazy('user-home')
     form_class = forms.InboxAddForm
     model = Inbox
-    template_name = "inbox/add.html"
+    template_name = "inboxen/inbox/add.html"
 
     def dispatch(self, request, *args, **kwargs):
         try:

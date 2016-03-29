@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from blog import models
+from inboxen.admin import site
 
 
 class BlogAdmin(admin.ModelAdmin):
@@ -41,4 +42,4 @@ class BlogAdmin(admin.ModelAdmin):
         return super(BlogAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-admin.site.register(models.BlogPost, BlogAdmin)
+site.register(models.BlogPost, BlogAdmin)

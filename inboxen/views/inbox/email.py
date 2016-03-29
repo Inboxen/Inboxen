@@ -38,7 +38,7 @@ _log = logging.getLogger(__name__)
 class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DetailView):
     model = models.Email
     pk_url_kwarg = "id"
-    template_name = 'inbox/email.html'
+    template_name = 'inboxen/inbox/email.html'
 
     def get(self, *args, **kwargs):
 

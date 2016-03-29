@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-20 08:15+0000\n"
+"POT-Creation-Date: 2016-03-28 20:12+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -308,11 +308,15 @@ msgstr ""
 msgid "Keep these tokens somewhere safe."
 msgstr ""
 
-#: account/templates/account/twofactor-backup.html:27
-msgid "Back"
+#: account/templates/account/twofactor-backup.html:28
+msgid "Done"
 msgstr ""
 
-#: account/templates/account/twofactor-backup.html:28
+#: account/templates/account/twofactor-backup.html:29
+msgid "Regenerate Tokens"
+msgstr ""
+
+#: account/templates/account/twofactor-backup.html:31
 msgid "Generate Tokens"
 msgstr ""
 
@@ -323,7 +327,13 @@ msgid ""
 "    any time.\n"
 msgstr ""
 
-#: account/templates/account/twofactor-disable.html:17
+#: account/templates/account/twofactor-disable.html:15
+msgid ""
+"\n"
+"    This will also delete any backup tokens you have generated.\n"
+msgstr ""
+
+#: account/templates/account/twofactor-disable.html:22
 msgid "Disable"
 msgstr ""
 

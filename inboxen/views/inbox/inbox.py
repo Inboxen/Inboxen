@@ -37,7 +37,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
     """Base class for Inbox views"""
     model = models.Email
     paginate_by = 100
-    template_name = 'inbox/inbox.html'
+    template_name = 'inboxen/inbox/inbox.html'
 
     def get_success_url(self):
         return self.request.path

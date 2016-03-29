@@ -176,6 +176,8 @@ class ModelTestCase(test.TestCase):
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
 
+        self.assertEqual(type(models.Request.objects.get().__unicode__()), unicode)
+
 
 class ModelFlagsTestCase(test.TestCase):
     def test_email_flags_order(self):

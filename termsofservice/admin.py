@@ -22,6 +22,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 from termsofservice import models
+from inboxen.admin import site
 
 
 class TOSAdmin(admin.ModelAdmin):
@@ -45,5 +46,5 @@ class StaffProfileAdmin(admin.ModelAdmin):
 
         return super(StaffProfileAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-admin.site.register(models.TOS, TOSAdmin)
-admin.site.register(models.StaffProfile, StaffProfileAdmin)
+site.register(models.TOS, TOSAdmin)
+site.register(models.StaffProfile, StaffProfileAdmin)

@@ -1,5 +1,5 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% extends 'base.html' %}
+{% extends 'inboxen/base.html' %}
 {% load i18n inboxen_flags %}
 
 {% block breadcumbs %}
@@ -29,7 +29,7 @@
         <div class="{{ col4 }}">&nbsp;</div>
     </div>
     {% for inbox in page_obj.object_list %}
-        {% include "includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
+        {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
     {% empty %}
         <div class="row">
             <div class="col-xs-12"><b><a href="{% url 'inbox-add' %}">{% trans "Click here to add an Inbox" %}</a></b></div>

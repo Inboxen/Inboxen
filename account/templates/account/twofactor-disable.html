@@ -11,6 +11,11 @@
     You are about to disable two-factor authentication. You can re-enalbe it at
     any time.
 {% endblocktrans %}</p>
+
+<p class="alert alert-warning">{% blocktrans %}
+    This will also delete any backup tokens you have generated.
+{% endblocktrans %}</p>
+
 <form method="post">
     {% csrf_token %}
     {{ form|bootstrap }}
