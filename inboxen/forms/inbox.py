@@ -85,6 +85,7 @@ class InboxSecondaryEditForm(forms.Form):
 
 class InboxEditForm(forms.ModelForm):
     exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
+    pinned = forms.BooleanField(required=False, label=_("Pin Inbox to top"))
 
     class Meta:
         model = models.Inbox
@@ -94,6 +95,7 @@ class InboxEditForm(forms.ModelForm):
         self.request = request
         super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
         self.fields["exclude_from_unified"].initial = bool(self.instance.flags.exclude_from_unified)
+        self.fields["pinned"].initial = bool(self.instance.flags.pinned)
         self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
 
     def save(self):
@@ -102,6 +104,7 @@ class InboxEditForm(forms.ModelForm):
             data.update(self.subform.cleaned_data.copy())
 
         self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
+        self.instance.flags.pinned = data.pop("pinned", False)
         self.instance.flags.disabled = data.pop("disable_inbox", False)
         clear_inbox = data.pop("clear_inbox", False)
 
