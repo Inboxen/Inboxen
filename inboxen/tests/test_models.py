@@ -201,6 +201,7 @@ class ModelFlagsTestCase(test.TestCase):
             "new",
             "exclude_from_unified",
             "disabled",
+            "pinned",
         ]
 
         inbox_flags = list(models.Inbox.flags)

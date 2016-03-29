@@ -142,7 +142,7 @@ class Inbox(models.Model):
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled"), default=0)
+    flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled", "pinned"), default=0)
     description = models.CharField(max_length=256, null=True, blank=True)
 
     objects = InboxQuerySet.as_manager()
