@@ -37,7 +37,7 @@
             <th>{% trans "Total number of inboxes" %}</th>
             <td>
                 {{ object.inboxes.inbox_count__sum }}
-                <i>({% blocktrans with total_possible=object.inbxes.total_possible %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
+                <i>({% blocktrans with total_possible=object.inboxes.total_possible %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
             </td>
         </tr>
     {% endif %}
