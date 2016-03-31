@@ -229,6 +229,7 @@ CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 if DEBUG:
     # local dev made easy
     INSTALLED_APPS += ('debug_toolbar',)
+    JQUERY_URL = None
     CSP_REPORT_ONLY = True
 
 # csrf
