@@ -64,6 +64,11 @@ def statistics():
             inboxes[key] = users[key]
             del users[key]
 
+    domain_count = models.Domain.objects.available(None).count()
+    inboxes_possible = len(settings.INBOX_CHOICES) ** settings.INBOX_LENGTH
+
+    inboxes["total_possible"] = inboxes_possible * domain_count
+
     emails = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted)
     emails = emails.annotate(email_count=Count("email__id")).aggregate(**inbox_aggregate)
 
