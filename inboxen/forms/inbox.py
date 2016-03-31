@@ -98,11 +98,18 @@ class InboxEditForm(forms.ModelForm):
         self.fields["pinned"].initial = bool(self.instance.flags.pinned)
         self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
 
+    def clean(self):
+        if self.subform.is_valid():
+            self.cleaned_data.update(self.subform.cleaned_data)
+
+        disabled = self.cleaned_data.get("disable_inbox", False)
+        pinned = self.cleaned_data.get("pinned", False)
+
+        if disabled and pinned:
+            raise forms.ValidationError(_("Inbox cannot be disabled and pinned at the same time"))
+
     def save(self):
         data = self.cleaned_data.copy()
-        if self.subform.is_valid():
-            data.update(self.subform.cleaned_data.copy())
-
         self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
         self.instance.flags.pinned = data.pop("pinned", False)
         self.instance.flags.disabled = data.pop("disable_inbox", False)
