@@ -22,7 +22,7 @@
             <th>{% trans "User count" %}</th>
             <td>
                 {{ object.users.count }}
-                <i>({% trans "With Inboxes:" %} {{ object.users.with_inboxes }})</i>
+                <i>({% blocktrans with with_inboxes=object.users.with_inboxes %}With inboxes: {{ with_inboxes }}{% endblocktrans %})</i>
             </td>
         </tr>
         <tr>
@@ -35,7 +35,10 @@
     {% if object.inboxes.inbox_count__sum %}
         <tr>
             <th>{% trans "Total number of inboxes" %}</th>
-            <td>{{ object.inboxes.inbox_count__sum }}</td>
+            <td>
+                {{ object.inboxes.inbox_count__sum }}
+                <i>({% blocktrans with total_possible=object.inbxes.total_possible %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
+            </td>
         </tr>
     {% endif %}
         <tr>

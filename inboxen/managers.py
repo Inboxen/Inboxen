@@ -21,7 +21,6 @@ from collections import OrderedDict
 from datetime import datetime
 import hashlib
 import random
-import string
 
 from django.conf import settings
 from django.db import IntegrityError, models
@@ -70,7 +69,7 @@ class InboxQuerySet(QuerySet):
             # loop around until we create a unique address
             inbox = []
             for i in range(length):
-                inbox += random.choice(string.ascii_lowercase)
+                inbox += random.choice(settings.INBOX_CHOICES)
 
             inbox = "".join(inbox)
 
