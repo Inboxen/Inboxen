@@ -1,6 +1,6 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n %}
+{% load i18n humanize %}
 
 {% block header %}
     <meta name="referrer" content="no-referrer">
@@ -47,7 +47,7 @@
 </div>
 
 <strong>{% trans "From" %}:</strong> {{ email.headers.From }} <br />
-<strong>{% trans "Received" %}:</strong> <span title="{{ email.date|date:"r" }}">{{ email.date|timesince }} {% trans "ago" %}</span>
+<strong>{% trans "Received" %}:</strong> <span title="{{ email.date|date:"r" }}">{{ email.date|naturaltime }}</span>
 <br />
 {% if headersfetchall %}
 <strong>{% trans "Raw Headers" %}:</strong>

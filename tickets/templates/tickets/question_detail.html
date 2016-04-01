@@ -1,6 +1,6 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n bootstrap %}
+{% load i18n humanize bootstrap %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -14,9 +14,9 @@
 <p>
         <b>{% trans "Asked by" %}:</b> {{ object.author.username }}
     <br />
-        <b>{% trans "Asked" %}:</b> {{ object.date|timesince }} {% trans "ago" %}
+        <b>{% trans "Asked" %}:</b> <span title="{{ object.date|date:"r" }}">{{ object.date|naturaltime }}</span>
     <br />
-        <b>{% trans "Last activity" %}:</b> {{ object.last_activity|timesince }} {% trans "ago" %}
+        <b>{% trans "Last activity" %}:</b> <span title="{{ object.last_activity|date:"r" }}">{{ object.last_activity|naturaltime }}</span>
     <br />
         <b>{% trans "Status" %}:</b> {{ object.get_status_display }}
 </p>
