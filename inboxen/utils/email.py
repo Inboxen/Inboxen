@@ -173,7 +173,7 @@ def _render_body(request, email, attachments):
 
             plain_message = True
             messages.error(request, _("Some parts of this email contained invalid HTML and could not be displayed"))
-            _log.exception(exc)
+            _log.exception(exc, extra={"request": request})
 
     if plain_message:
         body = html_utils.escape(body)
