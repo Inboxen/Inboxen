@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2015-2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -46,5 +46,12 @@ js = Bundle(
     output="compiled/js/website.%(version)s.js",
 )
 
+chart_js = Bundle(
+    "thirdparty/chart.js/Chart.js",
+    filters="jsmin",
+    output="compiled/js/stats.%(version)s.js",
+)
+
 register("inboxen_css", css)
 register("inboxen_js", js)
+register("chart_js", chart_js)
