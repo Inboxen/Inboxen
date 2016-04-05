@@ -39,6 +39,7 @@ session_csrf.monkeypatch()
 urlpatterns = [
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^_csp_report/', views.error.csp_report, name='csp_logger'),
+    urls.url(r'^stats_recent.json$', views.stats_recent, name='stats_recent'),
     urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
 
     # inbox views
