@@ -1,8 +1,13 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n cache %}
+{% load i18n cache assets %}
 
 {% get_current_language as LANGUAGE_CODE %}
+{% block extra_js %}
+    {% assets "chart_js" %}
+        <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endblock %}
 
 {% block content %}
 {% cache 1800 stats LANGUAGE_CODE %}
