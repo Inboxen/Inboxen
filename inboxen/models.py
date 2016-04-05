@@ -72,7 +72,7 @@ class UserProfile(models.Model):
 
 class Statistic(models.Model):
     """Statistics about users"""
-    date = models.DateTimeField('date')
+    date = models.DateTimeField('date', auto_now_add=True)
 
     users = JSONField()
     emails = JSONField()
