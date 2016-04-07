@@ -65,8 +65,8 @@ class HomeViewTestCase(test.TestCase):
     def test_pagin(self):
         # there should be 150 inboxes in the test fixtures
         # and pages are paginated by 100 items
-        response = self.client.get(self.get_url() + "2")
+        response = self.client.get(self.get_url() + "2/")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(self.get_url() + "3")
+        response = self.client.get(self.get_url() + "3/")
         self.assertEqual(response.status_code, 404)
