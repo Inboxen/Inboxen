@@ -38,31 +38,31 @@ session_csrf.monkeypatch()
 
 urlpatterns = [
     urls.url(r'^$', views.Index.as_view(), name='index'),
-    urls.url(r'^_csp_report/', views.error.csp_report, name='csp_logger'),
-    urls.url(r'^stats', views.StatsView.as_view(), name='stats'),
+    urls.url(r'^_csp_report/$', views.error.csp_report, name='csp_logger'),
+    urls.url(r'^stats/$', views.StatsView.as_view(), name='stats'),
 
     # inbox views
-    urls.url(r'^inbox/add/', views.InboxAddView.as_view(), name='inbox-add'),
-    urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)', views.InboxEditView.as_view(), name='inbox-edit'),
+    urls.url(r'^inbox/add/$', views.InboxAddView.as_view(), name='inbox-add'),
+    urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.InboxEditView.as_view(), name='inbox-edit'),
 
-    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)', views.AttachmentDownloadView.as_view(), name='email-attachment'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)', views.EmailView.as_view(), name='email-view'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)', views.SingleInboxView.as_view(), name='single-inbox'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/', views.SingleInboxView.as_view(), name='single-inbox'),
-    urls.url(r'^inbox/(?P<page>\d+)', views.UnifiedInboxView.as_view(), name='unified-inbox'),
-    urls.url(r'^inbox/', views.UnifiedInboxView.as_view(), name='unified-inbox'),
+    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/(?P<method>\w+)/$', views.AttachmentDownloadView.as_view(), name='email-attachment'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)/$', views.EmailView.as_view(), name='email-view'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)/$', views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/(?P<page>\d+)/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
+    urls.url(r'^inbox/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 
     # form inlines
-    urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/', views.FormInboxEditView.as_view(), name='form-inbox-edit'),
-    urls.url(r'^forms/inbox/email/', views.FormInboxView.as_view(), name='form-inbox-email'),
+    urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.FormInboxEditView.as_view(), name='form-inbox-edit'),
+    urls.url(r'^forms/inbox/email/$', views.FormInboxView.as_view(), name='form-inbox-email'),
 
     # user views
-    urls.url(r'^user/home/(?P<page>\d+)', views.UserHomeView.as_view(), name='user-home'),
-    urls.url(r'^user/home/', views.UserHomeView.as_view(), name='user-home'),
-    urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)', views.SearchView.as_view(), name='user-search'),
-    urls.url(r'^user/search/(?P<q>.*)/', views.SearchView.as_view(), name='user-search'),
-    urls.url(r'^user/search/', views.SearchView.as_view(), name='user-search'),
-    urls.url(r'^user/searchapi/(?P<q>.*)/', views.SearchApiView.as_view(), name='user-searchapi'),
+    urls.url(r'^user/home/(?P<page>\d+)/$', views.UserHomeView.as_view(), name='user-home'),
+    urls.url(r'^user/home/$', views.UserHomeView.as_view(), name='user-home'),
+    urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)/$', views.SearchView.as_view(), name='user-search'),
+    urls.url(r'^user/search/(?P<q>.*)/$', views.SearchView.as_view(), name='user-search'),
+    urls.url(r'^user/search/$', views.SearchView.as_view(), name='user-search'),
+    urls.url(r'^user/searchapi/(?P<q>.*)/$', views.SearchApiView.as_view(), name='user-searchapi'),
 
 
     # other apps

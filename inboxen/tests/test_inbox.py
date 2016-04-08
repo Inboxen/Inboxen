@@ -126,10 +126,10 @@ class InboxTestAbstract(object):
     def test_pagin(self):
         # there should be 150 emails in the test fixtures
         # and pages are paginated by 100 items
-        response = self.client.get(self.get_url() + "2")
+        response = self.client.get(self.get_url() + "2/")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(self.get_url() + "3")
+        response = self.client.get(self.get_url() + "3/")
         self.assertEqual(response.status_code, 404)
 
 
