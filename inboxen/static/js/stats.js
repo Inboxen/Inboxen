@@ -12,6 +12,7 @@
 
     // override some defaults
     Chart.defaults.global.responsive = true;
+    Chart.defaults.global.animation = false;
 
     $.get(statsUrl, function(data) {
         var userChart, inboxChart, emailChart, fakeLabels;
@@ -26,7 +27,7 @@
         // colours picked here: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
         // picked a nice red, and then pick two more colours 120 deg hue above and below to get the blue and green
 
-        $("#users-chart").append($userCanvas);
+        $("#users-chart").prepend($userCanvas);
         userChart = new Chart($userCanvas[0].getContext("2d"));
         userLineChart = userChart.Line({labels: fakeLabels, datasets: [{
             label: "Users",
@@ -40,7 +41,7 @@
         }]});
         $("#users-chart").prepend(userLineChart.generateLegend());
 
-        $("#inboxes-chart").append($inboxCanvas);
+        $("#inboxes-chart").prepend($inboxCanvas);
         inboxChart = new Chart($inboxCanvas[0].getContext("2d"));
         inboxLineChart = inboxChart.Line({labels: fakeLabels, datasets: [{
             label: "Inboxes",
@@ -54,7 +55,7 @@
         }]});
         $("#inboxes-chart").prepend(inboxLineChart.generateLegend());
 
-        $("#emails-chart").append($emailCanvas);
+        $("#emails-chart").prepend($emailCanvas);
         emailChart = new Chart($emailCanvas[0].getContext("2d"));
         emailLineChart = emailChart.Line({labels: fakeLabels, datasets: [{
             label: "Emails",
