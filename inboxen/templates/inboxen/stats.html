@@ -1,4 +1,4 @@
-{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{# Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
 {% load i18n cache assets %}
 
@@ -10,15 +10,22 @@
 {% endblock %}
 
 {% block content %}
+{% if object %}
+<div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div id="stats-chart" class="row" data-url="{% url "stats_recent" %}">
+        <div id="users-chart" class="chart col-xs-12 col-md-4"></div>
+        <div id="inboxes-chart" class="chart col-xs-12 col-md-4"></div>
+        <div id="emails-chart" class="chart col-xs-12 col-md-4"></div>
+    </div>
+</div>
 {% cache 1800 stats LANGUAGE_CODE %}
 <!-- Stats gathered at: {{ object.date|date:"r" }} -->
 <!-- Page cached since: {% now "r" %} -->
-{% if object %}
-<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+<div class="row"><div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
     <table class="table table-bordered">
         <colgroup>
             <col class="col-xs-2">
-            <col class="col-xs-5">
+            <col class="col-xs-4">
         </colgroup>
         <tr class="active">
             <th colspan="2">{% trans "Users" %}</th>
@@ -76,9 +83,9 @@
         </tr>
     {% endif %}
     </table>
-</div>
+</div></div>
+{% endcache %}
 {% else %}
 <p class="alert alert-info">{% trans "Sorry, we don't seem to have any statistics." %}</p>
 {% endif %}
-{% endcache %}
 {% endblock %}
