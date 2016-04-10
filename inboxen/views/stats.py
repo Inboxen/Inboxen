@@ -41,7 +41,7 @@ class StatsView(base.CommonContextMixin, generic.DetailView):
 
 @cache_page(1800)
 def stats_recent(request):
-    objects = models.Statistic.objects.order_by("-date")
+    objects = models.Statistic.objects.order_by("date")
     dates = []
     users = []
     inboxes = []
