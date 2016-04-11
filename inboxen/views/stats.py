@@ -19,7 +19,6 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views import generic
-from django.views.decorators.cache import cache_page
 
 from inboxen import models
 from inboxen.views import base
@@ -39,7 +38,6 @@ class StatsView(base.CommonContextMixin, generic.DetailView):
             return None
 
 
-@cache_page(1800)
 def stats_recent(request):
     objects = models.Statistic.objects.order_by("date")
     dates = []
