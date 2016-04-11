@@ -263,3 +263,35 @@ class InboxEditTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
+
+
+class InboxInlineEditTestCase(test.TestCase):
+    """Test the inline version of the inbox edit page"""
+    def setUp(self):
+        """Create the client and grab the user"""
+        super(InboxInlineEditTestCase, self).setUp()
+        self.user = factories.UserFactory()
+        self.inbox = factories.InboxFactory(user=self.user)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urlresolvers.reverse("form-inbox-edit", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+
+    def test_inbox_form(self):
+        response = self.client.get(self.get_url())
+        form = response.context["form"]
+        self.assertIsInstance(form, inboxen_forms.InboxEditForm)
+
+        self.assertNotIn("inbox", form.fields)
+        self.assertNotIn("domain", form.fields)
+        self.assertIn("description", form.fields)
+
+    def test_inbox_add_description(self):
+        response = self.client.post(self.get_url(), {"description": "nothing at all"})
+        self.assertEqual(response.status_code, 204)
+
+        self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
