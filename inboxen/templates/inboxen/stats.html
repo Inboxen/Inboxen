@@ -1,6 +1,6 @@
 {# Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n assets %}
+{% load i18n humanize assets %}
 
 {% block extra_js %}
     {% assets "chart_js" %}
@@ -24,13 +24,13 @@
             <tr>
                 <th>{% trans "User count" %}</th>
                 <td>
-                    {{ object.users.count }}
-                    <i>({% blocktrans with with_inboxes=object.users.with_inboxes %}With inboxes: {{ with_inboxes }}{% endblocktrans %})</i>
+                    {{ object.users.count|intcomma }}
+                    <i>({% blocktrans with with_inboxes=object.users.with_inboxes|intcomma %}With inboxes: {{ with_inboxes }}{% endblocktrans %})</i>
                 </td>
             </tr>
             <tr>
                 <th>{% trans "New users today" %}</th>
-                <td>{{ object.users.new }}</td>
+                <td>{{ object.users.new|intcomma }}</td>
             </tr>
         </table>
     </div>
@@ -47,8 +47,8 @@
             <tr>
                 <th>{% trans "Total number of inboxes" %}</th>
                 <td>
-                    {{ object.inboxes.inbox_count__sum }}
-                    <i>({% blocktrans with total_possible=object.inboxes.total_possible %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
+                    {{ object.inboxes.inbox_count__sum|intcomma }}
+                    <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
                 </td>
             </tr>
             <tr>
@@ -75,7 +75,7 @@
             <tr><td colspan="2" id="emails-chart" class="chart"></td></tr>
             <tr>
                 <th>{% trans "Total number of emails" %}</th>
-                <td>{{ object.emails.email_count__sum }}</td>
+                <td>{{ object.emails.email_count__sum|intcomma }}</td>
             </tr>
             <tr>
                 <th>{% trans "Average number of emails per inbox" %}</th>
