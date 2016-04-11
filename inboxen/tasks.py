@@ -76,7 +76,6 @@ def statistics():
         users=users,
         emails=emails,
         inboxes=inboxes,
-        date=datetime.now(utc),
     )
 
     stat.save()
