@@ -29,7 +29,7 @@
 
         $("#users-chart").prepend($userCanvas);
         userChart = new Chart($userCanvas[0].getContext("2d"));
-        userLineChart = userChart.Line({labels: fakeLabels, datasets: [{
+        userChart.Line({labels: fakeLabels, datasets: [{
             label: "Users",
             fillColor: "rgba(191, 63, 95, 0.5)",
             strokeColor: "rgb(191, 63, 95)",
@@ -39,11 +39,10 @@
             pointHighlightStroke: "rgb(191, 63, 95)",
             data: data.users
         }]});
-        $("#users-chart").prepend(userLineChart.generateLegend());
 
         $("#inboxes-chart").prepend($inboxCanvas);
         inboxChart = new Chart($inboxCanvas[0].getContext("2d"));
-        inboxLineChart = inboxChart.Line({labels: fakeLabels, datasets: [{
+        inboxChart.Line({labels: fakeLabels, datasets: [{
             label: "Inboxes",
             fillColor: "rgba(95, 191, 63, 0.5)",
             strokeColor: "rgb(95, 191, 63)",
@@ -53,11 +52,10 @@
             pointHighlightStroke: "rgb(95, 191, 63)",
             data: data.inboxes
         }]});
-        $("#inboxes-chart").prepend(inboxLineChart.generateLegend());
 
         $("#emails-chart").prepend($emailCanvas);
         emailChart = new Chart($emailCanvas[0].getContext("2d"));
-        emailLineChart = emailChart.Line({labels: fakeLabels, datasets: [{
+        emailChart.Line({labels: fakeLabels, datasets: [{
             label: "Emails",
             fillColor: "rgba(63, 95, 191, 0.5)",
             strokeColor: "rgb(63, 95, 191)",
@@ -67,6 +65,5 @@
             pointHighlightStroke: "rgb(63, 95, 191)",
             data: data.emails
         }]});
-        $("#emails-chart").prepend(emailLineChart.generateLegend());
     });
 })(jQuery, Chart);
