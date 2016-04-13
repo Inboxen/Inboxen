@@ -147,7 +147,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
 class FormInboxView(InboxView):
     """POST-only view for JS stuff"""
     def get(self, *args, **kwargs):
-        raise HttpResponseNotAllowed("Only POST requests please")
+        return HttpResponseNotAllowed("Only POST requests please")
 
     def post(self, *args, **kwargs):
         response = super(FormInboxView, self).post(*args, **kwargs)
