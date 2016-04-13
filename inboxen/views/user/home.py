@@ -18,6 +18,7 @@
 ##
 
 
+from django.db.models import Case, Count, IntegerField, When
 from django.utils.translation import ugettext as _
 from django.views import generic
 
@@ -35,9 +36,19 @@ class UserHomeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Lis
     headline = _("Home")
 
     def get_queryset(self):
-        queryset = models.Inbox.objects.viewable(self.request.user)
-        queryset = queryset.select_related("domain")
-        return queryset.add_last_activity()
+        qs = models.Inbox.objects.viewable(self.request.user)
+        qs = qs.select_related("domain")
+
+        # ugly!
+        # see https://code.djangoproject.com/ticket/19513
+        # tl;dr Django uses a subquery when doing an `update` on a queryset,
+        # but it doesn't strip out annotations
+        # q?: does this still apply?
+        if self.request.method != "POST":
+            qs = qs.add_last_activity()
+            qs = qs.annotate(pinned=Count(Case(When(flags=models.Inbox.flags.pinned, then=1), output_field=IntegerField())))
+            qs = qs.order_by("-pinned", "-last_activity").select_related("domain")
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super(UserHomeView, self).get_context_data(**kwargs)

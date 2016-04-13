@@ -49,6 +49,12 @@ FLAGS_TO_TAGS = {
         "class": "label-danger",
         "inverse": False,
     },
+    "pinned": {
+        "title": _("Inbox has been pinned"),
+        "str": _("Pinned"),
+        "class": "label-warning",
+        "inverse": False,
+    },
     "disabled": {
         "title": _("Inbox has been disabled"),
         "str": _("Disabled"),

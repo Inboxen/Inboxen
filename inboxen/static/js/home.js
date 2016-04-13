@@ -40,6 +40,7 @@ function homeFormComplete(xhr, statusText) {
     $row = $("#" + inboxSelector + " + .row");
     description = this.find("#id_description").val();
     is_disabled = this.find("#id_disable_inbox").prop("checked");
+    is_pinned = this.find("#id_pinned").prop("checked");
 
     if (xhr.status === 204) {
         var $inbox_row = $("#" + inboxSelector);
@@ -54,6 +55,10 @@ function homeFormComplete(xhr, statusText) {
         } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
             $inbox_row.removeClass("inbox-disabled");
             $inbox_row.find(".inbox-flags").empty();
+        } else if (is_pinned && !is_disabled && $inbox_row.find("span.label-warning").length === 0) {
+           $inbox_row.find(".inbox-flags").append('<div class=\"inline-block__wrapper\"><span class="label label-warning" title="Inbox has been pinned">Pinned</span></div>');
+        } else if (!is_pinned && !is_disabled) {
+            $inbox_row.find("span.label-warning").remove();
         }
 
         $row.remove();
@@ -67,7 +72,7 @@ function homeFormComplete(xhr, statusText) {
 
 function inboxFormComplete(xhr, statusText) {
     if (xhr.status === 204) {
-        this.$form.parents(".inbox-edit-form-row").remove()
+        this.$form.parents(".inbox-edit-form-row").remove();
     } else {
         if (xhr.status === 200) {
             this.$form.html(xhr.responseText);

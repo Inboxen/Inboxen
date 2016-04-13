@@ -50,6 +50,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
         # see https://code.djangoproject.com/ticket/19513
         # tl;dr Django uses a subquery when doing an `update` on a queryset,
         # but it doesn't strip out annotations
+        # q?: does this still apply?
         if self.request.method != "POST":
             qs = qs.annotate(important=Count(Case(When(flags=models.Email.flags.important, then=1), output_field=IntegerField())))
             qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
@@ -146,7 +147,7 @@ class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListVi
 class FormInboxView(InboxView):
     """POST-only view for JS stuff"""
     def get(self, *args, **kwargs):
-        raise HttpResponseNotAllowed("Only POST requests please")
+        return HttpResponseNotAllowed("Only POST requests please")
 
     def post(self, *args, **kwargs):
         response = super(FormInboxView, self).post(*args, **kwargs)
