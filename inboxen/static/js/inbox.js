@@ -3,7 +3,9 @@
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
-$(document).ready(function() {
+(function($) {
+    'uuse strict';
+
     var important_label = '<span class="label label-danger" title="Message has been marked as important">Important</span>';
 
     function ToggleImportant($row) {
@@ -87,4 +89,4 @@ $(document).ready(function() {
             }
         });
     });
-});
+})(jQuery);

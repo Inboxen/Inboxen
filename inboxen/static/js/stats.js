@@ -4,6 +4,8 @@
  */
 
 (function($, Chart) {
+    'use strict';
+
     var statsUrl, $userCanvas, $inboxCanvas, $emailCanvas;
     statsUrl = $("#stats-chart").data("url");
     $userCanvas = $("<canvas></canvas>");
