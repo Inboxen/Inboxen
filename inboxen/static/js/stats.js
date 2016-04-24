@@ -14,7 +14,27 @@
 
     // override some defaults
     Chart.defaults.global.responsive = true;
+    Chart.defaults.global.maintainAspectRatio = false;
     Chart.defaults.global.animation = false;
+
+    // hack to bypass evil "new Function"
+    Chart.defaults.global.tooltipTitleTemplate = function(obj) {
+        return obj.label;
+    };
+    Chart.defaults.global.tooltipTemplate = function(obj) {
+        var out = ""
+        if (obj.label) {
+            out = out + obj.label + ": ";
+        }
+        out = out + obj.value;
+        return out
+    };
+    Chart.defaults.global.multiTooltipTemplate = function(obj) {
+        return obj.value;
+    };
+    Chart.defaults.global.scaleLabel = function(obj) {
+        return obj.value;
+    };
 
     $.get(statsUrl, function(data) {
         var userChart, inboxChart, emailChart, fakeLabels;
