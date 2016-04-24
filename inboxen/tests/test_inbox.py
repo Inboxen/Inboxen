@@ -126,10 +126,10 @@ class InboxTestAbstract(object):
     def test_pagin(self):
         # there should be 150 emails in the test fixtures
         # and pages are paginated by 100 items
-        response = self.client.get(self.get_url() + "2")
+        response = self.client.get(self.get_url() + "2/")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(self.get_url() + "3")
+        response = self.client.get(self.get_url() + "3/")
         self.assertEqual(response.status_code, 404)
 
 
@@ -263,3 +263,125 @@ class InboxEditTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
 
         self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
+
+
+class InboxInlineEditTestCase(test.TestCase):
+    """Test the inline version of the inbox edit page"""
+    def setUp(self):
+        """Create the client and grab the user"""
+        super(InboxInlineEditTestCase, self).setUp()
+        self.user = factories.UserFactory()
+        self.inbox = factories.InboxFactory(user=self.user)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urlresolvers.reverse("form-inbox-edit", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+
+    def test_inbox_form(self):
+        response = self.client.get(self.get_url())
+        form = response.context["form"]
+        self.assertIsInstance(form, inboxen_forms.InboxEditForm)
+
+        self.assertNotIn("inbox", form.fields)
+        self.assertNotIn("domain", form.fields)
+        self.assertIn("description", form.fields)
+
+    def test_inbox_add_description(self):
+        response = self.client.post(self.get_url(), {"description": "nothing at all"})
+        self.assertEqual(response.status_code, 204)
+
+        self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
+
+
+class InboxEmailEditTestCase(test.TestCase):
+    """Test the post only email edit view"""
+    def setUp(self):
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+        self.inbox = factories.InboxFactory(user=self.user)
+        self.emails = factories.EmailFactory.create_batch(150, inbox=self.inbox)
+        self.not_mine = factories.EmailFactory.create(inbox__user=self.user)
+
+        for email in self.emails:
+            part = factories.PartListFactory(email=email)
+            factories.HeaderFactory(part=part)
+            factories.HeaderFactory(part=part, name="From")
+            factories.HeaderFactory(part=part, name="Subject")
+
+    def get_url(self):
+        return urlresolvers.reverse("form-inbox-email")
+
+    def test_no_get(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 405)
+
+    def test_post_important(self):
+        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        self.assertEqual(count, 0)
+
+        params = {"important": ""}
+
+        for email in self.emails[:2]:
+            params[email.eid] = "email"
+
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 204)
+
+        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        self.assertEqual(count, 2)
+
+        # and then mark them as unimportant again
+        params = {"unimportant": ""}
+
+        for email in self.emails[:2]:
+            params[email.eid] = "email"
+
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 204)
+
+        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        self.assertEqual(count, 0)
+
+    def test_post_delete(self):
+        count_1st = len(self.emails)
+        params = dict([(email.eid, "email") for email in self.emails[:10]])
+        params[self.not_mine.eid] = "email"  # this email should get ignored
+        params["delete"] = ""
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 204)
+
+        count_2nd = models.Email.objects.count()
+        self.assertEqual(count_1st - 10, count_2nd)
+
+    def test_post_single_delete(self):
+        email = self.emails[0]
+        response = self.client.post(self.get_url(), {"delete-single": email.eid})
+        self.assertEqual(response.status_code, 204)
+
+        # second time around, throw a 404
+        response = self.client.post(self.get_url(), {"delete-single": email.eid})
+        self.assertEqual(response.status_code, 404)
+
+        with self.assertRaises(models.Email.DoesNotExist):
+            models.Email.objects.get(id=email.id)
+
+    def test_post_single_important(self):
+        email = self.emails[0]
+        response = self.client.post(self.get_url(), {"important-single": email.eid})
+        self.assertEqual(response.status_code, 204)
+        email.refresh_from_db()
+        self.assertTrue(bool(email.flags.important))
+
+        response = self.client.post(self.get_url(), {"important-single": email.eid})
+        self.assertEqual(response.status_code, 204)
+        email.refresh_from_db()
+        self.assertFalse(bool(email.flags.important))

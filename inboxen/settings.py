@@ -20,6 +20,7 @@
 from subprocess import Popen, PIPE
 import datetime
 import os
+import string
 
 from django.contrib.messages import constants as message_constants
 from django.core import urlresolvers
@@ -35,6 +36,9 @@ djcelery.setup_loader()
 # Hash used to store uniqueness of certain models
 # if you change this, you'll need to do a datamigration to change the rest
 COLUMN_HASHER = "sha1"
+
+# passed directly to random.choice when creating an Inbox
+INBOX_CHOICES = string.ascii_lowercase
 
 ##
 # To override the following settings, create a separate settings module.
@@ -181,6 +185,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'django.contrib.humanize',
 
     # third party
     'bootstrapform',
@@ -229,6 +234,7 @@ CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
 if DEBUG:
     # local dev made easy
     INSTALLED_APPS += ('debug_toolbar',)
+    DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
 
 # csrf

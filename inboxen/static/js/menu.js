@@ -4,7 +4,8 @@
  */
 
 // add the collapsing nav via JS - makes the navigation fallback gracefully if your phone has JS turned off :)
-$(document).ready(function() {
+(function($) {
+    'use strict';
     // collapsing nav
     // we do this here so that the nav still works for those without JS
     $("#navbar-button-1").removeClass("hidden");
@@ -15,4 +16,4 @@ $(document).ready(function() {
     $("div[role=alert]").each(function() {
         $(this).append(button);
     });
-});
+})(jQuery);

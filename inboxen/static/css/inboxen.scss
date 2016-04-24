@@ -166,3 +166,7 @@ a.soon {
 .btn-massive {
     @include button-size(20px, 32px, 28px, 1.0, 6px);
 }
+
+.chart canvas {
+    height: 250px !important;
+}

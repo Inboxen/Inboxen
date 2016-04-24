@@ -29,7 +29,7 @@ class HomeViewTestCase(test.TestCase):
         super(HomeViewTestCase, self).setUp()
         self.user = factories.UserFactory()
         domain = factories.DomainFactory()
-        factories.InboxFactory.create_batch(150, domain=domain, user=self.user)
+        self.inboxes = factories.InboxFactory.create_batch(150, domain=domain, user=self.user)
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -62,11 +62,23 @@ class HomeViewTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
+    def test_pinned_first(self):
+        # mark some emails as important
+        for inbox in self.inboxes[:3]:
+            inbox.flags.pinned = True
+            inbox.save()
+
+        response = self.client.get(self.get_url())
+        objs = response.context["page_obj"].object_list[:5]
+        objs = [obj.pinned for obj in objs]
+
+        self.assertEqual(objs, [1, 1, 1, 0, 0])
+
     def test_pagin(self):
         # there should be 150 inboxes in the test fixtures
         # and pages are paginated by 100 items
-        response = self.client.get(self.get_url() + "2")
+        response = self.client.get(self.get_url() + "2/")
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(self.get_url() + "3")
+        response = self.client.get(self.get_url() + "3/")
         self.assertEqual(response.status_code, 404)
