@@ -2,12 +2,6 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n inboxen_flags %}
 
-{% if inbox %}
-    {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
-{% else %}
-    {% url 'unified-inbox' as inbox_url %}
-{% endif %}
-
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
@@ -44,6 +38,12 @@
         {% endfor %}
     </div>
 </form>
+{% if inbox %}
+    {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
+{% else %}
+    {% url 'unified-inbox' as inbox_url %}
+{% endif %}
+
 <ul class="pager">
     {% if page_obj.has_previous %}
         <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">
