@@ -53,6 +53,8 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """
 
+BODILESS_BODY = """<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>"""
+
 
 # example email that was causing issue #47
 EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>

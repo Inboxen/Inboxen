@@ -23,17 +23,21 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
 
+import mock
+
 from inboxen import models
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (
     BODY,
+    BODILESS_BODY,
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
     METALESS_BODY,
+
 )
-from inboxen.utils.email import _unicode_damnit
+from inboxen.utils import email as email_utils
 from router.app.helpers import make_email
 
 
@@ -378,10 +382,17 @@ class RealExamplesTestCase(test.TestCase):
 class UtilityTestCase(test.TestCase):
     def test_is_unicode(self):
         string = "Hey there!"
-        self.assertTrue(isinstance(_unicode_damnit(string), unicode))
+        self.assertTrue(isinstance(email_utils._unicode_damnit(string), unicode))
 
     def test_unicode_passthrough(self):
         already_unicode = u"€"
 
         # if this doesn't passthrough, it will error
-        _unicode_damnit(already_unicode, "ascii", "strict")
+        email_utils._unicode_damnit(already_unicode, "ascii", "strict")
+
+    def test_clean_html_no_body(self):
+        email = {"display_images": True}
+        with mock.patch("inboxen.utils.email.messages.info", side_effect=self.failureException("Unexpected message")):
+            returned_body = email_utils._clean_html_body(None, email, BODILESS_BODY, "utf-8")
+
+            self.assertIn('<a href="/click/?url=http%3A//tinyletter.com/asym/confirm%3Fid%3Duuid"', returned_body)
