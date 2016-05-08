@@ -53,6 +53,8 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """
 
+BODILESS_BODY = """<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>"""
+
 
 # example email that was causing issue #47
 EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>
@@ -1217,7 +1219,7 @@ Precedence: list
 List-Id: "CentOS announcements \(security and general\) will be posted to
  this list." <centos-announce.centos.org>
 List-Unsubscribe:
- <http://lists.centos.org/mailman/listinfo/centos-announce>, 
+ <http://lists.centos.org/mailman/listinfo/centos-announce>,
  <mailto:centos-announce-request@centos.org?subject=unsubscribe>
 List-Archive: <http://lists.centos.org/pipermail/centos-announce>
 List-Post: <mailto:centos-announce@centos.org>
@@ -1280,12 +1282,12 @@ Subject: [CentOS-announce] CEBA-2014:0262  CentOS 6 qemu-kvm Update
 Message: 1
 
 
-CentOS Errata and Bugfix Advisory 2014:0262 
+CentOS Errata and Bugfix Advisory 2014:0262
 
 Upstream details at : https://rhn.redhat.com/errata/RHBA-2014-0262.html
 
-The following updated files have been uploaded and are currently 
-syncing to the mirrors: ( sha256sum Filename ) 
+The following updated files have been uploaded and are currently
+syncing to the mirrors: ( sha256sum Filename )
 
 i386:
 46164fd539f764d60217ca6193928d37e8ab3ae1be81ae833b15f866de5fedd0  qemu-guest-agent-0.12.1.2-2.415.el6_5.5.i686.rpm
@@ -1301,7 +1303,7 @@ Source:
 
 
 
--- 
+--
 Johnny Hughes
 CentOS Project { http://www.centos.org/ }
 irc: hughesjr, #centos@irc.freenode.net
@@ -1324,12 +1326,12 @@ Subject: [CentOS-announce] CEBA-2014:0264  CentOS 6 libtirpc Update
 Message: 2
 
 
-CentOS Errata and Bugfix Advisory 2014:0264 
+CentOS Errata and Bugfix Advisory 2014:0264
 
 Upstream details at : https://rhn.redhat.com/errata/RHBA-2014-0264.html
 
-The following updated files have been uploaded and are currently 
-syncing to the mirrors: ( sha256sum Filename ) 
+The following updated files have been uploaded and are currently
+syncing to the mirrors: ( sha256sum Filename )
 
 i386:
 0232079882c8a0f3cdd00417b0fdfc45fdb2f2066d7bd35a2b127658be6f8d94  libtirpc-0.2.1-6.el6_5.1.i686.rpm
@@ -1346,7 +1348,7 @@ Source:
 
 
 
--- 
+--
 Johnny Hughes
 CentOS Project { http://www.centos.org/ }
 irc: hughesjr, #centos@irc.freenode.net
@@ -1656,7 +1658,7 @@ To: Matt Molyneaux <example@example.com>
 Date: Fri, 20 Nov 2015 22:36:40 +0000
 References: <mailman.12.1392379204.22573.centos-announce@centos.org>
 Content-Type: multipart/signed; micalg="pgp-sha1"; protocol="application/pgp-signature"; boundary="=-8OGUbXGGezXx/m8jI4KD"
-X-Mailer: Evolution 3.18.1 (3.18.1-1.fc23) 
+X-Mailer: Evolution 3.18.1 (3.18.1-1.fc23)
 Mime-Version: 1.0
 X-Evolution-Source: 1288220347.2934.3@delta6thc
 
