@@ -77,7 +77,9 @@ def _clean_html_body(request, email, body, charset):
             break
 
     try:
-        html_tree = Premailer(html_tree).transform()
+        # check there's a body and header for premailer
+        if html_tree.find("body"):
+            html_tree = Premailer(html_tree).transform()
     except Exception as exc:
         # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
         messages.info(request, _("Part of this message could not be parsed - it may not display correctly"))
