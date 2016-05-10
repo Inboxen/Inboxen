@@ -12,14 +12,14 @@
     <div title="{{ received_date|date:"r" }}" class="email-reveived col-xs-5 col-md-1 col-md-push-8">{{ received_date|naturaltime }}</div>
     <div class="email-buttons col-xs-2 col-md-1 col-md-push-8">
         <button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ eid }}">
-            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>
+            <span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>
         </button>
         <button title="{% trans "Toggle Importantance" %}" class="close" type="submit" name="important-single" value="{{ eid }}">
-            <span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
+            <span class="fa fa-star" aria-hidden="true"></span><span class="sr-only">{% trans "Toggle Importantance" %}</span>
         </button>
         {% if unified %}
             <a class="close" title="{% trans "Inbox" %}" href="{% url 'single-inbox' inbox=inbox domain=domain %}">
-                <span class="glyphicon glyphicon-inbox" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox" %}</span>
+                <span class="fa fa-inbox" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox" %}</span>
             </a>
         {% endif %}
     </div>

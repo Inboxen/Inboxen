@@ -12,7 +12,7 @@
     </div>{% endif %}
     <div class="inbox-options {{ col3 }}">
         <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
-            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
+            <span class="fa fa-pencil-square" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
         </a>
     </div>
     <div class="inbox-description {{ col4 }}">{{ desc|default:"&nbsp;" }}</div>

@@ -1,5 +1,10 @@
-$icon-font-path: "../../thirdparty/bootstrap-sass/assets/fonts/bootstrap/";
+// override font vars
+$icon-font-path: "../../thirdparty/font-awesome/fonts/";
+$fa-font-path: "../../thirdparty/font-awesome/fonts/";
+$icon-font-name: "fontawesome-webfont";
+$icon-font-svg-id: "fontawesomeregular";
 @import "bootstrap-sass/assets/stylesheets/bootstrap";
+@import "font-awesome/scss/font-awesome.scss";
 
 // Inboxen styles
 

@@ -12,7 +12,7 @@
     $("#navbar-collapse-1").addClass("collapse navbar-collapse");
 
     // alert buttons
-    var button = '<button type="button" class="close" data-dismiss="alert"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">Close</span></button>';
+    var button = '<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button>';
     $("div[role=alert]").each(function() {
         $(this).append(button);
     });
