@@ -39,7 +39,7 @@ class StatsView(base.CommonContextMixin, generic.DetailView):
 
 
 def stats_recent(request):
-    objects = reversed(models.Statistic.objects.order_by("-date")[:10])
+    objects = reversed(models.Statistic.objects.order_by("-date")[:90])
     dates = []
     users = []
     inboxes = []

@@ -16,6 +16,9 @@
     Chart.defaults.global.responsive = true;
     Chart.defaults.global.maintainAspectRatio = false;
     Chart.defaults.global.animation = false;
+    Chart.defaults.global.scaleBeginAtZero = true;
+    Chart.defaults.global.showTooltips = false;
+    Chart.defaults.global.bezierCurve = false;
 
     // hack to bypass evil "new Function"
     Chart.defaults.global.tooltipTitleTemplate = function(obj) {
@@ -51,41 +54,57 @@
 
         $("#users-chart").prepend($userCanvas);
         userChart = new Chart($userCanvas[0].getContext("2d"));
-        userChart.Line({labels: fakeLabels, datasets: [{
-            label: "Users",
-            fillColor: "rgba(191, 63, 95, 0.5)",
-            strokeColor: "rgb(191, 63, 95)",
-            pointColor: "rgb(191, 63, 95)",
-            pointStrokeColor: "rgb(191, 63, 95)",
-            pointHighlightFill: "rgb(191, 63, 95)",
-            pointHighlightStroke: "rgb(191, 63, 95)",
-            data: data.users
-        }]});
+        userChart.Line({
+            labels: fakeLabels,
+            datasets: [{
+                label: "Users",
+                fillColor: "rgba(191, 63, 95, 0.5)",
+                strokeColor: "rgb(191, 63, 95)",
+                pointStrokeColor: "rgb(191, 63, 95)",
+                pointHighlightFill: "rgb(191, 63, 95)",
+                pointHighlightStroke: "rgb(191, 63, 95)",
+                data: data.users
+            }]
+        },
+        {
+            pointDot: false,
+            scaleShowVerticalLines: false
+        });
 
         $("#inboxes-chart").prepend($inboxCanvas);
         inboxChart = new Chart($inboxCanvas[0].getContext("2d"));
-        inboxChart.Line({labels: fakeLabels, datasets: [{
-            label: "Inboxes",
-            fillColor: "rgba(95, 191, 63, 0.5)",
-            strokeColor: "rgb(95, 191, 63)",
-            pointColor: "rgb(95, 191, 63)",
-            pointStrokeColor: "rgb(95, 191, 63)",
-            pointHighlightFill: "rgb(95, 191, 63)",
-            pointHighlightStroke: "rgb(95, 191, 63)",
-            data: data.inboxes
-        }]});
+        inboxChart.Line({
+            labels: fakeLabels,
+            datasets: [{
+                label: "Inboxes",
+                fillColor: "rgba(95, 191, 63, 0.5)",
+                strokeColor: "rgb(95, 191, 63)",
+                pointStrokeColor: "rgb(95, 191, 63)",
+                pointHighlightFill: "rgb(95, 191, 63)",
+                pointHighlightStroke: "rgb(95, 191, 63)",
+                data: data.inboxes
+            }]
+        },{
+            pointDot: false,
+            scaleShowVerticalLines: false
+        });
 
         $("#emails-chart").prepend($emailCanvas);
         emailChart = new Chart($emailCanvas[0].getContext("2d"));
-        emailChart.Line({labels: fakeLabels, datasets: [{
-            label: "Emails",
-            fillColor: "rgba(63, 95, 191, 0.5)",
-            strokeColor: "rgb(63, 95, 191)",
-            pointColor: "rgb(63, 95, 191)",
-            pointStrokeColor: "rgb(63, 95, 191)",
-            pointHighlightFill: "rgb(63, 95, 191)",
-            pointHighlightStroke: "rgb(63, 95, 191)",
-            data: data.emails
-        }]});
+        emailChart.Line({
+            labels: fakeLabels,
+            datasets: [{
+                label: "Emails",
+                fillColor: "rgba(63, 95, 191, 0.5)",
+                strokeColor: "rgb(63, 95, 191)",
+                pointStrokeColor: "rgb(63, 95, 191)",
+                pointHighlightFill: "rgb(63, 95, 191)",
+                pointHighlightStroke: "rgb(63, 95, 191)",
+                data: data.emails
+            }]
+        },{
+            pointDot: false,
+            scaleShowVerticalLines: false
+        });
     });
 })(jQuery, Chart);
