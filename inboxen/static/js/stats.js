@@ -32,12 +32,12 @@
         return obj.label;
     };
     Chart.defaults.global.tooltipTemplate = function(obj) {
-        var out = ""
+        var out = "";
         if (obj.label) {
             out = out + obj.label + ": ";
         }
         out = out + obj.value;
-        return out
+        return out;
     };
     Chart.defaults.global.multiTooltipTemplate = function(obj) {
         return obj.value;
