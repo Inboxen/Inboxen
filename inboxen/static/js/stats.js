@@ -48,7 +48,6 @@
 
     $.get(statsUrl, function(data) {
         var userChart, inboxChart, emailChart, fakeLabels;
-        var userLineChart, inboxLineChart, emailLineChart;
 
         // horrible hack to avoid printing the full dates under the X axis
         fakeLabels = new Array(data.dates.length);
@@ -58,7 +57,7 @@
 
         $("#users-chart").prepend($userCanvas);
         userChart = new Chart($userCanvas[0].getContext("2d"));
-        userChart.Line({
+        userChart = userChart.Line({
             labels: fakeLabels,
             datasets: [
                 {
@@ -79,10 +78,11 @@
             pointDot: false,
             scaleShowVerticalLines: false
         });
+        $("#users-chart").prepend(userChart.generateLegend());
 
         $("#inboxes-chart").prepend($inboxCanvas);
         inboxChart = new Chart($inboxCanvas[0].getContext("2d"));
-        inboxChart.Line({
+        inboxChart = inboxChart.Line({
             labels: fakeLabels,
             datasets: [
                 {
@@ -102,10 +102,11 @@
             pointDot: false,
             scaleShowVerticalLines: false
         });
+        $("#inboxes-chart").prepend(inboxChart.generateLegend());
 
         $("#emails-chart").prepend($emailCanvas);
         emailChart = new Chart($emailCanvas[0].getContext("2d"));
-        emailChart.Line({
+        emailChart = emailChart.Line({
             labels: fakeLabels,
             datasets: [
                 {
@@ -125,5 +126,6 @@
             pointDot: false,
             scaleShowVerticalLines: false
         });
+        $("#emails-chart").prepend(emailChart.generateLegend());
     });
 })(jQuery, Chart);

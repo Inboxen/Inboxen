@@ -175,3 +175,14 @@ a.soon {
 .chart canvas {
     height: 250px !important;
 }
+
+.line-legend {
+    list-style: none;
+
+    .line-legend-icon {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        margin-right: 5px;
+    }
+}
