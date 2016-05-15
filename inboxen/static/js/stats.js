@@ -7,6 +7,13 @@
     'use strict';
 
     var statsUrl, $userCanvas, $inboxCanvas, $emailCanvas;
+    var colour1, colour2, fill1, fill2;
+
+    colour1 = "rgb(217, 83, 79)";
+    colour2 = "rgb(51, 122, 183)";
+    fill1 = "rgba(217, 83, 79, 0.75)";
+    fill2 = "rgba(51, 122, 183, 0.75)";
+
     statsUrl = $("#stats-chart").data("url");
     $userCanvas = $("<canvas></canvas>");
     $inboxCanvas = $("<canvas></canvas>");
@@ -49,22 +56,24 @@
             fakeLabels[i] = "";
         }
 
-        // colours picked here: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Colors/Color_picker_tool
-        // picked a nice red, and then pick two more colours 120 deg hue above and below to get the blue and green
-
         $("#users-chart").prepend($userCanvas);
         userChart = new Chart($userCanvas[0].getContext("2d"));
         userChart.Line({
             labels: fakeLabels,
-            datasets: [{
-                label: "Users",
-                fillColor: "rgba(191, 63, 95, 0.5)",
-                strokeColor: "rgb(191, 63, 95)",
-                pointStrokeColor: "rgb(191, 63, 95)",
-                pointHighlightFill: "rgb(191, 63, 95)",
-                pointHighlightStroke: "rgb(191, 63, 95)",
-                data: data.users
-            }]
+            datasets: [
+                {
+                    label: "Users",
+                    fillColor: fill1,
+                    strokeColor: colour1,
+                    data: data.users
+                },
+                {
+                    label: "Users with inboxes",
+                    fillColor: fill2,
+                    strokeColor: colour2,
+                    data: data.active_users
+                }
+            ]
         },
         {
             pointDot: false,
@@ -75,15 +84,20 @@
         inboxChart = new Chart($inboxCanvas[0].getContext("2d"));
         inboxChart.Line({
             labels: fakeLabels,
-            datasets: [{
-                label: "Inboxes",
-                fillColor: "rgba(95, 191, 63, 0.5)",
-                strokeColor: "rgb(95, 191, 63)",
-                pointStrokeColor: "rgb(95, 191, 63)",
-                pointHighlightFill: "rgb(95, 191, 63)",
-                pointHighlightStroke: "rgb(95, 191, 63)",
-                data: data.inboxes
-            }]
+            datasets: [
+                {
+                    label: "Inboxes",
+                    fillColor: fill1,
+                    strokeColor: colour1,
+                    data: data.inboxes
+                },
+                {
+                    label: "Inboxes with emails",
+                    fillColor: fill2,
+                    strokeColor: colour2,
+                    data: data.active_inboxes
+                }
+            ]
         },{
             pointDot: false,
             scaleShowVerticalLines: false
@@ -93,15 +107,20 @@
         emailChart = new Chart($emailCanvas[0].getContext("2d"));
         emailChart.Line({
             labels: fakeLabels,
-            datasets: [{
-                label: "Emails",
-                fillColor: "rgba(63, 95, 191, 0.5)",
-                strokeColor: "rgb(63, 95, 191)",
-                pointStrokeColor: "rgb(63, 95, 191)",
-                pointHighlightFill: "rgb(63, 95, 191)",
-                pointHighlightStroke: "rgb(63, 95, 191)",
-                data: data.emails
-            }]
+            datasets: [
+                {
+                    label: "Emails",
+                    fillColor: fill1,
+                    strokeColor: colour1,
+                    data: data.emails
+                },
+                {
+                    label: "Emails read",
+                    fillColor: fill2,
+                    strokeColor: colour2,
+                    data: data.read_emails
+                }
+            ]
         },{
             pointDot: false,
             scaleShowVerticalLines: false
