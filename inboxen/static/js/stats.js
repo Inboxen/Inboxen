@@ -8,6 +8,7 @@
 
     var statsUrl, $userCanvas, $inboxCanvas, $emailCanvas;
     var colour1, colour2, fill1, fill2;
+    var chartOpts, legendFunc;
 
     colour1 = "rgb(217, 83, 79)";
     colour2 = "rgb(51, 122, 183)";
@@ -46,6 +47,31 @@
         return obj.value;
     };
 
+    // legend
+    legendFunc = function(obj) {
+		var $list = $("<ul class=\"" + obj.name.toLowerCase() + "-legend\" aria-hidden=\"true\"></ul>");
+        for (var i=0; i<obj.datasets.length; i++) {
+            var $item, $icon;
+
+            $item = $("<li></li>");
+
+            $icon = $("<span class=\"" + obj.name.toLowerCase() + "-legend-icon\"></span>");
+            $icon.css("background-color", obj.datasets[i].strokeColor);
+            $item.append($icon);
+
+            $item.append($("<span class=\"" + obj.name.toLowerCase() + "-legend-text\">" + obj.datasets[i].label + "</span>"));
+
+            $list.append($item);
+        }
+        return $list;
+    };
+
+    chartOpts = {
+        pointDot: false,
+        scaleShowVerticalLines: false,
+        legendTemplate: legendFunc
+    };
+
     $.get(statsUrl, function(data) {
         var userChart, inboxChart, emailChart, fakeLabels;
 
@@ -73,11 +99,7 @@
                     data: data.active_users
                 }
             ]
-        },
-        {
-            pointDot: false,
-            scaleShowVerticalLines: false
-        });
+        }, chartOpts);
         $("#users-chart").prepend(userChart.generateLegend());
 
         $("#inboxes-chart").prepend($inboxCanvas);
@@ -98,10 +120,7 @@
                     data: data.active_inboxes
                 }
             ]
-        },{
-            pointDot: false,
-            scaleShowVerticalLines: false
-        });
+        }, chartOpts);
         $("#inboxes-chart").prepend(inboxChart.generateLegend());
 
         $("#emails-chart").prepend($emailCanvas);
@@ -122,10 +141,7 @@
                     data: data.read_emails
                 }
             ]
-        },{
-            pointDot: false,
-            scaleShowVerticalLines: false
-        });
+        }, chartOpts);
         $("#emails-chart").prepend(emailChart.generateLegend());
     });
 })(jQuery, Chart);
