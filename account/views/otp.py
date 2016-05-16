@@ -24,31 +24,26 @@ from django.utils.translation import ugettext as _
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
 
-from inboxen.views import base
 
 __all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
 
 
-class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
+class TwoFactorView(profile.ProfileView):
     template_name = "account/security.html"
-    headline = _("Security")  # view contains link to password change form too
 
 
-class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
+class TwoFactorBackupView(core.BackupTokensView):
     template_name = "account/twofactor-backup.html"
-    headline = _("Backup Tokens")
     redirect_url = "user-twofactor-backup"
 
 
-class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
+class TwoFactorDisableView(profile.DisableView):
     template_name = "account/twofactor-disable.html"
-    headline = _("Disable Two Factor Authentication")
     redirect_url = "user-security"
 
 
-class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
+class TwoFactorSetupView(core.SetupView):
     template_name = "account/twofactor-setup.html"
-    headline = _("Setup Two Factor Authentication")
     form_list = (
         ('welcome', forms.Form),
         ('method', two_forms.MethodForm),

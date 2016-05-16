@@ -18,8 +18,7 @@
 ##
 
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
 
-from inboxen.views import base
 
-
-index = base.TemplateView.as_view(headline=_("Source Code"), template_name="source/index.html")
+index = TemplateView.as_view(template_name="source/index.html")

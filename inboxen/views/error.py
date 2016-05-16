@@ -24,14 +24,13 @@ from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
-from inboxen.views import base
+from django.views.generic import TemplateView
 
 
 _log = logging.getLogger(__name__)
 
 
-class ErrorView(base.TemplateView):
+class ErrorView(TemplateView):
     error_message = None
     error_css_class = "warning"
     error_code = None
@@ -49,6 +48,7 @@ class ErrorView(base.TemplateView):
         kwargs["error_message"] = self.get_error_message()
         kwargs["error_css_class"] = self.get_error_css_class()
         kwargs["error_code"] = self.get_error_code()
+        kwargs["headline"] = self.headline
         return super(ErrorView, self).get_context_data(**kwargs)
 
     def get_error_message(self):

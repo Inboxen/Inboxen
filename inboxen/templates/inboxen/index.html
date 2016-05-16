@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n %}
 
+{% block headline %}{% trans "Welcome" %}{% endblock %}
+
 {% block extra-messages %}
     {% if user.is_authenticated %}
         {% url 'user-home' as home_url %}

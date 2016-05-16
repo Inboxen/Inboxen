@@ -2,10 +2,12 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n %}
 
+{% block headline %}{% blocktrans with name=settings.SITE_NAME %}The People Behind {{ name }}{% endblocktrans %}{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
-        <li class="active">{% blocktrans with settings.SITE_NAME as name %}The People Behind {{ name }}{% endblocktrans %}</li>
+        <li class="active">{% blocktrans with name=settings.SITE_NAME %}The People Behind {{ name }}{% endblocktrans %}</li>
     </ul>
 {% endblock %}
 

@@ -18,21 +18,21 @@
 ##
 
 from django.core.urlresolvers import reverse_lazy
-from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
+
 from account import forms
-from inboxen.views import base
+
 
 __all__ = ["GeneralSettingsView", "UsernameChangeView"]
 
 
-class GeneralSettingsView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
+class GeneralSettingsView(LoginRequiredMixin, generic.FormView):
     """General settings view"""
     form_class = forms.SettingsForm
     success_url = reverse_lazy("user-settings")
     template_name = "account/index.html"
-    headline = _("Settings")
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(GeneralSettingsView, self).get_form_kwargs(**kwargs)
@@ -44,12 +44,11 @@ class GeneralSettingsView(base.CommonContextMixin, base.LoginRequiredMixin, gene
         return super(GeneralSettingsView, self).form_valid(form=form, *args, **kwargs)
 
 
-class UsernameChangeView(base.CommonContextMixin, base.LoginRequiredMixin, generic.FormView):
+class UsernameChangeView(LoginRequiredMixin, generic.FormView):
     """Allow users to change their username"""
     form_class = forms.UsernameChangeForm
     success_url = reverse_lazy("user-settings")
     template_name = "account/username.html"
-    headline = _("Change Username")
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(UsernameChangeView, self).get_form_kwargs(**kwargs)

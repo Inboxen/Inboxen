@@ -20,17 +20,14 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
 from django.views import generic
 
 from account import forms
-from inboxen.views.base import CommonContextMixin
 
 
-class UserRegistrationView(CommonContextMixin, generic.CreateView):
+class UserRegistrationView(generic.CreateView):
     form_class = forms.PlaceHolderUserCreationForm
     success_url = reverse_lazy('user-success')
-    headline = _("Register")
     template_name = "account/register/register.html"
 
     def dispatch(self, request, *args, **kwargs):

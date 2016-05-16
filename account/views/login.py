@@ -17,20 +17,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext as _
-
 from two_factor.views import core
 from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
 
 from account.forms import PlaceHolderAuthenticationForm
-from inboxen.views.base import CommonContextMixin
+
 
 __all__ = ["LoginView"]
 
 
-class LoginView(CommonContextMixin, core.LoginView):
+class LoginView(core.LoginView):
     template_name = "account/login.html"
-    headline = _("Login")
 
     form_list = (
         ('auth', PlaceHolderAuthenticationForm),

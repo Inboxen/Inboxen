@@ -17,16 +17,13 @@
 
 from django.http import JsonResponse
 from django.utils import timezone
-from django.utils.translation import ugettext as _
 from django.views import generic
 
 from inboxen import models
-from inboxen.views import base
 
 
-class StatsView(base.CommonContextMixin, generic.DetailView):
+class StatsView(generic.DetailView):
     template_name = "inboxen/stats.html"
-    headline = _("Server Statistics")
     model = models.Statistic
 
     def get_object(self, queryset=None):

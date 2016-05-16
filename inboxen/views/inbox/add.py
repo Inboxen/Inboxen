@@ -23,16 +23,16 @@ from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import messages
 
+from braces.views import LoginRequiredMixin
+
 from inboxen.models import Inbox
 
 from inboxen import forms
-from inboxen.views import base
 
 __all__ = ["InboxAddView"]
 
 
-class InboxAddView(base.CommonContextMixin, base.LoginRequiredMixin, generic.CreateView):
-    headline = _("Add Inbox")
+class InboxAddView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy('user-home')
     form_class = forms.InboxAddForm
     model = Inbox

@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n humanize bootstrap %}
 
+{% block headline %}{% trans "Tickets" %}{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>

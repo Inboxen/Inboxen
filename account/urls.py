@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -21,13 +21,13 @@ from django.conf import settings as dj_settings, urls
 from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
+from django.views.generic import TemplateView
 
 from two_factor.views import core as twofactor
 
 from account.forms import PlaceHolderPasswordChangeForm
 from account.decorators import anonymous_required
 from account.views import delete, login, otp, register, settings
-from inboxen import views
 
 
 urlpatterns = [
@@ -37,9 +37,6 @@ urlpatterns = [
             'template_name': 'account/password.html',
             'post_change_redirect': reverse_lazy('user-security'),
             'password_change_form': PlaceHolderPasswordChangeForm,
-            'extra_context': {
-                'headline': _('Change Password'),
-            },
         },
         name='user-password',
     ),
@@ -60,7 +57,7 @@ urlpatterns = [
 
 if dj_settings.ENABLE_REGISTRATION:
     urlpatterns += [
-        urls.url(r'^register/status/$', anonymous_required(views.TemplateView.as_view(template_name='account/register/software-status.html', headline=_('We\'re not stable!'))), name='user-status'),
-        urls.url(r'^register/success/$', anonymous_required(views.TemplateView.as_view(template_name='account/register/success.html', headline=_('Welcome!'))), name='user-success'),
+        urls.url(r'^register/status/$', anonymous_required(TemplateView.as_view(template_name='account/register/software-status.html')), name='user-status'),
+        urls.url(r'^register/success/$', anonymous_required(TemplateView.as_view(template_name='account/register/success.html')), name='user-success'),
         urls.url(r'^register/$', anonymous_required(register.UserRegistrationView.as_view()), name='user-registration'),
     ]
