@@ -26,7 +26,6 @@
     Chart.defaults.global.animation = false;
     Chart.defaults.global.scaleBeginAtZero = true;
     Chart.defaults.global.showTooltips = false;
-    Chart.defaults.global.bezierCurve = false;
 
     // hack to bypass evil "new Function"
     Chart.defaults.global.tooltipTitleTemplate = function(obj) {
@@ -67,7 +66,8 @@
     };
 
     chartOpts = {
-        pointDot: false,
+        pointDotRadius: 2,
+        bezierCurve: false,
         scaleShowVerticalLines: false,
         legendTemplate: legendFunc
     };
