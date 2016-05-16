@@ -4,7 +4,7 @@
 <html>
     <head>
         <link rel="icon" type="image/png" href="{% static "imgs/megmelon-icon.png" %}" />
-        <title>{{ headline }} - {{ settings.SITE_NAME }}</title>
+        <title>{% block headline %}{% endblock %} - {{ settings.SITE_NAME }}</title>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
