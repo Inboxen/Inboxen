@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -18,8 +18,9 @@
 ##
 
 from django.http import Http404
-from django.views import generic
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
+from django.views import generic
 
 from termsofservice import models
 
@@ -46,10 +47,9 @@ class WhoView(generic.ListView):
         return qs.filter(user__is_staff=True).select_related("user")
 
 
-class HelpView(generic.TemplateView):
-    template_name = "termsofservice/index.html"
-
-    def get_context_data(self, **kwargs):
-        kwargs["tos_exists"] = models.TOS.objects.filter(published=True).exists()
-        kwargs["who_exists"] = models.StaffProfile.objects.filter(user__is_staff=True).exists()
-        return super(HelpView, self).get_context_data(**kwargs)
+def help_view(request):
+    context = {
+        "tos_exists": models.TOS.objects.filter(published=True).exists(),
+        "who_exists": models.StaffProfile.objects.filter(user__is_staff=True).exists(),
+    }
+    return TemplateResponse(request, "termsofservice/index.html", context)
