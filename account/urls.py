@@ -26,8 +26,7 @@ from django.views.generic import TemplateView
 from two_factor.views import core as twofactor
 
 from account.forms import PlaceHolderPasswordChangeForm
-from account.decorators import anonymous_required
-from account.views import delete, login, otp, register, settings
+from account.views import delete, otp, register, settings
 
 
 urlpatterns = [
@@ -40,15 +39,15 @@ urlpatterns = [
         },
         name='user-password',
     ),
-    urls.url(r'^security/setup/$', otp.TwoFactorSetupView.as_view(), name='user-twofactor-setup'),
-    urls.url(r'^security/backup/$', otp.TwoFactorBackupView.as_view(), name='user-twofactor-backup'),
-    urls.url(r'^security/disable/$', otp.TwoFactorDisableView.as_view(), name='user-twofactor-disable'),
+    urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
+    urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
+    urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
     urls.url(r'^security/qrcode/$', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
-    urls.url(r'^security/$', otp.TwoFactorView.as_view(), name='user-security'),
+    urls.url(r'^security/$', otp.twofactor_view, name='user-security'),
 
     urls.url(r'^delete/$', delete.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^username/$', settings.UsernameChangeView.as_view(), name='user-username'),
-    urls.url(r'^login/$', anonymous_required(login.LoginView.as_view()), name='user-login'),
+    urls.url(r'^login/$', otp.login, name='user-login'),
     urls.url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='user-logout'),
 
     # liberation app

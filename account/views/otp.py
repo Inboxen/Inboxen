@@ -24,22 +24,23 @@ from django.utils.translation import ugettext as _
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
 
-
-__all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
-
-
-class TwoFactorView(profile.ProfileView):
-    template_name = "account/security.html"
+from account.forms import PlaceHolderAuthenticationForm
+from account.decorators import anonymous_required
 
 
-class TwoFactorBackupView(core.BackupTokensView):
-    template_name = "account/twofactor-backup.html"
-    redirect_url = "user-twofactor-backup"
+class LoginView(core.LoginView):
+    template_name = "account/login.html"
+    form_list = (
+        ('auth', PlaceHolderAuthenticationForm),
+        ('token', two_forms.AuthenticationTokenForm),
+        ('backup', two_forms.BackupTokenForm),
+    )
 
-
-class TwoFactorDisableView(profile.DisableView):
-    template_name = "account/twofactor-disable.html"
-    redirect_url = "user-security"
+    def get_form_kwargs(self, step):
+        if step == "auth":
+            return {"request": self.request}
+        else:
+            return super(LoginView, self).get_form_kwargs(step)
 
 
 class TwoFactorSetupView(core.SetupView):
@@ -72,3 +73,10 @@ class TwoFactorSetupView(core.SetupView):
             context["qr"] = int(self.request.GET.get("qr", "1"))
 
         return context
+
+
+backup_view = core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", redirect_url="user-twofactor-backup")
+disable_view = profile.DisableView.as_view(template_name="account/twofactor-disable.html", redirect_url="user-security")
+login = anonymous_required(LoginView.as_view())
+setup_view = TwoFactorSetupView.as_view()
+twofactor_view = profile.ProfileView.as_view(template_name="account/security.html")
