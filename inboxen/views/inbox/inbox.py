@@ -23,17 +23,17 @@ from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
 from watson import search
 
 from inboxen import models
 from inboxen.tasks import deal_with_flags
 from inboxen.tasks import delete_inboxen_item
-from inboxen.views import base
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 
 
-class InboxView(base.CommonContextMixin, base.LoginRequiredMixin, generic.ListView):
+class InboxView(LoginRequiredMixin, generic.ListView):
     """Base class for Inbox views"""
     model = models.Email
     paginate_by = 100
@@ -168,7 +168,7 @@ class UnifiedInboxView(InboxView):
         return qs
 
     def get_context_data(self, *args, **kwargs):
-        self.headline = _("Inbox")
+        kwargs["headline"] = _("Inbox")
         profile = self.request.user.userprofile
         if profile.flags.unified_has_new_messages:
             profile.flags.unified_has_new_messages = False
@@ -198,7 +198,7 @@ class SingleInboxView(InboxView):
         return qs
 
     def get_context_data(self, *args, **kwargs):
-        self.headline = "{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
+        kwargs["headline"] = u"{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
         context = super(SingleInboxView, self).get_context_data(*args, **kwargs)
         context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 

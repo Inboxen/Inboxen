@@ -25,7 +25,8 @@ from django.core.cache import cache
 from django.utils.translation import ugettext as _
 from django.views import generic
 
-from inboxen.views import base
+from braces.views import LoginRequiredMixin
+
 from inboxen import tasks
 
 from celery import exceptions
@@ -35,7 +36,7 @@ from watson import models as watson_models
 __all__ = ["SearchView", "SearchApiView"]
 
 
-class SearchView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView):
+class SearchView(LoginRequiredMixin, generic.ListView):
     """A specialised search view that splits results by model"""
     paginate_by = None
     template_name = "inboxen/user/search.html"
@@ -108,9 +109,6 @@ class SearchView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListV
             context["waiting"] = len(context[self.context_object_name]) == 0
 
         return context
-
-    def get_headline(self):
-        return "%s: %s" % (_("Search"), self.query)
 
     def get_query_param(self):
         return self.query_param

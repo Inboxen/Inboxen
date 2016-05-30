@@ -2,6 +2,8 @@
 {% extends 'account/index.html' %}
 {% load two_factor i18n inboxen_account bootstrap %}
 
+{% block headline %}{% trans "Disable Two Factor Authentication" %}{% endblock %}
+
 {% block navigation %}
     {% account_menu 'user-security' %}
 {% endblock %}

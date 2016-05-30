@@ -15,10 +15,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.utils.translation import ugettext as _
-from . import TemplateView
+from django.views.generic import TemplateView
 
 
 class Index(TemplateView):
     template_name = "inboxen/index.html"
-    headline = _("Welcome")

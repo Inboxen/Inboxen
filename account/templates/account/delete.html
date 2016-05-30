@@ -2,6 +2,8 @@
 {% extends 'account/index.html' %}
 {% load i18n bootstrap inboxen_account %}
 
+{% block headline %}{% trans "Delete Account" %}{% endblock %}
+
 {% block navigation %}
     {% account_menu 'user-delete' %}
 {% endblock %}

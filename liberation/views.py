@@ -23,19 +23,19 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
 from sendfile import sendfile
 
 from liberation import forms
 from liberation.tasks import TAR_TYPES
-from inboxen.views import base
+
 
 __all__ = ["LiberationView", "LiberationDownloadView"]
 
 
-class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
+class LiberationView(LoginRequiredMixin, generic.UpdateView):
     form_class = forms.LiberationForm
     success_url = reverse_lazy('user-home')
-    headline = _("Liberate your data")
     template_name = "liberation/liberate.html"
 
     def get_object(self, queryset=None):
@@ -52,7 +52,7 @@ class LiberationView(base.CommonContextMixin, base.LoginRequiredMixin, generic.U
         return output
 
 
-class LiberationDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
+class LiberationDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):
         liberation = self.request.user.liberation
 

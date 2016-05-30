@@ -25,12 +25,10 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from blog.models import BlogPost
-from inboxen.views import base
 
 
-class BlogListView(base.CommonContextMixin, generic.ListView):
+class BlogListView(generic.ListView):
     context_object_name = "posts"
-    headline = _("Blog")
     model = BlogPost
     paginate_by = 5
     template_name = "blog/blog.html"
@@ -39,16 +37,13 @@ class BlogListView(base.CommonContextMixin, generic.ListView):
         return super(BlogListView, self).get_queryset().filter(draft=False)
 
 
-class BlogDetailView(base.CommonContextMixin, generic.DetailView):
+class BlogDetailView(generic.DetailView):
     context_object_name = "post"
     model = BlogPost
     template_name = "blog/post.html"
 
     def get_queryset(self):
         return super(BlogDetailView, self).get_queryset().filter(draft=False)
-
-    def get_headline(self):
-        return self.object.subject
 
 
 class RssFeed(Feed):

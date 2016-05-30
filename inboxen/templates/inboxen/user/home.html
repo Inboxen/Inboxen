@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n inboxen_flags %}
 
+{% block headline %}{% trans "Home" %}{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li class="active">{% blocktrans %}{{ user }}'s Home{% endblocktrans %}</li>

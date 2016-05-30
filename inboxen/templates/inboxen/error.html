@@ -1,7 +1,9 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
 
+{% block headline %}{{ headline }}{% endblock %}
+
 {% block content %}
-    <h2> {{ headline }} </h2>
+    <h2>{{ headline }}</h2>
     <p class="alert alert-{{ error_css_class }}"> {{ error_message }} </p>
 {% endblock %}

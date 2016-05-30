@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matthew Molyneaux
+#    Copyright (C) 2014, 2016 Jessica Tallon & Matthew Molyneaux
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -15,27 +15,20 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.template.response import TemplateResponse
 from django.http import JsonResponse
 from django.utils import timezone
-from django.utils.translation import ugettext as _
-from django.views import generic
 
 from inboxen import models
-from inboxen.views import base
 
 
-class StatsView(base.CommonContextMixin, generic.DetailView):
-    template_name = "inboxen/stats.html"
-    headline = _("Server Statistics")
-    model = models.Statistic
+def stats(request):
+    try:
+        stat = models.Statistic.objects.latest("date")
+    except models.Statistic.DoesNotExist:
+        stat = None
 
-    def get_object(self, queryset=None):
-        queryset = queryset or self.get_queryset()
-
-        try:
-            return queryset.latest("date")
-        except models.Statistic.DoesNotExist:
-            return None
+    return TemplateResponse(request, "inboxen/stats.html", {"object": stat})
 
 
 def stats_recent(request):

@@ -23,8 +23,9 @@ from django.http import Http404
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
+
 from tickets import forms, models
-from inboxen.views import base
 
 
 class FormMixin(generic.edit.FormMixin):
@@ -47,11 +48,10 @@ class FormMixin(generic.edit.FormMixin):
             return self.form_invalid(form)
 
 
-class QuestionHomeView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView, FormMixin):
+class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
     """List of questions that belong to current user"""
     paginate_by = 10
     model = models.Question
-    headline = _("Tickets")
     form_class = forms.QuestionForm
     template_name = "tickets/question_home.html"
 
@@ -127,10 +127,9 @@ class QuestionHomeView(base.LoginRequiredMixin, base.CommonContextMixin, generic
         return super(QuestionHomeView, self).post(*args, **kwargs)
 
 
-class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic.ListView):
+class QuestionListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 50
     model = models.Question
-    headline = _("Tickets")
 
     def get_context_data(self, **kwargs):
         context = super(QuestionListView, self).get_context_data(**kwargs)
@@ -157,7 +156,7 @@ class QuestionListView(base.LoginRequiredMixin, base.CommonContextMixin, generic
         return qs.annotate(response_count=Count("response__id"), last_response_date=Max("response__date"))
 
 
-class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, generic.DetailView, FormMixin):
+class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
     """View and respond to Question"""
     model = models.Question
     form_class = forms.ResponseForm
@@ -173,10 +172,6 @@ class QuestionDetailView(base.LoginRequiredMixin, base.CommonContextMixin, gener
         kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
         kwargs.setdefault("responses", self.get_responses())
         return kwargs
-
-    def get_headline(self):
-        ticket = _("Ticket")
-        return "{0}: {1}".format(ticket, self.object.subject)
 
     def get_queryset(self):
         qs = super(QuestionDetailView, self).get_queryset()

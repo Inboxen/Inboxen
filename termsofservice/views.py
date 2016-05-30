@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,17 +17,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings
 from django.http import Http404
-from django.views import generic
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
+from django.views import generic
 
 from termsofservice import models
-from inboxen.views import base
 
 
-class TOSView(base.CommonContextMixin, generic.DetailView):
-    headline = _("Terms Of Service")
+class TOSView(generic.DetailView):
     model = models.TOS
     template_name = "termsofservice/tos.html"
 
@@ -40,8 +38,7 @@ class TOSView(base.CommonContextMixin, generic.DetailView):
             raise Http404
 
 
-class WhoView(base.CommonContextMixin, generic.ListView):
-    headline = _("The People Behind %(name)s") % {"name": settings.SITE_NAME}
+class WhoView(generic.ListView):
     model = models.StaffProfile
     template_name = "termsofservice/who.html"
 
@@ -50,11 +47,9 @@ class WhoView(base.CommonContextMixin, generic.ListView):
         return qs.filter(user__is_staff=True).select_related("user")
 
 
-class HelpView(base.TemplateView):
-    headline = _("Help")
-    template_name = "termsofservice/index.html"
-
-    def get_context_data(self, **kwargs):
-        kwargs["tos_exists"] = models.TOS.objects.filter(published=True).exists()
-        kwargs["who_exists"] = models.StaffProfile.objects.filter(user__is_staff=True).exists()
-        return super(HelpView, self).get_context_data(**kwargs)
+def help_view(request):
+    context = {
+        "tos_exists": models.TOS.objects.filter(published=True).exists(),
+        "who_exists": models.StaffProfile.objects.filter(user__is_staff=True).exists(),
+    }
+    return TemplateResponse(request, "termsofservice/index.html", context)

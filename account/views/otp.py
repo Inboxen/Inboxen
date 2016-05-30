@@ -24,31 +24,27 @@ from django.utils.translation import ugettext as _
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
 
-from inboxen.views import base
-
-__all__ = ["TwoFactorView", "TwoFactorBackupView", "TwoFactorDisableView", "TwoFactorSetupView"]
-
-
-class TwoFactorView(base.CommonContextMixin, profile.ProfileView):
-    template_name = "account/security.html"
-    headline = _("Security")  # view contains link to password change form too
+from account.forms import PlaceHolderAuthenticationForm
+from account.decorators import anonymous_required
 
 
-class TwoFactorBackupView(base.CommonContextMixin, core.BackupTokensView):
-    template_name = "account/twofactor-backup.html"
-    headline = _("Backup Tokens")
-    redirect_url = "user-twofactor-backup"
+class LoginView(core.LoginView):
+    template_name = "account/login.html"
+    form_list = (
+        ('auth', PlaceHolderAuthenticationForm),
+        ('token', two_forms.AuthenticationTokenForm),
+        ('backup', two_forms.BackupTokenForm),
+    )
+
+    def get_form_kwargs(self, step):
+        if step == "auth":
+            return {"request": self.request}
+        else:
+            return super(LoginView, self).get_form_kwargs(step)
 
 
-class TwoFactorDisableView(base.CommonContextMixin, profile.DisableView):
-    template_name = "account/twofactor-disable.html"
-    headline = _("Disable Two Factor Authentication")
-    redirect_url = "user-security"
-
-
-class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
+class TwoFactorSetupView(core.SetupView):
     template_name = "account/twofactor-setup.html"
-    headline = _("Setup Two Factor Authentication")
     form_list = (
         ('welcome', forms.Form),
         ('method', two_forms.MethodForm),
@@ -77,3 +73,10 @@ class TwoFactorSetupView(base.CommonContextMixin, core.SetupView):
             context["qr"] = int(self.request.GET.get("qr", "1"))
 
         return context
+
+
+backup_view = core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", redirect_url="user-twofactor-backup")
+disable_view = profile.DisableView.as_view(template_name="account/twofactor-disable.html", redirect_url="user-security")
+login = anonymous_required(LoginView.as_view())
+setup_view = TwoFactorSetupView.as_view()
+twofactor_view = profile.ProfileView.as_view(template_name="account/security.html")
