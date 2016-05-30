@@ -25,6 +25,7 @@ from django.views.generic import TemplateView
 
 from two_factor.views import core as twofactor
 
+from account.decorators import anonymous_required
 from account.forms import PlaceHolderPasswordChangeForm
 from account.views import delete, otp, register, settings
 
