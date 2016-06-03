@@ -36,6 +36,10 @@ body {
     border-radius:4px;
     margin-top: 20px;
 
+    a {
+        color: $text-color !important;
+    }
+
     & > div {
         border-top: 1px solid $table-border-color;
 
@@ -45,6 +49,10 @@ body {
 
         &.title {
             font-weight: 700;
+
+            & > div {
+                padding: $table-cell-padding;
+            }
         }
     }
 
@@ -52,7 +60,7 @@ body {
         margin-left: initial;
         margin-right: initial;
 
-        & > div {
+        & > .clickable > div {
             padding: $table-cell-padding;
         }
 
@@ -67,6 +75,11 @@ body {
 
     .email-sender, .email-subject {
         word-wrap: break-word;
+    }
+
+    .inbox-edit-form-row > div {
+        padding-top: ceil(($grid-gutter-width / 2));
+        padding-bottom: floor(($grid-gutter-width / 2));
     }
 }
 

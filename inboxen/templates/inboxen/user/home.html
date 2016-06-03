@@ -20,21 +20,25 @@
         <div class="{{ col4 }} hidden-xs hidden-sm">{% trans "Description" %}</div>
     </div>
     <div id="unified" class="row">
-        <div class="{{ col0 }}">
-            <div class="row">
-                <div class="inbox-name col-xs-12 col-sm-8"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
-                <div class="inbox-flags col-xs-12 col-sm-4">{{ user.userprofile.flags|render_flags }}</div>
+        <a class="clickable" href="{% url 'unified-inbox' %}">
+            <div class="{{ col0 }}">
+                <div class="row">
+                    <div class="inbox-name col-xs-12 col-sm-8">{% trans "Unified Inbox" %}</div>
+                    <div class="inbox-flags col-xs-12 col-sm-4">{{ user.userprofile.flags|render_flags }}</div>
+                </div>
             </div>
-        </div>
-        <div class="{{ col2 }}">&nbsp;</div>
-        <div class="{{ col3 }}">&nbsp;</div>
-        <div class="{{ col4 }}">&nbsp;</div>
+            <div class="{{ col2 }}">&nbsp;</div>
+            <div class="{{ col3 }}">&nbsp;</div>
+            <div class="{{ col4 }}">&nbsp;</div>
+        </a>
     </div>
     {% for inbox in page_obj.object_list %}
         {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
     {% empty %}
         <div class="row">
-            <div class="col-xs-12"><b><a href="{% url 'inbox-add' %}">{% trans "Click here to add an Inbox" %}</a></b></div>
+            <a href="{% url 'inbox-add' %}" class="clickable">
+                <div class="col-xs-12"><b>{% trans "Click here to add an Inbox" %}</b></div>
+            </a>
         </div>
     {% endfor %}
 </div>
