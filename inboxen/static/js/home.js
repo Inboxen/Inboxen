@@ -46,7 +46,7 @@
 
         if (xhr.status === 204) {
             var $inbox_row = $("#" + inboxSelector);
-            var $description_cell = $inbox_row.children(".inbox-description");
+            var $description_cell = $inbox_row.find(".inbox-description");
 
             $description_cell.text(description);
 
