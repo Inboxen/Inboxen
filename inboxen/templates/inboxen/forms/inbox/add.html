@@ -1,0 +1,7 @@
+{# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% load i18n bootstrap %}
+<form action="{% url 'inbox-add' %}" class="form" method="POST">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <button class="btn btn-primary">{% trans "Add" %}</button>
+</form>

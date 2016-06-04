@@ -29,7 +29,7 @@ from inboxen.models import Inbox
 
 from inboxen import forms
 
-__all__ = ["InboxAddView"]
+__all__ = ["InboxAddView", "FormInboxAddView"]
 
 
 class InboxAddView(LoginRequiredMixin, generic.CreateView):
@@ -38,17 +38,17 @@ class InboxAddView(LoginRequiredMixin, generic.CreateView):
     model = Inbox
     template_name = "inboxen/inbox/add.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            if request.user.userprofile.available_inboxes() <= 0:
-                messages.error(request, _("You have too many Inboxes."))
-                return HttpResponseRedirect(self.success_url)
-        except AttributeError:
-            pass
-
-        return super(InboxAddView, self).dispatch(request=request, *args, **kwargs)
-
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super(InboxAddView, self).get_form_kwargs(*args, **kwargs)
         kwargs.setdefault("request", self.request)
         return kwargs
+
+
+class FormInboxAddView(InboxAddView):
+    template_name = "inboxen/forms/inbox/add.html"
+
+    def form_valid(self, form):
+        response = super(FormInboxAddView, self).form_valid(form)
+        response.status_code = 204
+
+        return response
