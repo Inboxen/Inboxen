@@ -2,7 +2,7 @@
 {% load i18n inboxen_flags humanize %}
 {% url 'email-view' inbox=inbox domain=domain id=eid as email_url %}
 <div id="email-{{ eid }}" class="row">
-    <a class="clickable" href="{{ email_url }}">
+    <span class="clickable">
         <div class="col-md-2 col-xs-5">
             <div class="row">
                 {% if not search_results %}<div class="email-checkbox col-sm-2 col-xs-12"><input type="checkbox" value="email" name="{{ eid }}" /></div>
@@ -11,8 +11,6 @@
             </div>
         </div>
         <div title="{{ received_date|date:"r" }}" class="email-reveived col-xs-5 col-md-1 col-md-push-8">{{ received_date|naturaltime }}</div>
-    </a>
-    <span class="clickable">
         <div class="email-buttons col-xs-2 col-md-1 col-md-push-8">
             <button title="{% trans "Delete" %}" class="close" type="submit" name="delete-single" value="{{ eid }}">
                 <span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">{% trans "Delete" %}</span>

@@ -20,13 +20,15 @@
         <div class="{{ col4 }} hidden-xs hidden-sm">{% trans "Description" %}</div>
     </div>
     <div id="unified" class="row">
-        <a class="clickable" href="{% url 'unified-inbox' %}">
+        <span class="clickable">
             <div class="{{ col0 }}">
                 <div class="row">
-                    <div class="inbox-name col-xs-12 col-sm-8">{% trans "Unified Inbox" %}</div>
+                    <div class="inbox-name col-xs-12 col-sm-8"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
                     <div class="inbox-flags col-xs-12 col-sm-4">{{ user.userprofile.flags|render_flags }}</div>
                 </div>
             </div>
+        </span>
+        <a class="clickable" href="{% url 'unified-inbox' %}">
             <div class="{{ col2 }}">&nbsp;</div>
             <div class="{{ col3 }}">&nbsp;</div>
             <div class="{{ col4 }}">&nbsp;</div>
