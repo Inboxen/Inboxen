@@ -20,11 +20,6 @@
             $this.find("button").prop("disabled", true);
             $this.find("a.btn").addClass("disabled");
             $this.data("sending", "yes");
-            setTimeout(function() {
-                $this.data("sending", "no");
-                $this.find("button").prop("disabled", false);
-                $this.find("a.btn").removeClass("disabled");
-            }, 3000);
 
             $.ajax({
                 type: "POST",
