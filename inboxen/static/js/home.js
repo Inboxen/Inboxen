@@ -3,7 +3,7 @@
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 (function($){
-    ' use strict';
+    'use strict';
 
     function initForm($form, completeCallback) {
         $form.submit(function(event) {
@@ -36,7 +36,7 @@
     }
 
     function homeFormComplete(xhr, statusText) {
-        var description, inboxSelector, is_disabled, $row;
+        var description, inboxSelector, is_disabled, is_pinned, $row;
 
         inboxSelector = this.$form.data("inbox-selector");
         $row = $("#" + inboxSelector + " + .row");
