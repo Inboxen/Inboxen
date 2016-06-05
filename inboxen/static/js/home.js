@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
+ * Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 (function($){
@@ -85,6 +85,24 @@
         }
     }
 
+    function addInboxComplete(xhr, statusText) {
+        if (xhr.status === 204) {
+            // TODO: add an alert message
+            $("#inbox-add-form").remove();
+
+            // hacky, but this will have to do for now
+            document.location.reload(true);
+
+        } else {
+            if (xhr.status === 200) {
+                this.$form.html(xhr.responseText);
+            } else {
+                this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+                console.log("Form failed to POST (" + xhr.status + ")");
+            }
+        }
+    }
+
     // adds event listeners for inline forms to be popped in
     $("#inbox-list .inbox-options a").click(function() {
         // option buttons on inbox list
@@ -151,6 +169,36 @@
         } else if ($table.children(":first").hasClass("inbox-edit-form-row")) {
             $table.children(":first").remove();
         }
+        return false;
+    });
+
+    $("#add-inbox").click(function() {
+        var $this = $(this);
+        var $nav = $("#navbar-container");
+
+        if ($this.data("clicked") === "yes") {
+            return false;
+        } else {
+            $this.data("clicked", "yes");
+            $this.addClass("disabled");
+            setTimeout(function() {
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+            }, 3000);
+        }
+
+        $.get($this.data("form-url"), function(data) {
+            var $addForm;
+            // double check
+            if ($("#inbox-add-form").length === 0) {
+                $addForm = $("<div id=\"inbox-add-form\" class=\"row\"><div class=\"panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4\"><div class=\"panel-body\">" + data + "</div></div></div>");
+                $nav.after($addForm);
+                initForm($addForm.find("form"), addInboxComplete);
+                $addForm.find("a").click(function() {
+                    $addForm.remove();
+                });
+            }
+        });
         return false;
     });
 })(jQuery);
