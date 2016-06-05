@@ -55,6 +55,10 @@ class InboxAddForm(forms.ModelForm):
         model = models.Inbox
         fields = ["domain", "description"]
 
+    def clean(self):
+        if self.request.user.userprofile.available_inboxes() <= 0:
+            raise forms.ValidationError( _("You have too many Inboxes."))
+
     def save(self):
         # We want this instance created by .create() so we will ignore self.instance
         # which is created just by model(**data)

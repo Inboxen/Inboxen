@@ -4,7 +4,7 @@
  */
 
 (function($) {
-    'uuse strict';
+    'use strict';
 
     var important_label = '<span class="label label-danger" title="Message has been marked as important">Important</span>';
 

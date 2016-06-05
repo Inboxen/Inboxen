@@ -1,9 +1,9 @@
 /*!
- * Copyright (c) 2015 Jessica Tallon & Matt Molyneaux
+ * Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 (function($){
-    ' use strict';
+    'use strict';
 
     function initForm($form, completeCallback) {
         $form.submit(function(event) {
@@ -20,11 +20,6 @@
             $this.find("button").prop("disabled", true);
             $this.find("a.btn").addClass("disabled");
             $this.data("sending", "yes");
-            setTimeout(function() {
-                $this.data("sending", "no");
-                $this.find("button").prop("disabled", false);
-                $this.find("a.btn").removeClass("disabled");
-            }, 3000);
 
             $.ajax({
                 type: "POST",
@@ -36,7 +31,7 @@
     }
 
     function homeFormComplete(xhr, statusText) {
-        var description, inboxSelector, is_disabled, $row;
+        var description, inboxSelector, is_disabled, is_pinned, $row;
 
         inboxSelector = this.$form.data("inbox-selector");
         $row = $("#" + inboxSelector + " + .row");
@@ -75,6 +70,24 @@
     function inboxFormComplete(xhr, statusText) {
         if (xhr.status === 204) {
             this.$form.parents(".inbox-edit-form-row").remove();
+        } else {
+            if (xhr.status === 200) {
+                this.$form.html(xhr.responseText);
+            } else {
+                this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+                console.log("Form failed to POST (" + xhr.status + ")");
+            }
+        }
+    }
+
+    function addInboxComplete(xhr, statusText) {
+        if (xhr.status === 204) {
+            // TODO: add an alert message
+            $("#inbox-add-form").remove();
+
+            // hacky, but this will have to do for now
+            document.location.reload(true);
+
         } else {
             if (xhr.status === 200) {
                 this.$form.html(xhr.responseText);
@@ -151,6 +164,36 @@
         } else if ($table.children(":first").hasClass("inbox-edit-form-row")) {
             $table.children(":first").remove();
         }
+        return false;
+    });
+
+    $("#add-inbox").click(function() {
+        var $this = $(this);
+        var $nav = $("#navbar-container");
+
+        if ($this.data("clicked") === "yes") {
+            return false;
+        } else {
+            $this.data("clicked", "yes");
+            $this.addClass("disabled");
+            setTimeout(function() {
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+            }, 3000);
+        }
+
+        $.get($this.data("form-url"), function(data) {
+            var $addForm;
+            // double check
+            if ($("#inbox-add-form").length === 0) {
+                $addForm = $("<div id=\"inbox-add-form\" class=\"row\"><div class=\"panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4\"><div class=\"panel-body\">" + data + "</div></div></div>");
+                $nav.after($addForm);
+                initForm($addForm.find("form"), addInboxComplete);
+                $addForm.find("a").click(function() {
+                    $addForm.remove();
+                });
+            }
+        });
         return false;
     });
 })(jQuery);
