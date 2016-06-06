@@ -119,10 +119,13 @@ body {
 }
 
 .email-buttons, .inbox-options {
-    .close + .close {
-        margin-left: 5px;
-        margin-bottom: 5px;
+    .close {
+        margin: 5px;
     }
+}
+
+.btn > .fa {
+    margin-right: 5px;
 }
 
 a.soon {

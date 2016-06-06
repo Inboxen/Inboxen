@@ -29,24 +29,24 @@
 <div class="pull-right">
     <form class="inline-buttons" action="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}" method="POST">
         {% csrf_token %}
-        <button class="btn btn-default" type="submit" value="{{ email.eid }}" name="delete-single">{% trans "Delete" %}</button>
+        <button class="btn btn-danger" type="submit" value="{{ email.eid }}" name="delete-single"><span class="fa fa-trash" aria-hidden="true"></span>{% trans "Delete" %}</button>
     </form>
     <form class="inline-buttons" action="{{ request.path }}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="important-toggle">
         {% if object.flags.important %}{# email isn't actually the email object #}
-            {% trans "Unmark as important" %}
+            <span class="fa fa-star-o" aria-hidden="true"></span>{% trans "Unmark as important" %}
         {% else %}
-            {% trans "Mark as important" %}
+            <span class="fa fa-star" aria-hidden="true"></span>{% trans "Mark as important" %}
         {% endif %}
         </button>
     </form>
     {% if headersfetchall %}
     <a class="btn btn-default" href="{{ request.path }}?all-headers=0">
-        {% trans "Hide headers" %}
+        <span class="fa fa-eye-slash" aria-hidden="true"></span>{% trans "Hide headers" %}
     {% else %}
     <a class="btn btn-default" href="{{ request.path }}?all-headers=1">
-        {% trans "Show headers" %}
+        <span class="fa fa-eye" aria-hidden="true"></span>{% trans "Show headers" %}
     {% endif %}
     </a>
 </div>
