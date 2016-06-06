@@ -34,7 +34,7 @@
         {% for email in page_obj.object_list %}
             {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
         {% empty %}
-            <div class="row">
+            <div class="row empty-message">
                 <span class="clickable">
                     <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
                 </span>

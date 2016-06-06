@@ -37,7 +37,7 @@
     {% for inbox in page_obj.object_list %}
         {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
     {% empty %}
-        <div class="row">
+        <div class="row empty-message">
             <a href="{% url 'inbox-add' %}" class="clickable">
                 <div class="col-xs-12"><b>{% trans "Click here to add an Inbox" %}</b></div>
             </a>
