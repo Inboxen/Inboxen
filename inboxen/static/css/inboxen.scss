@@ -125,6 +125,10 @@ body {
     }
 }
 
+.btn > .fa {
+    margin-right: 5px;
+}
+
 a.soon {
     cursor: not-allowed;
     color: $gray-light;
