@@ -64,7 +64,7 @@ body {
             background-color: $table-bg-hover;
         }
 
-        &.title:hover, &.inbox-edit-form-row:hover {
+        &.title:hover, &.inbox-edit-form-row:hover, &.empty-message:hover {
             background-color: initial;
         }
     }
