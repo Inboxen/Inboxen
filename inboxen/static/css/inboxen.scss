@@ -79,6 +79,16 @@ body {
     }
 }
 
+.table-honeydew {
+    // old style for tables - don't remove unless all templates have stopped using it :)
+    border:1px solid #ddd;
+    border-collapse:collapse;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:4px;
+    margin-top: 20px;
+}
+
 #unified {
     background-color: $state-warning-bg;
 
