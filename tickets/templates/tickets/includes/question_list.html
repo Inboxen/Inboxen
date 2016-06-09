@@ -1,30 +1,24 @@
 {% load i18n humanize %}
-<div class="table-responsive">
-    <table class="table table-hover table-honeydew">
-        <thead>
-            <tr>
-                <th>{% trans "Subject" %}</th>
-                <th>{% trans "Responses" %}</th>
-                <th>{% trans "Status" %}</th>
-                <th>{% trans "Last Activity" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for question in questions %}
-            <tr>
-                <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
-                <td>{{ question.response_count }}</td>
-                <td>{{ question.get_status_display }}</td>
-                <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</td>
-            </tr>
-            {% if forloop.last %}
-                <tr><td colspan=4><div class="pull-right"><a class="btn btn-info" href="{{ more_url }}">{% trans "More Questions" %}</a></div></td></tr>
-            {% endif %}
-        {% empty %}
-            <tr>
-                <td colspan=4>{% trans "There are no questions." %}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="honeydew">
+    <div class="row title hidden-xs">
+        <div class="col-sm-6">{% trans "Subject" %}</div>
+        <div class="col-sm-1">{% trans "Responses" %}</div>
+        <div class="col-sm-1">{% trans "Status" %}</div>
+        <div class="col-sm-4">{% trans "Last Activity" %}</div>
+    </div>
+    {% for question in questions %}
+        <div class="row"><span class="clickable">
+            <div class="col-sm-6 col-xs-12"><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></div>
+            <div class="col-sm-1 col-xs-1">{{ question.response_count }}</div>
+            <div class="col-sm-1 col-xs-2">{{ question.get_status_display }}</div>
+            <div class="col-sm-4 col-xs-9" title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</div>
+        </span></div>
+        {% if forloop.last and more_url %}
+            <div class="row"><span class="clickable"><div class="col-xs-12"><div class="pull-right"><a class="btn btn-info" href="{{ more_url }}">{% trans "More Questions" %}</a></div></div></span></div>
+        {% endif %}
+    {% empty %}
+        <div class="row"><span class="clickable">
+            <div class="col-xs-12">{% trans "There are no questions." %}</div>
+        </span></div>
+    {% endfor %}
 </div>
