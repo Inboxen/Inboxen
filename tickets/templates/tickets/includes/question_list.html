@@ -1,0 +1,30 @@
+{% load i18n humanize %}
+<div class="table-responsive">
+    <table class="table table-hover table-honeydew">
+        <thead>
+            <tr>
+                <th>{% trans "Subject" %}</th>
+                <th>{% trans "Responses" %}</th>
+                <th>{% trans "Status" %}</th>
+                <th>{% trans "Last Activity" %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for question in questions %}
+            <tr>
+                <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
+                <td>{{ question.response_count }}</td>
+                <td>{{ question.get_status_display }}</td>
+                <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</td>
+            </tr>
+            {% if forloop.last %}
+                <tr><td colspan=4><div class="pull-right"><a class="btn btn-info" href="{{ more_url }}">{% trans "More Questions" %}</a></div></td></tr>
+            {% endif %}
+        {% empty %}
+            <tr>
+                <td colspan=4>{% trans "There are no questions." %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
