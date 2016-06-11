@@ -69,9 +69,12 @@ def _clean_html_body(request, email, body, charset):
     for meta_tag in html_tree.xpath("/html/head/meta"):
         if meta_tag.get("http-equiv", None) == "Content-Type":
             content = meta_tag.get("content")
-            content = content.split(";", 1)[1]
-            charset = dict(HEADER_PARAMS.findall(content)).get("charset", charset)
-            break
+            try:
+                content = content.split(";", 1)[1]
+                charset = dict(HEADER_PARAMS.findall(content))["charset"]
+                break
+            except (KeyError, IndexError):
+                pass
         elif meta_tag.get("charset", None):
             charset = meta_tag.get("charset")
             break
