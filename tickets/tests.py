@@ -73,8 +73,8 @@ class QuestionViewTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        self.assertIn("More Open Tickets", response.content)
-        self.assertNotIn("More Closed Tickets", response.content)
+        self.assertIn("More Questions", response.content)
+        self.assertIn(urlresolvers.reverse("tickets-list", kwargs={"status": "!resolved"}), response.content)
 
     def test_switch_open_closed(self):
         models.Question.objects.filter(status=models.Question.NEW).update(author=self.other_user)
@@ -83,8 +83,8 @@ class QuestionViewTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        self.assertNotIn("More Open Tickets", response.content)
-        self.assertIn("More Closed Tickets", response.content)
+        self.assertIn("More Questions", response.content)
+        self.assertIn(urlresolvers.reverse("tickets-list", kwargs={"status": "resolved"}), response.content)
 
     def test_post(self):
         params = {"subject": "hello!", "body": "This is the body of my question"}
