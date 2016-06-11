@@ -47,6 +47,12 @@ body {
         &.title {
             font-weight: 700;
 
+            @media (max-width: $screen-sm-min) {
+                &.hidden-xs, & + div  {
+                    border-top: 0px;
+                }
+            }
+
             & > div {
                 padding: $table-cell-padding;
             }
@@ -65,7 +71,7 @@ body {
             background-color: $table-bg-hover;
         }
 
-        &.title:hover, &.inbox-edit-form-row:hover, &.empty-message:hover {
+        &.title:hover, &.inbox-edit-form-row:hover, &.empty-message:hover, &.more-questions:hover {
             background-color: initial;
         }
     }

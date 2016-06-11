@@ -2,22 +2,29 @@
 <div class="honeydew">
     <div class="row title hidden-xs">
         <div class="col-sm-6">{% trans "Subject" %}</div>
-        <div class="col-sm-1">{% trans "Responses" %}</div>
-        <div class="col-sm-1">{% trans "Status" %}</div>
-        <div class="col-sm-4">{% trans "Last Activity" %}</div>
+        <div class="col-sm-3">&nbsp;</div>
+        <div class="col-sm-3">{% trans "Last Activity" %}</div>
     </div>
     {% for question in questions %}
-        <div class="row"><span class="clickable">
-            <div class="col-sm-6 col-xs-12"><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></div>
-            <div class="col-sm-1 col-xs-1">{{ question.response_count }}</div>
-            <div class="col-sm-1 col-xs-2">{{ question.get_status_display }}</div>
-            <div class="col-sm-4 col-xs-9" title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</div>
-        </span></div>
+        <div class="row">
+            <a class="clickable" href="{% url 'tickets-detail' pk=question.pk %}">
+                <div class="col-sm-6 col-xs-12">
+                    {{ question.subject }}
+                    {% if question.response_count > 0 %}
+                        <span title="{% trans "Question responses" %}" class="badge">{{ question.response_count }}</span>
+                    {% endif %}
+                </div>
+            </a>
+            <span class="clickable">
+                <div class="col-sm-3 col-xs-3">{{ question.get_status_display }}</div>
+                <div class="col-sm-3 col-xs-9" title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</div>
+            </span>
+        </div>
         {% if forloop.last and more_url %}
-            <div class="row"><span class="clickable"><div class="col-xs-12"><div class="pull-right"><a class="btn btn-info" href="{{ more_url }}">{% trans "More Questions" %}</a></div></div></span></div>
+            <div class="row more-questions"><span class="clickable"><div class="col-xs-12"><div class="pull-right"><a class="btn btn-info" href="{{ more_url }}">{% trans "More Questions" %}</a></div></div></span></div>
         {% endif %}
     {% empty %}
-        <div class="row"><span class="clickable">
+        <div class="row empty-message"><span class="clickable">
             <div class="col-xs-12">{% trans "There are no questions." %}</div>
         </span></div>
     {% endfor %}
