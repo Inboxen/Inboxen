@@ -1,4 +1,4 @@
-{% load i18n humanize %}
+{% load i18n tickets_flags humanize %}
 <div class="honeydew">
     <div class="row title hidden-xs">
         <div class="col-sm-6">{% trans "Subject" %}</div>
@@ -16,7 +16,7 @@
                 </div>
             </a>
             <span class="clickable">
-                <div class="col-sm-3 col-xs-3">{{ question.get_status_display }}</div>
+                <div class="col-sm-3 col-xs-3">{{ question.status|render_status }}</div>
                 <div class="col-sm-3 col-xs-9" title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</div>
             </span>
         </div>

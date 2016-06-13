@@ -27,6 +27,7 @@ import factory.fuzzy
 from inboxen.tests import factories
 from inboxen.utils import override_settings
 from tickets import models
+from tickets.templatetags import tickets_flags
 
 
 class QuestionFactory(factory.django.DjangoModelFactory):
@@ -196,3 +197,12 @@ class RenderBodyTestCase(test.TestCase):
         expected = "<div><p>Hi</p>\n\n<p> &gt;</p></div>"
         obj = MockModel(original)
         self.assertHtmlEqual(obj.render_body(), expected)
+
+
+class RenderStatus(test.TestCase):
+    def test_render(self):
+        result = tickets_flags.render_status(models.Question.NEW)
+        self.assertIn(unicode(tickets_flags.STATUSES[models.Question.NEW]), result)
+        self.assertIn(unicode(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
+
+        self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
