@@ -51,7 +51,6 @@ def generate_maintenance_page():
     _log.info("Building maintenance page...")
 
     context = Context(reduced_settings_context(None))
-    context["headline"] = _("Back Soon!")
     rendered = template.render(context)
 
     try:

@@ -47,7 +47,7 @@ class StatsViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
         data = json.loads(response.content)
-        self.assertItemsEqual(["dates", "users", "inboxes", "emails", "now"], data.keys())
+        self.assertItemsEqual(["dates", "users", "inboxes", "emails", "now", "read_emails", "active_users", "active_inboxes"], data.keys())
 
     def test_recent_missing_points(self):
         def format_date(date):
@@ -58,7 +58,8 @@ class StatsViewTestCase(test.TestCase):
                 r = r[:-6] + "Z"
             return r
 
-        stat = models.Statistic.objects.create(users={"count":12}, inboxes={"inbox_count__sum": 13}, emails={"email_count__sum": 14})
+        stat1 = models.Statistic.objects.create(users={"count":12}, inboxes={"inbox_count__sum": 13}, emails={"email_count__sum": 14})
+        stat2 = models.Statistic.objects.create(users={"count":12}, inboxes={}, emails={"email_count__sum": 14})
 
         response = self.client.get(reverse("stats_recent"))
         self.assertEqual(response.status_code, 200)
@@ -71,9 +72,12 @@ class StatsViewTestCase(test.TestCase):
         self.assertItemsEqual(
             data.items(),
             (
-                ("dates", [format_date(stat.date)]),
-                ("inboxes", [13]),
-                ("users", [12]),
-                ("emails", [14]),
+                ("dates", [format_date(stat1.date), format_date(stat2.date)]),
+                ("inboxes", [13, None]),
+                ("users", [12, 12]),
+                ("emails", [14, 14]),
+                ("read_emails", [None, None]),
+                ("active_users", [None, None]),
+                ("active_inboxes", [None, None]),
             )
         )

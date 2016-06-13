@@ -51,14 +51,21 @@ Committing and Branching
 
 ### Branching
 
-[Vincent Driessen's branching
-model](http://nvie.com/posts/a-successful-git-branching-model/) best describes
-how *should* do things.
+All development happens in branches off of `master`. Each branch should have an
+associated issue - if there isn't one for what you're working on then create a
+new issue first!
 
-There are some differences however:
-* Our `master` is really Driessen's `develop`, we don't have an equivalent to
-  Driessen's `master`
-* `deploy` is our only release branch
+Branch names should be of the format `<issue>-<description>` where:
+
+* `<issue>` is the issue you are working on
+* `<description>` is a brief description of what's happening on that branch
+
+For example, `129-pin-inboxes` was the branch used for implementing the [pin
+inbox feature](https://github.com/Inboxen/Inboxen/issues/129)
+
+Finish branches are then merged into `master`. `master` is merged into `deploy`
+at release time. If there is someone available to review your branch, your
+branch should be reviewed and merged by them.
 
 Commits on `deploy` **must** be signed with a GPG key. This is important for
 the future.
@@ -77,6 +84,10 @@ Fixes this thing, changes how we should do something else
 fix #345
 touch #234
 ```
+
+If you are commiting on either `master` or `deploy`, then make sure to end your
+commit message with either "IN MASTER" or "IN DEPLOY" so we know who to blame
+when stuff breaks.
 
 Deploying
 ---------

@@ -22,20 +22,19 @@ from django.http import Http404
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
+
 from inboxen import forms
-from inboxen.views import base
 from inboxen.models import Inbox
+
 
 __all__ = ["InboxEditView", "FormInboxEditView"]
 
 
-class InboxEditView(base.CommonContextMixin, base.LoginRequiredMixin, generic.UpdateView):
+class InboxEditView(LoginRequiredMixin, generic.UpdateView):
     form_class = forms.InboxEditForm
     template_name = "inboxen/inbox/edit.html"
     success_views = ["user-home", "unified-inbox", "single-inbox"]
-
-    def get_headline(self):
-        return _("{inbox}@{domain} Options").format(inbox=self.kwargs["inbox"], domain=self.kwargs["domain"])
 
     def get_form_kwargs(self):
         kwargs = super(InboxEditView, self).get_form_kwargs()

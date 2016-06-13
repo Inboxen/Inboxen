@@ -37,9 +37,24 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """
 
-
 METALESS_BODY = """<html>
 <head>
+<style type="text/css">
+p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
+<p><a>Ha!</a><img width=10 height=10></p>
+</body>
+</html>
+"""
+
+CHARSETLESS_BODY = """<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
 <style type="text/css">
 p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
 </style>

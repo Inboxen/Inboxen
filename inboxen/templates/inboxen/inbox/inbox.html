@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n inboxen_flags %}
 
+{% block headline %}{{ headline }}{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
@@ -17,13 +19,13 @@
 <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}">
     {% csrf_token %}
     <div class="inbox-btn-group">
-    <button class="btn btn-default" type="submit" name="important">{% trans "Important" %}</button>
-    <button class="btn btn-default" type="submit" name="unimportant">{% trans "Unimportant" %}</button>
-    <button class="btn btn-default" type="submit" name="delete">{% trans "Delete" %}</button>
+    <button class="btn btn-default" type="submit" name="important"><span class="fa fa-star" aria-hidden="true"></span>{% trans "Important" %}</button>
+    <button class="btn btn-default" type="submit" name="unimportant"><span class="fa fa-star-o" aria-hidden="true"></span>{% trans "Unimportant" %}</button>
+    <button class="btn btn-danger" type="submit" name="delete"><span class="fa fa-trash" aria-hidden="true"></span>{% trans "Delete" %}</button>
     {% if inbox %}
         <a class="btn btn-default inbox-edit pull-right undo-pull-right-sm" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
                 data-inbox-id="{{ inbox }}@{{ domain }}">
-            {% trans "Inbox Options" %}
+            <span class="fa fa-cog" aria-hidden="true"></span>{% trans "Inbox Options" %}
         </a>
     {% endif %}
     </div>
@@ -32,8 +34,10 @@
         {% for email in page_obj.object_list %}
             {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
         {% empty %}
-            <div class="row">
-                <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
+            <div class="row empty-message">
+                <span class="clickable">
+                    <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
+                </span>
             </div>
         {% endfor %}
     </div>

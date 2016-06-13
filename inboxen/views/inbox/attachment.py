@@ -20,10 +20,10 @@ import re
 from django.http import Http404, HttpResponse
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
 from csp.decorators import csp_replace
 
 from inboxen import models
-from inboxen.views import base
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 HEADER_CLEAN = re.compile(r'\s+')
@@ -31,7 +31,7 @@ HEADER_CLEAN = re.compile(r'\s+')
 __all__ = ["AttachmentDownloadView"]
 
 
-class AttachmentDownloadView(base.LoginRequiredMixin, generic.detail.BaseDetailView):
+class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
     file_attachment = False
     file_status = 200
 

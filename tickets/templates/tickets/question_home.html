@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n humanize bootstrap %}
 
+{% block headline %}{% trans "Tickets" %}{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
@@ -10,73 +12,25 @@
 {% endblock %}
 
 {% block content %}
+{% url "tickets-list" status="!resolved" as more_open_url %}
+{% url "tickets-list" status="resolved" as more_closed_url %}
 <span class="sr-only"><a href="#question-form">{% trans "Go to Question form" %}</a></span>
-
-<div class="table-responsive">
-    <table class="table table-hover table-honeydew">
-        <thead>
-            <tr>
-                <th>{% trans "Subject" %}</th>
-                <th>{% trans "Responses" %}</th>
-                <th>{% trans "Status" %}</th>
-                <th>{% trans "Last Activity" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for question in open %}
-            <tr>
-                <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
-                <td>{{ question.response_count }}</td>
-                <td>{{ question.get_status_display }}</td>
-                <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</td>
-            </tr>
-            {% if forloop.last %}
-                <tr><td colspan=4><div class="pull-right"><a class="btn btn-info" href="{% url "tickets-list" status="!resolved" %}">{% trans "More Open Tickets" %}</a></div></td></tr>
-            {% endif %}
-        {% empty %}
-            <tr>
-                <td colspan=4>{% trans "There are no open questions." %}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-<div class="table-responsive">
-    <table class="table table-hover table-honeydew">
-        <thead>
-            <tr>
-                <th>{% trans "Subject" %}</th>
-                <th>{% trans "Responses" %}</th>
-                <th>{% trans "Status" %}</th>
-                <th>{% trans "Last Activity" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for question in closed %}
-            <tr>
-                <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
-                <td>{{ question.response_count }}</td>
-                <td>{{ question.get_status_display }}</td>
-                <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</td>
-            </tr>
-            {% if forloop.last %}
-                <tr><td colspan=4><div class="pull-right"><a class="btn btn-danger" href="{% url "tickets-list" status="resolved" %}">{% trans "More Closed Tickets" %}</a></div></td></tr>
-            {% endif %}
-        {% empty %}
-            <tr>
-                <td colspan=4>{% trans "There are no closed questions." %}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-<div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
-    <div class="panel-body">
-        <form id="question-form" class="form" method="post" action="{% url 'tickets-index' %}">
-            {% csrf_token %}
-            {{ form|bootstrap }}
-            <button class="btn btn-primary">{% trans "Submit" %}</button>
-        </form>
+<h3>{% trans "Open Questions" %}</h3>
+{% include "tickets/includes/question_list.html" with questions=open more_url=more_open_url %}
+<h3>{% trans "Resolved Questions" %}</h3>
+{% include "tickets/includes/question_list.html" with questions=closed more_url=more_closed_url %}
+<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% trans "Submit New Question" %}
+        </div>
+        <div class="panel-body">
+            <form id="question-form" class="form" method="post" action="{% url 'tickets-index' %}">
+                {% csrf_token %}
+                {{ form|bootstrap }}
+                <button class="btn btn-primary">{% trans "Submit" %}</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

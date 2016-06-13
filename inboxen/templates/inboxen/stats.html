@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n humanize assets %}
 
+{% block headline %}{% trans "Server Statistics" %}{% endblock %}
+
 {% block extra_js %}
     {% assets "chart_js" %}
         <script src="{{ ASSET_URL }}"></script>
@@ -48,7 +50,7 @@
                 <th>{% trans "Total number of inboxes" %}</th>
                 <td>
                     {{ object.inboxes.inbox_count__sum|intcomma }}
-                    <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
+                    <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma with_emails=object.inboxes.with_emails|intcomma %}Total possible: {{ total_possible }}, With emails: {{ with_emails }}{% endblocktrans %})</i>
                 </td>
             </tr>
             <tr>
@@ -75,7 +77,10 @@
             <tr><td colspan="2" id="emails-chart" class="chart"></td></tr>
             <tr>
                 <th>{% trans "Total number of emails" %}</th>
-                <td>{{ object.emails.email_count__sum|intcomma }}</td>
+                <td>
+                    {{ object.emails.email_count__sum|intcomma }}
+                    <i>({% blocktrans with emails_read=object.emails.emails_read|intcomma %}Emails read: {{ emails_read }}{% endblocktrans %})</i>
+                </td>
             </tr>
             <tr>
                 <th>{% trans "Average number of emails per inbox" %}</th>

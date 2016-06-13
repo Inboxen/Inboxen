@@ -69,8 +69,11 @@ def statistics():
 
     inboxes["total_possible"] = inboxes_possible * domain_count
 
-    emails = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted)
-    emails = emails.annotate(email_count=Count("email__id")).aggregate(**inbox_aggregate)
+    inbox_qs = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted).annotate(email_count=Count("email__id"))
+    emails = inbox_qs.aggregate(**inbox_aggregate)
+
+    inboxes["with_emails"] = inbox_qs.exclude(email_count=0).count()
+    emails["emails_read"] = models.Email.objects.filter(flags=models.Email.flags.read).count()
 
     stat = models.Statistic(
         users=users,

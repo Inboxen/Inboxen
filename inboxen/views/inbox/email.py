@@ -24,18 +24,20 @@ from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from braces.views import LoginRequiredMixin
 from watson import search
 
 from inboxen import models
 from inboxen.utils.email import find_bodies
-from inboxen.views import base
+
 
 __all__ = ["EmailView"]
+
 
 _log = logging.getLogger(__name__)
 
 
-class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.DetailView):
+class EmailView(LoginRequiredMixin, generic.DetailView):
     model = models.Email
     pk_url_kwarg = "id"
     template_name = 'inboxen/inbox/email.html'
@@ -124,8 +126,6 @@ class EmailView(base.CommonContextMixin, base.LoginRequiredMixin, generic.Detail
         email_dict["has_images"] = False
 
         find_bodies(self.request, email_dict, attachments[:1])
-
-        self.headline = email_dict["headers"].get("Subject", _("No Subject"))
 
         for body in email_dict["bodies"]:
             assert isinstance(body, unicode), "body is %r" % type(body)

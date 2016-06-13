@@ -28,14 +28,14 @@ import mock
 from inboxen import models
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (
-    BODY,
     BODILESS_BODY,
+    BODY,
+    CHARSETLESS_BODY,
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
     METALESS_BODY,
-
 )
 from inboxen.utils import email as email_utils
 from router.app.helpers import make_email
@@ -396,3 +396,8 @@ class UtilityTestCase(test.TestCase):
             returned_body = email_utils._clean_html_body(None, email, BODILESS_BODY, "utf-8")
 
             self.assertIn('<a href="/click/?url=http%3A//tinyletter.com/asym/confirm%3Fid%3Duuid"', returned_body)
+
+    def test_clean_html_no_charset(self):
+        email = {"display_images": True}
+        returned_body = email_utils._clean_html_body(None, email, CHARSETLESS_BODY, "ascii")
+        self.assertIsInstance(returned_body, unicode)

@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n humanize bootstrap %}
 
+{% block headline %}{% trans "Tickets" %}{% endblock %}
+
 {% block breadcumbs %}
     <ul class="breadcrumb">
         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
@@ -11,32 +13,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="table-responsive">
-    <table class="table table-hover table-honeydew">
-        <thead>
-            <tr>
-                <th>{% trans "Subject" %}</th>
-                <th>{% trans "Responses" %}</th>
-                <th>{% trans "Status" %}</th>
-                <th>{% trans "Last Activity" %}</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for question in object_list %}
-            <tr>
-                <td><a href="{% url 'tickets-detail' pk=question.pk %}">{{ question.subject }}</a></td>
-                <td>{{ question.response_count }}</td>
-                <td>{{ question.get_status_display }}</td>
-                <td title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|naturaltime }}</td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan=4>{% trans "There are no questions." %}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+{% include "tickets/includes/question_list.html" with questions=page_obj %}
 <ul class="pager">
     {% if page_obj.has_previous %}
         <li class="previous"><a href="{% url 'tickets-list' status=status page=page_obj.previous_page_number %}">

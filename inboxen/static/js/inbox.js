@@ -4,7 +4,7 @@
  */
 
 (function($) {
-    'uuse strict';
+    'use strict';
 
     var important_label = '<span class="label label-danger" title="Message has been marked as important">Important</span>';
 
@@ -83,7 +83,7 @@
                     });
                 } else {
                     var $messageBlock = $("#alertmessages");
-                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
+                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
             }

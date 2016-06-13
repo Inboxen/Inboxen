@@ -4,7 +4,7 @@
 <html>
     <head>
         <link rel="icon" type="image/png" href="{% static "imgs/megmelon-icon.png" %}" />
-        <title>{{ headline }} - {{ settings.SITE_NAME }}</title>
+        <title>{% block headline %}{% endblock %} - {{ settings.SITE_NAME }}</title>
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -18,7 +18,7 @@
             {% if messages %}<a href="#alertmessages">{% trans "Skip to alerts" %}</a>{% endif %}
             <a href="#contentstart">{% trans "Skip to content" %}</a>
         </span>
-        <div class="navbar navbar-default">
+        <div id="navbar-container" class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
                       <button id="navbar-button-1" type="button" class="navbar-toggle collapsed hidden" data-toggle="collapse" data-target="#navbar-collapse-1">
@@ -33,7 +33,7 @@
                 <div id="navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'inbox-add' %}">{% trans "Add Inbox" %}</a></li>
+                        <li><a id="add-inbox" href="{% url 'inbox-add' %}" data-form-url="{% url 'form-inbox-add' %}">{% trans "Add Inbox" %}</a></li>
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                         <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
                         <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>

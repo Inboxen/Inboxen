@@ -233,6 +233,37 @@ class InboxAddTestCase(test.TestCase):
         self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
 
 
+class InboxAddInlineTestCase(test.TestCase):
+    """Test the add inbox inline form page"""
+    def setUp(self):
+        """Create the client and grab the user"""
+        self.user = factories.UserFactory()
+        other_user = factories.UserFactory(username="lalna")
+
+        for args in itertools.product([True, False], [self.user, other_user, None]):
+            factories.DomainFactory(enabled=args[0], owner=args[1])
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urlresolvers.reverse("form-inbox-add")
+
+    def test_inbox_add(self):
+        response = self.client.get(self.get_url())
+        self.assertIsInstance(response.context["form"], inboxen_forms.InboxAddForm)
+
+        domain = models.Domain.objects.filter(enabled=True, owner=None)[0]
+        inbox_count_1st = models.Inbox.objects.count()
+        response = self.client.post(self.get_url(), {"domain": domain.id, "description": "nothing at all"})
+        self.assertEqual(response.status_code, 204)
+
+        inbox_count_2nd = models.Inbox.objects.count()
+        self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
+
+
 class InboxEditTestCase(test.TestCase):
     """Test the edit inbox page"""
     def setUp(self):

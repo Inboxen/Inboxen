@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load assets i18n staticfiles inboxen_flags %}
 
+{% block headline %}{% blocktrans %}Search: {{ query }}{% endblocktrans %}{% endblock %}
+
 {% block header %}
     {% if waiting %}
         <noscript>

@@ -39,7 +39,7 @@ session_csrf.monkeypatch()
 urlpatterns = [
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^_csp_report/$', views.error.csp_report, name='csp_logger'),
-    urls.url(r'^stats/$', views.StatsView.as_view(), name='stats'),
+    urls.url(r'^stats/$', views.stats, name='stats'),
     urls.url(r'^stats_recent.json$', views.stats_recent, name='stats_recent'),
 
     # inbox views
@@ -54,6 +54,7 @@ urlpatterns = [
     urls.url(r'^inbox/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 
     # form inlines
+    urls.url(r'^forms/inbox/add/$', views.FormInboxAddView.as_view(), name='form-inbox-add'),
     urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.FormInboxEditView.as_view(), name='form-inbox-edit'),
     urls.url(r'^forms/inbox/email/$', views.FormInboxView.as_view(), name='form-inbox-email'),
 
