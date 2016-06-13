@@ -27,6 +27,7 @@ import factory.fuzzy
 from inboxen.tests import factories
 from inboxen.utils import override_settings
 from tickets import models
+from tickets.templatetags import tickets_flags
 
 
 class QuestionFactory(factory.django.DjangoModelFactory):
@@ -73,8 +74,8 @@ class QuestionViewTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        self.assertIn("More Open Tickets", response.content)
-        self.assertNotIn("More Closed Tickets", response.content)
+        self.assertIn("More Questions", response.content)
+        self.assertIn(urlresolvers.reverse("tickets-list", kwargs={"status": "!resolved"}), response.content)
 
     def test_switch_open_closed(self):
         models.Question.objects.filter(status=models.Question.NEW).update(author=self.other_user)
@@ -83,8 +84,8 @@ class QuestionViewTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        self.assertNotIn("More Open Tickets", response.content)
-        self.assertIn("More Closed Tickets", response.content)
+        self.assertIn("More Questions", response.content)
+        self.assertIn(urlresolvers.reverse("tickets-list", kwargs={"status": "resolved"}), response.content)
 
     def test_post(self):
         params = {"subject": "hello!", "body": "This is the body of my question"}
@@ -196,3 +197,12 @@ class RenderBodyTestCase(test.TestCase):
         expected = "<div><p>Hi</p>\n\n<p> &gt;</p></div>"
         obj = MockModel(original)
         self.assertHtmlEqual(obj.render_body(), expected)
+
+
+class RenderStatus(test.TestCase):
+    def test_render(self):
+        result = tickets_flags.render_status(models.Question.NEW)
+        self.assertIn(unicode(tickets_flags.STATUSES[models.Question.NEW]), result)
+        self.assertIn(unicode(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
+
+        self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
