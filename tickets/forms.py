@@ -35,20 +35,3 @@ class ResponseForm(forms.ModelForm):
         model = models.Response
         fields = ["body"]
         labels = {"body": _("Reply")}
-
-
-class QuestionStatusUpdateForm(forms.Form):
-    status = forms.ChoiceField(required=True, choices=models.Question.STATUS_CHOICES)
-
-    def __init__(self, question, *args, **kwargs):
-        self.question = question
-        return super(QuestionStatusUpdateForm, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        cleaned_data = super(QuestionStatusUpdateForm, self).clean()
-        self.question.status = cleaned_data["status"]
-
-        return cleaned_data
-
-    def save(self):
-        self.question.save()
