@@ -26,7 +26,7 @@ matrix:
       script: tox -e $TOX_ENV
 
 script:
-    - coverage run manage.py test --settings=inboxen.tests.settings
+    - coverage run --branch  manage.py test --settings=inboxen.tests.settings
 
 after_success: codecov
 
