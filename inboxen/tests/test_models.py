@@ -24,9 +24,13 @@ from pytz import utc
 
 from django import test
 from django.conf import settings
+from django.contrib.auth import get_user_model
 
 from inboxen import models
 from inboxen.tests import factories
+
+
+User = get_user_model()
 
 
 class ModelTestCase(test.TestCase):
@@ -231,3 +235,61 @@ class ModelFlagsTestCase(test.TestCase):
         liberation_flags = list(models.Liberation.flags)
 
         self.assertEqual(flag_order, liberation_flags)
+
+
+class ModelReprTestCase(test.TestCase):
+    """Repr is very useful when debugging via the shell"""
+
+    def test_body(self):
+        body = models.Body(hashed="1234")
+        self.assertEqual(repr(body), "<Body: 1234>")
+
+    def test_domain(self):
+        domain = models.Domain(domain="example.com")
+        self.assertEqual(repr(domain), "<Domain: example.com>")
+
+    def test_email(self):
+        email = models.Email(id=1234)
+        self.assertEqual(repr(email), "<Email: 4d2>")
+
+    def test_header(self):
+        header = models.Header(name=models.HeaderName(name="example"))
+        self.assertEqual(repr(header), "<Header: example>")
+
+    def test_header_data(self):
+        data = models.HeaderData(hashed="1234")
+        self.assertEqual(repr(data), "<HeaderData: 1234>")
+
+    def test_header_name(self):
+        name = models.HeaderName(name="example")
+        self.assertEqual(repr(name), "<HeaderName: example>")
+
+    def test_inbox(self):
+        inbox = models.Inbox(inbox="inbox", domain=models.Domain(domain="example.com"))
+        self.assertEqual(repr(inbox), "<Inbox: inbox@example.com>")
+        inbox.flags.deleted = True
+        self.assertEqual(repr(inbox), "<Inbox: inbox@example.com (deleted)>")
+
+    def test_liberation(self):
+        liberation = models.Liberation(user=User(username="example"))
+        self.assertEqual(repr(liberation), "<Liberation: Liberation for example>")
+
+    def test_partlist(self):
+        part = models.PartList(id="1234")
+        self.assertEqual(repr(part), "<PartList: 1234>")
+
+    def test_request(self):
+        request = models.Request(requester=User(username="example"))
+        self.assertEqual(repr(request), "<Request: Request for example (None)>")
+
+        request.succeeded = False
+        self.assertEqual(repr(request), "<Request: Request for example (False)>")
+
+    def test_statistic(self):
+        now = datetime.datetime.now()
+        stat = models.Statistic(date=now)
+        self.assertEqual(repr(stat), "<Statistic: %s>" % now)
+
+    def test_userprofile(self):
+        profile = models.UserProfile(user=User(username="example"))
+        self.assertEqual(repr(profile), "<UserProfile: Profile for example>")

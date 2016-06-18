@@ -78,6 +78,9 @@ class Statistic(models.Model):
     emails = JSONField()
     inboxes = JSONField()
 
+    def __unicode__(self):
+        return unicode(self.date)
+
 
 class Liberation(models.Model):
     """Liberation data
@@ -103,6 +106,9 @@ class Liberation(models.Model):
         self._path = os.path.join(settings.LIBERATION_PATH, path)
 
     path = property(get_path, set_path)
+
+    def __unicode__(self):
+        return u"Liberation for %s" % self.user
 
 
 ##
@@ -151,13 +157,10 @@ class Inbox(models.Model):
         return u"%s@%s" % (self.inbox, self.domain.domain)
 
     def __repr__(self):
-        try:
-            u_rep = unicode(self)
-        except (UnicodeEncodeError, UnicodeDecodeError):
-            u_rep = "[Bad Unicode data]"
-        if self.flags.deleted is True:
+        u_rep = unicode(self)
+        if self.flags.deleted:
             u_rep = "%s (deleted)" % u_rep
-        return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep))
+        return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep), errors="replace")
 
     class Meta:
         verbose_name_plural = "Inboxes"
