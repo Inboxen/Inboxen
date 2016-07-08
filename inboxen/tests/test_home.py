@@ -82,3 +82,43 @@ class HomeViewTestCase(test.TestCase):
 
         response = self.client.get(self.get_url() + "3/")
         self.assertEqual(response.status_code, 404)
+
+    def test_post(self):
+        inbox = self.inboxes[0]
+        was_pinned = bool(inbox.flags.pinned)
+
+        response = self.client.post(self.get_url(), {"pin-single": str(inbox.id)})
+        self.assertEqual(response.status_code, 302)
+
+        inbox.refresh_from_db()
+        self.assertNotEqual(bool(inbox.flags.pinned), was_pinned)
+
+        response = self.client.post(self.get_url(), {"pin-single": str(inbox.id)})
+        self.assertEqual(response.status_code, 302)
+
+        inbox.refresh_from_db()
+        self.assertEqual(bool(inbox.flags.pinned), was_pinned)
+
+        response = self.client.post(self.get_url(), {"pin-single": "aagfdsgsfdg"})
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_form_view(self):
+        url =  urlresolvers.reverse("form-home")
+
+        inbox = self.inboxes[0]
+        was_pinned = bool(inbox.flags.pinned)
+
+        response = self.client.post(url, {"pin-single": str(inbox.id)})
+        self.assertEqual(response.status_code, 204)
+
+        inbox.refresh_from_db()
+        self.assertNotEqual(bool(inbox.flags.pinned), was_pinned)
+
+        response = self.client.post(url, {"pin-single": str(inbox.id)})
+        self.assertEqual(response.status_code, 204)
+
+        inbox.refresh_from_db()
+        self.assertEqual(bool(inbox.flags.pinned), was_pinned)
+
+        response = self.client.post(url, {"pin-single": "aagfdsgsfdg"})
+        self.assertEqual(response.status_code, 404)

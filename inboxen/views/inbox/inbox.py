@@ -65,7 +65,7 @@ class InboxView(LoginRequiredMixin, generic.ListView):
             try:
                 email_id = int(self.request.POST["delete-single"], 16)
                 email = qs.get(id=email_id)
-            except self.model.DoesNotExist, ValueError:
+            except (self.model.DoesNotExist, ValueError):
                 raise Http404
 
             email.delete()
@@ -75,7 +75,7 @@ class InboxView(LoginRequiredMixin, generic.ListView):
             try:
                 email_id = int(self.request.POST["important-single"], 16)
                 email = qs.get(id=email_id)
-            except self.model.DoesNotExist, ValueError:
+            except (self.model.DoesNotExist, ValueError):
                 raise Http404
 
             email.flags.important = not email.flags.important
