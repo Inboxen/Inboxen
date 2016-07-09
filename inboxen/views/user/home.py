@@ -57,8 +57,7 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
     def post(self, *args, **kwargs):
         qs = self.get_queryset()
         try:
-            inbox_id = int(self.request.POST["pin-single"])
-            inbox = qs.get(id=inbox_id)
+            inbox = qs.from_string(email=self.request.POST["pin-inbox"], user=self.request.user)
         except (self.model.DoesNotExist, ValueError, KeyError):
             raise Http404
 
