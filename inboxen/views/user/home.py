@@ -19,24 +19,27 @@
 
 
 from django.db.models import Case, Count, IntegerField, When
+from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
+from watson import search
 
 from inboxen import models
 
-__all__ = ["UserHomeView"]
+__all__ = ["UserHomeView", "FormHomeView"]
 
 
 class UserHomeView(LoginRequiredMixin, generic.ListView):
     """ The user's home which lists the inboxes """
     allow_empty = True
+    model = models.Inbox
     paginate_by = 100
     template_name = "inboxen/user/home.html"
 
     def get_queryset(self):
-        qs = models.Inbox.objects.viewable(self.request.user)
+        qs = self.model.objects.viewable(self.request.user)
         qs = qs.select_related("domain")
 
         # ugly!
@@ -49,3 +52,32 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
             qs = qs.annotate(pinned=Count(Case(When(flags=models.Inbox.flags.pinned, then=1), output_field=IntegerField())))
             qs = qs.order_by("-pinned", "-last_activity").select_related("domain")
         return qs
+
+    @search.skip_index_update()
+    def post(self, *args, **kwargs):
+        qs = self.get_queryset()
+        try:
+            inbox = qs.from_string(email=self.request.POST["pin-inbox"], user=self.request.user)
+        except (self.model.DoesNotExist, ValueError, KeyError):
+            raise Http404
+
+        inbox.flags.pinned = not inbox.flags.pinned
+        inbox.save(update_fields=["flags"])
+
+        return HttpResponseRedirect(self.request.path)
+
+
+class FormHomeView(UserHomeView):
+    """POST-only view for JS stuff"""
+    def get(self, *args, **kwargs):
+        return HttpResponseNotAllowed("Only POST requests please")
+
+    def post(self, *args, **kwargs):
+        response = super(FormHomeView, self).post(*args, **kwargs)
+
+        # JS auto follows redirects, so change the response code
+        # to allow us to detect success
+        if response.status_code == 302:
+            response.status_code = 204
+
+        return response

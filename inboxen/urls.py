@@ -55,6 +55,7 @@ urlpatterns = [
 
     # form inlines
     urls.url(r'^forms/inbox/add/$', views.FormInboxAddView.as_view(), name='form-inbox-add'),
+    urls.url(r'^forms/home/$', views.FormHomeView.as_view(), name='form-home'),
     urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.FormInboxEditView.as_view(), name='form-inbox-edit'),
     urls.url(r'^forms/inbox/email/$', views.FormInboxView.as_view(), name='form-inbox-email'),
 
