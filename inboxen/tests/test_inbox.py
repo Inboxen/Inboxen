@@ -295,6 +295,11 @@ class InboxEditTestCase(test.TestCase):
 
         self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
 
+    def test_not_found(self):
+        url = urlresolvers.reverse("inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
 
 class InboxInlineEditTestCase(test.TestCase):
     """Test the inline version of the inbox edit page"""

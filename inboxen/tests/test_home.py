@@ -82,3 +82,61 @@ class HomeViewTestCase(test.TestCase):
 
         response = self.client.get(self.get_url() + "3/")
         self.assertEqual(response.status_code, 404)
+
+    def test_post(self):
+        inbox = self.inboxes[0]
+        was_pinned = bool(inbox.flags.pinned)
+
+        # pin
+        response = self.client.post(self.get_url(), {"pin-inbox": str(inbox)})
+        self.assertEqual(response.status_code, 302)
+
+        inbox.refresh_from_db()
+        self.assertNotEqual(bool(inbox.flags.pinned), was_pinned)
+
+        # toggle
+        response = self.client.post(self.get_url(), {"pin-inbox": str(inbox)})
+        self.assertEqual(response.status_code, 302)
+
+        inbox.refresh_from_db()
+        self.assertEqual(bool(inbox.flags.pinned), was_pinned)
+
+        # invalid
+        response = self.client.post(self.get_url(), {"pin-inbox": "aagfdsgsfdg"})
+        self.assertEqual(response.status_code, 404)
+
+        # disabled
+        inbox.flags.disabled = True
+        inbox.save()
+        response = self.client.post(self.get_url(), {"pin-inbox": str(inbox)})
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_form_view(self):
+        url =  urlresolvers.reverse("form-home")
+
+        inbox = self.inboxes[0]
+        was_pinned = bool(inbox.flags.pinned)
+
+        # pin
+        response = self.client.post(url, {"pin-inbox": str(inbox)})
+        self.assertEqual(response.status_code, 204)
+
+        inbox.refresh_from_db()
+        self.assertNotEqual(bool(inbox.flags.pinned), was_pinned)
+
+        # toggle
+        response = self.client.post(url, {"pin-inbox": str(inbox)})
+        self.assertEqual(response.status_code, 204)
+
+        inbox.refresh_from_db()
+        self.assertEqual(bool(inbox.flags.pinned), was_pinned)
+
+        # invalid
+        response = self.client.post(url, {"pin-inbox": "aagfdsgsfdg"})
+        self.assertEqual(response.status_code, 404)
+
+        # disabled
+        inbox.flags.disabled = True
+        inbox.save()
+        response = self.client.post(url, {"pin-inbox": str(inbox)})
+        self.assertEqual(response.status_code, 404)

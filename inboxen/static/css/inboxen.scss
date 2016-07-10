@@ -122,6 +122,10 @@ body {
     font-style: italic;
     color: $gray !important;
     background-color: $gray-lighter;
+
+    button[name=pin-inbox] {
+        @extend .hidden;
+    }
 }
 
 .inbox-disabled .label {
