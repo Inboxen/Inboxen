@@ -1,5 +1,5 @@
 {# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% load i18n inboxen_flags humanize %}
+{% load i18n inboxen_flags inboxen_selector humanize %}
 <div id="{{ inbox }}@{{ domain }}" class="row{% if flags.disabled %} inbox-disabled{% endif %}">
     <span class="clickable">
         <div class="{{ col0 }}">
@@ -12,7 +12,8 @@
             <span title="{{ last_activity|date:"r" }}">{{ last_activity|naturaltime }}</span>
         </div>{% endif %}
         <div class="inbox-options {{ col3 }}">
-            <form action="{{ request.path }}" method="POST" data-url="{% url 'form-home' %}">
+            <form action="{{ request.path }}" method="POST" data-url="{% url 'form-home' %}"
+                    data-inbox-selector="{{ inbox|escape_selector:True }}\@{{ domain|escape_selector:True }}">
                 {# form per line because we can't have forms within forms when inlining edit inbox forms #}
                 {% csrf_token %}
                 <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">

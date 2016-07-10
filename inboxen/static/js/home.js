@@ -2,6 +2,60 @@
  * Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
+
+(function($){
+    'use strict';
+
+    var pinned_label = '<span class="label label-warning" title="Inbox has been pinned">Pinned</span>';
+
+    function TogglePinned($row) {
+        if ($row.find("span.label-warning").length === 0) {
+           $row.find("div.inbox-flags").append(pinned_label);
+        } else {
+            $row.find("span.label-warning").remove();
+        }
+    }
+
+    $(".inbox-options button[type=submit]").click(function(event) {
+        event.preventDefault();
+
+        var $this = $(this);
+        if ($this.data("clicked") === "yes") {
+            return false;
+        } else {
+            $this.data("clicked", "yes");
+            $this.addClass("disabled");
+            setTimeout(function() {
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+            }, 3000);
+        }
+
+        var button = {"name": $this.attr("name"), "value": $this.attr("value")};
+        var $form = $this.parent("form");
+        var form_data = $form.serializeArray();
+        form_data.push(button);
+
+        $.ajax({
+            type: "POST",
+            url: $this.parent("form").data("url"),
+            data: form_data,
+            complete: function(xhr, statusText) {
+                if (xhr.status === 204) {
+                    var $row = $("#" + $form.data("inbox-selector"));
+                    if (button.name === "pin-inbox") {
+                        TogglePinned($row);
+                    }
+                } else {
+                    var $messageBlock = $("#alertmessages");
+                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
+                    $messageBlock.append(message);
+                }
+            }
+        });
+    });
+})(jQuery);
+
 (function($){
     'use strict';
 
