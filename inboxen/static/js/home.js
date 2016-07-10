@@ -61,6 +61,7 @@
             $row.remove();
         } else if (xhr.status === 200) {
             this.$form.html(xhr.responseText);
+            initForm(this.$form, homeFormComplete);
         } else {
             this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
             console.log("Form for " + inboxSelector + " failed to POST (" + xhr.status + ")");
@@ -73,6 +74,7 @@
         } else {
             if (xhr.status === 200) {
                 this.$form.html(xhr.responseText);
+                initForm(this.$form, inboxFormComplete);
             } else {
                 this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
                 console.log("Form failed to POST (" + xhr.status + ")");
@@ -87,10 +89,10 @@
 
             // hacky, but this will have to do for now
             document.location.reload(true);
-
         } else {
             if (xhr.status === 200) {
                 this.$form.html(xhr.responseText);
+                initForm(this.$form, addInboxComplete);
             } else {
                 this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
                 console.log("Form failed to POST (" + xhr.status + ")");
