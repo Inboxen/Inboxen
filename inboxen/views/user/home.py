@@ -55,7 +55,7 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
 
     @search.skip_index_update()
     def post(self, *args, **kwargs):
-        qs = self.get_queryset()
+        qs = self.get_queryset().exclude(flags=models.Inbox.flags.disabled)
         try:
             inbox = qs.from_string(email=self.request.POST["pin-inbox"], user=self.request.user)
         except (self.model.DoesNotExist, ValueError, KeyError):
