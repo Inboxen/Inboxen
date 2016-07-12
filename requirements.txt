@@ -9,7 +9,7 @@ django-bitfield
 django-bootstrap-form
 django-braces
 django-celery
-django-csp
+django-csp<3.0
 django-extensions
 django-formtools
 django-mptt
