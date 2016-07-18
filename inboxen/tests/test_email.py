@@ -401,3 +401,8 @@ class UtilityTestCase(test.TestCase):
         email = {"display_images": True}
         returned_body = email_utils._clean_html_body(None, email, CHARSETLESS_BODY, "ascii")
         self.assertIsInstance(returned_body, unicode)
+
+    def test_invalid_charset(self):
+        text = "Växjö"
+        self.assertEqual(email_utils._unicode_damnit(text, "utf-8"), u"Växjö")
+        self.assertEqual(email_utils._unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")
