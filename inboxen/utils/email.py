@@ -55,7 +55,10 @@ def _unicode_damnit(data, charset="utf-8", errors="replace"):
     if isinstance(data, unicode):
         return data
 
-    return unicode(str(data), charset, errors)
+    try:
+        return unicode(str(data), charset, errors)
+    except LookupError:
+        return unicode(str(data), "ascii", errors)
 
 
 def _clean_html_body(request, email, body, charset):
