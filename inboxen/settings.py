@@ -264,6 +264,7 @@ try:
 except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
+EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
 
 ## LOGGING
 if DEBUG:
