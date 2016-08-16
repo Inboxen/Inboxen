@@ -20,7 +20,7 @@
 import logging
 
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponse
+from django.http import HttpResponse, UnreadablePostError
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -111,5 +111,8 @@ bad_request = ErrorView.as_view(
 @require_POST
 def csp_report(request):
     """Simple CSP report view"""
-    _log.warning("CSP Report: %s", request.body)
+    try:
+        _log.warning("CSP Report: %s", request.body)
+    except UnreadablePostError:
+        pass
     return HttpResponse("")
