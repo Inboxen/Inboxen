@@ -23,6 +23,7 @@ from django.utils.translation import ugettext as _
 
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
+from sudo.decorators import sudo_required
 
 from account.forms import PlaceHolderAuthenticationForm
 from account.decorators import anonymous_required
@@ -75,8 +76,8 @@ class TwoFactorSetupView(core.SetupView):
         return context
 
 
-backup_view = core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", redirect_url="user-twofactor-backup")
-disable_view = profile.DisableView.as_view(template_name="account/twofactor-disable.html", redirect_url="user-security")
+backup_view = sudo_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", redirect_url="user-twofactor-backup"))
+disable_view = sudo_required(profile.DisableView.as_view(template_name="account/twofactor-disable.html", redirect_url="user-security"))
 login = anonymous_required(LoginView.as_view())
-setup_view = TwoFactorSetupView.as_view()
+setup_view = sudo_required(TwoFactorSetupView.as_view())
 twofactor_view = profile.ProfileView.as_view(template_name="account/security.html")

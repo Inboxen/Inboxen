@@ -17,6 +17,7 @@ django-otp
 django-ratelimit-backend
 django-sendfile
 django-session-csrf
+django-sudo
 django-two-factor-auth>=1.0.0
 django-watson>=1.2.0
 factory-boy

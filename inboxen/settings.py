@@ -175,6 +175,7 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.RateLimitMiddleware',
     'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'sudo.middleware.SudoMiddleware',
     'csp.middleware.CSPMiddleware',
 )
 
@@ -195,6 +196,7 @@ INSTALLED_APPS = (
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
+    'sudo',
     'two_factor',
     'watson',
 
