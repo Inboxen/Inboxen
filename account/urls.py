@@ -43,7 +43,7 @@ urlpatterns = [
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
     urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
-    urls.url(r'^security/qrcode/$', twofactor.QRGeneratorView.as_view(), name='user-twofactor-qrcode'),
+    urls.url(r'^security/qrcode/$', otp.qrcode_view, name='user-twofactor-qrcode'),
     urls.url(r'^security/$', otp.twofactor_view, name='user-security'),
 
     urls.url(r'^delete/$', delete.AccountDeletionView.as_view(), name='user-delete'),

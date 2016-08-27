@@ -80,4 +80,5 @@ backup_view = sudo_required(core.BackupTokensView.as_view(template_name="account
 disable_view = sudo_required(profile.DisableView.as_view(template_name="account/twofactor-disable.html", redirect_url="user-security"))
 login = anonymous_required(LoginView.as_view())
 setup_view = sudo_required(TwoFactorSetupView.as_view())
+qrcode_view = sudo_required(core.QRGeneratorView.as_view())
 twofactor_view = profile.ProfileView.as_view(template_name="account/security.html")
