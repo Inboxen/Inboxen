@@ -22,8 +22,6 @@ import os
 from django.conf import settings, urls
 from django.utils.translation import ugettext as _
 
-import sudo.views
-
 from inboxen import admin, views
 
 
@@ -68,8 +66,6 @@ urlpatterns = [
     urls.url(r'^user/search/(?P<q>.*)/$', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/$', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/searchapi/(?P<q>.*)/$', views.SearchApiView.as_view(), name='user-searchapi'),
-    urls.url(r'^user/sudo/$', sudo.views.sudo, name='user-sudo'),
-
 
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),

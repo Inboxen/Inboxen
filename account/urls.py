@@ -23,7 +23,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 
-from two_factor.views import core as twofactor
+import sudo.views
 
 from account.decorators import anonymous_required
 from account.forms import PlaceHolderPasswordChangeForm
@@ -40,6 +40,7 @@ urlpatterns = [
         },
         name='user-password',
     ),
+    urls.url(r'^security/sudo/$', sudo.views.sudo, name='user-sudo'),
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
     urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
