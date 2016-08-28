@@ -17,7 +17,7 @@
 {% block form %}
     <form method="POST" class="form">
         {% csrf_token %}
-        {{ form|bootstrap }}
+        {{ form|bootstrap_inline }}
         <button class="btn btn-primary">{% trans "Confirm password" %}</button>
         <a href="{% url 'user-settings' %}" class="btn btn-default">{% trans "Cancel" %}</a>
     </form>
