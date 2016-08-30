@@ -48,6 +48,12 @@ HTML_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre",
 _log = logging.getLogger(__name__)
 
 
+class InboxenPremailer(Premailer):
+    def _load_external(self, url):
+        """Don't load external resources"""
+        return ""
+
+
 def _unicode_damnit(data, charset="utf-8", errors="replace"):
     """Makes doubley sure that we can turn the database's binary typees into
     unicode objects
@@ -85,7 +91,7 @@ def _clean_html_body(request, email, body, charset):
     try:
         # check there's a body and header for premailer
         if html_tree.find("body"):
-            html_tree = Premailer(html_tree).transform()
+            html_tree = InboxenPremailer(html_tree).transform()
     except Exception as exc:
         # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
         messages.info(request, _("Part of this message could not be parsed - it may not display correctly"))
