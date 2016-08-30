@@ -296,6 +296,7 @@ Content-Transfer-Encoding: quoted-printable
 <html>
 <head>
 =09<title></title>
+=09<link rel="stylesheet" type="text/css" href="css/broken.css">
 </head>
 <body><!-- Facebook sharing information tags -->
 <style type=3D"text/css"><!--
