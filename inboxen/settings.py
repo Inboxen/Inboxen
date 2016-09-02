@@ -176,6 +176,7 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sudo.middleware.SudoMiddleware',
+    'inboxen.middleware.SudoAdminMiddleware',
     'csp.middleware.CSPMiddleware',
 )
 
