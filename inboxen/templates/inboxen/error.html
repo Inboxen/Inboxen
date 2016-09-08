@@ -5,5 +5,5 @@
 
 {% block content %}
     <h2>{{ headline }}</h2>
-    <p class="alert alert-{{ error_css_class }}"> {{ error_message }} </p>
+    <p class="alert alert-{{ error_css_class }}"> {{ exception.message|default:error_message }} </p>
 {% endblock %}
