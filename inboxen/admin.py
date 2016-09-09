@@ -22,6 +22,7 @@ from urllib import urlencode
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import redirect
@@ -59,7 +60,10 @@ class InboxenAdmin(admin.AdminSite):
     index_title = ugettext_lazy("Instance Administration")
 
     def has_permission(self, request):
-        return super(InboxenAdmin, self).has_permission(request) and request.user.is_verified()
+        has_perm = super(InboxenAdmin, self).has_permission(request)
+        if has_perm and not request.user.is_verified():
+            raise PermissionDenied("Admins must have Two Factor authentication enabled")
+        return has_perm
 
     def login(self, request, extra_context=None):
         if REDIRECT_FIELD_NAME in request.GET:
