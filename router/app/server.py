@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 @stateless
 @nolocking
 @transaction.atomic()
-def START(message, inbox=None, domain=None):
+def process_message(message, inbox=None, domain=None):
     try:
         inbox = Inbox.objects.filter(inbox=inbox, domain__domain=domain)
         inbox = inbox.select_related("user", "user__userprofile").receiving()

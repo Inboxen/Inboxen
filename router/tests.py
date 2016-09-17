@@ -98,26 +98,26 @@ class RouterTestCase(test.TestCase):
 
     def test_exceptions(self):
         # import here, that way we don't have to fiddle with sys.path in the global scope
-        from router.app.server import START
+        from router.app.server import process_message
 
         with self.assertRaises(SMTPError) as error:
-            START(None, None, None)
+            process_message(None, None, None)
         self.assertEqual(error.exception.code, 550)
 
         with self.assertRaises(SMTPError) as error, \
                 mock.patch.object(models.Inbox.objects, "filter", side_effect=DatabaseError):
-            START(None, None, None)
+            process_message(None, None, None)
         self.assertEqual(error.exception.code, 451)
 
     def test_flag_setting(self):
         # import here, that way we don't have to fiddle with sys.path in the global scope
-        from router.app.server import START
+        from router.app.server import process_message
 
         user = factories.UserFactory()
         inbox = factories.InboxFactory(user=user)
 
         with mock.patch("router.app.server.make_email") as mock_make_email:
-            START(None, inbox.inbox, inbox.domain.domain)
+            process_message(None, inbox.inbox, inbox.domain.domain)
         self.assertTrue(mock_make_email.called)
 
         user = get_user_model().objects.get(id=user.id)
@@ -135,7 +135,7 @@ class RouterTestCase(test.TestCase):
         profile.save(update_fields=["flags"])
 
         with mock.patch("router.app.server.make_email") as mock_make_email:
-            START(None, inbox.inbox, inbox.domain.domain)
+            process_message(None, inbox.inbox, inbox.domain.domain)
         self.assertTrue(mock_make_email.called)
 
         user = get_user_model().objects.get(id=user.id)
