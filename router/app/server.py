@@ -27,10 +27,18 @@ from watson import search
 
 from app.helpers import make_email
 from inboxen.models import Inbox
+from inboxen.utils import RESERVED_LOCAL_PARTS
 
 import logging
 
 log = logging.getLogger(__name__)
+
+
+@route("(local)@(domain)", local=RESERVED_LOCAL_PARTS, domain=".+")
+@stateless
+@nolocking
+def forward_to_admins(message, local=None, domain=None):
+    pass
 
 
 @route("(inbox)@(domain)", inbox=".+", domain=".+")
