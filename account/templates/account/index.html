@@ -9,20 +9,22 @@
         {% account_menu 'user-settings' %}
     {% endblock %}
     <br />
-    <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
-        <div class="panel panel-default">
-            {% block form-header %}{% endblock %}
-            <div class="panel-body">
-            {% block form %}
-                <form action="{% url 'user-settings' %}" class="form" method="POST">
-                    {% csrf_token %}
-                    {{ form|bootstrap }}
-                    <button class="btn btn-primary">{% trans "Save" %}</button>
-                </form>
-                <hr>
-                <p>{% blocktrans with name=request.user.username %}You can change your username here. You current username is <b>{{ name }}</b>.{% endblocktrans %}</p>
-                <p><a class="btn btn-primary" href="{% url 'user-username' %}">{% trans "Change username" %}</a></p>
-            {% endblock %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+            <div class="panel panel-default inboxen-panel">
+                {% block form-header %}{% endblock %}
+                <div class="panel-body">
+                {% block form %}
+                    <form action="{% url 'user-settings' %}" class="form" method="POST">
+                        {% csrf_token %}
+                        {{ form|bootstrap }}
+                        <button class="btn btn-primary">{% trans "Save" %}</button>
+                    </form>
+                    <hr>
+                    <p>{% blocktrans with name=request.user.username %}You can change your username here. You current username is <b>{{ name }}</b>.{% endblocktrans %}</p>
+                    <p><a class="btn btn-primary" href="{% url 'user-username' %}">{% trans "Change username" %}</a></p>
+                {% endblock %}
+                </div>
             </div>
         </div>
     </div>
