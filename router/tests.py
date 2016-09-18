@@ -29,6 +29,7 @@ from salmon.mail import MailRequest
 from salmon.server import SMTPError
 from salmon.routing import Router
 
+from inboxen.utils import override_settings
 from inboxen import models
 from inboxen.tests import factories
 from router.app.helpers import make_email
@@ -155,3 +156,37 @@ class RouterTestCase(test.TestCase):
 
         bodies = [str(part.body.data) for part in models.PartList.objects.select_related("body").order_by("level", "lft")]
         self.assertEqual(bodies, BODIES)
+
+    @override_settings(ADMINS=(("admin", "root@localhost"),))
+    def test_forwarding(self):
+        from router.app.server import forward_to_admins
+
+        with mock.patch("router.app.server.Relay") as relay_mock:
+            deliver_mock = relay_mock.return_value.deliver
+            forward_to_admins(None, "user", "example.com")
+
+            self.assertEqual(deliver_mock.call_count, 1)
+            self.assertEqual(deliver_mock.call_args[0], (None,))
+            self.assertEqual(deliver_mock.call_args[1], {"To": ["root@localhost"], "From": "django@localhost"})
+
+    def test_routes(self):
+        from salmon.routing import Router
+
+        user = factories.UserFactory()
+        inbox = factories.InboxFactory(user=user)
+        Router.load(['app.server'])
+
+        with mock.patch("router.app.server.Relay") as relay_mock, \
+                mock.patch("router.app.server.make_email") as mock_make_email:
+            message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
+            Router.deliver(message)
+
+            self.assertEqual(mock_make_email.call_count, 1)
+            self.assertEqual(relay_mock.call_count, 0)
+
+            mock_make_email.reset_mock()
+            message = MailRequest("locahost", "test@localhost", "root@localhost", TEST_MSG)
+            Router.deliver(message)
+
+            self.assertEqual(mock_make_email.call_count, 0)
+            self.assertEqual(relay_mock.call_count, 1)

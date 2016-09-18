@@ -19,29 +19,34 @@
 #
 ##
 
-from salmon.routing import nolocking, route, stateless
-from salmon.server import SMTPError
+import logging
 
+from salmon.routing import nolocking, route, stateless
+from salmon.server import SMTPError, Relay
+
+from django.conf import settings
 from django.db import DatabaseError, transaction
 from watson import search
 
 from app.helpers import make_email
 from inboxen.models import Inbox
-from inboxen.utils import RESERVED_LOCAL_PARTS
+from inboxen.utils import RESERVED_LOCAL_PARTS_REGEX
 
-import logging
+# we want to match *something*, but not something consumed by forward_to_admins
+INBOX_REGEX = r"(?!{}).+".format(RESERVED_LOCAL_PARTS_REGEX)
+
 
 log = logging.getLogger(__name__)
 
 
-@route("(local)@(domain)", local=RESERVED_LOCAL_PARTS, domain=".+")
+@route(r"(local)@(domain)", local=RESERVED_LOCAL_PARTS_REGEX, domain=r".+")
 @stateless
 @nolocking
 def forward_to_admins(message, local=None, domain=None):
-    pass
+    Relay().deliver(message, To=[m[1] for m in settings.ADMINS], From=settings.SERVER_EMAIL)
 
 
-@route("(inbox)@(domain)", inbox=".+", domain=".+")
+@route(r"(inbox)@(domain)", inbox=INBOX_REGEX, domain=r".+")
 @stateless
 @nolocking
 @transaction.atomic()
