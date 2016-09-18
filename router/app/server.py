@@ -33,7 +33,7 @@ from inboxen.models import Inbox
 from inboxen.utils import RESERVED_LOCAL_PARTS_REGEX
 
 # we want to match *something*, but not something consumed by forward_to_admins
-INBOX_REGEX = r"(?!{}).+".format(RESERVED_LOCAL_PARTS_REGEX)
+INBOX_REGEX = r"(?!^({})@).+".format(RESERVED_LOCAL_PARTS_REGEX)
 
 
 log = logging.getLogger(__name__)
