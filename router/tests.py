@@ -29,6 +29,7 @@ from salmon.mail import MailRequest
 from salmon.server import SMTPError
 from salmon.routing import Router
 
+from inboxen.utils import override_settings
 from inboxen import models
 from inboxen.tests import factories
 from router.app.helpers import make_email
@@ -98,26 +99,26 @@ class RouterTestCase(test.TestCase):
 
     def test_exceptions(self):
         # import here, that way we don't have to fiddle with sys.path in the global scope
-        from router.app.server import START
+        from router.app.server import process_message
 
         with self.assertRaises(SMTPError) as error:
-            START(None, None, None)
+            process_message(None, None, None)
         self.assertEqual(error.exception.code, 550)
 
         with self.assertRaises(SMTPError) as error, \
                 mock.patch.object(models.Inbox.objects, "filter", side_effect=DatabaseError):
-            START(None, None, None)
+            process_message(None, None, None)
         self.assertEqual(error.exception.code, 451)
 
     def test_flag_setting(self):
         # import here, that way we don't have to fiddle with sys.path in the global scope
-        from router.app.server import START
+        from router.app.server import process_message
 
         user = factories.UserFactory()
         inbox = factories.InboxFactory(user=user)
 
         with mock.patch("router.app.server.make_email") as mock_make_email:
-            START(None, inbox.inbox, inbox.domain.domain)
+            process_message(None, inbox.inbox, inbox.domain.domain)
         self.assertTrue(mock_make_email.called)
 
         user = get_user_model().objects.get(id=user.id)
@@ -135,7 +136,7 @@ class RouterTestCase(test.TestCase):
         profile.save(update_fields=["flags"])
 
         with mock.patch("router.app.server.make_email") as mock_make_email:
-            START(None, inbox.inbox, inbox.domain.domain)
+            process_message(None, inbox.inbox, inbox.domain.domain)
         self.assertTrue(mock_make_email.called)
 
         user = get_user_model().objects.get(id=user.id)
@@ -155,3 +156,55 @@ class RouterTestCase(test.TestCase):
 
         bodies = [str(part.body.data) for part in models.PartList.objects.select_related("body").order_by("level", "lft")]
         self.assertEqual(bodies, BODIES)
+
+    @override_settings(ADMINS=(("admin", "root@localhost"),))
+    def test_forwarding(self):
+        from router.app.server import forward_to_admins
+
+        with mock.patch("router.app.server.Relay") as relay_mock:
+            deliver_mock = relay_mock.return_value.deliver
+            forward_to_admins(None, "user", "example.com")
+
+            self.assertEqual(deliver_mock.call_count, 1)
+            self.assertEqual(deliver_mock.call_args[0], (None,))
+            self.assertEqual(deliver_mock.call_args[1], {"To": ["root@localhost"], "From": "django@localhost"})
+
+    def test_routes(self):
+        from salmon.routing import Router
+
+        user = factories.UserFactory()
+        inbox = factories.InboxFactory(user=user)
+        Router.load(['app.server'])
+
+        with mock.patch("router.app.server.Relay") as relay_mock, \
+                mock.patch("router.app.server.make_email") as mock_make_email:
+            deliver_mock = mock.Mock()
+            relay_mock.return_value.deliver = deliver_mock
+            message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
+            Router.deliver(message)
+
+            self.assertEqual(mock_make_email.call_count, 1)
+            self.assertEqual(relay_mock.call_count, 0)
+            self.assertEqual(deliver_mock.call_count, 0)
+
+            mock_make_email.reset_mock()
+            relay_mock.reset_mock();
+            deliver_mock.reset_mock();
+            message = MailRequest("locahost", "test@localhost", "root@localhost", TEST_MSG)
+            Router.deliver(message)
+
+            self.assertEqual(mock_make_email.call_count, 0)
+            self.assertEqual(relay_mock.call_count, 1)
+            self.assertEqual(deliver_mock.call_count, 1)
+            self.assertEqual(message, deliver_mock.call_args[0][0])
+
+            mock_make_email.reset_mock()
+            relay_mock.reset_mock();
+            deliver_mock.reset_mock();
+            message = MailRequest("locahost", "test@localhost", "root1@localhost", TEST_MSG)
+            with self.assertRaises(SMTPError):
+                Router.deliver(message)
+
+            self.assertEqual(mock_make_email.call_count, 0)
+            self.assertEqual(relay_mock.call_count, 0)
+            self.assertEqual(deliver_mock.call_count, 0)
