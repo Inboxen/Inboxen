@@ -178,25 +178,33 @@ class RouterTestCase(test.TestCase):
 
         with mock.patch("router.app.server.Relay") as relay_mock, \
                 mock.patch("router.app.server.make_email") as mock_make_email:
+            deliver_mock = mock.Mock()
+            relay_mock.return_value.deliver = deliver_mock
             message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
             Router.deliver(message)
 
             self.assertEqual(mock_make_email.call_count, 1)
             self.assertEqual(relay_mock.call_count, 0)
+            self.assertEqual(deliver_mock.call_count, 0)
 
             mock_make_email.reset_mock()
             relay_mock.reset_mock();
+            deliver_mock.reset_mock();
             message = MailRequest("locahost", "test@localhost", "root@localhost", TEST_MSG)
             Router.deliver(message)
 
             self.assertEqual(mock_make_email.call_count, 0)
             self.assertEqual(relay_mock.call_count, 1)
+            self.assertEqual(deliver_mock.call_count, 1)
+            self.assertEqual(message, deliver_mock.call_args[0][0])
 
             mock_make_email.reset_mock()
             relay_mock.reset_mock();
+            deliver_mock.reset_mock();
             message = MailRequest("locahost", "test@localhost", "root1@localhost", TEST_MSG)
             with self.assertRaises(SMTPError):
                 Router.deliver(message)
 
             self.assertEqual(mock_make_email.call_count, 0)
             self.assertEqual(relay_mock.call_count, 0)
+            self.assertEqual(deliver_mock.call_count, 0)
