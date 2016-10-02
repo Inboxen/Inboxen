@@ -31,15 +31,17 @@ from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 
 import mock
 
 from inboxen.management.commands import router, feeder, url_stats
-from inboxen.middleware import ExtendSessionMiddleware
+from inboxen.middleware import ExtendSessionMiddleware, SudoAdminMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
+
 
 @override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
@@ -146,6 +148,34 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
         request = utils.MockRequest(user)
         ExtendSessionMiddleware().process_request(request)
         self.assertFalse(request.session.modified)
+
+
+class SudoAdminMiddlewareTestCase(test.TestCase):
+    middleware = SudoAdminMiddleware()
+
+    def test_non_admin_path(self):
+        request = utils.MockRequest(None)
+        request.is_sudo = lambda: True
+        response = self.middleware.process_request(request)
+        self.assertIsNone(response)
+
+        request.is_sudo = lambda: False
+        response = self.middleware.process_request(request)
+        self.assertIsNone(response)
+
+    def test_admin_path(self):
+        request = utils.MockRequest(None)
+        request.path = "%s/something/" % reverse("admin:index")
+
+        request.is_sudo = lambda: True
+        response = self.middleware.process_request(request)
+        self.assertIsNone(response)
+
+        request.is_sudo = lambda: False
+        response = self.middleware.process_request(request)
+        self.assertIsNotNone(response)
+        self.assertEqual(response["Location"], "%s?next=%s" % (reverse("user-sudo"), request.path))
+
 
 
 class UtilsTestCase(test.TestCase):

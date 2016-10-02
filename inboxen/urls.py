@@ -67,7 +67,6 @@ urlpatterns = [
     urls.url(r'^user/search/$', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/searchapi/(?P<q>.*)/$', views.SearchApiView.as_view(), name='user-searchapi'),
 
-
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^click/', urls.include("redirect.urls")),

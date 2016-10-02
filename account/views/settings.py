@@ -21,6 +21,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
+from sudo.mixins import SudoMixin
 
 from account import forms
 
@@ -44,7 +45,7 @@ class GeneralSettingsView(LoginRequiredMixin, generic.FormView):
         return super(GeneralSettingsView, self).form_valid(form=form, *args, **kwargs)
 
 
-class UsernameChangeView(LoginRequiredMixin, generic.FormView):
+class UsernameChangeView(LoginRequiredMixin, SudoMixin, generic.FormView):
     """Allow users to change their username"""
     form_class = forms.UsernameChangeForm
     success_url = reverse_lazy("user-settings")

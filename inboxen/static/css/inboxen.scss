@@ -224,3 +224,15 @@ a.soon {
         margin-right: 5px;
     }
 }
+
+.inboxen-panel {
+    .panel-body {
+        padding-left: $panel-body-padding + ($grid-gutter-width/2);
+        padding-right: $panel-body-padding + ($grid-gutter-width/2);
+    }
+
+    .panel-heading + .panel-body {
+        padding-left: $panel-body-padding;
+        padding-right: $panel-body-padding;
+    }
+}

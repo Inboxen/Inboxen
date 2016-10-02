@@ -18,8 +18,11 @@
 ##
 
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.contrib.messages.storage.session import SessionStorage
+
+from sudo.utils import get_random_string
+from sudo import settings as sudo_settings
 
 
 class MockRequest(HttpRequest):
@@ -31,3 +34,24 @@ class MockRequest(HttpRequest):
         session = SessionMiddleware()
         self.session = session.SessionStore(session_id)
         self._messages = SessionStorage(self)
+
+
+# TODO: submit to django-sudo?
+def grant_client_sudo(client):
+    """Sets a cookie on the test client that django-sudo will use"""
+    response = HttpResponse()
+    token = get_random_string()
+
+    response.set_signed_cookie(
+        sudo_settings.COOKIE_NAME, token,
+                salt=sudo_settings.COOKIE_SALT,
+                max_age=sudo_settings.COOKIE_AGE,
+                secure=False,
+                httponly=True,
+                path=sudo_settings.COOKIE_PATH,
+                domain=sudo_settings.COOKIE_DOMAIN,
+    )
+    client.cookies[sudo_settings.COOKIE_NAME] = response.cookies[sudo_settings.COOKIE_NAME]
+    session = client.session
+    session[sudo_settings.COOKIE_NAME] = token
+    session.save()

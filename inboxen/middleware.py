@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014, 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014-2016 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -18,10 +18,12 @@
 ##
 
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.utils.translation import ugettext as _
 
 from ratelimitbackend.exceptions import RateLimitException
+from sudo.views import redirect_to_sudo
 
 
 class RateLimitMiddleware(object):
@@ -38,3 +40,13 @@ class ExtendSessionMiddleware(object):
         if request.user.is_authenticated():
             request.session.set_expiry(None)
             request.session.modified = True
+
+
+class SudoAdminMiddleware(object):
+    """Protects admin site with Django-Sudo"""
+    def process_request(self, request):
+        if request.path.startswith(reverse("admin:index")):
+            if request.is_sudo():
+                return
+            else:
+                return redirect_to_sudo(request.get_full_path())

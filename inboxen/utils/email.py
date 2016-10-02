@@ -61,7 +61,10 @@ def _unicode_damnit(data, charset="utf-8", errors="replace"):
     if isinstance(data, unicode):
         return data
 
-    return unicode(str(data), charset, errors)
+    try:
+        return unicode(str(data), charset, errors)
+    except LookupError:
+        return unicode(str(data), "ascii", errors)
 
 
 def _clean_html_body(request, email, body, charset):
@@ -92,7 +95,8 @@ def _clean_html_body(request, email, body, charset):
     except Exception as exc:
         # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
         messages.info(request, _("Part of this message could not be parsed - it may not display correctly"))
-        _log.exception(exc, extra={"request": request})
+        msg = "Failed to render CSS: %s" % exc
+        _log.exception(msg, extra={"request": request})
 
     # Mail Pile uses this, give back if you come up with something better
     cleaner = Cleaner(
@@ -184,7 +188,8 @@ def _render_body(request, email, attachments):
 
             plain_message = True
             messages.error(request, _("Some parts of this email contained invalid HTML and could not be displayed"))
-            _log.exception(exc, extra={"request": request})
+            msg = "Failed to display HTML: %s" % exc
+            _log.exception(msg, extra={"request": request})
 
     if plain_message:
         body = html_utils.escape(body)

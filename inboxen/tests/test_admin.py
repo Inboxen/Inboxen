@@ -19,7 +19,7 @@
 
 from django import test
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.core import urlresolvers
+from django.core import urlresolvers, exceptions
 
 from inboxen import admin
 from inboxen.tests import factories
@@ -62,8 +62,8 @@ class AdminTestCase(test.TestCase):
 
         request.user.is_verified = lambda: False
         request.user.is_staff = True
-        response = admin.site.admin_view(admin.site.index)(request)
-        self.assertEqual(response.status_code, 302)
+        with self.assertRaises(exceptions.PermissionDenied):
+            admin.site.admin_view(admin.site.index)(request)
 
         request.user.is_verified = lambda: True
         request.user.is_staff = False

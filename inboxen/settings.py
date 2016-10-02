@@ -175,6 +175,8 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.RateLimitMiddleware',
     'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'sudo.middleware.SudoMiddleware',
+    'inboxen.middleware.SudoAdminMiddleware',
     'csp.middleware.CSPMiddleware',
 )
 
@@ -195,6 +197,7 @@ INSTALLED_APPS = (
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
+    'sudo',
     'two_factor',
     'watson',
 
@@ -230,6 +233,13 @@ X_FRAME_OPTIONS = "DENY"
 # CSP settings
 CSP_REPORT_ONLY = False
 CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
+CSP_DEFAULT_SRC = ("'none'",)
+
+CSP_CONNECT_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
 
 if DEBUG:
     # local dev made easy
@@ -264,6 +274,7 @@ try:
 except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
+EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
 
 ## LOGGING
 if DEBUG:

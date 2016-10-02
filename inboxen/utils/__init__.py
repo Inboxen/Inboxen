@@ -34,9 +34,9 @@ from inboxen.context_processors import reduced_settings_context
 
 
 # use the following to get a pipe separated list of inboxes that should be reserved
-# cat /etc/aliases | egrep "^[^#]" | awk '{gsub (":", ""); print $1}' | sort | tr "\n" "|" | sed 's/|$/\)$\n/' | sed 's/^/\^(/'
-RESERVED_LOCAL_PARTS = re.compile(r"""^(abuse|adm|amanda|apache|bin|canna|daemon|dbus|decode|desktop|dovecot|dumper|fax|ftp|ftpadm|ftp-adm|ftpadmin|ftp-admin|games|gdm|gopher|halt|hostmaster|ident|info|ingres|ldap|lp|mail|mailer-daemon|mailnull|manager|marketing|mysql|named|netdump|news|newsadm|newsadmin|nfsnobody|nobody|noc|nscd|ntp|nut|operator|pcap|postfix|postgres|postmaster|privoxy|pvm|quagga|radiusd|radvd|root|rpc|rpcuser|rpm|sales|security|shutdown|smmsp|squid|sshd|support|sync|system|toor|usenet|uucp|vcsa|webalizer|webmaster|wnn|www|xfs)$""")
-
+# cat /etc/aliases | egrep "^[^#]" | awk '{gsub (":", ""); print $1}' | sort | tr "\n" "|" | sed 's/|$/\n/'
+RESERVED_LOCAL_PARTS_REGEX = r"""abuse|adm|amanda|apache|bin|canna|daemon|dbus|decode|desktop|dovecot|dumper|fax|ftp|ftpadm|ftp-adm|ftpadmin|ftp-admin|games|gdm|gopher|halt|hostmaster|ident|info|ingres|ldap|lp|mail|mailer-daemon|mailnull|manager|marketing|mysql|named|netdump|news|newsadm|newsadmin|nfsnobody|nobody|noc|nscd|ntp|nut|operator|pcap|postfix|postgres|postmaster|privoxy|pvm|quagga|radiusd|radvd|root|rpc|rpcuser|rpm|sales|security|shutdown|smmsp|squid|sshd|support|sync|system|tor|usenet|uucp|vcsa|webalizer|webmaster|wnn|www|xfs"""
+RESERVED_LOCAL_PARTS = re.compile(r"^({})$".format(RESERVED_LOCAL_PARTS_REGEX), re.IGNORECASE)
 
 _log = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ def build_assets():
 
     errored = argparser.run_with_argv(["build"]) or 0
     if errored != 0:
-        raise Exception("Asset building failed with error cdoe %d" % errored)
+        raise Exception("Asset building failed with error code %d" % errored)
 
 
 def is_reserved(inbox):
