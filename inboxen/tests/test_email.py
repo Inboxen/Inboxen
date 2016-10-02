@@ -138,7 +138,8 @@ class EmailViewTestCase(test.TestCase):
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
-        self.assertNotIn("img-src", response["content-security-policy"])
+        self.assertIn("img-src 'self';", response["content-security-policy"])
+        self.assertNotIn("img-src 'self' https:;", response["content-security-policy"])
 
     def test_body_no_ask_images(self):
         self.user.userprofile.flags.ask_images = False
@@ -161,7 +162,8 @@ class EmailViewTestCase(test.TestCase):
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
-        self.assertNotIn("img-src", response["content-security-policy"])
+        self.assertIn("img-src 'self';", response["content-security-policy"])
+        self.assertNotIn("img-src 'self' https:;", response["content-security-policy"])
 
     def test_attachments_get(self):
         part = self.email.parts.get()
@@ -171,7 +173,7 @@ class EmailViewTestCase(test.TestCase):
 
         # csp
         self.assertNotIn("srcipt-src", response["content-security-policy"])
-        self.assertIn("default-src 'self';", response["content-security-policy"])
+        self.assertIn("default-src 'none';", response["content-security-policy"])
         self.assertIn("img-src 'self' https:;", response["content-security-policy"])
         self.assertIn("media-src https:;", response["content-security-policy"])
         self.assertIn("style-src 'self' 'unsafe-inline' https:;", response["content-security-policy"])
