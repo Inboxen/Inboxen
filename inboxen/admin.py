@@ -61,7 +61,7 @@ class InboxenAdmin(admin.AdminSite):
 
     def has_permission(self, request):
         has_perm = super(InboxenAdmin, self).has_permission(request)
-        if has_perm and not request.user.is_verified():
+        if has_perm and not request.user.is_verified() and not settings.DEBUG:
             raise PermissionDenied("Admins must have Two Factor authentication enabled")
         return has_perm
 
