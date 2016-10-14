@@ -84,6 +84,10 @@ class InboxenAdmin(admin.AdminSite):
     def password_change_done(self, *args, **kwargs):
         return redirect(reverse('admin:index', current_app=self.name))
 
+    def admin_view(self, view, cacheable=False):
+        view = super(InboxenAdmin, self).admin_view(view, cacheable)
+        return csp_replace(SCRIPT_SRC=("'self'", "'unsafe-inline'"))(view)
+
 
 site = InboxenAdmin()
 site.register(models.Domain, DomainAdmin)
