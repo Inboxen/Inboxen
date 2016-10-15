@@ -28,6 +28,8 @@ from django.db.models import Q
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy
 
+from csp.decorators import csp_replace
+
 from inboxen import models
 
 
