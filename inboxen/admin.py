@@ -28,6 +28,8 @@ from django.db.models import Q
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy
 
+from csp.decorators import csp_replace
+
 from inboxen import models
 
 
@@ -61,7 +63,7 @@ class InboxenAdmin(admin.AdminSite):
 
     def has_permission(self, request):
         has_perm = super(InboxenAdmin, self).has_permission(request)
-        if has_perm and not request.user.is_verified():
+        if has_perm and not request.user.is_verified() and not settings.DEBUG:
             raise PermissionDenied("Admins must have Two Factor authentication enabled")
         return has_perm
 
@@ -83,6 +85,10 @@ class InboxenAdmin(admin.AdminSite):
 
     def password_change_done(self, *args, **kwargs):
         return redirect(reverse('admin:index', current_app=self.name))
+
+    def admin_view(self, view, cacheable=False):
+        view = super(InboxenAdmin, self).admin_view(view, cacheable)
+        return csp_replace(SCRIPT_SRC=("'self'", "'unsafe-inline'"))(view)
 
 
 site = InboxenAdmin()

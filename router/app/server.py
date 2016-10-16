@@ -43,6 +43,10 @@ log = logging.getLogger(__name__)
 @stateless
 @nolocking
 def forward_to_admins(message, local=None, domain=None):
+    if message.is_bounce():
+        # log and swallow the message
+        log.warning("Detected message bounce %s, subject: %s", message, message["Subject"])
+        return
     Relay().deliver(message, To=[m[1] for m in settings.ADMINS], From=settings.SERVER_EMAIL)
 
 

@@ -163,11 +163,18 @@ class RouterTestCase(test.TestCase):
 
         with mock.patch("router.app.server.Relay") as relay_mock:
             deliver_mock = relay_mock.return_value.deliver
-            forward_to_admins(None, "user", "example.com")
+            message = MailRequest("", "", "", "")
+            forward_to_admins(message, "user", "example.com")
 
             self.assertEqual(deliver_mock.call_count, 1)
-            self.assertEqual(deliver_mock.call_args[0], (None,))
+            self.assertEqual(deliver_mock.call_args[0], (message,))
             self.assertEqual(deliver_mock.call_args[1], {"To": ["root@localhost"], "From": "django@localhost"})
+
+            deliver_mock.reset_mock()
+            with mock.patch.object(message, "is_bounce", lambda: True):
+                forward_to_admins(message, "user", "example.com")
+
+                self.assertEqual(deliver_mock.call_count, 0)
 
     def test_routes(self):
         from salmon.routing import Router
