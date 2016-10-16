@@ -21,6 +21,8 @@ from django import test
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core import urlresolvers, exceptions
 
+from csp.middleware import CSPMiddleware
+
 from inboxen import admin
 from inboxen.tests import factories
 
@@ -69,3 +71,14 @@ class AdminTestCase(test.TestCase):
         request.user.is_staff = False
         response = admin.site.admin_view(admin.site.index)(request)
         self.assertEqual(response.status_code, 302)
+
+    def test_csp_replace(self):
+        request = self.factory.get("/")
+        request.user = factories.UserFactory()
+        request.user.is_verified = lambda: True
+        request.user.is_staff = True
+        middleware = CSPMiddleware()
+
+        response = admin.site.admin_view(admin.site.index)(request)
+        response = middleware.process_response(request, response)
+        self.assertIn("script-src 'self' 'unsafe-inline'", response["content-security-policy"])
