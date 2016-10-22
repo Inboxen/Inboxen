@@ -127,6 +127,9 @@ def _clean_html_body(request, email, body, charset):
             # proxy link
             url = link.attrib["href"]
             link.attrib["href"] = proxy_url(url)
+
+            # open link in tab
+            link.attrib["target"] = "_blank"
         except KeyError:
             pass
 
