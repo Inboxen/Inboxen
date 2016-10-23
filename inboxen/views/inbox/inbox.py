@@ -169,7 +169,7 @@ class UnifiedInboxView(InboxView):
 
     def get_context_data(self, *args, **kwargs):
         kwargs["headline"] = _("Inbox")
-        profile = self.request.user.userprofile
+        profile = self.request.user.inboxenprofile
         if profile.flags.unified_has_new_messages:
             profile.flags.unified_has_new_messages = False
             profile.save(update_fields=["flags"])

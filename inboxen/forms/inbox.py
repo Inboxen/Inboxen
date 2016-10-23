@@ -41,7 +41,7 @@ class InboxAddForm(forms.ModelForm):
             initial = {
                 "inbox": None,  # This is filled in by the manager.create
             }
-            prefered_domain = self.request.user.userprofile.prefered_domain
+            prefered_domain = self.request.user.inboxenprofile.prefered_domain
             if prefered_domain is not None and prefered_domain in domain_qs:
                 initial["domain"] = prefered_domain
             else:
@@ -56,7 +56,7 @@ class InboxAddForm(forms.ModelForm):
         fields = ["domain", "description"]
 
     def clean(self):
-        if self.request.user.userprofile.available_inboxes() <= 0:
+        if self.request.user.inboxenprofile.available_inboxes() <= 0:
             raise forms.ValidationError( _("You have too many Inboxes."))
 
     def save(self):

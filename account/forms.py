@@ -118,7 +118,7 @@ class SettingsForm(forms.Form):
     prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
 
     def __init__(self, request, *args, **kwargs):
-        self.profile = request.user.userprofile
+        self.profile = request.user.inboxenprofile
 
         initial = kwargs.get("initial", {})
 

@@ -162,7 +162,7 @@ def _render_body(request, email, attachments):
         plain_message = False
     elif html.parent_id == plain.parent_id:
         # basically multiple/alternative
-        plain_message = not request.user.userprofile.flags.prefer_html_email
+        plain_message = not request.user.inboxenprofile.flags.prefer_html_email
     # which ever has the lower lft value will win
     elif html.lft < plain.lft:
         plain_message = False

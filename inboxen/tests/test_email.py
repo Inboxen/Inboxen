@@ -95,8 +95,8 @@ class EmailViewTestCase(test.TestCase):
         self.assertFalse(headersfetchall)
 
     def test_body_encoding_with_imgDisplay(self):
-        self.user.userprofile.flags.ask_images = True
-        self.user.userprofile.save()
+        self.user.inboxenprofile.flags.ask_images = True
+        self.user.inboxenprofile.save()
 
         response = self.client.get(self.get_url() + "?imgDisplay=1")
         self.assertEqual(response.status_code, 200)
@@ -118,8 +118,8 @@ class EmailViewTestCase(test.TestCase):
         self.assertIn("img-src 'self' https:;", response["content-security-policy"])
 
     def test_body_encoding_without_imgDisplay(self):
-        self.user.userprofile.flags.ask_images = True
-        self.user.userprofile.save()
+        self.user.inboxenprofile.flags.ask_images = True
+        self.user.inboxenprofile.save()
 
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
@@ -142,8 +142,8 @@ class EmailViewTestCase(test.TestCase):
         self.assertNotIn("img-src 'self' https:;", response["content-security-policy"])
 
     def test_body_no_ask_images(self):
-        self.user.userprofile.flags.ask_images = False
-        self.user.userprofile.save()
+        self.user.inboxenprofile.flags.ask_images = False
+        self.user.inboxenprofile.save()
 
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
