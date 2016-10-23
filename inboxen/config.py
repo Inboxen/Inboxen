@@ -109,6 +109,9 @@ LANGUAGE_CODE = config["general"]["language_code"]
 # Where `manage.py collectstatic` puts static files
 STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
 
+# Media files get uploaded to this dir
+MEDIA_ROOT = os.path.join(BASE_DIR, config["general"]["media_root"])
+
 # Email the server uses when sending emails
 SERVER_EMAIL = config["general"]["server_email"]
 

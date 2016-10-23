@@ -117,6 +117,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
     ("thirdparty", os.path.join(BASE_DIR, "node_modules")),
@@ -178,6 +179,8 @@ MIDDLEWARE_CLASSES = (
     'sudo.middleware.SudoMiddleware',
     'inboxen.middleware.SudoAdminMiddleware',
     'csp.middleware.CSPMiddleware',
+    'wagtail.wagtailcore.middleware.SiteMiddleware',
+    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -201,6 +204,22 @@ INSTALLED_APPS = (
     'two_factor',
     'watson',
 
+    # wagtail
+    'wagtail.wagtailforms',
+    'wagtail.wagtailredirects',
+    'wagtail.wagtailembeds',
+    'wagtail.wagtailsites',
+    'wagtail.wagtailusers',
+    'wagtail.wagtailsnippets',
+    'wagtail.wagtaildocs',
+    'wagtail.wagtailimages',
+    'wagtail.wagtailsearch',
+    'wagtail.wagtailadmin',
+    'wagtail.wagtailcore',
+
+    'modelcluster',
+    'taggit',
+
     # Inboxen
     'inboxen',
     'account',
@@ -211,6 +230,7 @@ INSTALLED_APPS = (
     'source',
     'termsofservice',
     'tickets',
+    'help',
 )
 
 SILENCED_SYSTEM_CHECKS = [
@@ -276,6 +296,11 @@ except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
 EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
+
+# wagtail
+WAGTAIL_SITE_NAME = SITE_NAME
+WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
+WAGTAIL_PASSWORD_RESET_ENABLED = False
 
 ## LOGGING
 if DEBUG:

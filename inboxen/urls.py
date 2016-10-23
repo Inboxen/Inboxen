@@ -20,7 +20,12 @@
 import os
 
 from django.conf import settings, urls
+from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
+
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
+from wagtail.wagtailcore import urls as wagtail_urls
+from wagtail.wagtaildocs import urls as wagtaildocs_urls
 
 from inboxen import admin, views
 
@@ -77,4 +82,12 @@ urlpatterns = [
 
     # admin
     urls.url(r'^admin/', urls.include(admin.site.urls)),
+
+    # wagtail
+    urls.url(r'^cms/', urls.include(wagtailadmin_urls)),
+    urls.url(r'^documents/', urls.include(wagtaildocs_urls)),
+    urls.url(r'^pages/', urls.include(wagtail_urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
