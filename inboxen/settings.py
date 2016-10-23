@@ -224,13 +224,12 @@ INSTALLED_APPS = (
     'inboxen',
     'account',
     'blog',
+    'help',
     'liberation',
     'redirect',
     'router',
     'source',
-    'termsofservice',
     'tickets',
-    'help',
 )
 
 SILENCED_SYSTEM_CHECKS = [
@@ -343,6 +342,10 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
+        'help': {
+            'handlers': ['console', 'mail_admins'],
+            'level': log_level,
+        },
         'liberation': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
@@ -356,10 +359,6 @@ LOGGING = {
             'level': log_level,
         },
         'source': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'termsofservice': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },

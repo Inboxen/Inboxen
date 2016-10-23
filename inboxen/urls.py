@@ -75,7 +75,6 @@ urlpatterns = [
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^click/', urls.include("redirect.urls")),
-    urls.url(r'^help/', urls.include("termsofservice.urls")),
     urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
@@ -86,7 +85,7 @@ urlpatterns = [
     # wagtail
     urls.url(r'^cms/', urls.include(wagtailadmin_urls)),
     urls.url(r'^documents/', urls.include(wagtaildocs_urls)),
-    urls.url(r'^pages/', urls.include(wagtail_urls)),
+    urls.url(r'^help/', urls.include(wagtail_urls)),
 ]
 
 if settings.DEBUG:

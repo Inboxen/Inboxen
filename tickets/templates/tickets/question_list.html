@@ -6,7 +6,7 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'termsofservice-index' %}">{% trans "Help" %}</a></li>
+        <li><a href="{% url 'wagtail-serve' %}">{% trans "Help" %}</a></li>
         <li><a href="{% url 'tickets-index' %}">{% trans "Questions" %}</a></li>
         <li class="active">{% blocktrans %}Status: {{ status }}{% endblocktrans %}</li>
     </ul>
