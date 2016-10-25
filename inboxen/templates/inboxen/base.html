@@ -36,7 +36,7 @@
                         <li><a id="add-inbox" href="{% url 'inbox-add' %}" data-form-url="{% url 'form-inbox-add' %}">{% trans "Add Inbox" %}</a></li>
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                         <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
-                        <li><a href="{% url 'wagtail-serve' %}">{% trans "Help" %}</a></li>
+                        <li><a href="{% url 'wagtail_serve' '' %}">{% trans "Help" %}</a></li>
                         <li><a href="{% url 'user-logout' %}">{% trans "Logout" %}</a></li>
                     {% else %}
                         <li><a href="{% url 'user-login' %}">{% trans "Login" %}</a></li>
@@ -44,7 +44,7 @@
                             <li><a href="{% url 'user-status' %}">{% trans "Register" %}</a></li>
                         {% endif %}
                         <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
-                        <li><a href="{% url 'wagtail-serve' %}">{% trans "Help" %}</a></li>
+                        <li><a href="{% url 'wagtail_serve' '' %}">{% trans "Help" %}</a></li>
                     {% endif %}
                 </ul>
                 {% if user.is_authenticated %}
