@@ -13,6 +13,7 @@ install:
     - mkdir node_modules
     - travis_retry npm update
     - if [[ $DB == postgres ]]; then travis_retry pip install -q psycopg2; fi
+    - travis_retry pip install -q -U setuptools
     - travis_retry pip install -q -r requirements.txt
     - travis_retry pip install -q codecov
     - travis_retry gem install sass
