@@ -75,7 +75,6 @@ urlpatterns = [
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^click/', urls.include("redirect.urls")),
-    urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
 
