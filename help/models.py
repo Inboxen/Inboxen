@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.urlresolvers import RegexURLResolver
+from django.core.urlresolvers import RegexURLResolver, reverse
 
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailcore import fields, models as wag_models
@@ -39,6 +39,10 @@ class AppPage(wag_models.Page):
 
     def serve(self, request, *args, **kwargs):
         return self._view(request, *args, **kwargs)
+
+    def reverse(self, viewname, args, kwargs):
+        """Gives reverse URL for view name relative to page"""
+        return reverse(viewname, urlconf=self.app, args=args, kwargs=kwargs)
 
 
 class HelpPage(wag_models.Page):

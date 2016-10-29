@@ -1,13 +1,14 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n humanize bootstrap %}
+{% load i18n humanize bootstrap help_tags wagtailcore_tags %}
 
 {% block headline %}{% trans "Tickets" %}{% endblock %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'wagtail_serve' '' %}">{% trans "Help" %}</a></li>
-        <li><a href="{% url 'tickets-index' %}">{% trans "Questions" %}</a></li>
+        {% for pg in page.get_ancestors %}
+            {% if not pg.is_root %}<li><a href="{% pageurl pg %}">{{ pg.title }}</a></li>{% endif %}
+        {% endfor %}
         <li class="active">{% blocktrans %}Status: {{ status }}{% endblocktrans %}</li>
     </ul>
 {% endblock %}
@@ -16,13 +17,13 @@
 {% include "tickets/includes/question_list.html" with questions=page_obj %}
 <ul class="pager">
     {% if page_obj.has_previous %}
-        <li class="previous"><a href="{% url 'tickets-list' status=status page=page_obj.previous_page_number %}">
+        <li class="previous"><a href="{% app_url 'tickets-list' status=status page=page_obj.previous_page_number %}">
             <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
         </a></li>
     {% endif %}
 
     {% if page_obj.has_next %}
-        <li class="next"><a href="{% url 'tickets-list' status=status page=page_obj.next_page_number %}">
+        <li class="next"><a href="{% app_url 'tickets-list' status=status page=page_obj.next_page_number %}">
             <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
         </a></li>
     {% endif %}

@@ -1,19 +1,21 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n humanize bootstrap %}
+{% load i18n humanize bootstrap help_tags wagtailcore_tags %}
 
 {% block headline %}{% trans "Tickets" %}{% endblock %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'wagtail_serve' '' %}">{% trans "Help" %}</a></li>
-        <li class="active">{% trans "Questions" %}</li>
+        {% for pg in page.get_ancestors %}
+            {% if not pg.is_root %}<li><a href="{% pageurl pg %}">{{ pg.title }}</a></li>{% endif %}
+        {% endfor %}
+        <li class="active">{{ page.title }}</li>
     </ul>
 {% endblock %}
 
 {% block content %}
-{% url "tickets-list" status="!resolved" as more_open_url %}
-{% url "tickets-list" status="resolved" as more_closed_url %}
+{% app_url "tickets-list" status="!resolved" as more_open_url %}
+{% app_url "tickets-list" status="resolved" as more_closed_url %}
 <span class="sr-only"><a href="#question-form">{% trans "Go to Question form" %}</a></span>
 <h3>{% trans "Open Questions" %}</h3>
 {% include "tickets/includes/question_list.html" with questions=open more_url=more_open_url %}
@@ -25,7 +27,7 @@
             {% trans "Submit New Question" %}
         </div>
         <div class="panel-body">
-            <form id="question-form" class="form" method="post" action="{% url 'tickets-index' %}">
+            <form id="question-form" class="form" method="post" action="{% app_url 'tickets-index' %}">
                 {% csrf_token %}
                 {{ form|bootstrap }}
                 <button class="btn btn-primary">{% trans "Submit" %}</button>

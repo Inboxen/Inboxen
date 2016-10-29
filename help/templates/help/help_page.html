@@ -9,7 +9,7 @@
     {% for pg in page.get_ancestors %}
         {% if not pg.is_root %}<li><a href="{% pageurl pg %}">{{ pg.title }}</a></li>{% endif %}
     {% endfor %}
-        <li>{{ page.title }}</li>
+        <li class="active">{{ page.title }}</li>
     </ul>
 {% endblock %}
 

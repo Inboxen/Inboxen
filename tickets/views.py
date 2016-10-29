@@ -25,6 +25,7 @@ from django.views import generic
 
 from braces.views import LoginRequiredMixin
 
+from help.utils import app_reverse
 from tickets import forms, models
 
 
@@ -77,7 +78,7 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
         return qs
 
     def get_success_url(self):
-        return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
+        return app_reverse(self.request.page, self.request.site, "tickets-detail", kwargs={"pk": self.object.pk})
 
 
 class QuestionListView(LoginRequiredMixin, generic.ListView):
@@ -131,7 +132,7 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
         return qs.filter(author=self.request.user).select_related("author")
 
     def get_success_url(self):
-        return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
+        return app_reverse(self.request.page, self.request.site, "tickets-detail", kwargs={"pk": self.object.pk})
 
     def get_responses(self):
         return self.object.response_set.select_related("author").all()

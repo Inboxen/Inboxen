@@ -1,4 +1,4 @@
-{% load i18n tickets_flags humanize %}
+{% load i18n tickets_flags help_tags humanize %}
 <div class="honeydew">
     <div class="row title hidden-xs">
         <div class="col-sm-6">{% trans "Subject" %}</div>
@@ -7,7 +7,7 @@
     </div>
     {% for question in questions %}
         <div class="row">
-            <a class="clickable" href="{% url 'tickets-detail' pk=question.pk %}">
+            <a class="clickable" href="{% app_url 'tickets-detail' pk=question.pk %}">
                 <div class="col-sm-6 col-xs-12">
                     {{ question.subject }}
                     {% if question.response_count > 0 %}
