@@ -6,9 +6,10 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
-        {% for pg in page.get_ancestors %}
+        {% for pg in request.page.get_ancestors %}
             {% if not pg.is_root %}<li><a href="{% pageurl pg %}">{{ pg.title }}</a></li>{% endif %}
         {% endfor %}
+        <li><a href="{% app_url 'tickets-index' %}">{{ request.page.title }}</a></li>
         <li class="active">{{ object.subject }}</li>
     </ul>
 {% endblock %}
