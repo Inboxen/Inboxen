@@ -1,6 +1,6 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n %}
+{% load wagtailcore_tags %}
 
 {% block headline %}{{ page.title }}{% endblock %}
 
@@ -12,25 +12,10 @@
 
 {% block content %}
 <div class="text-center row">
-    <div class="col-sm-4 col-sm-offset-2 col-md-2 col-md-offset-2">
-    <h3><a class="soon" href="#">
-        {% trans "Terms Of Service" %}
-    </a></h3>
-    <h5>{% trans "Soon." %}</h5>
-    </div>
+{% for child in menu %}
     <div class="col-sm-4 col-md-2">
-    <h3><a class="soon" href="#">
-        {% blocktrans with settings.SITE_NAME as name %}The People Behind {{ name }}{% endblocktrans %}
-    </a></h3>
-    <h5>{% trans "Soon." %}</h5>
+    <h3><a href="{% pageurl child %}">{{ child.title }}</a></h3>
     </div>
-    <div class="col-sm-4 col-sm-offset-2 col-md-2 col-md-offset-0">
-        <h3><a href="">{% trans "Questions?" %}</a></h3>
-        <h5>{% trans "If you need assistance or want to speak to a human." %}</h5>
-    </div>
-    <div class="col-sm-4 col-md-2">
-        <h3><a class="soon" href="#">{% trans "Knowedge Base" %}</a></h3>
-        <h5>{% trans "Coming soon!" %}</h5>
-    </div>
+{% endfor %}
 </div>
 {% endblock %}

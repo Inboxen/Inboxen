@@ -15,6 +15,12 @@ class HelpIndex(wag_models.Page):
         'help.AppPage',
     ]
 
+    def get_context(self, request, *args, **kwargs):
+        context = super(HelpIndex, self).get_context(request, *args, **kwargs)
+        context["menu"] = self.get_children().live().public()
+
+        return context
+
 
 class AppPage(wag_models.Page):
     APP_CHOICES = (
