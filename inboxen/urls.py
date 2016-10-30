@@ -88,4 +88,9 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
+    import debug_toolbar  # NOQA
+
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        urls.url(r'^__debug__/', urls.include(debug_toolbar.urls)),
+    ]
