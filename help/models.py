@@ -20,7 +20,7 @@ class AppPage(wag_models.Page):
     APP_CHOICES = (
         ("tickets.urls", "Tickets"),
     )
-    app = models.CharField(max_length=255, choices=APP_CHOICES)
+    app = models.CharField(max_length=255, unique=True, choices=APP_CHOICES)
 
     content_panels = wag_models.Page.content_panels + [
         FieldPanel('app'),
