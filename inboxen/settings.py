@@ -177,10 +177,11 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sudo.middleware.SudoMiddleware',
-    'inboxen.middleware.SudoAdminMiddleware',
+    'inboxen.middleware.WagtailAdminProtectionMiddleware',
     'csp.middleware.CSPMiddleware',
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'inboxen.middleware.RedirectWagLoginMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -301,6 +302,7 @@ EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
 WAGTAIL_SITE_NAME = SITE_NAME
 WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
 WAGTAIL_PASSWORD_RESET_ENABLED = False
+WAGTAIL_ADMIN_BASE_URL = urlresolvers.reverse_lazy("wagtailadmin_home")
 
 ## LOGGING
 if DEBUG:
