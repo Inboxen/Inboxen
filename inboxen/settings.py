@@ -205,6 +205,9 @@ INSTALLED_APPS = (
     'two_factor',
     'watson',
 
+    # Main Inboxen app
+    'inboxen',
+
     # wagtail
     'wagtail.wagtailforms',
     'wagtail.wagtailredirects',
@@ -222,8 +225,7 @@ INSTALLED_APPS = (
     'modelcluster',
     'taggit',
 
-    # Inboxen
-    'inboxen',
+    # Other Inboxen apps
     'account',
     'blog',
     'help',
