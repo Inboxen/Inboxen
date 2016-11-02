@@ -30,8 +30,8 @@ class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512)
     body = models.TextField()
-    date = models.DateTimeField('posted', null=True, blank=True)
-    modified = models.DateTimeField('modified', auto_now=True)
+    date = models.DateTimeField('posted', null=True, blank=True, editable=False)
+    modified = models.DateTimeField('modified', auto_now=True, editable=False)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)
 
