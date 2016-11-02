@@ -208,6 +208,16 @@ INSTALLED_APPS = (
     # Main Inboxen app
     'inboxen',
 
+    # Other Inboxen apps
+    'account',
+    'blog',
+    'help',
+    'liberation',
+    'redirect',
+    'router',
+    'source',
+    'tickets',
+
     # wagtail
     'wagtail.wagtailforms',
     'wagtail.wagtailredirects',
@@ -224,16 +234,6 @@ INSTALLED_APPS = (
 
     'modelcluster',
     'taggit',
-
-    # Other Inboxen apps
-    'account',
-    'blog',
-    'help',
-    'liberation',
-    'redirect',
-    'router',
-    'source',
-    'tickets',
 )
 
 SILENCED_SYSTEM_CHECKS = [
@@ -305,6 +305,10 @@ EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
 WAGTAIL_SITE_NAME = SITE_NAME
 WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
 WAGTAIL_PASSWORD_RESET_ENABLED = False
+
+WAGTAIL_USER_CREATION_FORM = 'help.forms.InboxenUserCreationForm'
+WAGTAIL_USER_EDIT_FORM = 'help.forms.InboxenUserEditForm'
+
 WAGTAIL_ADMIN_BASE_URL = urlresolvers.reverse_lazy("wagtailadmin_home")
 
 ## LOGGING
