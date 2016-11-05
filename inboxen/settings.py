@@ -267,7 +267,7 @@ CSP_STYLE_SRC = ("'self'",)
 if DEBUG:
     # local dev made easy
     INTERNAL_IPS = ["127.0.0.1"]
-    INSTALLED_APPS += ('debug_toolbar',)
+    INSTALLED_APPS += ('debug_toolbar', 'wagtail.contrib.wagtailstyleguide')
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
