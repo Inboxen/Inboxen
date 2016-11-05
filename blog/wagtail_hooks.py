@@ -5,6 +5,7 @@ from blog.models import BlogPost
 
 class BlogAdmin(ModelAdmin):
     model = BlogPost
+    menu_icon = 'edit'
     list_display = ("subject", "author", "date", "published")
 
     def published(self, obj):
