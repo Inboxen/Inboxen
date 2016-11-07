@@ -14,8 +14,8 @@
 {% endblock %}
 
 {% block content %}
-{% app_url "tickets-list" status="!resolved" as more_open_url %}
-{% app_url "tickets-list" status="resolved" as more_closed_url %}
+{% app_url "tickets-list" status="open" as more_open_url %}
+{% app_url "tickets-list" status="closed" as more_closed_url %}
 <span class="sr-only"><a href="#question-form">{% trans "Go to Question form" %}</a></span>
 <h3>{% trans "Open Questions" %}</h3>
 {% include "tickets/includes/question_list.html" with questions=open more_url=more_open_url %}

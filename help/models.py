@@ -37,7 +37,8 @@ class AppPage(wag_models.Page):
 
     def route(self, request, path_components):
         resolver = RegexURLResolver(r"^", self.app)
-        path = request.path[len(self.url):]
+        _, _, url = self.get_url_parts()
+        path = request.path[len(url):]
         view, args, kwargs = resolver.resolve(path)
 
         self._view = view

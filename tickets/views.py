@@ -95,15 +95,12 @@ class QuestionListView(LoginRequiredMixin, generic.ListView):
         qs = super(QuestionListView, self).get_queryset()
 
         # filter statuses
-        try:
-            status = self.kwargs["status"].upper()
-            if status.startswith("!"):
-                status = getattr(self.model, status[1:])
-                qs = qs.exclude(status=status)
-            else:
-                status = getattr(self.model, status)
-                qs = qs.filter(status=status)
-        except (AttributeError, KeyError, IndexError, ValueError):
+        status = self.kwargs["status"].upper()
+        if status == "OPEN":
+            qs = qs.open()
+        elif status == "CLOSED":
+            qs = qs.closed()
+        else:
             raise Http404
 
         qs = qs.filter(author=self.request.user).select_related("author")

@@ -85,7 +85,7 @@ class QuestionViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertIn("More Questions", response.content)
-        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "!resolved"})
+        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "open"})
         self.assertIn(list_url, response.content)
 
     def test_switch_open_closed(self):
@@ -96,7 +96,7 @@ class QuestionViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertIn("More Questions", response.content)
-        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "resolved"})
+        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "closed"})
         self.assertIn(list_url, response.content)
 
     def test_post(self):
@@ -126,7 +126,7 @@ class QuestionListTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "!resolved"})
+        return app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "open"})
 
     def test_get(self):
         response = self.client.get(self.get_url())
