@@ -1,0 +1,50 @@
+{% extends "modeladmin/edit.html" %}
+{% load i18n %}
+
+{% block form %}
+<ul class="objects">
+    <li class="object">
+        <h2>{% trans "Question" %}</h3>
+        <fieldset>
+            <ul class="fields">
+                <li>
+                    <div><h3>{{ view.instance.subject }}</h3></div>
+                </li>
+                <li>
+                    <div>{{ view.instance.render_body }}</div>
+                </li>
+                <li>
+                <li><i>{% blocktrans with author=view.instance.author date=view.instance.date %}From {{ author }} at {{ date }}{% endblocktrans %}</i></li>
+                </li>
+            </ul>
+        </fieldset>
+    </li>
+    <li class="object">
+        <h2>{% trans "Replies" %}</h3>
+        {% for reply in view.instance.response_set.all %}
+        <fieldset>
+            <ul class="fields">
+                <li><div>{{ reply.render_body }}</div></li>
+                <li><i>{% blocktrans with author=reply.author date=reply.date %}From {{ author }} at {{ date }}{% endblocktrans %}</i></li>
+            </ul>
+        </fieldset>
+        {% empty %}
+        <fieldset>
+            <ul class="fields">
+                <li><div>{% trans "There are no replies" %}</div></li>
+            </ul>
+        </fieldset>
+        {% endfor %}
+    </li>
+    <li class="object">
+        <h2>{% trans "Add a reply" %}</h2>
+        <fieldset>
+            <ul class="fields">
+                <li>
+                    {% include "wagtailadmin/shared/field.html" with show_label=False show_help_text=False field=form.body %}
+                </li>
+            </ul>
+        </fieldset>
+    </li>
+</ul>
+{% endblock %}

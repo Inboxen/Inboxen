@@ -24,6 +24,7 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
+from wagtail.contrib.modeladmin.views import EditView
 
 from help.utils import app_reverse
 from tickets import forms, models
@@ -112,12 +113,12 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
     model = models.Question
     form_class = forms.ResponseForm
 
-    def form_valid(self, form):
-        response = form.save(commit=False)
-        response.author = self.request.user
-        response.question = self.object
-        response.save()
-        return super(QuestionDetailView, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(QuestionDetailView, self).get_form_kwargs()
+        kwargs["author"] = self.request.user
+        kwargs["question"] = self.object
+
+        return kwargs
 
     def get_context_data(self, **kwargs):
         kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
@@ -137,3 +138,25 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
     def post(self, *args, **kwargs):
         self.object = self.get_object()
         return super(QuestionDetailView, self).post(*args, **kwargs)
+
+
+class QuestionAdminEditView(EditView):
+    """View for modeladmin "edit" view"""
+    def get_form_class(self):
+        return forms.ResponseForm
+
+    def get_form_kwargs(self):
+        kwargs = super(QuestionAdminEditView, self).get_form_kwargs()
+        kwargs["author"] = self.request.user
+        kwargs["question"] = kwargs["instance"]
+        del kwargs["instance"]
+
+        return kwargs
+
+    def get_edit_handler_class(self):
+        """Return a fake edit_handler because we're not using it"""
+        class FakeHandler(object):
+            def __init__(self, *args, **kwargs):
+                pass
+
+        return FakeHandler

@@ -31,6 +31,19 @@ class QuestionForm(forms.ModelForm):
 
 
 class ResponseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.question = kwargs.pop("question")
+        self.author = kwargs.pop("author")
+        super(ResponseForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(ResponseForm, self).save(commit=False)
+        instance.author = self.author
+        instance.question = self.question
+        instance.save()
+
+        return instance
+
     class Meta:
         model = models.Response
         fields = ["body"]
