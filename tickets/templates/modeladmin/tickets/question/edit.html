@@ -43,6 +43,9 @@
                 <li>
                     {% include "wagtailadmin/shared/field.html" with show_label=False show_help_text=False field=form.body %}
                 </li>
+                <li>
+                    {% include "wagtailadmin/shared/field.html" with show_label=False show_help_text=False field=form.status %}
+                </li>
             </ul>
         </fieldset>
     </li>

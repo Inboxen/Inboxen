@@ -143,7 +143,7 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
 class QuestionAdminEditView(EditView):
     """View for modeladmin "edit" view"""
     def get_form_class(self):
-        return forms.ResponseForm
+        return forms.ResponseAdminForm
 
     def get_form_kwargs(self):
         kwargs = super(QuestionAdminEditView, self).get_form_kwargs()

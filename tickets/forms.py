@@ -40,7 +40,27 @@ class ResponseForm(forms.ModelForm):
         instance = super(ResponseForm, self).save(commit=False)
         instance.author = self.author
         instance.question = self.question
-        instance.save()
+        if commit:
+            instance.save()
+
+        return instance
+
+    class Meta:
+        model = models.Response
+        fields = ["body"]
+        labels = {"body": _("Reply")}
+
+
+class ResponseAdminForm(ResponseForm):
+    status = forms.ChoiceField(choices=models.Question.STATUS_CHOICES)
+
+    def save(self, commit=True):
+        instance = super(ResponseAdminForm, self).save(commit=False)
+        self.question.status = self.cleaned_data["status"]
+
+        if commit:
+            instance.save()
+            self.question.save()
 
         return instance
 
