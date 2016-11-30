@@ -114,6 +114,7 @@ class QuestionListTestCase(test.TestCase):
 
         QuestionFactory.create_batch(75, author=self.user, status=models.Question.NEW)
 
+        Site.objects.all().delete()
         index_page = HelpIndex(slug="help", title="Help")
         HelpIndex.add_root(instance=index_page)
         self.page = AppPage(app="tickets.urls", slug="questions", title="Questions")
