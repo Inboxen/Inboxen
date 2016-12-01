@@ -211,7 +211,7 @@ INSTALLED_APPS = (
     # Other Inboxen apps
     'account',
     'blog',
-    'help',
+    'cms',
     'liberation',
     'redirect',
     'router',
@@ -306,8 +306,8 @@ WAGTAIL_SITE_NAME = SITE_NAME
 WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
 WAGTAIL_PASSWORD_RESET_ENABLED = False
 
-WAGTAIL_USER_CREATION_FORM = 'help.forms.InboxenUserCreationForm'
-WAGTAIL_USER_EDIT_FORM = 'help.forms.InboxenUserEditForm'
+WAGTAIL_USER_CREATION_FORM = 'cms.forms.InboxenUserCreationForm'
+WAGTAIL_USER_EDIT_FORM = 'cms.forms.InboxenUserEditForm'
 
 WAGTAIL_ADMIN_BASE_URL = urlresolvers.reverse_lazy("wagtailadmin_home")
 
@@ -352,7 +352,7 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
-        'help': {
+        'cms': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },

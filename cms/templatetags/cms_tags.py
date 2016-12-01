@@ -1,6 +1,6 @@
 from django import template
 
-from help.utils import app_reverse
+from cms.utils import app_reverse
 
 register = template.Library()
 

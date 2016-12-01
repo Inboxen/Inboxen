@@ -25,8 +25,8 @@ from wagtail.wagtailcore.models import Site
 import factory
 import factory.fuzzy
 
-from help.models import AppPage, HelpIndex
-from help.utils import app_reverse
+from cms.models import AppPage, HelpIndex
+from cms.utils import app_reverse
 from inboxen.tests import factories
 from inboxen.utils import override_settings
 from tickets import models

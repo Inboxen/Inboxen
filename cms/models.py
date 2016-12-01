@@ -10,9 +10,9 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 class HelpIndex(wag_models.Page):
     subpage_types = [
         # all Pages except itself
-        'help.HelpPage',
-        'help.PeoplePage',
-        'help.AppPage',
+        'cms.HelpPage',
+        'cms.PeoplePage',
+        'cms.AppPage',
     ]
 
     def get_context(self, request, *args, **kwargs):
@@ -32,7 +32,7 @@ class AppPage(wag_models.Page):
         FieldPanel('app'),
     ]
 
-    parent_page_types = ['help.HelpIndex']
+    parent_page_types = ['cms.HelpIndex']
     subpage_types = []
 
     def route(self, request, path_components):
@@ -59,8 +59,8 @@ class HelpPage(wag_models.Page):
         FieldPanel('body', classname="full"),
     ]
 
-    parent_page_types = ['help.HelpIndex', 'help.HelpPage']
-    subpage_types = ['help.HelpPage']
+    parent_page_types = ['cms.HelpIndex', 'cms.HelpPage']
+    subpage_types = ['cms.HelpPage']
 
 
 class PeoplePage(wag_models.Page):
@@ -68,7 +68,7 @@ class PeoplePage(wag_models.Page):
         InlinePanel('people', label="People"),
     ]
 
-    parent_page_types = ['help.HelpIndex']
+    parent_page_types = ['cms.HelpIndex']
     subpage_types = []
 
 

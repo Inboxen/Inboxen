@@ -26,7 +26,7 @@ from django.views import generic
 from braces.views import LoginRequiredMixin
 from wagtail.contrib.modeladmin.views import EditView
 
-from help.utils import app_reverse
+from cms.utils import app_reverse
 from tickets import forms, models
 
 
