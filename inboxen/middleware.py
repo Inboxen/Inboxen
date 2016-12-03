@@ -70,7 +70,10 @@ class WagtailAdminProtectionMiddleware(object):
     """Protects Wagtail's admin with both sudo and 2FA"""
     def process_request(self, request):
         if request.path.startswith(str(settings.WAGTAIL_ADMIN_BASE_URL)):
-            if not request.user.is_verified() and not settings.DEBUG:
-                raise PermissionDenied("Admins must have Two Factor Authentication enalbed")
+            if request.user.is_anonymous():
+                # admin has its own redirect for non-logged in users
+                return
+            elif not request.user.is_verified() and not settings.DEBUG:
+                raise PermissionDenied("Admins must have Two Factor Authentication enabled")
             elif not request.is_sudo():
                 return redirect_to_sudo(request.get_full_path())

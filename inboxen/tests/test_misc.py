@@ -159,9 +159,15 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
 
 class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
     middleware = WagtailAdminProtectionMiddleware()
+    user = get_user_model()()
 
-    class MockUser(object):
-        is_verified = None
+    def test_anon_passthrough(self):
+        path = "%s/something/" % reverse("wagtailadmin_home")
+        request = utils.MockRequest(AnonymousUser())
+        request.path = path
+
+        response = self.middleware.process_request(request)
+        self.assertIsNone(response)
 
     def test_non_admin_path(self):
         path = "/something%s" % reverse("wagtailadmin_home")
@@ -172,7 +178,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
             (False, False),
         )
         for is_sudo, is_verified in attrs:
-            request = utils.MockRequest(self.MockUser())
+            request = utils.MockRequest(self.user)
             request.path = path
             request.is_sudo = lambda: is_sudo
             request.user.is_verified = lambda: is_verified
@@ -189,7 +195,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
             (False, False, True),
         )
         for is_sudo, is_verified, will_redirect in attrs:
-            request = utils.MockRequest(self.MockUser())
+            request = utils.MockRequest(self.user)
             request.path = path
             request.is_sudo = lambda: is_sudo
             request.user.is_verified = lambda: is_verified
