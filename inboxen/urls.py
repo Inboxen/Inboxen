@@ -78,11 +78,8 @@ urlpatterns = [
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
 
-    # admin
-    urls.url(r'^admin/', urls.include(admin.site.urls)),
-
     # wagtail
-    urls.url(r'^cms/', urls.include(wagtailadmin_urls)),
+    urls.url(r'^admin/', urls.include(wagtailadmin_urls)),
     urls.url(r'^documents/', urls.include(wagtaildocs_urls)),
     urls.url(r'^help/', urls.include(wagtail_urls)),
 ]
