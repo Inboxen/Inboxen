@@ -244,6 +244,7 @@ CSP_STYLE_SRC = ("'self'",)
 if DEBUG:
     # local dev made easy
     INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
 
