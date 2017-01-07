@@ -51,7 +51,7 @@ class TwoFactorSetupView(core.SetupView):
         ('method', two_forms.MethodForm),
         ('generator', two_forms.TOTPDeviceForm),
     )
-    redirect_url = "user-twofactor-backup"
+    success_url = "user-twofactor-backup"
     qrcode_url = "user-twofactor-qrcode"
 
     def done(self, *args, **kwargs):
@@ -76,7 +76,7 @@ class TwoFactorSetupView(core.SetupView):
         return context
 
 
-backup_view = sudo_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", redirect_url="user-twofactor-backup"))
+backup_view = sudo_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", success_url="user-twofactor-backup"))
 disable_view = sudo_required(profile.DisableView.as_view(template_name="account/twofactor-disable.html", redirect_url="user-security"))
 login = anonymous_required(LoginView.as_view())
 setup_view = sudo_required(TwoFactorSetupView.as_view())
