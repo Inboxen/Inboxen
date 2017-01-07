@@ -205,7 +205,7 @@ class EmailViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing">link</a>', body)
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
 
     def test_not_allowed_tag(self):
         response = self.client.get(self.get_url())
@@ -314,7 +314,7 @@ class BadEmailTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing">link</a>', body)
+        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
 
 
 class RealExamplesTestCase(test.TestCase):
