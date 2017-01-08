@@ -280,6 +280,8 @@ if DEBUG:
 ANON_ALWAYS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
+SUDO_URL = urlresolvers.reverse_lazy("user-sudo")
+
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'inboxen.wsgi.application'
 
