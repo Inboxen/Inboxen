@@ -50,7 +50,7 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
         if self.request.method != "POST":
             qs = qs.add_last_activity()
             qs = qs.annotate(pinned=Count(Case(When(flags=models.Inbox.flags.pinned, then=1), output_field=IntegerField())))
-            qs = qs.annotate(disabled=Case(When(flags=models.Inbox.flags.disabled, then=1), output_field=IntegerField()))
+            qs = qs.annotate(disabled=Count(Case(When(flags=models.Inbox.flags.disabled, then=1), output_field=IntegerField())))
             qs = qs.order_by("-pinned", "disabled", "-last_activity").select_related("domain")
         return qs
 
