@@ -1,0 +1,16 @@
+{# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "inboxen/base.html" %}
+{% load wagtailcore_tags %}
+
+{% block headline %}{{ page.title }}{% endblock %}
+
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+    {% for pg in page.get_ancestors %}
+        {% if not pg.is_root %}<li><a href="{% pageurl pg %}">{{ pg.title }}</a></li>{% endif %}
+    {% endfor %}
+        <li class="active">{{ page.title }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}{{ page.body|richtext }}{% endblock %}
