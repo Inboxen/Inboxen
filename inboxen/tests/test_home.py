@@ -77,8 +77,8 @@ class HomeViewTestCase(test.TestCase):
         middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
         middle.flags.pinned = True
 
-        # Finally the least active.
-        least = ordered_inboxes[-1]
+        # Finally the least active (NB: negative indexing isn't supported).
+        least = ordered_inboxes[len(ordered_inboxes)-1]
         least.flags.pinned = True
 
         response = self.client.get(self.get_url())
@@ -109,8 +109,8 @@ class HomeViewTestCase(test.TestCase):
         middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
         middle.flags.disabled = True
 
-        # Finally the inbox with the least activity.
-        least = ordered_inboxes[-1]
+        # Finally the least active (NB: negative indexing isn't supported).
+        least = ordered_inboxes[len(ordered_inboxes)-1]
         least.flags.disabled = True
 
         # Get the page, they should have been pushed to the second page.
