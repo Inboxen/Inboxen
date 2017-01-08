@@ -85,7 +85,7 @@ def make_message(message):
     for part in part_list:
         msg = Message()
 
-        header_set = part.header_set.order_by("ordinal").select_related("name__name", "data__data")
+        header_set = part.header_set.order_by("ordinal").select_related("name", "data")
         for header in header_set:
             msg[header.name.name] = Header(header.data.data, "utf-8").encode()
 
