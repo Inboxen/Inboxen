@@ -64,16 +64,33 @@ class HomeViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_pinned_first(self):
-        # mark some emails as important
-        for inbox in self.inboxes[:3]:
-            inbox.flags.pinned = True
-            inbox.save()
+        # Mark some specific inboxes based on activity. One for most recent, one
+        # in the middel and then the least recent.
+        ordered_inboxes = models.Inbox.objects.all().order_by("-last_activity")
+
+        # Most recent activity
+        latest = ordered_inboxes[0]
+        latest.flags.pinned = True
+
+        # Around (or exactly) the middle in activity.
+        middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
+        middle.flags.pinned = True
+
+        # Finally the least active.
+        least = ordered_inboxes[-1]
+        least.flags.pinned = True
 
         response = self.client.get(self.get_url())
         objs = response.context["page_obj"].object_list[:5]
-        objs = [obj.pinned for obj in objs]
 
-        self.assertEqual(objs, [1, 1, 1, 0, 0])
+        # Check the top inboxes three inboxes are pinned.
+        self.assertEqual([obj.pinned for obj in objs], [1, 1, 1, 0, 0])
+
+        # Check the pinned inboxes are ordered amongst themselves.
+        self.assertEqual(
+            [obj.id for o in objs],
+            [latest.id, middle.id, least.id]
+        )
 
     def test_disabled_sink(self):
         """ Check disabled inboxes sink to the bottom """
