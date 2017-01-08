@@ -72,14 +72,17 @@ class HomeViewTestCase(test.TestCase):
         # Most recent activity
         latest = ordered_inboxes[0]
         latest.flags.pinned = True
+        latest.save()
 
         # Around (or exactly) the middle in activity.
         middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
         middle.flags.pinned = True
+        middle.save()
 
         # Finally the least active (NB: negative indexing isn't supported).
         least = ordered_inboxes[len(ordered_inboxes)-1]
         least.flags.pinned = True
+        least.save()
 
         response = self.client.get(self.get_url())
         objs = response.context["page_obj"].object_list[:5]
@@ -89,7 +92,7 @@ class HomeViewTestCase(test.TestCase):
 
         # Check the pinned inboxes are ordered amongst themselves.
         self.assertEqual(
-            [obj.id for o in objs],
+            [obj.id for obj in objs][:3],
             [latest.id, middle.id, least.id]
         )
 
@@ -104,25 +107,31 @@ class HomeViewTestCase(test.TestCase):
         # The inbox with the latest activity.
         latest = ordered_inboxes[0]
         latest.flags.disabled = True
+        latest.save()
 
         # One from the middle
         middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
         middle.flags.disabled = True
+        middle.save()
 
         # Finally the least active (NB: negative indexing isn't supported).
         least = ordered_inboxes[len(ordered_inboxes)-1]
         least.flags.disabled = True
+        least.save()
 
         # Get the page, they should have been pushed to the second page.
         response = self.client.get(self.get_url() + "2/")
-        objs = response.context["page_obj"].object_list[:5]
+        objs = response.context["page_obj"].object_list[45:]
 
         # Check the last three are disabled
-        self.assertEqual([obj.disabled for o in objs], [0, 0, 1, 1, 1])
+        self.assertEqual(
+            [bool(obj.flags.disabled) for obj in objs],
+            [False, False, True, True, True]
+        )
 
         # Check the three are in order amongst themselves.
         self.assertEqual(
-            [obj.id for o in objs],
+            [obj.id for obj in objs[2:]],
             [latest.id, middle.id, least.id]
         )
 
