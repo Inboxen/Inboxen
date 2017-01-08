@@ -21,6 +21,7 @@ from django import test
 from django.conf import settings as dj_settings
 from django.core import urlresolvers
 
+from inboxen import models
 from inboxen.tests import factories
 
 
@@ -73,6 +74,38 @@ class HomeViewTestCase(test.TestCase):
         objs = [obj.pinned for obj in objs]
 
         self.assertEqual(objs, [1, 1, 1, 0, 0])
+
+    def test_disabled_sink(self):
+        """ Check disabled inboxes sink to the bottom """
+        # Find three inboxes, the inbox with: the most recent activity, least
+        # recent activity and then pick one from the middle. This insures that
+        # they sink to the bottom but keep their order within the disabled.
+        ordered_inboxes = models.Inbox.objets.all().order_by("-last_activity")
+
+        # The inbox with the latest activity.
+        latest = ordered_inboxes[0]
+        latest.flags.disabled = True
+
+        # One from the middle
+        middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
+        middle.flags.disabled = True
+
+        # Finally the inbox with the least activity.
+        least = ordered_inboxes[-1]
+        least.flags.disabled = True
+
+        # Get the page, they should have been pushed to the second page.
+        response = self.client.get(self.get_url() + "2/")
+        objs = response.context["page_obj"].object_list[:5]
+
+        # Check the last three are disabled
+        self.assertEqual([obj.disabled for o in objs], [0, 0, 1, 1, 1])
+
+        # Check the three are in order amongst themselves.
+        self.assertEqual(
+            [obj.id for o in objs],
+            [latest.id, middle.id, least.id]
+        )
 
     def test_pagin(self):
         # there should be 150 inboxes in the test fixtures
