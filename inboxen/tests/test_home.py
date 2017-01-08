@@ -80,7 +80,7 @@ class HomeViewTestCase(test.TestCase):
         # Find three inboxes, the inbox with: the most recent activity, least
         # recent activity and then pick one from the middle. This insures that
         # they sink to the bottom but keep their order within the disabled.
-        ordered_inboxes = models.Inbox.objets.all().order_by("-last_activity")
+        ordered_inboxes = models.Inbox.objects.all().order_by("-last_activity")
 
         # The inbox with the latest activity.
         latest = ordered_inboxes[0]
