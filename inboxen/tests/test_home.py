@@ -66,7 +66,8 @@ class HomeViewTestCase(test.TestCase):
     def test_pinned_first(self):
         # Mark some specific inboxes based on activity. One for most recent, one
         # in the middel and then the least recent.
-        ordered_inboxes = models.Inbox.objects.all().order_by("-last_activity")
+        ordered_inboxes = models.Inbox.objects.all().add_last_activity()
+        ordered_inboxes = ordered_inboxes.order_by("-last_activity")
 
         # Most recent activity
         latest = ordered_inboxes[0]
@@ -97,7 +98,8 @@ class HomeViewTestCase(test.TestCase):
         # Find three inboxes, the inbox with: the most recent activity, least
         # recent activity and then pick one from the middle. This insures that
         # they sink to the bottom but keep their order within the disabled.
-        ordered_inboxes = models.Inbox.objects.all().order_by("-last_activity")
+        ordered_inboxes = models.Inbox.objects.all().add_last_activity()
+        ordered_inboxes = ordered_inboxes.order_by("-last_activity")
 
         # The inbox with the latest activity.
         latest = ordered_inboxes[0]
