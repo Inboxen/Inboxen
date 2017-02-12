@@ -94,8 +94,11 @@ ALLOWED_HOSTS = config["general"]["allowed_hosts"]
 # Enable debugging - DO NOT USE IN PRODUCTION
 DEBUG = config["general"]["debug"]
 
-# Alloew new users to register
+# Allow new users to register
 ENABLE_REGISTRATION = config["general"]["enable_registration"]
+
+# Allow admins to edit users
+ENABLE_USER_EDITING = config["general"]["enable_user_editing"]
 
 # Cooloff time, in minutes, for failed logins
 LOGIN_ATTEMPT_COOLOFF = config["general"]["login_attempt_cooloff"]
