@@ -11,10 +11,12 @@
 {% endblock %}
 
 {% block content %}
+<div class="text-center"><h2>{{ page.title }}</h2><p>{{ page.description }}</p></div>
 <div class="text-center row">
 {% for child in menu %}
     <div class="col-sm-4 col-md-2">
-    <h3><a href="{% pageurl child %}">{{ child.title }}</a></h3>
+        <h3><a href="{% pageurl child %}">{{ child.title }}</a></h3>
+        <p>{{ child.specific.description }}</p>
     </div>
 {% endfor %}
 </div>

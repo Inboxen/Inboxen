@@ -7,7 +7,17 @@ from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, Inl
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 
 
-class HelpIndex(wag_models.Page):
+class HelpBasePage(wag_models.Page):
+    description = models.TextField(blank=True)
+
+    promote_panels = wag_models.Page.promote_panels + [
+        FieldPanel('description'),
+    ]
+    class Meta:
+        abstract = True
+
+
+class HelpIndex(HelpBasePage):
     subpage_types = [
         # all Pages except itself
         'cms.HelpPage',
@@ -17,12 +27,12 @@ class HelpIndex(wag_models.Page):
 
     def get_context(self, request, *args, **kwargs):
         context = super(HelpIndex, self).get_context(request, *args, **kwargs)
-        context["menu"] = self.get_children().live().public()
+        context["menu"] = self.get_children().live().in_menu().public().specific()
 
         return context
 
 
-class AppPage(wag_models.Page):
+class AppPage(HelpBasePage):
     APP_CHOICES = (
         ("tickets.urls", "Tickets"),
     )
@@ -52,7 +62,7 @@ class AppPage(wag_models.Page):
         return reverse(viewname, urlconf=self.app, args=args, kwargs=kwargs)
 
 
-class HelpPage(wag_models.Page):
+class HelpPage(HelpBasePage):
     body = fields.RichTextField(blank=True)
 
     content_panels = wag_models.Page.content_panels + [
@@ -63,7 +73,7 @@ class HelpPage(wag_models.Page):
     subpage_types = ['cms.HelpPage']
 
 
-class PeoplePage(wag_models.Page):
+class PeoplePage(HelpBasePage):
     content_panels = wag_models.Page.content_panels + [
         InlinePanel('people', label="People"),
     ]
