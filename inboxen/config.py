@@ -53,7 +53,7 @@ cache_dict = {
     "memcached": "django.core.cache.backends.memcached.PyLibMCCache",
 }
 
-is_testing = bool(int(os.getenv('INBOX_TESTING', '0')))
+is_testing = int(os.getenv('INBOXEN_TESTING', '0')) > 0
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
