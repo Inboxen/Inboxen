@@ -1,0 +1,10 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "inboxen/base.html" %}
+
+{% block headline %}{{ page.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 col-md-offset-1 col-xs-12">{% block page_content %}{% endblock %}</div>
+</div>
+{% endblock %}

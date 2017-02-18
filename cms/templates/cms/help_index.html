@@ -1,8 +1,6 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% extends 'inboxen/base.html' %}
+{% extends 'cms/help_base.html' %}
 {% load wagtailcore_tags %}
-
-{% block headline %}{{ page.title }}{% endblock %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -10,7 +8,7 @@
     </ul>
 {% endblock %}
 
-{% block content %}
+{% block page_content %}
 <div class="text-center"><h2>{{ page.title }}</h2><p>{{ page.description }}</p></div>
 <div class="text-center row">
 {% for child in menu %}
