@@ -110,7 +110,7 @@ class FullEmailFactory(EmailFactory):
         with search.update_index():
             email = super(FullEmailFactory, cls)._create(model_class, *args, **kwargs)
             body = BodyFactory(data="This mail body is searchable")
-            part = PartListFactory(body=body)
+            part = PartListFactory(email=email, body=body)
             HeaderFactory(part=part, name="From")
             HeaderFactory(part=part, name="Subject")
             HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")

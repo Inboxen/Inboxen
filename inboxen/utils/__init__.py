@@ -21,6 +21,7 @@ import os
 import re
 import logging
 import sys
+import warnings
 
 from django.conf import settings
 from django.template import loader, Context
@@ -28,6 +29,7 @@ from django import test
 from django.utils.translation import ugettext as _
 
 from django_assets import env as assets_env
+from djcelery.contrib.test_runner import CeleryTestSuiteRunner
 from webassets.script import GenericArgparseImplementation
 
 from inboxen.context_processors import reduced_settings_context
@@ -112,3 +114,18 @@ class WebAssetsOverrideMixin(object):
 
 class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
     pass
+
+
+class InboxenTestRunner(CeleryTestSuiteRunner):
+    """Test runner for Inboxen
+
+    Build on top of djcelery's test runner
+    """
+    def setup_test_environment(self, **kwargs):
+        self.is_testing_var_set = int(os.getenv('INBOXEN_TESTING', '0')) > 0
+        super(InboxenTestRunner, self).setup_test_environment(**kwargs)
+
+    def teardown_test_environment(self, **kwargs):
+        super(InboxenTestRunner, self).teardown_test_environment(**kwargs)
+        if not self.is_testing_var_set:
+            warnings.warn("You did not set 'INBOXEN_TESTING' in your environment. Test results will be unreliable!")

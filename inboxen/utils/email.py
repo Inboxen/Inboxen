@@ -130,6 +130,12 @@ def _clean_html_body(request, email, body, charset):
         except KeyError:
             pass
 
+        # open link in tab
+        link.attrib["target"] = "_blank"
+        # and prevent window.opener bug (noopener is only supported in newer
+        # browsers, plus we already set noreferrer in the head)
+        link.attrib["rel"] = "noreferrer"
+
     # finally, export to unicode
     body = _unicode_damnit(etree.tostring(html_tree), charset)
     return safestring.mark_safe(body)

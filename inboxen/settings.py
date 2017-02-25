@@ -99,7 +99,7 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-TEST_RUNNER = 'djcelery.contrib.test_runner.CeleryTestSuiteRunner'
+TEST_RUNNER = 'inboxen.utils.InboxenTestRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
 
@@ -244,6 +244,7 @@ CSP_STYLE_SRC = ("'self'",)
 if DEBUG:
     # local dev made easy
     INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
 
