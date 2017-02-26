@@ -85,7 +85,7 @@ fix #345
 touch #234
 ```
 
-If you are commiting on either `master` or `deploy`, then make sure to end your
+If you are committing on either `master` or `deploy`, then make sure to end your
 commit message with either "IN MASTER" or "IN DEPLOY" so we know who to blame
 when stuff breaks.
 
@@ -114,7 +114,7 @@ After this has completed, see the next section on minimum configuration. Also,
 do.
 
 We tag our deployments (you should too) - we use signed annotated tags (`git
-tag -as deplpy-YYYYMMDD`). The tag should contain a changelog since the last
+tag -as deploy-YYYYMMDD`). The tag should contain a changelog since the last
 deploy tag. This is particularly useful for rollbacks and keeps a record of
 deployments that's separate from git history.
 
@@ -130,7 +130,7 @@ secret_key = some_random_string
 Where `some_random_string` is a long (at least a length of 50) string,
 containing random characters.
 
-### Webserver
+### Web Server
 
 The WSGI script can be found at `inboxen/wsgi.py`
 
@@ -141,6 +141,6 @@ world.  Solutions such as a VPN are probably the easiest for your staff to use.
 ### Static Files
 
 Static files are collected into `./static_content/`. You should configure your
-webserver to point the URL `/static/` to this folder.
+web server to point the URL `/static/` to this folder.
 
 Remember to run `python manage.py collectstatic`!
