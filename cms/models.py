@@ -91,11 +91,14 @@ class PersonInfo(wag_models.Orderable):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        # TODO: put this in a setting or something?
+        help_text="Images will be in the collection 'Profile Pictures'. Images will be displayed at 300x400",
+        limit_choices_to={"collection__name": "Profile Pictures"}
     )
 
     content_panels = [
         FieldPanel("name"),
         FieldPanel('body', classname="full"),
-        ImageChooserPanel('feed_image'),
+        ImageChooserPanel('image'),
     ]
