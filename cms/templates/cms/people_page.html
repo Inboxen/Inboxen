@@ -15,7 +15,7 @@
 {% for person in page.people.all %}
     <p>
         <h3>{{ person.name }}</h3>
-        <p>{% image person.image max-500x500 %}</p>
+        <p>{% image person.image fill-300x400 %}</p>
         <p>{{ person.body|richtext }}</p>
     </p>
 {% endfor %}
