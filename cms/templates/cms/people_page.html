@@ -19,9 +19,15 @@
     {# forloop.counter == forloop.counter0 + 1 #}
     {% if forloop.counter0|divisibleby:2 %}<div class="row">{% endif %}
         <div class="col-xs-12 col-md-6{% if forloop.last and forloop.counter0|divisibleby:2 %} col-md-offset-3{% endif %}">
-            <h3>{{ person.name }}</h3>
-            <p>{% image person.image fill-300x400 %}</p>
-            <p>{{ person.body|richtext }}</p>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ person.name }}</h3>
+                </div>
+                <div class="panel-body">
+                    {% image person.image fill-300x400 class="profile-image" %}
+                    {{ person.body|richtext }}
+                </div>
+            </div>
         </div>
     {% if forloop.last or forloop.counter|divisibleby:2 %}</div>{% endif %}
 {% endfor %}
