@@ -74,7 +74,10 @@ class HelpPage(HelpBasePage):
 
 
 class PeoplePage(HelpBasePage):
+    intro_paragraph = fields.RichTextField(blank=True, help_text="Text at the top of the page")
+
     content_panels = wag_models.Page.content_panels + [
+        FieldPanel('intro_paragraph', classname="full"),
         InlinePanel('people', label="People"),
     ]
 
