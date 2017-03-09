@@ -18,7 +18,7 @@ def initial_data(apps, schema_editor):
     app_page_ct, _ = ContentType.objects.get_or_create(model="apppage", app_label="cms")
 
     help_index = HelpIndex.objects.create(
-        title="Help",
+        title="Help & Support",
         description="",
         depth=2,
         content_type=help_index_ct,
@@ -30,7 +30,7 @@ def initial_data(apps, schema_editor):
 
     questions_app = AppPage.objects.create(
         title="Questions",
-        description="",
+        description="If you need assistance or want to speak to a human.",
         depth=3,
         content_type=app_page_ct,
         path="000100010001",
