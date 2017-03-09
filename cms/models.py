@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import RegexURLResolver, reverse
 
@@ -95,9 +96,8 @@ class PersonInfo(wag_models.Orderable):
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        # TODO: put this in a setting or something?
-        help_text="Images will be in the collection 'Profile Pictures'. Images will be displayed at 300x400",
-        limit_choices_to={"collection__name": "Profile Pictures"}
+        help_text="Images will be in the collection '%s'. Images will be displayed at 300x400" % settings.PEOPLE_PAGE_IMAGE_COLLECTION,
+        limit_choices_to={"collection__name": settings.PEOPLE_PAGE_IMAGE_COLLECTION}
     )
 
     content_panels = [

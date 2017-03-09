@@ -311,6 +311,9 @@ WAGTAIL_USER_EDIT_FORM = 'cms.forms.InboxenUserEditForm'
 
 WAGTAIL_ADMIN_BASE_URL = urlresolvers.reverse_lazy("wagtailadmin_home")
 
+# this is the name of the collection that will contain profile pictures
+PEOPLE_PAGE_IMAGE_COLLECTION = "Profile Pictures"
+
 ## LOGGING
 if DEBUG:
     log_level = "INFO"

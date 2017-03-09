@@ -4,12 +4,23 @@ from django.db import migrations
 
 def initial_data(apps, schema_editor):
     ContentType = apps.get_model("contenttypes.ContentType")
-    Site = apps.get_model("wagtailcore.Site")
-    HelpIndex = apps.get_model("cms.HelpIndex")
-    AppPage = apps.get_model("cms.AppPage")
+
+    Collection = apps.get_model("wagtailcore.Collection")
     Page = apps.get_model("wagtailcore.Page")
+    Site = apps.get_model("wagtailcore.Site")
+
+    AppPage = apps.get_model("cms.AppPage")
+    HelpIndex = apps.get_model("cms.HelpIndex")
 
     default_site = Site.objects.get()
+
+    Collection.objects.create(
+        name=settings.PEOPLE_PAGE_IMAGE_COLLECTION,
+        path="00010001",
+        depth=2,
+        numchild=0,
+    )
+    Collection.objects.filter(path="0001").update(numchild=1)
 
     root_page = Page.objects.get(path="0001", slug="root")
     Page.objects.exclude(id=root_page.id).delete()
@@ -59,6 +70,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("cms", "0005_auto_20170226_2309"),
         ("wagtailcore", "0032_add_bulk_delete_page_permission"),
+        ("wagtaildocs", "0006_copy_document_permissions_to_collections"),
         ("contenttypes", "0002_remove_content_type_name"),
     ]
 
