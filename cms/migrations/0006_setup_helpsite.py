@@ -68,7 +68,7 @@ def remove_initial_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("cms", "0005_auto_20170226_2309"),
+        ("cms", "0006_peoplepage_intro_paragraph"),
         ("wagtailcore", "0032_add_bulk_delete_page_permission"),
         ("wagtaildocs", "0006_copy_document_permissions_to_collections"),
         ("contenttypes", "0002_remove_content_type_name"),
