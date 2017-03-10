@@ -65,12 +65,8 @@ class QuestionViewTestCase(test.TestCase):
         QuestionFactory.create_batch(11, author=self.user, status=models.Question.NEW)
         QuestionFactory.create_batch(3, author=self.other_user, status=models.Question.RESOLVED)
 
-        Site.objects.all().delete()
-        index_page = HelpIndex(slug="help", title="Help")
-        HelpIndex.add_root(instance=index_page)
-        self.page = AppPage(app="tickets.urls", slug="questions", title="Questions")
-        index_page.add_child(instance=self.page)
-        self.site = Site.objects.create(hostname="exmaple.com", root_page=index_page, is_default_site=True)
+        self.page = AppPage.objects.get(app="tickets.urls")
+        self.site = Site.objects.get(is_default_site=True)
 
         login = self.client.login(username=self.user.username, password="123456")
 
@@ -114,12 +110,8 @@ class QuestionListTestCase(test.TestCase):
 
         QuestionFactory.create_batch(75, author=self.user, status=models.Question.NEW)
 
-        Site.objects.all().delete()
-        index_page = HelpIndex(slug="help", title="Help")
-        HelpIndex.add_root(instance=index_page)
-        self.page = AppPage(app="tickets.urls", slug="questions", title="Questions")
-        index_page.add_child(instance=self.page)
-        self.site = Site.objects.create(hostname="exmaple.com", root_page=index_page, is_default_site=True)
+        self.page = AppPage.objects.get(app="tickets.urls")
+        self.site = Site.objects.get(is_default_site=True)
 
         login = self.client.login(username=self.user.username, password="123456")
 
