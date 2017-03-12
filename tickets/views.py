@@ -49,6 +49,10 @@ class FormMixin(generic.edit.FormMixin):
         else:
             return self.form_invalid(form)
 
+    def form_valid(self, form):
+        form.save()
+        return super(FormMixin, self).form_valid(form)
+
 
 class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
     """List of questions that belong to current user"""
@@ -60,7 +64,6 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
-        self.object.save()
 
         return super(QuestionHomeView, self).form_valid(form)
 
