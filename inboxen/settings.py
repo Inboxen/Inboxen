@@ -283,6 +283,7 @@ if DEBUG:
 else:
     log_level = "WARNING"
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -306,6 +307,10 @@ LOGGING = {
         }
     },
     'loggers': {
+        'django': {
+            'handlers': ['console', 'mail_admins'],
+            'level': log_level,
+        },
         'inboxen': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
