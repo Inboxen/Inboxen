@@ -66,11 +66,6 @@ class BlogTestCase(test.TestCase):
         user.is_staff = True
         user.save()
 
-        login = self.client.login(username=user.username, password="123456")
-
-        if not login:
-            raise Exception("Could not log in")
-
         models.BlogPost.objects.create(author=user, subject=SUBJECT, draft=True, body=BODY)
         post = models.BlogPost.objects.get()
         self.assertEqual(post.subject, SUBJECT)
