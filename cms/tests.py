@@ -19,11 +19,56 @@
 
 from django import test
 from django.core import urlresolvers
+import mock
+
+from inboxen.tests import factories
+from inboxen.utils import override_settings
 
 
 class AdminTestCase(test.TestCase):
+    def setUp(self):
+        user = factories.UserFactory()
+        user.is_superuser = True
+        user.save()
+
+        login = self.client.login(username=user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
     def test_login_redirects(self):
+        with mock.patch("inboxen.signals.messages"):
+            self.client.logout()
+
         url = urlresolvers.reverse("wagtailadmin_home")
         response = self.client.get(url, follow=True)
         self.assertEqual(len(response.redirect_chain), 2)
         self.assertEqual(response.request["PATH_INFO"], urlresolvers.reverse("user-login"))
+
+    @override_settings(WAGTAIL_ADMIN_BASE_URL="/someurl", ENABLE_USER_EDITING=False)
+    def test_user_editing_disabled(self):
+        admin_home = urlresolvers.reverse("wagtailadmin_home")
+        response = self.client.get(admin_home)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("users", response.content)
+        self.assertNotIn("groups", response.content)
+
+        response = self.client.get(admin_home + "users/")
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(admin_home + "groups/")
+        self.assertEqual(response.status_code, 404)
+
+    @override_settings(WAGTAIL_ADMIN_BASE_URL="/someurl", ENABLE_USER_EDITING=True)
+    def test_user_editing_disabled(self):
+        admin_home = urlresolvers.reverse("wagtailadmin_home")
+        response = self.client.get(admin_home)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Users", response.content)
+        self.assertIn("Groups", response.content)
+
+        response = self.client.get(admin_home + "users/")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(admin_home + "groups/")
+        self.assertEqual(response.status_code, 200)
