@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from importlib import import_module
 import gc
 import logging
 import urllib
@@ -84,6 +85,17 @@ def statistics():
     stat.save()
 
     log.info("Saved statistics (%s)", stat.date)
+
+
+@app.task(ignore_result=True)
+def clean_expired_session():
+    """Clear expired sessions"""
+    engine = import_module(settings.SESSION_ENGINE)
+
+    try:
+        engine.SessionStore.clear_expired()
+    except NotImplementedError:
+        log.info("%s does not implement clear_expired", settings.SESSION_ENGINE)
 
 
 @app.task(ignore_result=True)
