@@ -36,4 +36,11 @@ notifications:
             - "ircs://irc.megworld.co.uk:9000#inboxen"
         use_notice: true
 
+    webhooks:
+        urls:
+            - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MG1vZ2dlcnM4NyUzQW1hdHJpeC5vcmcvJTIxZlRMa1dtaG9FWFRlUG1VaXhuJTNBbWF0cml4Lm9yZw"
+        on_success: always
+        on_failure: always
+        on_start: never
+
 sudo: false
