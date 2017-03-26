@@ -24,7 +24,7 @@ def remove_user_menu_items(request, menu_items):
 
 @hooks.register('register_admin_urls')
 def override_user_urls():
-    if settings.ENABLE_USER_EDITING:
+    if not settings.ENABLE_USER_EDITING:
         return [
             urls.url(r'^users/', user_editing_disabled_view),
             urls.url(r'^groups/', user_editing_disabled_view),

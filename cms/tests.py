@@ -17,12 +17,27 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import sys
+
 from django import test
+from django.conf import settings
 from django.core import urlresolvers
+from django.core.exceptions import PermissionDenied
+from wagtail.wagtailadmin import wagtail_hooks as admin_hooks
+from wagtail.wagtailadmin.menu import Menu
 import mock
 
+from cms.wagtail_hooks import override_user_urls, remove_user_menu_items
 from inboxen.tests import factories
 from inboxen.utils import override_settings
+
+
+class MiddlewareMock(object):
+    fail = True
+
+    def process_request(self, request):
+        if self.fail:
+            raise PermissionDenied()
 
 
 class AdminTestCase(test.TestCase):
@@ -36,6 +51,17 @@ class AdminTestCase(test.TestCase):
         if not login:
             raise Exception("Could not log in")
 
+    def test_for_smoke(self):
+        with mock.patch("inboxen.middleware.WagtailAdminProtectionMiddleware", MiddlewareMock) as middleware_mock:
+            # make sure admin is available and not on fire
+            url = urlresolvers.reverse("wagtailadmin_home")
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 403)  # OTP protected
+
+            middleware_mock.fail = False
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+
     def test_login_redirects(self):
         with mock.patch("inboxen.signals.messages"):
             self.client.logout()
@@ -45,30 +71,26 @@ class AdminTestCase(test.TestCase):
         self.assertEqual(len(response.redirect_chain), 2)
         self.assertEqual(response.request["PATH_INFO"], urlresolvers.reverse("user-login"))
 
-    @override_settings(WAGTAIL_ADMIN_BASE_URL="/someurl", ENABLE_USER_EDITING=False)
+
+class WagtailHooksTestCase(test.TestCase):
+    @override_settings(ENABLE_USER_EDITING=True)
+    def test_user_editing_enabled(self):
+        # not overriding URLS
+        self.assertEqual(override_user_urls(), None)
+
+        admin_hooks.settings_menu = Menu(register_hook_name='register_settings_menu_item')
+        menu = Menu(register_hook_name='register_admin_menu_item', construct_hook_name='construct_main_menu')
+        menu_html = menu.render_html(mock.Mock())
+        self.assertIn("Users", menu_html)
+        self.assertIn("Groups", menu_html)
+
+    @override_settings(ENABLE_USER_EDITING=False)
     def test_user_editing_disabled(self):
-        admin_home = urlresolvers.reverse("wagtailadmin_home")
-        response = self.client.get(admin_home)
-        self.assertEqual(response.status_code, 200)
-        self.assertNotIn("users", response.content)
-        self.assertNotIn("groups", response.content)
+        # URLs to override user and group editing
+        self.assertEqual(len(override_user_urls()), 2)
 
-        response = self.client.get(admin_home + "users/")
-        self.assertEqual(response.status_code, 404)
-
-        response = self.client.get(admin_home + "groups/")
-        self.assertEqual(response.status_code, 404)
-
-    @override_settings(WAGTAIL_ADMIN_BASE_URL="/someurl", ENABLE_USER_EDITING=True)
-    def test_user_editing_disabled(self):
-        admin_home = urlresolvers.reverse("wagtailadmin_home")
-        response = self.client.get(admin_home)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("Users", response.content)
-        self.assertIn("Groups", response.content)
-
-        response = self.client.get(admin_home + "users/")
-        self.assertEqual(response.status_code, 200)
-
-        response = self.client.get(admin_home + "groups/")
-        self.assertEqual(response.status_code, 200)
+        admin_hooks.settings_menu = Menu(register_hook_name='register_settings_menu_item')
+        menu = Menu(register_hook_name='register_admin_menu_item', construct_hook_name='construct_main_menu')
+        menu_html = menu.render_html(mock.Mock())
+        self.assertNotIn("Users", menu_html)
+        self.assertNotIn("Groups", menu_html)
