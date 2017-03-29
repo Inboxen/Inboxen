@@ -30,7 +30,7 @@ def decided_checker(sender, instance=None, **kwargs):
     if instance.date_decided is None and instance.succeeded is not None and instance.authorizer is not None:
         instance.date_decided = datetime.now(utc)
         if instance.succeeded is True:
-            profile = instance.requester.userprofile
+            profile = instance.requester.inboxenprofile
             profile.pool_amount = models.F("pool_amount") + instance.amount
             profile.save(update_fields=["pool_amount"])
     elif instance.authorizer is None or instance.succeeded is None:

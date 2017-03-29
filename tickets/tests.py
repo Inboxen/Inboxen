@@ -21,9 +21,12 @@ from django import test
 from django.core import mail, urlresolvers
 from django.db.models import Max
 
+from wagtail.wagtailcore.models import Site
 import factory
 import factory.fuzzy
 
+from cms.models import AppPage, HelpIndex
+from cms.utils import app_reverse
 from inboxen.tests import factories
 from inboxen.utils import override_settings
 from tickets import models
@@ -62,20 +65,24 @@ class QuestionViewTestCase(test.TestCase):
         QuestionFactory.create_batch(11, author=self.user, status=models.Question.NEW)
         QuestionFactory.create_batch(3, author=self.other_user, status=models.Question.RESOLVED)
 
+        self.page = AppPage.objects.get(app="tickets.urls")
+        self.site = Site.objects.get(is_default_site=True)
+
         login = self.client.login(username=self.user.username, password="123456")
 
         if not login:
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("tickets-index")
+        return app_reverse(self.page, self.site, "tickets-index")
 
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
         self.assertIn("More Questions", response.content)
-        self.assertIn(urlresolvers.reverse("tickets-list", kwargs={"status": "!resolved"}), response.content)
+        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "open"})
+        self.assertIn(list_url, response.content)
 
     def test_switch_open_closed(self):
         models.Question.objects.filter(status=models.Question.NEW).update(author=self.other_user)
@@ -85,13 +92,56 @@ class QuestionViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertIn("More Questions", response.content)
-        self.assertIn(urlresolvers.reverse("tickets-list", kwargs={"status": "resolved"}), response.content)
+        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "closed"})
+        self.assertIn(list_url, response.content)
 
     def test_post(self):
         params = {"subject": "hello!", "body": "This is the body of my question"}
         response = self.client.post(self.get_url(), params)
         question = models.Question.objects.latest("date")
-        self.assertRedirects(response, urlresolvers.reverse("tickets-detail", kwargs={"pk": question.pk}))
+
+        expected_url = app_reverse(self.page, self.site, "tickets-detail", kwargs={"pk": question.pk})
+        self.assertRedirects(response, expected_url)
+
+        self.assertEqual(question.author_id, self.user.id)
+        self.assertEqual(question.body, "This is the body of my question")
+
+
+class QuestionDetailTestCase(test.TestCase):
+    def setUp(self):
+        super(QuestionDetailTestCase, self).setUp()
+        self.user = factories.UserFactory()
+        self.other_user = factories.UserFactory(username="tester")
+
+        self.question = QuestionFactory(author=self.user, status=models.Question.NEW)
+        self.page = AppPage.objects.get(app="tickets.urls")
+        self.site = Site.objects.get(is_default_site=True)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return app_reverse(self.page, self.site, "tickets-detail", kwargs={"pk": self.question.pk})
+
+    def test_get(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.question.render_body(), response.content)
+
+    def test_post(self):
+        response = self.client.post(self.get_url(), {"body": "hello"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], self.get_url())
+
+        responses = self.question.response_set.all()
+        self.assertEqual(len(responses), 1)
+        self.assertEqual(responses[0].author, self.user)
+        self.assertEqual(responses[0].body, "hello")
+
+        response = self.client.get(self.get_url())
+        self.assertIn(responses[0].render_body(), response.content)
 
 
 class QuestionListTestCase(test.TestCase):
@@ -101,13 +151,16 @@ class QuestionListTestCase(test.TestCase):
 
         QuestionFactory.create_batch(75, author=self.user, status=models.Question.NEW)
 
+        self.page = AppPage.objects.get(app="tickets.urls")
+        self.site = Site.objects.get(is_default_site=True)
+
         login = self.client.login(username=self.user.username, password="123456")
 
         if not login:
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("tickets-list", kwargs={"status": "!resolved"})
+        return app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "open"})
 
     def test_get(self):
         response = self.client.get(self.get_url())

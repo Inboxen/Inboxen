@@ -122,7 +122,7 @@ class RouterTestCase(test.TestCase):
         self.assertTrue(mock_make_email.called)
 
         user = get_user_model().objects.get(id=user.id)
-        profile = user.userprofile
+        profile = user.inboxenprofile
         inbox = models.Inbox.objects.get(id=inbox.id)
 
         self.assertTrue(inbox.flags.new)
@@ -140,7 +140,7 @@ class RouterTestCase(test.TestCase):
         self.assertTrue(mock_make_email.called)
 
         user = get_user_model().objects.get(id=user.id)
-        profile = user.userprofile
+        profile = user.inboxenprofile
         inbox = models.Inbox.objects.get(id=inbox.id)
 
         self.assertTrue(inbox.flags.new)

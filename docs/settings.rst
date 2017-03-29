@@ -127,6 +127,13 @@ directory to place static files when using::
 
     python manage.py collectstatic
 
+meida_root
+^^^^^^^^^^^
+*Default value: media_content*
+
+This specifies where the directoy is for uploading media via the CMS. It should
+be writable by the Django app.
+
 server_email
 ^^^^^^^^^^^^
 *Default value: django@localhost*

@@ -31,6 +31,39 @@ class QuestionForm(forms.ModelForm):
 
 
 class ResponseForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.question = kwargs.pop("question")
+        self.author = kwargs.pop("author")
+        super(ResponseForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(ResponseForm, self).save(commit=False)
+        instance.author = self.author
+        instance.question = self.question
+        if commit:
+            instance.save()
+
+        return instance
+
+    class Meta:
+        model = models.Response
+        fields = ["body"]
+        labels = {"body": _("Reply")}
+
+
+class ResponseAdminForm(ResponseForm):
+    status = forms.ChoiceField(choices=models.Question.STATUS_CHOICES)
+
+    def save(self, commit=True):
+        instance = super(ResponseAdminForm, self).save(commit=False)
+        self.question.status = self.cleaned_data["status"]
+
+        if commit:
+            instance.save()
+            self.question.save()
+
+        return instance
+
     class Meta:
         model = models.Response
         fields = ["body"]

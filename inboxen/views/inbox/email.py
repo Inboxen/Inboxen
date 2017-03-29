@@ -112,11 +112,11 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
         if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
             email_dict["display_images"] = True
             email_dict["ask_images"] = False
-        elif self.request.user.userprofile.flags.ask_images:
+        elif self.request.user.inboxenprofile.flags.ask_images:
             email_dict["display_images"] = False
             email_dict["ask_images"] = True
         else:
-            email_dict["display_images"] = self.request.user.userprofile.flags.display_images
+            email_dict["display_images"] = self.request.user.inboxenprofile.flags.display_images
             email_dict["ask_images"] = False
 
         # iterate over MIME parts

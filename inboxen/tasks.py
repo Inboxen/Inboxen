@@ -137,7 +137,7 @@ def requests():
     """Check for unresolved Inbox allocation requests"""
     requests = models.Request.objects.filter(succeeded__isnull=True)
     requests = requests.select_related("requester").order_by("-date")
-    requests = requests.values("id", "amount", "date", "requester__username", "requester__userprofile__pool_amount")
+    requests = requests.values("id", "amount", "date", "requester__username", "requester__inboxenprofile__pool_amount")
 
     if len(requests) == 0:
         return
@@ -151,7 +151,7 @@ def requests():
             username=request["requester__username"],
             date=request["date"],
             amount=request["amount"],
-            current=request["requester__userprofile__pool_amount"]
+            current=request["requester__inboxenprofile__pool_amount"]
         )
         output.append(item)
 

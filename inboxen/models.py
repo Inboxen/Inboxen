@@ -44,7 +44,7 @@ class UserProfile(models.Model):
     ask_images - should we offer to enable image display for HTML emails?
     display_images - should we display images in HTML emails by default? Implies we should never ask
     """
-    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
     pool_amount = models.IntegerField(default=500)
     flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True)

@@ -14,6 +14,7 @@ docs/_*
 /router/run
 /settings.ini
 /static_content
+/media_content
 /node_modules
 
 *.py[cod]

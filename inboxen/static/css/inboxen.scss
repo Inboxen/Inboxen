@@ -13,6 +13,8 @@ $icon-font-svg-id: "fontawesomeregular";
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
+$profile-margin: 10px;
+
 html {
     position: relative;
     min-height: 100%;
@@ -235,4 +237,10 @@ a.soon {
         padding-left: $panel-body-padding;
         padding-right: $panel-body-padding;
     }
+}
+
+.profile-image {
+    float: left;
+    margin-right: $profile-margin;
+    margin-bottom: $profile-margin;
 }

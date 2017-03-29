@@ -20,9 +20,14 @@
 import os
 
 from django.conf import settings, urls
+from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
 
-from inboxen import admin, views
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
+from wagtail.wagtailcore import urls as wagtail_urls
+from wagtail.wagtaildocs import urls as wagtaildocs_urls
+
+from inboxen import views
 
 
 urls.handler400 = views.error.bad_request
@@ -70,11 +75,19 @@ urlpatterns = [
     # other apps
     urls.url(r'^blog/', urls.include("blog.urls")),
     urls.url(r'^click/', urls.include("redirect.urls")),
-    urls.url(r'^help/', urls.include("termsofservice.urls")),
-    urls.url(r'^help/tickets/', urls.include("tickets.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
 
-    # admin
-    urls.url(r'^admin/', urls.include(admin.site.urls)),
+    # wagtail
+    urls.url(r'^admin/', urls.include(wagtailadmin_urls)),
+    urls.url(r'^documents/', urls.include(wagtaildocs_urls)),
+    urls.url(r'^help/', urls.include(wagtail_urls)),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar  # NOQA
+
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [
+        urls.url(r'^__debug__/', urls.include(debug_toolbar.urls)),
+    ]

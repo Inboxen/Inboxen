@@ -76,7 +76,7 @@ class SearchTestCase(test.TestCase):
 class RequestReportTestCase(test.TestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-        self.user.userprofile  # autocreate a profile
+        self.user.inboxenprofile  # autocreate a profile
 
         now = datetime.now(utc)
 
@@ -87,7 +87,7 @@ class RequestReportTestCase(test.TestCase):
         tasks.requests.delay().get()
 
         # fetch a fresh copy of the profile
-        profile = models.UserProfile.objects.get(pk=self.user.userprofile.pk)
+        profile = models.UserProfile.objects.get(pk=self.user.inboxenprofile.pk)
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("Amount: 200", mail.outbox[0].body)

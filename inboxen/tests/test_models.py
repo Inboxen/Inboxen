@@ -165,7 +165,7 @@ class ModelTestCase(test.TestCase):
 
     def test_requests_are_requested(self):
         user = factories.UserFactory()
-        profile = user.userprofile
+        profile = user.inboxenprofile
         profile.pool_amount = settings.MIN_INBOX_FOR_REQUEST
         profile.save()
 
@@ -290,6 +290,6 @@ class ModelReprTestCase(test.TestCase):
         stat = models.Statistic(date=now)
         self.assertEqual(repr(stat), "<Statistic: %s>" % now)
 
-    def test_userprofile(self):
+    def test_inboxenprofile(self):
         profile = models.UserProfile(user=User(username="example"))
         self.assertEqual(repr(profile), "<UserProfile: Profile for example>")

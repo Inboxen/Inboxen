@@ -29,6 +29,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.urlresolvers import reverse
@@ -37,7 +38,11 @@ from django.test.client import RequestFactory
 import mock
 
 from inboxen.management.commands import router, feeder, url_stats
-from inboxen.middleware import ExtendSessionMiddleware, SudoAdminMiddleware
+from inboxen.middleware import (
+    ExtendSessionMiddleware,
+    RedirectWagLoginMiddleware,
+    WagtailAdminProtectionMiddleware,
+)
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
@@ -137,45 +142,74 @@ class IndexTestCase(test.TestCase):
 
 
 class ExtendSessionMiddlewareTestCase(test.TestCase):
+    middleware = ExtendSessionMiddleware()
+
     def test_get_set(self):
         user = factories.UserFactory()
         request = utils.MockRequest(user)
-        ExtendSessionMiddleware().process_request(request)
+        self.middleware.process_request(request)
         self.assertTrue(request.session.modified)
 
     def test_with_anon(self):
         user = AnonymousUser()
         request = utils.MockRequest(user)
-        ExtendSessionMiddleware().process_request(request)
+        self.middleware.process_request(request)
         self.assertFalse(request.session.modified)
 
 
-class SudoAdminMiddlewareTestCase(test.TestCase):
-    middleware = SudoAdminMiddleware()
+class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
+    middleware = WagtailAdminProtectionMiddleware()
+    user = get_user_model()()
+
+    def test_anon_passthrough(self):
+        path = "%s/something/" % reverse("wagtailadmin_home")
+        request = utils.MockRequest(AnonymousUser())
+        request.path = path
+
+        response = self.middleware.process_request(request)
+        self.assertIsNone(response)
 
     def test_non_admin_path(self):
-        request = utils.MockRequest(None)
-        request.is_sudo = lambda: True
-        response = self.middleware.process_request(request)
-        self.assertIsNone(response)
+        path = "/something%s" % reverse("wagtailadmin_home")
+        attrs = (
+            (True, True),
+            (True, False),
+            (False, True),
+            (False, False),
+        )
+        for is_sudo, is_verified in attrs:
+            request = utils.MockRequest(self.user)
+            request.path = path
+            request.is_sudo = lambda: is_sudo
+            request.user.is_verified = lambda: is_verified
 
-        request.is_sudo = lambda: False
-        response = self.middleware.process_request(request)
-        self.assertIsNone(response)
+            response = self.middleware.process_request(request)
+            self.assertIsNone(response)
 
     def test_admin_path(self):
-        request = utils.MockRequest(None)
-        request.path = "%s/something/" % reverse("admin:index")
+        path = "%s/something/" % reverse("wagtailadmin_home")
+        attrs = (
+            (True, True, False),
+            (True, False, True),
+            (False, True, True),
+            (False, False, True),
+        )
+        for is_sudo, is_verified, will_redirect in attrs:
+            request = utils.MockRequest(self.user)
+            request.path = path
+            request.is_sudo = lambda: is_sudo
+            request.user.is_verified = lambda: is_verified
 
-        request.is_sudo = lambda: True
-        response = self.middleware.process_request(request)
-        self.assertIsNone(response)
-
-        request.is_sudo = lambda: False
-        response = self.middleware.process_request(request)
-        self.assertIsNotNone(response)
-        self.assertEqual(response["Location"], "%s?next=%s" % (reverse("user-sudo"), request.path))
-
+            try:
+                response = self.middleware.process_request(request)
+            except PermissionDenied:
+                if not will_redirect:
+                    self.fail("Middleware raised PermissionDenied, but it should not have!")
+            else:
+                if will_redirect:
+                    self.assertEqual(response["Location"], "%s?next=%s" % (reverse("user-sudo"), request.path))
+                else:
+                    self.assertIsNone(response)
 
 
 class UtilsTestCase(test.TestCase):

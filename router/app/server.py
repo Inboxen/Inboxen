@@ -57,7 +57,7 @@ def forward_to_admins(message, local=None, domain=None):
 def process_message(message, inbox=None, domain=None):
     try:
         inbox = Inbox.objects.filter(inbox=inbox, domain__domain=domain)
-        inbox = inbox.select_related("user", "user__userprofile").receiving()
+        inbox = inbox.select_related("user", "user__inboxenprofile").receiving()
         inbox = inbox.get()
 
         make_email(message, inbox)
@@ -67,7 +67,7 @@ def process_message(message, inbox=None, domain=None):
             inbox.save(update_fields=["flags"])
 
         if not inbox.flags.exclude_from_unified:
-            profile = inbox.user.userprofile
+            profile = inbox.user.inboxenprofile
             profile.flags.unified_has_new_messages = True
             profile.save(update_fields=["flags"])
 

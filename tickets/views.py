@@ -24,7 +24,9 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
+from wagtail.contrib.modeladmin.views import EditView
 
+from cms.utils import app_reverse
 from tickets import forms, models
 
 
@@ -47,6 +49,10 @@ class FormMixin(generic.edit.FormMixin):
         else:
             return self.form_invalid(form)
 
+    def form_valid(self, form):
+        form.save()
+        return super(FormMixin, self).form_valid(form)
+
 
 class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
     """List of questions that belong to current user"""
@@ -58,7 +64,6 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
-        self.object.save()
 
         return super(QuestionHomeView, self).form_valid(form)
 
@@ -77,7 +82,7 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
         return qs
 
     def get_success_url(self):
-        return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
+        return app_reverse(self.request.page, self.request.site, "tickets-detail", kwargs={"pk": self.object.pk})
 
 
 class QuestionListView(LoginRequiredMixin, generic.ListView):
@@ -94,15 +99,12 @@ class QuestionListView(LoginRequiredMixin, generic.ListView):
         qs = super(QuestionListView, self).get_queryset()
 
         # filter statuses
-        try:
-            status = self.kwargs["status"].upper()
-            if status.startswith("!"):
-                status = getattr(self.model, status[1:])
-                qs = qs.exclude(status=status)
-            else:
-                status = getattr(self.model, status)
-                qs = qs.filter(status=status)
-        except (AttributeError, KeyError, IndexError, ValueError):
+        status = self.kwargs["status"].upper()
+        if status == "OPEN":
+            qs = qs.open()
+        elif status == "CLOSED":
+            qs = qs.closed()
+        else:
             raise Http404
 
         qs = qs.filter(author=self.request.user).select_related("author")
@@ -114,12 +116,12 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
     model = models.Question
     form_class = forms.ResponseForm
 
-    def form_valid(self, form):
-        response = form.save(commit=False)
-        response.author = self.request.user
-        response.question = self.object
-        response.save()
-        return super(QuestionDetailView, self).form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super(QuestionDetailView, self).get_form_kwargs()
+        kwargs["author"] = self.request.user
+        kwargs["question"] = self.object
+
+        return kwargs
 
     def get_context_data(self, **kwargs):
         kwargs = super(QuestionDetailView, self).get_context_data(**kwargs)
@@ -131,7 +133,7 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
         return qs.filter(author=self.request.user).select_related("author")
 
     def get_success_url(self):
-        return urlresolvers.reverse("tickets-detail", kwargs={"pk": self.object.pk})
+        return app_reverse(self.request.page, self.request.site, "tickets-detail", kwargs={"pk": self.object.pk})
 
     def get_responses(self):
         return self.object.response_set.select_related("author").all()
@@ -139,3 +141,25 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
     def post(self, *args, **kwargs):
         self.object = self.get_object()
         return super(QuestionDetailView, self).post(*args, **kwargs)
+
+
+class QuestionAdminEditView(EditView):
+    """View for modeladmin "edit" view"""
+    def get_form_class(self):
+        return forms.ResponseAdminForm
+
+    def get_form_kwargs(self):
+        kwargs = super(QuestionAdminEditView, self).get_form_kwargs()
+        kwargs["author"] = self.request.user
+        kwargs["question"] = kwargs["instance"]
+        del kwargs["instance"]
+
+        return kwargs
+
+    def get_edit_handler_class(self):
+        """Return a fake edit_handler because we're not using it"""
+        class FakeHandler(object):
+            def __init__(self, *args, **kwargs):
+                pass
+
+        return FakeHandler

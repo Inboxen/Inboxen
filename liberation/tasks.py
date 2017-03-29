@@ -255,7 +255,7 @@ def liberate_user_profile(user_id, email_results):
     user = get_user_model().objects.get(id=user_id)
 
     # user's preferences
-    profile = user.userprofile
+    profile = user.inboxenprofile
     data['preferences']['pool_amount'] = profile.pool_amount
     data['preferences']['flags'] = dict(profile.flags.items())
 

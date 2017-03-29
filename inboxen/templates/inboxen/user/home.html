@@ -24,7 +24,7 @@
             <div class="{{ col0 }}">
                 <div class="row">
                     <div class="inbox-name col-xs-12 col-sm-8"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
-                    <div class="inbox-flags col-xs-12 col-sm-4">{{ user.userprofile.flags|render_flags }}</div>
+                    <div class="inbox-flags col-xs-12 col-sm-4">{{ user.inboxenprofile.flags|render_flags }}</div>
                 </div>
             </div>
         </span>

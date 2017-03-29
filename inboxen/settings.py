@@ -117,6 +117,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
     ("thirdparty", os.path.join(BASE_DIR, "node_modules")),
@@ -176,8 +177,11 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sudo.middleware.SudoMiddleware',
-    'inboxen.middleware.SudoAdminMiddleware',
+    'inboxen.middleware.WagtailAdminProtectionMiddleware',
     'csp.middleware.CSPMiddleware',
+    'wagtail.wagtailcore.middleware.SiteMiddleware',
+    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'inboxen.middleware.RedirectWagLoginMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -201,16 +205,35 @@ INSTALLED_APPS = (
     'two_factor',
     'watson',
 
-    # Inboxen
+    # Main Inboxen app
     'inboxen',
+
+    # Other Inboxen apps
     'account',
     'blog',
+    'cms',
     'liberation',
     'redirect',
     'router',
     'source',
-    'termsofservice',
     'tickets',
+
+    # wagtail
+    'wagtail.wagtailforms',
+    'wagtail.wagtailredirects',
+    'wagtail.wagtailembeds',
+    'wagtail.wagtailsites',
+    'wagtail.wagtailusers',
+    'wagtail.wagtailsnippets',
+    'wagtail.wagtaildocs',
+    'wagtail.wagtailimages',
+    'wagtail.wagtailsearch',
+    'wagtail.wagtailadmin',
+    'wagtail.wagtailcore',
+    'wagtail.contrib.modeladmin',
+
+    'modelcluster',
+    'taggit',
 )
 
 SILENCED_SYSTEM_CHECKS = [
@@ -243,7 +266,8 @@ CSP_STYLE_SRC = ("'self'",)
 
 if DEBUG:
     # local dev made easy
-    INSTALLED_APPS += ('debug_toolbar',)
+    INTERNAL_IPS = ["127.0.0.1"]
+    INSTALLED_APPS += ('debug_toolbar', 'wagtail.contrib.wagtailstyleguide')
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
@@ -276,6 +300,19 @@ except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
 EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
+
+# wagtail
+WAGTAIL_SITE_NAME = SITE_NAME
+WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
+WAGTAIL_PASSWORD_RESET_ENABLED = False
+
+WAGTAIL_USER_CREATION_FORM = 'cms.forms.InboxenUserCreationForm'
+WAGTAIL_USER_EDIT_FORM = 'cms.forms.InboxenUserEditForm'
+
+WAGTAIL_ADMIN_BASE_URL = urlresolvers.reverse_lazy("wagtailadmin_home")
+
+# this is the name of the collection that will contain profile pictures
+PEOPLE_PAGE_IMAGE_COLLECTION = "Profile Pictures"
 
 ## LOGGING
 if DEBUG:
@@ -323,6 +360,10 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
+        'cms': {
+            'handlers': ['console', 'mail_admins'],
+            'level': log_level,
+        },
         'liberation': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
@@ -336,10 +377,6 @@ LOGGING = {
             'level': log_level,
         },
         'source': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'termsofservice': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
