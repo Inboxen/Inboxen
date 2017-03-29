@@ -17,10 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django import test
 from django.core import mail
+from django.contrib.sessions.models import Session
 
 from pytz import utc
 import mock
@@ -35,6 +36,18 @@ class StatsTestCase(test.TestCase):
     # only testing that it doesn't raise an exception atm
     def test_no_exceptions(self):
         tasks.statistics.delay()
+
+
+class CleanSessionsTestCase(test.TestCase):
+    def test_sessions_deleted(self):
+        Session.objects.create(
+            session_key="1234",
+            session_data="{}",
+            expire_date=datetime.now() - timedelta(1),
+        )
+        self.assertEqual(Session.objects.count(), 1)
+        tasks.clean_expired_session.delay()
+        self.assertEqual(Session.objects.count(), 0)
 
 
 class FlagTestCase(test.TestCase):
