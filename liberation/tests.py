@@ -31,12 +31,21 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse
+from salmon import mail
 
 from inboxen import models
+from inboxen.tests.example_emails import (
+    EXAMPLE_ALT,
+    EXAMPLE_DIGEST,
+    EXAMPLE_PREMAILER_BROKEN_CSS,
+    EXAMPLE_SIGNED_FORWARDED_DIGEST,
+)
 from inboxen.tests import factories
 from inboxen.utils import override_settings
 from liberation import tasks
 from liberation.forms import LiberationForm
+from liberation.utils import make_message
+from router.app.helpers import make_email
 
 
 class LiberateTestCase(test.TestCase):
@@ -194,3 +203,45 @@ class LiberationDownloadViewTestCase(test.TestCase):
             self.assertEqual(response["Content-Type"], "application/x-gzip")
             self.assertEqual(response["Content-Disposition"], 'attachment; filename="liberated_data.tar.gz"')
             self.assertEqual(response["X-Sendfile"], os.path.join(self.tmp_dir, "test.txt"))
+
+
+class MakeMessageUtilTestCase(test.TestCase):
+    """Test that example emails are serialisable"""
+    def setUp(self):
+        self.user = factories.UserFactory()
+        self.inbox = factories.InboxFactory(user=self.user)
+
+        login = self.client.login(username=self.user.username, password="123456")
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def test_digest(self):
+        msg = mail.MailRequest("", "", "", EXAMPLE_DIGEST)
+        make_email(msg, self.inbox)
+        email = models.Email.objects.get()
+        message_object = make_message(email)
+        new_msg = mail.MailRequest("", "", "", str(message_object))
+
+    def test_signed_forwarded_digest(self):
+        msg = mail.MailRequest("", "", "", EXAMPLE_SIGNED_FORWARDED_DIGEST)
+        make_email(msg, self.inbox)
+        self.email = models.Email.objects.get()
+        email = models.Email.objects.get()
+        message_object = make_message(email)
+        new_msg = mail.MailRequest("", "", "", str(message_object))
+
+    def test_alterative(self):
+        msg = mail.MailRequest("", "", "", EXAMPLE_ALT)
+        make_email(msg, self.inbox)
+        email = models.Email.objects.get()
+        message_object = make_message(email)
+        new_msg = mail.MailRequest("", "", "", str(message_object))
+
+    def test_bad_css(self):
+        """This test uses an example email that causes issue #47"""
+        msg = mail.MailRequest("", "", "", EXAMPLE_PREMAILER_BROKEN_CSS)
+        make_email(msg, self.inbox)
+        email = models.Email.objects.get()
+        message_object = make_message(email)
+        new_msg = mail.MailRequest("", "", "", str(message_object))
