@@ -223,6 +223,9 @@ class MakeMessageUtilTestCase(test.TestCase):
         message_object = make_message(email)
         new_msg = mail.MailRequest("", "", "", str(message_object))
 
+        self.assertEqual(len(msg.keys()), len(new_msg.keys()))
+        self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
+
     def test_signed_forwarded_digest(self):
         msg = mail.MailRequest("", "", "", EXAMPLE_SIGNED_FORWARDED_DIGEST)
         make_email(msg, self.inbox)
@@ -231,12 +234,18 @@ class MakeMessageUtilTestCase(test.TestCase):
         message_object = make_message(email)
         new_msg = mail.MailRequest("", "", "", str(message_object))
 
+        self.assertEqual(len(msg.keys()), len(new_msg.keys()))
+        self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
+
     def test_alterative(self):
         msg = mail.MailRequest("", "", "", EXAMPLE_ALT)
         make_email(msg, self.inbox)
         email = models.Email.objects.get()
         message_object = make_message(email)
         new_msg = mail.MailRequest("", "", "", str(message_object))
+
+        self.assertEqual(len(msg.keys()), len(new_msg.keys()))
+        self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
 
     def test_bad_css(self):
         """This test uses an example email that causes issue #47"""
@@ -245,3 +254,29 @@ class MakeMessageUtilTestCase(test.TestCase):
         email = models.Email.objects.get()
         message_object = make_message(email)
         new_msg = mail.MailRequest("", "", "", str(message_object))
+
+        self.assertEqual(len(msg.keys()), len(new_msg.keys()))
+        self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
+
+    def test_encoders_used(self):
+        # make message with base64 part, uuencode part, 8bit part, 7bit part,
+        # quopri part, and some invalid part
+        body_data = "Hello\n\nHow are you?\n"
+        email = factories.EmailFactory(inbox=self.inbox)
+        body = factories.BodyFactory(data=body_data)
+        first_part = factories.PartListFactory(email=email, body=factories.BodyFactory(data=""))
+        factories.HeaderFactory(part=first_part, name="Content-Type", data="multipart/mixed; boundary=\"=-3BRZDE/skgKPPh+RuFa/\"")
+        encodings = ["base64", "quopri", "uuencode", "7-bit", "8-bit", "9-bit"]
+        for enc in encodings:
+            part = factories.PartListFactory(email=email, parent=first_part, body=body)
+            factories.HeaderFactory(part=part, name="Content-Type", data="text/plain; name=\"my-file.txt\"")
+            factories.HeaderFactory(part=part, name="Content-Transfer-Encoding", data=enc)
+
+        # and now export
+        message_object = make_message(email)
+
+        for message_part in message_object.walk():
+            if message_part["Content-Type"].startswith("multipart/mixed"):
+                pass
+            else:
+                self.assertEqual(message_part.get_payload(decode=True), body_data)

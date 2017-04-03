@@ -235,19 +235,11 @@ class Email(models.Model):
 
             dispos = part_head.pop("Content-Disposition", "")
 
-            try:
-                params = dict(HEADER_PARAMS.findall(content_params))
-            except IndexError:
-                params = {}
+            params = dict(HEADER_PARAMS.findall(content_params))
             params.update(dict(HEADER_PARAMS.findall(dispos)))
 
-            # find filename, could be anywhere
-            if "filename" in params:
-                part_head["filename"] = params["filename"]
-            elif "name" in params:
-                part_head["filename"] = params["name"]
-            else:
-                part_head["filename"] = ""
+            # find filename, could be anywhere, could be nothing
+            part_head["filename"] = params.get("filename") or params.get("name") or ""
 
             # grab charset
             part.charset = params.get("charset", "utf-8")
