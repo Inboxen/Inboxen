@@ -2,6 +2,9 @@
 
 ### Pending
 
+* Added Wagtail CMS (#162)
+* Added periodic task to clear stale sessions (#186)
+
 ### Deploy for 2017-02-25
 
 * Order disabled inboxes to the end of the inbox list (#177)
