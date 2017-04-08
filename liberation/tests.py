@@ -18,13 +18,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from StringIO import StringIO
 from importlib import import_module
+import base64
 import itertools
 import mailbox
 import os
 import os.path
+import quopri
 import shutil
 import tempfile
+import uu
 
 from django import test
 from django.conf import settings
@@ -44,7 +48,7 @@ from inboxen.tests import factories
 from inboxen.utils import override_settings
 from liberation import tasks
 from liberation.forms import LiberationForm
-from liberation.utils import make_message
+from liberation.utils import make_message, INBOXEN_ENCODING_ERROR_HEADER_NAME
 from router.app.helpers import make_email
 
 
@@ -266,17 +270,81 @@ class MakeMessageUtilTestCase(test.TestCase):
         body = factories.BodyFactory(data=body_data)
         first_part = factories.PartListFactory(email=email, body=factories.BodyFactory(data=""))
         factories.HeaderFactory(part=first_part, name="Content-Type", data="multipart/mixed; boundary=\"=-3BRZDE/skgKPPh+RuFa/\"")
-        encodings = ["base64", "quopri", "uuencode", "7-bit", "8-bit", "9-bit"]
-        for enc in encodings:
+
+        encodings = {
+                "base64": check_base64,
+                "quoted-printable": check_quopri,
+                "uuencode": check_uu,
+                "x-uuencode": check_uu,
+                "uue": check_uu,
+                "x-uue": check_uu,
+                "7-bit": check_noop,
+                "8-bit": check_noop,
+                "9-bit": check_unknown,  # unknown encoding
+            }
+
+        for enc in encodings.keys():
             part = factories.PartListFactory(email=email, parent=first_part, body=body)
             factories.HeaderFactory(part=part, name="Content-Type", data="text/plain; name=\"my-file.txt\"")
             factories.HeaderFactory(part=part, name="Content-Transfer-Encoding", data=enc)
+
+        # finally, make a part without content headers
+        factories.PartListFactory(email=email, parent=first_part, body=body)
 
         # and now export
         message_object = make_message(email)
 
         for message_part in message_object.walk():
-            if message_part["Content-Type"].startswith("multipart/mixed"):
+            ct = message_part.get("Content-Type", None)
+            cte = message_part.get("Content-Transfer-Encoding", None)
+            if ct is None:
+                # default is to assume 7-bit
+                check_noop(message_part, body_data)
+                self.assertEqual(message_part.get_payload(decode=True), body_data)
+            elif ct.startswith("multipart/mixed"):
                 pass
             else:
+                encodings[cte](message_part, body_data)
                 self.assertEqual(message_part.get_payload(decode=True), body_data)
+
+
+def check_noop(msg, data):
+    assert msg._payload == data, "Payload has been transformed"
+
+    assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
+
+
+def check_unknown(msg, data):
+    assert msg._payload == data, "Payload has been transformed"
+
+    assert INBOXEN_ENCODING_ERROR_HEADER_NAME in msg.keys(), "Missing error header"
+
+
+def check_base64(msg, data):
+    assert msg._payload != data, "Payload has not been transformed"
+    try:
+        payload = base64.standard_b64decode(msg._payload)
+    except TypeError:
+        assert False, "Payload could not be decoded"
+    assert payload == data, "Decoded payload does not match input data"
+
+    assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
+
+def check_quopri(msg, data):
+    assert msg._payload != data, "Payload has not been transformed"
+    assert quopri.decodestring(msg._payload) == data, "Payload was not encoded correctly"
+
+    assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
+
+def check_uu(msg, data):
+    assert msg._payload != data, "Payload has not been transformed"
+
+    outfile = StringIO()
+    try:
+        uu.decode(StringIO(msg._payload), outfile)
+        payload = outfile.getvalue()
+    except uu.Error:
+        assert False, "Payload could not be decoded"
+    assert payload == data, "Decoded payload does not match input data"
+
+    assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"

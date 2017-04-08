@@ -21,7 +21,7 @@ def set_base64_payload(msg, data):
     msg.set_payload(enc_data)
 
 
-def set_qprint_payload(msg, data):
+def set_quopri_payload(msg, data):
     """Encodees the payload with quoted-printable"""
     # this won't encode spaces if binascii is not available
     enc_data = quopri.encodestring(data, True)
@@ -77,7 +77,7 @@ def make_message(message):
             if cte == "base64":
                 set_base64_payload(msg, data)
             elif cte == "quoted-printable":
-                set_qprint_payload(msg, data)
+                set_quopri_payload(msg, data)
             elif cte in ["uuencode", "x-uuencode", "uue", "x-uue"]:
                 set_uuencode_payload(msg, data)
             elif cte in ["8-bit", "7-bit"]:
