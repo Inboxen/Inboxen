@@ -4,6 +4,7 @@
 
 * Added Wagtail CMS (#162)
 * Added periodic task to clear stale sessions (#186)
+* Refactor liberation utils (#189)
 
 ### Deploy for 2017-02-25
 

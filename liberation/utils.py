@@ -1,46 +1,60 @@
-from cStringIO import StringIO
-from email import encoders
+from StringIO import StringIO
 from email.header import Header
 from email.message import Message
-import binascii
+import base64
+import quopri
 import uu
 
+from inboxen.models import HEADER_PARAMS
 
-class EncodeMessage(Message):
-    """Just like a normal email.message.Message, but it automatically enocdes body parts"""
-    def get_payload(self, i=None):
-        # taken from http://hg.python.org/cpython/file/0926adcc335c/Lib/email/message.py
-        # Copyright (C) 2001-2006 Python Software Foundation
-        # See PY-LIC for licence
-        if i is None:
-            payload = self._payload
-        elif not isinstance(self._payload, list):
-            raise TypeError('Expected list, got %s' % type(self._payload))
-        else:
-            payload = self._payload[i]
 
-        if self.is_multipart():
-            return payload
-        cte = self.get('content-transfer-encoding', '').lower()
-        if cte == 'quoted-printable':
-            return encoders._qencode(payload)
-        elif cte == 'base64':
-            try:
-                return encoders._bencode(payload)
-            except binascii.Error:
-                # Incorrect padding
-                return payload
-        elif cte in ('x-uuencode', 'uuencode', 'uue', 'x-uue'):
-            sfp = StringIO()
-            try:
-                uu.encode(StringIO(payload + '\n'), sfp, quiet=True)
-                payload = sfp.getvalue()
-            except uu.Error:
-                # Some decoding problem
-                return payload
-        # Everything else, including encodings with 8bit or 7bit are returned
-        # unchanged.
-        return payload
+INBOXEN_ENCODING_ERROR_HEADER_NAME = "Inboxen-Liberation-Error"
+
+
+def _add_error(msg, error_msg):
+    msg[INBOXEN_ENCODING_ERROR_HEADER_NAME] = error_msg
+
+
+def set_base64_payload(msg, data):
+    """Encodees the payload with base64"""
+    enc_data = base64.standard_b64encode(data)
+    msg.set_payload(enc_data)
+
+
+def set_quopri_payload(msg, data):
+    """Encodees the payload with quoted-printable"""
+    # this won't encode spaces if binascii is not available
+    enc_data = quopri.encodestring(data, True)
+    msg.set_payload(enc_data)
+
+
+def set_uuencode_payload(msg, data):
+    """Encodees the payload with uuencode"""
+    outfile = StringIO()
+
+    ct = msg.get("Content-Type", "")
+    cd = msg.get("Content-Disposition", "")
+
+    params = dict(HEADER_PARAMS.findall(ct))
+    params.update(dict(HEADER_PARAMS.findall(cd)))
+
+    name = params.get("filename") or params.get("name")
+
+    uu.encode(StringIO(data), outfile, name=name)
+    enc_data = outfile.getvalue()
+    msg.set_payload(enc_data)
+
+
+def set_noop_payload(msg, data):
+    """Does no encoding"""
+    msg.set_payload(data)
+
+
+def set_unknown_payload(msg, data):
+    """Does no encoding and sets a header on the MIME part with an error"""
+    cte = msg.get("Content-Transfer-Encoding")
+    _add_error(msg, "Unknown Content-Transfer-Encoding: %s" % cte)
+    msg.set_payload(data)
 
 
 def make_message(message):
@@ -50,14 +64,26 @@ def make_message(message):
     first = None
 
     for part in part_list:
-        msg = EncodeMessage()
+        msg = Message()
 
         header_set = part.header_set.order_by("ordinal").select_related("name__name", "data__data")
         for header in header_set:
             msg[header.name.name] = Header(header.data.data, "utf-8").encode()
 
         if part.is_leaf_node():
-            msg.set_payload(str(part.body.data))
+            cte = msg.get("Content-Transfer-Encoding", "7-bit")
+            data = str(part.body.data)
+
+            if cte == "base64":
+                set_base64_payload(msg, data)
+            elif cte == "quoted-printable":
+                set_quopri_payload(msg, data)
+            elif cte in ["uuencode", "x-uuencode", "uue", "x-uue"]:
+                set_uuencode_payload(msg, data)
+            elif cte in ["8-bit", "7-bit"]:
+                set_noop_payload(msg, data)
+            else:
+                set_unknown_payload(msg, data)
         else:
             parents[part.id] = msg
 
