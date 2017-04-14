@@ -4,9 +4,7 @@ Inboxen
 [![Build Status](https://travis-ci.org/Inboxen/Inboxen.svg?branch=master)](https://travis-ci.org/Inboxen/Inboxen)
 [![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg?branch=master)](http://codecov.io/github/Inboxen/Inboxen?branch=master)
 
-This is the complete system with everything you need to set up Inboxen. Please
-use the "deploy" branch if you wish to use this in production - "master"
-sometimes breaks!
+This is the complete system with everything you need to set up Inboxen.
 
 Join us in our IRC channel! We're in the #inboxen channel on
 [MegNet](https://www.megworld.co.uk/irc/)
@@ -43,7 +41,7 @@ you've changed (and `jshint` on JS files) and run unit tests. To run the tests,
 do the following:
 
 ```
-DB=sqlite python manage.py test --settings=inboxen.tests.settings
+python manage.py test --settings=inboxen.tests.settings
 ```
 
 Committing and Branching
@@ -63,12 +61,14 @@ Branch names should be of the format `<issue>-<description>` where:
 For example, `129-pin-inboxes` was the branch used for implementing the [pin
 inbox feature](https://github.com/Inboxen/Inboxen/issues/129)
 
-Finish branches are then merged into `master`. `master` is merged into `deploy`
-at release time. If there is someone available to review your branch, your
-branch should be reviewed and merged by them.
+Finished branches are then merged into `master`. If there is someone available
+to review your branch, your branch should be reviewed and merged by them.
+Remember to add a note to CHANGELOG.md when merging!
 
-Commits on `deploy` **must** be signed with a GPG key. This is important for
-the future.
+#### Hotfix branches
+
+Hotfixes should be branched from the latest deploy tag, and then be tagged
+themselves as a normal deployment before being merged back into `master`.
 
 ### Commit messages
 
@@ -85,9 +85,8 @@ fix #345
 touch #234
 ```
 
-If you are committing on either `master` or `deploy`, then make sure to end your
-commit message with either "IN MASTER" or "IN DEPLOY" so we know who to blame
-when stuff breaks.
+If you are committing on `master , then make sure to end your commit message
+with "IN MASTER" so we know who to blame when stuff breaks.
 
 Deploying
 ---------
@@ -102,7 +101,7 @@ You'll need the following tools:
 Set yourself up with a virtual environment and run the following:
 
 ```
-git clone -b deploy https://github.com/Inboxen/Inboxen.git
+git clone https://github.com/Inboxen/Inboxen.git
 cd Inboxen
 pip install -r requirements.txt
 mkdir node_modules
@@ -114,9 +113,11 @@ After this has completed, see the next section on minimum configuration. Also,
 do.
 
 We tag our deployments (you should too) - we use signed annotated tags (`git
-tag -as deploy-YYYYMMDD`). The tag should contain a changelog since the last
-deploy tag. This is particularly useful for rollbacks and keeps a record of
-deployments that's separate from git history.
+tag -as deploy-YYYYMMDD`). The tag should contain the changelog for development
+since the last deploy tag. This is particularly useful for rollbacks and keeps
+a record of deployments that's separate from git history.
+
+Please remember to sign tags with your GPG key.
 
 ### settings.ini
 
