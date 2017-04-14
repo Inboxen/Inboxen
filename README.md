@@ -11,6 +11,15 @@ Join us in our IRC channel! We're in the #inboxen channel on
 
 See also: <https://etherpad.mozilla.org/inboxen>
 
+GPG keys
+--------
+
+GPG keys used by Inboxen developers to sign releases:
+
+```
+Matt Molyneaux <moggers87@moggers87.co.uk>
+    19F5 A8DC C917 FD00 E859   02F4 878B 5A2A 1D47 C084
+```
 Developing
 ----------
 
