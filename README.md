@@ -32,8 +32,8 @@ You'll need the following tools:
 * [EditorConfig](http://editorconfig.org/) *(optional)*
 
 This project comes with a `.editorconfig` file - we recommend installing it to
-avoid things like mixing tabs/spaces or accidently saving files with DOS-style
-newlines.
+avoid things like mixing tabs/spaces or accidentally saving files with
+DOS-style newlines.
 
 Set yourself up with a virtual environment and run the following:
 
