@@ -17,9 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from wagtail.contrib.modeladmin.helpers import PermissionHelper
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 
 from tickets import models, views
+
+
+class QuestionPermissionHelper(PermissionHelper):
+    def user_can_create(self, user):
+        return False
+
+    def user_can_delete_obj(self, user, obj):
+        return False
 
 
 class QuestionAdmin(ModelAdmin):
@@ -27,5 +36,6 @@ class QuestionAdmin(ModelAdmin):
     menu_icon = 'help'
     list_display = ("subject", "author", "status")
     edit_view_class = views.QuestionAdminEditView
+    permission_helper_class = QuestionPermissionHelper
 
 modeladmin_register(QuestionAdmin)
