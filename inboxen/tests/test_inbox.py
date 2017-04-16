@@ -138,7 +138,7 @@ class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -162,7 +162,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -189,7 +189,7 @@ class InboxAddTestCase(test.TestCase):
         for args in itertools.product([True, False], [self.user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -243,7 +243,7 @@ class InboxAddInlineTestCase(test.TestCase):
         for args in itertools.product([True, False], [self.user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -272,7 +272,7 @@ class InboxEditTestCase(test.TestCase):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -309,7 +309,7 @@ class InboxInlineEditTestCase(test.TestCase):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -338,7 +338,7 @@ class InboxEmailEditTestCase(test.TestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

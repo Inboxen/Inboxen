@@ -34,6 +34,7 @@ class MockRequest(HttpRequest):
         session = SessionMiddleware()
         self.session = session.SessionStore(session_id)
         self._messages = SessionStorage(self)
+        self.META = {"REMOTE_ADDR": "127.0.0.1"}
 
 
 # TODO: submit to django-sudo?

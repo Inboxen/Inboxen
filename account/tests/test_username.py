@@ -30,18 +30,18 @@ class LowerCaseUsernameTestCase(test.TestCase):
 
     def test_login(self):
         params = {"username": "ISdaBIZda", "password": "123456"}
-        form = forms.PlaceHolderAuthenticationForm(data=params)
+        form = forms.PlaceHolderAuthenticationForm(data=params, request=utils.MockRequest(self.user))
 
         self.assertTrue(form.is_valid())
 
     def test_login_fail(self):
         params = {"username": "hiii", "password": "123456"}
-        form = forms.PlaceHolderAuthenticationForm(data=params)
+        form = forms.PlaceHolderAuthenticationForm(data=params, request=utils.MockRequest(self.user))
 
         self.assertFalse(form.is_valid())
 
         params = {"username": "isdabizda", "password": "1234567"}
-        form = forms.PlaceHolderAuthenticationForm(data=params)
+        form = forms.PlaceHolderAuthenticationForm(data=params, request=utils.MockRequest(self.user))
 
         self.assertFalse(form.is_valid())
 

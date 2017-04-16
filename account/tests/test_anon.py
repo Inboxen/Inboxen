@@ -23,7 +23,7 @@ from django.core.urlresolvers import reverse
 import mock
 
 from account import decorators
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 
 
 class AnonRequiredTestCase(test.TestCase):
@@ -59,7 +59,8 @@ class AnonRequiredTestCase(test.TestCase):
 
     def test_urls_logged_in(self):
         urls = [reverse("user-registration"), reverse("user-status"), reverse("user-success"), reverse("user-login")]
-        assert self.client.login(username=self.user.username, password="123456")
+
+        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         for url in urls:
             response = self.client.get(url)

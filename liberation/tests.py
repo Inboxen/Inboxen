@@ -44,7 +44,7 @@ from inboxen.tests.example_emails import (
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
 )
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 from inboxen.utils import override_settings
 from liberation import tasks
 from liberation.forms import LiberationForm
@@ -148,7 +148,7 @@ class LiberateViewTestCase(test.TestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -178,7 +178,7 @@ class LiberationDownloadViewTestCase(test.TestCase):
         self.user = factories.UserFactory()
         self.tmp_dir = tempfile.mkdtemp()
 
-        assert self.client.login(username=self.user.username, password="123456")
+        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
     def test_sendfile_no_liberation(self):
         response = self.client.get(reverse("user-liberate-get"))
@@ -215,7 +215,7 @@ class MakeMessageUtilTestCase(test.TestCase):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

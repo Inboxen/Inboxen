@@ -25,8 +25,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
-from inboxen.tests import factories
-from inboxen.tests import utils
+from inboxen.tests import factories, utils
 
 
 class SettingsTestCase(test.TestCase):
@@ -38,7 +37,7 @@ class SettingsTestCase(test.TestCase):
         for args in itertools.product([True, False], [self.user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -109,7 +108,7 @@ class UsernameChangeTestCase(test.TestCase):
         super(UsernameChangeTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -156,7 +155,7 @@ class DeleteTestCase(test.TestCase):
         super(DeleteTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

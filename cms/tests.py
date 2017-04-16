@@ -28,7 +28,7 @@ from wagtail.wagtailadmin.menu import Menu
 import mock
 
 from cms.wagtail_hooks import override_user_urls, remove_user_menu_items
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 from inboxen.utils import override_settings
 
 
@@ -42,11 +42,9 @@ class MiddlewareMock(object):
 
 class AdminTestCase(test.TestCase):
     def setUp(self):
-        user = factories.UserFactory()
-        user.is_superuser = True
-        user.save()
+        user = factories.UserFactory(is_superuser=True)
 
-        login = self.client.login(username=user.username, password="123456")
+        login = self.client.login(username=user.username, password="123456", request=utils.MockRequest(user))
 
         if not login:
             raise Exception("Could not log in")
