@@ -18,7 +18,7 @@
     <p>{% blocktrans %}
         Please select which authentication method you would like to use.
     {% endblocktrans %}</p>
-{% elif wizard.steps.current == 'generator' and qr %}
+{% elif wizard.steps.current == 'generator' %}
     <p>{% blocktrans %}
         To start using a token generator you will need an application that read
         TOTP QR codes. <i>FreeOTP</i> is a good example and is Free Software
@@ -27,15 +27,10 @@
     {% endblocktrans %}</p>
     <p><img src="{{ QR_URL }}" alt="QR Code" /></p>
     <p>{% blocktrans %}
-        Alternatively, if you're unable to use QR codes,
-        <a href="{{ request.path }}?qr=0">click here</a> to view the code as
-        letters and numbers.
+        Alternatively, if you can't scan the QR code, you can copy and paste
+        the code below:
     {% endblocktrans %}</p>
-{% elif wizard.steps.current == 'generator' and not qr %}
-    <p>{% blocktrans %}
-        Manually type this code into your token generator (or copy and paste it if you prefer):
-    {% endblocktrans %}</p>
-    <pre>{{ secret }}</pre>
+    <p><pre>{{ secret }}</pre></p>
 {% endif %}
 
 <form action="{% url 'user-twofactor-setup' %}" method="post">
