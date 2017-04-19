@@ -276,7 +276,7 @@ class WagtailHooksTestCase(test.TestCase):
 
         self.admin_middleware_mock = mock.patch("inboxen.middleware.WagtailAdminProtectionMiddleware", MiddlewareMock)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

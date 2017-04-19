@@ -22,7 +22,7 @@ import mock
 from django import test
 from django.core import urlresolvers
 
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 from inboxen import models
 from inboxen.wagtail_hooks import DomainPermissionHelper, RequestPermissionHelper
 
@@ -38,7 +38,7 @@ class WagtailHooksTestCase(test.TestCase):
         self.domain = factories.DomainFactory()
         self.request = models.Request.objects.create(requester=factories.UserFactory(), amount=100)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         self.admin_middleware_mock = mock.patch("inboxen.middleware.WagtailAdminProtectionMiddleware", MiddlewareMock)
 
