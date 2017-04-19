@@ -24,7 +24,7 @@ import urllib
 from django import test
 from django.core import urlresolvers, cache
 
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 
 
 class SearchViewTestCase(test.TestCase):
@@ -32,7 +32,8 @@ class SearchViewTestCase(test.TestCase):
         super(SearchViewTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+
         self.url = urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
         key = "%s-cheddär" % self.user.id
         self.key = urllib.quote(key)

@@ -2,6 +2,8 @@
 
 ### Pending
 
+* Fix ratelimit warnings in tests (#197)
+
 ### Deploy for 2017-04-14
 
 * Added Wagtail CMS (#162)

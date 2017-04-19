@@ -48,7 +48,6 @@ from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
 
 
-@override_settings(CACHE_BACKEND="locmem:///")
 class LoginTestCase(test.TestCase):
     """Test various login things"""
     def setUp(self):
@@ -56,15 +55,19 @@ class LoginTestCase(test.TestCase):
         self.user = factories.UserFactory()
         cache.clear()
 
+    def tearDown(self):
+        super(LoginTestCase, self).tearDown()
+        cache.clear()
+
     def test_logout_message(self):
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
         self.assertEqual(login, True)
 
         response = self.client.get(dj_settings.LOGOUT_URL, follow=True)
         self.assertIn("You are now logged out. Have a nice day!", response.content)
 
     def test_last_login(self):
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
         self.assertEqual(login, True)
 
         user = get_user_model().objects.get(id=self.user.id)
@@ -130,7 +133,8 @@ class IndexTestCase(test.TestCase):
 
     def test_index_page_logged_in(self):
         user = factories.UserFactory()
-        assert self.client.login(username=user.username, password="123456")
+        assert self.client.login(username=user.username, password="123456", request=utils.MockRequest(user))
+
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("Join", response.content)

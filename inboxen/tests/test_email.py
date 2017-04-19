@@ -26,7 +26,7 @@ from salmon import mail
 import mock
 
 from inboxen import models
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 from inboxen.tests.example_emails import (
     BODILESS_BODY,
     BODY,
@@ -53,7 +53,7 @@ class EmailViewTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"utf-8\"")
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -247,7 +247,7 @@ class BadEmailTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"ascii\"")
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -322,7 +322,7 @@ class RealExamplesTestCase(test.TestCase):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

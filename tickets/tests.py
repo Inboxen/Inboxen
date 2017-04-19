@@ -27,7 +27,7 @@ import factory.fuzzy
 
 from cms.models import AppPage, HelpIndex
 from cms.utils import app_reverse
-from inboxen.tests import factories
+from inboxen.tests import factories, utils
 from inboxen.utils import override_settings
 from tickets import models
 from tickets.templatetags import tickets_flags
@@ -68,7 +68,7 @@ class QuestionViewTestCase(test.TestCase):
         self.page = AppPage.objects.get(app="tickets.urls")
         self.site = Site.objects.get(is_default_site=True)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -117,7 +117,7 @@ class QuestionDetailTestCase(test.TestCase):
         self.page = AppPage.objects.get(app="tickets.urls")
         self.site = Site.objects.get(is_default_site=True)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -154,7 +154,7 @@ class QuestionListTestCase(test.TestCase):
         self.page = AppPage.objects.get(app="tickets.urls")
         self.site = Site.objects.get(is_default_site=True)
 
-        login = self.client.login(username=self.user.username, password="123456")
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
