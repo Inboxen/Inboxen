@@ -5,7 +5,7 @@ configobj
 django-annoying
 django-assets
 django-async-messages
-git+https://github.com/disqus/django-bitfield.git@306ba5cb193fe444719d4286cd1d6296628ea339
+django-bitfield>=1.9.2
 django-bootstrap-form
 django-braces
 django-celery
