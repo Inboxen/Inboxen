@@ -30,4 +30,4 @@ python-daemon<1.7
 pytz
 salmon-mail==2
 simplejson
-https://moggers.co.uk/~moggers87/wagtail-1.10a0.tar.gz
+wagtail==1.10rc1
