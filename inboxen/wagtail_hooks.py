@@ -27,11 +27,20 @@ class RequestPermissionHelper(PermissionHelper):
     def user_can_create(self, user):
         return False
 
+    def user_can_delete_obj(self, user, obj):
+        return False
+
+
+class DomainPermissionHelper(PermissionHelper):
+    def user_can_delete_obj(self, user, obj):
+        return False
+
 
 class DomainAdmin(ModelAdmin):
     model = models.Domain
     menu_icon = 'snippet'
     list_display = ("domain", "owner", "enabled")
+    permission_helper_class = DomainPermissionHelper
 
 
 class RequestAdmin(ModelAdmin):

@@ -17,6 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import mock
+
 from django import test
 from django.core import mail, urlresolvers
 from django.db.models import Max
@@ -30,6 +32,7 @@ from cms.utils import app_reverse
 from inboxen.tests import factories, utils
 from inboxen.utils import override_settings
 from tickets import models
+from tickets.wagtail_hooks import QuestionPermissionHelper
 from tickets.templatetags import tickets_flags
 
 
@@ -54,6 +57,10 @@ class ResponseFactory(factory.django.DjangoModelFactory):
 class MockModel(models.RenderBodyMixin):
     def __init__(self, body):
         self.body = body
+
+
+class MiddlewareMock(object):
+    pass
 
 
 class QuestionViewTestCase(test.TestCase):
@@ -259,3 +266,46 @@ class RenderStatus(test.TestCase):
         self.assertIn(unicode(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
 
         self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
+
+
+class WagtailHooksTestCase(test.TestCase):
+    def setUp(self):
+        super(WagtailHooksTestCase, self).setUp()
+        self.user = factories.UserFactory(is_superuser=True)
+        self.question = QuestionFactory()
+
+        self.admin_middleware_mock = mock.patch("inboxen.middleware.WagtailAdminProtectionMiddleware", MiddlewareMock)
+
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+        self.admin_middleware_mock.start()
+
+    def tearDown(self):
+        super(WagtailHooksTestCase, self).tearDown()
+        self.admin_middleware_mock.stop()
+
+    def test_create_denied(self):
+        url = urlresolvers.reverse("tickets_question_modeladmin_create")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_denied(self):
+        url = urlresolvers.reverse("tickets_question_modeladmin_delete", kwargs={"instance_pk": self.question.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_permission_helper(self):
+        helper = QuestionPermissionHelper(models.Question)
+
+        # check that user_can_create always returns None
+        self.assertEqual(helper.user_can_create(self.user), False)
+        # it shouldn't even check args
+        self.assertEqual(helper.user_can_create(None), False)
+
+        # check that user_can_delete_obj always returns None
+        self.assertEqual(helper.user_can_delete_obj(self.user, self.question), False)
+        # it shouldn't even check args
+        self.assertEqual(helper.user_can_delete_obj(None, None), False)

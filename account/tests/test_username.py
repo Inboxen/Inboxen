@@ -26,7 +26,7 @@ from inboxen.tests import utils
 
 class LowerCaseUsernameTestCase(test.TestCase):
     def setUp(self):
-        self.user = factories.UserFactory()
+        self.user = factories.UserFactory(username="isdabizda")
 
     def test_login(self):
         params = {"username": "ISdaBIZda", "password": "123456"}

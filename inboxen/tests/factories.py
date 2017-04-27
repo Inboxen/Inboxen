@@ -40,7 +40,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = get_user_model()
 
-    username = "isdabizda"
+    username = factory.Sequence(lambda n: "isdabizda%d" % n)
     password = "123456"
 
     @classmethod

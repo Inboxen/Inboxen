@@ -3,6 +3,7 @@
 ### Pending
 
 * Fix ratelimit warnings in tests (#197)
+* Disable certain actions in the admin interface (e.g. disable deleting Domains (#193))
 
 ### Deploy for 2017-04-14
 
