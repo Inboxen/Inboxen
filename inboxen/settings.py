@@ -151,7 +151,7 @@ TEMPLATES = [{
             "django.template.context_processors.static",
             "django.template.context_processors.tz",
             "django.template.context_processors.request",
-            "session_csrf.context_processor",
+            "django.template.context_processors.csrf",
             "django.contrib.messages.context_processors.messages",
             "inboxen.context_processors.reduced_settings_context"
         ],
@@ -173,7 +173,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'session_csrf.CsrfMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'async_messages.middleware.AsyncMiddleware',
@@ -276,8 +275,7 @@ if DEBUG:
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
 
-# csrf
-ANON_ALWAYS = True
+CSRF_USE_SESSIONS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
 SUDO_URL = urlresolvers.reverse_lazy("user-sudo")

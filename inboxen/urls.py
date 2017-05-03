@@ -36,11 +36,6 @@ urls.handler404 = views.error.not_found
 urls.handler500 = views.error.server_error
 
 
-# csrf stuff
-import session_csrf
-session_csrf.monkeypatch()
-
-
 urlpatterns = [
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^_csp_report/$', views.error.csp_report, name='csp_logger'),
