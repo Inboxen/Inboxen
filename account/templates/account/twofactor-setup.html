@@ -33,10 +33,12 @@
     <p><pre>{{ secret }}</pre></p>
 {% endif %}
 
-<form action="{% url 'user-twofactor-setup' %}" method="post">
+<hr>
+
+<form class="form" action="{% url 'user-twofactor-setup' %}" method="post">
     {% csrf_token %}
     {{ wizard.management_form }}
-    {{ wizard.form|bootstrap_inline }}
+    {{ wizard.form|bootstrap }}
     <button type="submit" class="btn btn-primary">{% trans "Next" %}</button>
     <a href="{% url 'user-security' %}" class="btn btn-default">{% trans "Cancel" %}</a>
 </form>
