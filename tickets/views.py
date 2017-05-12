@@ -41,6 +41,7 @@ class FormMixin(generic.edit.FormMixin):
         return kwargs
 
     def post(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
@@ -69,8 +70,8 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
 
     def get_context_data(self, **kwargs):
         context = super(QuestionHomeView, self).get_context_data(**kwargs)
-        context["open"] = self.get_queryset().open()[:self.paginate_by]
-        context["closed"] = self.get_queryset().closed()[:self.paginate_by]
+        context["open"] = self.object_list.open()[:self.paginate_by]
+        context["closed"] = self.object_list.closed()[:self.paginate_by]
 
         return context
 

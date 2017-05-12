@@ -150,8 +150,7 @@ class QuestionDetailTestCase(test.TestCase):
 
     def test_post(self):
         response = self.client.post(self.get_url(), {"body": "hello"})
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], self.get_url())
+        self.assertRedirects(response, self.get_url())
 
         responses = self.question.response_set.all()
         self.assertEqual(len(responses), 1)
@@ -160,6 +159,9 @@ class QuestionDetailTestCase(test.TestCase):
 
         response = self.client.get(self.get_url())
         self.assertIn(responses[0].render_body(), response.content)
+
+        response = self.client.post(self.get_url(), {})
+        self.assertEqual(response.status_code, 200)
 
 
 class QuestionListTestCase(test.TestCase):
