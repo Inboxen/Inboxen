@@ -113,6 +113,17 @@ class QuestionViewTestCase(test.TestCase):
         self.assertEqual(question.author_id, self.user.id)
         self.assertEqual(question.body, "This is the body of my question")
 
+        del params["subject"]
+        response = self.client.post(self.get_url(), params)
+        self.assertEqual(response.status_code, 200)
+
+        maybe_new_question = models.Question.objects.latest("date")
+
+        # there shouldn't be a newer question
+        self.assertEqual(question, maybe_new_question)
+
+
+
 
 class QuestionDetailTestCase(test.TestCase):
     def setUp(self):
