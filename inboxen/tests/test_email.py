@@ -238,7 +238,7 @@ class BadEmailTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="From")
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"windows-1252\"")
-        factories.HeaderFactory(part=part, name="Content-Disposition", data="inline filename=\"He\n\rl\rlo\n.jpg\"")
+        factories.HeaderFactory(part=part, name="Content-Disposition", data="inline; filename=\"He\n\rl\rlo\nß.jpg\"")
 
         self.email_metaless = factories.EmailFactory(inbox__user=self.user)
         body = factories.BodyFactory(data=METALESS_BODY)
@@ -307,7 +307,7 @@ class BadEmailTestCase(test.TestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("He l lo .jpg", response["Content-Disposition"])
+        self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
 
     def test_html_a(self):
         response = self.client.get(self.get_url())
@@ -379,6 +379,45 @@ class RealExamplesTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
+
+
+class AttachmentTestCase(test.TestCase):
+    def setUp(self):
+        super(AttachmentTestCase, self).setUp()
+
+        self.user = factories.UserFactory()
+        self.email = factories.EmailFactory(inbox__user=self.user)
+        body = factories.BodyFactory(data=BODY)
+        self.part = factories.PartListFactory(email=self.email, body=body)
+        self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type", data="text/html; charset=\"utf-8\"")
+
+        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def test_no_name(self):
+        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Disposition"], "attachment")
+
+    def test_name_in_cc(self):
+        header_data = self.content_type_header.data
+        header_data.data = "text/html; charset=\"utf-8\"; name=\"Växjö.jpg\""
+        header_data.save()
+
+        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+
+    def test_name_in_cd(self):
+        factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
+        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
 
 class UtilityTestCase(test.TestCase):
