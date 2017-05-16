@@ -2,6 +2,8 @@
 
 ### Pending
 
+* Fix non-ASCII filename handling in attachment download (#206)
+
 ### Deploy for 2017-05-20
 
 * Fix ratelimit warnings in tests (#197)
