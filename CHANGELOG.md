@@ -2,6 +2,8 @@
 
 ### Pending
 
+* Display the text version of the 2FA secret code at the same time as the QR code (#190)
+
 ### Deploy for 2017-05-20
 
 * Fix ratelimit warnings in tests (#197)
