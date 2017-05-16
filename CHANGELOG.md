@@ -4,6 +4,8 @@
 
 * Fix ratelimit warnings in tests (#197)
 * Disable certain actions in the admin interface (e.g. disable deleting Domains (#193))
+* Fix 500 error on questions form error (#204)
+* Add missing copyright headers (#194)
 
 ### Deploy for 2017-04-14
 
