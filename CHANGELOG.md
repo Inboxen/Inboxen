@@ -6,6 +6,9 @@
   * Upgrade to Wagtail 1.10
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
+* Display a running total of emails processed on stats page
+* Remove standard deviation stat, it didn't actually mean anything for our dataset
+* Store join date of oldest user in stats
 
 ### Deploy for 2017-05-20
 
