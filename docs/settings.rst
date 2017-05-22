@@ -218,56 +218,27 @@ Which method should be used to accelerate liberation data downloads.
 database
 --------
 
-engine
-^^^^^^
-*Default value: sqlite*
-
-Which database engine to use, Django offers several database engines [3]_
-however we only support:
-
-+------------+---------------+-----------------------------+
-| Database   | Engine String | Suggested Usecase           |
-+============+===============+=============================+
-| PostgreSQL | postgresql    | Production                  |
-+------------+---------------+-----------------------------+
-| SQLite     | sqlite        | Testing and Development     |
-+------------+---------------+-----------------------------+
-
-MySQL is not supported as it is not able to create some of the indices needed
-by our models.
-
-Oracle is not supported as we've never tested it with Inboxen.
-
 name
 ^^^^
-*Default value: db.sqlite3*
+*Default value: inboxen*
 
-This is either the name of the database in PostgreSQL or the file path for
-SQLite.
+The name of the database.
 
 user
 ^^^^
 User used when connecting to PostgreSQL.
 
-This is ignored for SQLite.
-
 password
 ^^^^^^^^
 The password used when connecting to PostgreSQL.
-
-This is ignored for SQLite.
 
 host
 ^^^^
 The host name or IP address to connect to for PostgreSQL.
 
-This is ignored for SQLite.
-
 port
 ^^^^
 The port to connect to for PostgreSQL.
-
-This is ignored for SQLite.
 
 Cache
 -----
@@ -306,4 +277,3 @@ the cache directory.
 .. [0] https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key
 .. [1] https://docs.djangoproject.com/en/1.8/topics/settings/#envvar-DJANGO_SETTINGS_MODULE
 .. [2] https://docs.djangoproject.com/en/1.8/topics/i18n/#term-language-code
-.. [3] https://docs.djangoproject.com/en/1.8/ref/settings/#engine

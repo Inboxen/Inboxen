@@ -22,7 +22,6 @@ docs/_*
 *~
 
 /htmlcov
-db.sqlite3
 
 # C extensions
 *.so
