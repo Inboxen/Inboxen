@@ -2,6 +2,11 @@
 
 ### Pending
 
+* Update to Django 1.11 (#165)
+  * Upgrade to Wagtail 1.10
+  * Fix incorrect `select_related` use
+  * Removed `django-session-csrf`as it is no longer needed for Django 1.11
+
 ### Deploy for 2017-05-20
 
 * Fix ratelimit warnings in tests (#197)
