@@ -27,6 +27,7 @@ You'll need the following tools:
 
 * Git
 * Python (we strongly recommend you use virtualenv too)
+* PostgreSQL
 * NodeJS
 * Sass
 * [EditorConfig](http://editorconfig.org/) *(optional)*
@@ -104,6 +105,7 @@ You'll need the following tools:
 
 * Git
 * Python (we strongly recommend you use virtualenv too)
+* PostgreSQL
 * NodeJS
 * Sass
 
