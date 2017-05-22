@@ -66,7 +66,6 @@ def statistics():
     }
 
     inbox_aggregate = {
-        "disowned": Sum(Case(When(user__isnull=True, then=1), output_field=IntegerField())),
         "email_count__avg": Avg("email_count"),
         "email_count__sum": Sum("email_count"),
         "email_count__min": Min("email_count"),
@@ -92,6 +91,7 @@ def statistics():
     emails = inbox_qs.aggregate(**inbox_aggregate)
 
     inboxes["with_emails"] = inbox_qs.exclude(email_count=0).count()
+    inboxes["disowned"] = models.Inbox.objects.filter(user__isnull=True).count()
     emails["emails_read"] = models.Email.objects.filter(flags=models.Email.flags.read).count()
 
     if last_stat:
