@@ -56,9 +56,8 @@ def statistics():
     one_day_ago = datetime.now(utc) - timedelta(days=1)
     user_aggregate = {
         "count": Count("id"),
-        # TODO: uncomment this line once we're on Django 1.11
-        #"new": Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())),
-        #"with_inboxes": Sum(Case(When(inbox__isnull=True, then=1), output_field=IntegerField())),
+        "new": Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())),
+        "with_inboxes": Sum(Case(When(inbox__isnull=True, then=1), output_field=IntegerField())),
         "oldest_user": Min("date_joined"),
         "inbox_count__avg": Avg("inbox_count"),
         "inbox_count__sum": Sum("inbox_count"),
@@ -67,8 +66,7 @@ def statistics():
     }
 
     inbox_aggregate = {
-        # TODO: uncomment this line once we're on Django 1.11
-        #"disowned": Sum(Case(When(user__isnull=True, then=1), output_field=IntegerField())),
+        "disowned": Sum(Case(When(user__isnull=True, then=1), output_field=IntegerField())),
         "email_count__avg": Avg("email_count"),
         "email_count__sum": Sum("email_count"),
         "email_count__min": Min("email_count"),
@@ -77,10 +75,6 @@ def statistics():
 
     # collect user and inbox stats
     users = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
-
-    # TODO: remove these lines once the TODOs above have been solved
-    users["new"] = get_user_model().objects.filter(date_joined__gte=one_day_ago).count()
-    users["with_inboxes"] = get_user_model().objects.filter(inbox__isnull=False).distinct().count()
 
     inboxes = {}
     for key in list(users.keys()):
