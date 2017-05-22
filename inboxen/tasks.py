@@ -57,7 +57,7 @@ def statistics():
     user_aggregate = {
         "count": Count("id"),
         "new": Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())),
-        "with_inboxes": Sum(Case(When(inbox__isnull=True, then=1), output_field=IntegerField())),
+        "with_inboxes": Sum(Case(When(inbox__isnull=False, then=1), output_field=IntegerField())),
         "oldest_user": Min("date_joined"),
         "inbox_count__avg": Avg("inbox_count"),
         "inbox_count__sum": Sum("inbox_count"),
