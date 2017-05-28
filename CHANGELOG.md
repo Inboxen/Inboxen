@@ -2,6 +2,8 @@
 
 ### Pending
 
+* Change error message feeder command gives when inbox does not exit
+
 ### Deploy for 2017-05-20
 
 * Fix ratelimit warnings in tests (#197)
