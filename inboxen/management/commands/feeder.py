@@ -46,9 +46,9 @@ class Command(BaseCommand):
         if options["inbox"]:
             try:
                 Inbox.objects.from_string(email=options["inbox"])
-                self.inbox = options["inbox"]
             except Inbox.DoesNotExist:
-                raise CommandError("Address malformed")
+                raise CommandError("Inbox does not exist: %s" % options["inbox"])
+            self.inbox = options["inbox"]
         else:
             self.inbox = None
 
