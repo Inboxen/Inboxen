@@ -278,7 +278,7 @@ class FeederCommandTest(test.TestCase):
         with self.assertRaises(CommandError) as error:
             # non-existing inbox
             call_command("feeder", "some_file", inbox="something@localhost")
-        self.assertEqual(error.exception.message, "Address malformed")
+        self.assertEqual(error.exception.message, "Inbox does not exist")
 
         with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
             mock_box.return_value = mock.Mock()
