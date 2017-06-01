@@ -4,6 +4,7 @@
 
 * Change error message feeder command gives when inbox does not exit
 * Fix non-ASCII filename handling in attachment download (#206)
+* Remove CSP protection from the Wagtail admin (#219)
 
 ### Deploy for 2017-05-20
 
