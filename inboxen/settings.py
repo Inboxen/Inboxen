@@ -267,6 +267,8 @@ CSP_FONT_SRC = ("'self'",)
 CSP_IMG_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'",)
+# TODO https://github.com/wagtail/wagtail/issues/1288
+CSP_EXCLUDE_URL_PREFIXES = ('/admin',)
 
 if DEBUG:
     # local dev made easy
