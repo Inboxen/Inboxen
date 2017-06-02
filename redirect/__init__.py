@@ -22,6 +22,12 @@ from django.utils.http import urlquote
 
 
 def proxy_url(url):
+    url_parts = url.split(":")
+    if len(url_parts) > 1:
+        # if the url starts with a protocol, make sure it's a http one
+        if not url_parts[0].startswith("http"):
+            return url
+
     proxy = reverse("redirect")
     url = urlquote(url)
     return "{proxy}?url={url}".format(proxy=proxy, url=url)

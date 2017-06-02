@@ -7,6 +7,7 @@
 * Fix non-ASCII filename handling in attachment download (#206)
 * Drop Sqlite support (#214)
 * Remove "view" button from attachments (#202)
+* Stop proxying non-HTTP URIs (e.g. mailto:) (#211)
 
 ### Deploy for 2017-05-20
 
