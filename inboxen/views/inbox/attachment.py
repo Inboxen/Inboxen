@@ -61,8 +61,8 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
             disposition.append("attachment")
 
         headers = self.object.header_set.get_many("Content-Type", "Content-Disposition")
-        content_type = headers.pop("Content-Type", "text/plain").split(";", 1)
-        dispos = headers.pop("Content-Disposition", "")
+        content_type = headers.pop("Content-Type", u"text/plain").encode("utf-8").split(";", 1)
+        dispos = headers.pop("Content-Disposition", u"").encode("utf-8")
 
         try:
             params = dict(HEADER_PARAMS.findall(content_type[1]))
@@ -71,9 +71,9 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         params.update(dict(HEADER_PARAMS.findall(dispos)))
 
         if "filename" in params:
-            disposition.append("filename={0}".format(params["filename"]))
+            disposition.append("filename=\"{0}\"".format(params["filename"]))
         elif "name" in params:
-            disposition.append("filename={0}".format(params["name"]))
+            disposition.append("filename=\"{0}\"".format(params["name"]))
 
         disposition = "; ".join(disposition)
 
