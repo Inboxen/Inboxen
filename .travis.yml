@@ -1,18 +1,14 @@
 language: python
 python:
     - "2.7"
-
-env:
-    - DB=sqlite
-    - DB=postgres
+    - "3.5"
 
 before_script:
-  - psql -c 'create database inboxen;' -U postgres
+  - psql -c 'create database inboxenTest;' -U postgres
 
 install:
     - mkdir node_modules
     - travis_retry npm update
-    - if [[ $DB == postgres ]]; then travis_retry pip install -q psycopg2; fi
     - travis_retry pip install -q -U setuptools
     - travis_retry pip install -q -r requirements.txt
     - travis_retry pip install -q codecov
@@ -25,6 +21,8 @@ matrix:
       env: TOX_ENV=docs
       install: pip install tox
       script: tox -e $TOX_ENV
+  allow_failures:
+    - python: "3.5"
 
 script:
     - coverage run --branch  manage.py test --settings=inboxen.tests.settings

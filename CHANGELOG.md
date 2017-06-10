@@ -6,6 +6,11 @@
   * Upgrade to Wagtail 1.10
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
+* Display the text version of the 2FA secret code at the same time as the QR code (#190)
+* Change error message feeder command gives when inbox does not exit
+* Fix non-ASCII filename handling in attachment download (#206)
+* Drop Sqlite support (#214)
+* Remove "view" button from attachments (#202)
 
 ### Deploy for 2017-05-20
 
