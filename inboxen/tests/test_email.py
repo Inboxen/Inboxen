@@ -167,19 +167,12 @@ class EmailViewTestCase(test.TestCase):
 
     def test_attachments_get(self):
         part = self.email.parts.get()
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        # csp
-        self.assertNotIn("srcipt-src", response["content-security-policy"])
-        self.assertIn("default-src 'none';", response["content-security-policy"])
-        self.assertIn("img-src 'self' https:;", response["content-security-policy"])
-        self.assertIn("media-src https:;", response["content-security-policy"])
-        self.assertIn("style-src 'self' 'unsafe-inline' https:;", response["content-security-policy"])
-
         part_id = part.id + 1000
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part_id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part_id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -304,7 +297,7 @@ class BadEmailTestCase(test.TestCase):
 
     def test_attachments_get(self):
         part = self.email.parts.get()
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
@@ -397,7 +390,7 @@ class AttachmentTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def test_no_name(self):
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment")
@@ -407,14 +400,14 @@ class AttachmentTestCase(test.TestCase):
         header_data.data = "text/html; charset=\"utf-8\"; name=\"Växjö.jpg\""
         header_data.save()
 
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
     def test_name_in_cd(self):
         factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
