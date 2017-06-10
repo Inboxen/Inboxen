@@ -1,8 +1,13 @@
 from __future__ import absolute_import
 import os
 
+
+# tell settings module to ignore normal config file
 os.environ['INBOXEN_TESTING'] = '1'
 from inboxen.settings import *
+
+# build asserts if need be
+ASSETS_AUTO_BUILD = True
 
 CACHES = {
     "default": {
@@ -10,7 +15,8 @@ CACHES = {
     }
 }
 
-postgres_user = os.environ.get('PG_USER', 'postgres')
+# default to current user
+postgres_user = os.environ.get('PG_USER', os.environ.get('USER'))
 
 SECRET_KEY = "This is a test, you don't need secrets"
 ENABLE_REGISTRATION = True
