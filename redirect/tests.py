@@ -45,6 +45,18 @@ class RedirectTestCase(test.TestCase):
         self.assertEqual(response.redirect_chain[0][0], "/?bizz=iss")
         self.assertEqual(response.redirect_chain[0][1], 302)
 
+    def test_proxy_url_no_proto_and_port(self):
+        url = "localhost:8080"
+        proxied = redirect.proxy_url(url)
+
+        self.assertEqual("/click/?url=localhost%3A8080", proxied)
+
+        response = self.client.get(proxied, follow=True)
+
+        self.assertEqual(len(response.redirect_chain), 1)
+        self.assertEqual(response.redirect_chain[0][0], "localhost:8080")
+        self.assertEqual(response.redirect_chain[0][1], 302)
+
     def test_proxy_url_http_proto(self):
         url = "http://localhost/?bizz=iss"
         proxied = redirect.proxy_url(url)
