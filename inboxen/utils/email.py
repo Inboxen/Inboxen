@@ -54,7 +54,7 @@ class InboxenPremailer(Premailer):
         return ""
 
 
-def _unicode_damnit(data, charset="utf-8", errors="replace"):
+def unicode_damnit(data, charset="utf-8", errors="replace"):
     """Makes doubley sure that we can turn the database's binary typees into
     unicode objects
     """
@@ -137,7 +137,7 @@ def _clean_html_body(request, email, body, charset):
         link.attrib["rel"] = "noreferrer"
 
     # finally, export to unicode
-    body = _unicode_damnit(etree.tostring(html_tree), charset)
+    body = unicode_damnit(etree.tostring(html_tree), charset)
     return safestring.mark_safe(body)
 
 
@@ -178,9 +178,9 @@ def _render_body(request, email, attachments):
     # finally, set the body to something
     if plain_message:
         if plain:
-            body = _unicode_damnit(plain.body.data, plain.charset)
+            body = unicode_damnit(plain.body.data, plain.charset)
         elif len(attachments) == 1:
-            body = _unicode_damnit(attachments[0].body.data, attachments[0].charset)
+            body = unicode_damnit(attachments[0].body.data, attachments[0].charset)
         else:
             body = u""
     else:
@@ -188,7 +188,7 @@ def _render_body(request, email, attachments):
             body = _clean_html_body(request, email, str(html.body.data), html.charset)
         except (etree.LxmlError, ValueError) as exc:
             if plain is not None and len(plain.body.data) > 0:
-                body = _unicode_damnit(plain.body.data, plain.charset)
+                body = unicode_damnit(plain.body.data, plain.charset)
             else:
                 body = u""
 

@@ -416,13 +416,13 @@ class AttachmentTestCase(test.TestCase):
 class UtilityTestCase(test.TestCase):
     def test_is_unicode(self):
         string = "Hey there!"
-        self.assertTrue(isinstance(email_utils._unicode_damnit(string), unicode))
+        self.assertTrue(isinstance(email_utils.unicode_damnit(string), unicode))
 
     def test_unicode_passthrough(self):
         already_unicode = u"€"
 
         # if this doesn't passthrough, it will error
-        email_utils._unicode_damnit(already_unicode, "ascii", "strict")
+        email_utils.unicode_damnit(already_unicode, "ascii", "strict")
 
     def test_clean_html_no_body(self):
         email = {"display_images": True}
@@ -438,5 +438,5 @@ class UtilityTestCase(test.TestCase):
 
     def test_invalid_charset(self):
         text = "Växjö"
-        self.assertEqual(email_utils._unicode_damnit(text, "utf-8"), u"Växjö")
-        self.assertEqual(email_utils._unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")
+        self.assertEqual(email_utils.unicode_damnit(text, "utf-8"), u"Växjö")
+        self.assertEqual(email_utils.unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")
