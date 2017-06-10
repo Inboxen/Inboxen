@@ -390,7 +390,7 @@ class AttachmentTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def test_no_name(self):
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment")
@@ -400,14 +400,14 @@ class AttachmentTestCase(test.TestCase):
         header_data.data = "text/html; charset=\"utf-8\"; name=\"Växjö.jpg\""
         header_data.save()
 
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
     def test_name_in_cd(self):
         factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
-        url = urlresolvers.reverse("email-attachment", kwargs={"method": "download", "attachmentid": self.part.id})
+        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
