@@ -20,6 +20,7 @@
 import re
 
 from django.core import exceptions
+from django.db.models import Q
 
 from watson import search
 
@@ -29,42 +30,24 @@ from inboxen.utils.email import unicode_damnit
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 
+def find_body(part):
+    if part is not None:
+        try:
+            main, sub = part.content_type.split("/", 1)
+        except ValueError:
+            if part.is_leaf_node() and part.get_level() == 0:
+                yield part
+        else:
+            if main == "multipart":
+                for child in part.get_children():
+                    for grandchild in find_body(child):
+                        yield grandchild
+            elif main == "text" and sub == "plain":
+                yield part
+
+
 class EmailSearchAdapter(search.SearchAdapter):
     trunc_to_size = 2 ** 20  # 1MB. Or two copies of 1984
-
-    def get_bodies(self, obj):
-        """Return a queryset of text/* bodies for given obj"""
-        from inboxen.models import Body
-
-        data = Body.objects.filter(
-            partlist__email__id=obj.id,
-            partlist__header__name__name="Content-Type",
-            partlist__header__data__data__startswith="text/",
-        )
-
-        if len(data) == 0:
-            data = Body.objects.filter(partlist__email__id=obj.id)
-            data = data.exclude(partlist__header__name__name="Content-Type")
-            data = data.exclude(partlist__header__name__name="MIME-Version")
-
-        return data
-
-    def get_body_charset(self, obj, body):
-        """Figure out the charset for the body we've just been given"""
-        from inboxen.models import Header
-
-        content_type = Header.objects.filter(part__email__id=obj.id, part__body__id=body.id, name__name="Content-Type").select_related("data")
-        try:
-            content_type = content_type[0].data.data
-            content_type = content_type.split(";", 1)
-            params = dict(HEADER_PARAMS.findall(content_type[1]))
-            encoding = params["charset"]
-        except (exceptions.ObjectDoesNotExist, IndexError, KeyError):
-            encoding = "utf-8"
-
-        return encoding
-
-    # Overridden SearchAdapter methods, see Watson docs
 
     def get_title(self, obj):
         """Fetch subject for obj"""
@@ -75,38 +58,41 @@ class EmailSearchAdapter(search.SearchAdapter):
                 header__part__parent__isnull=True,
                 header__name__name="Subject",
                 header__part__email__id=obj.id,
-            )
-            subject = subject[0]
+            ).first()
 
             return unicode_damnit(subject.data)
-        except IndexError:
+        except AttributeError:
             return u""
 
     def get_description(self, obj):
-        """Fetch first text/* body for obj, reading up to `trunc_to_size` bytes
-        """
-        try:
-            body = self.get_bodies(obj)[0]
-        except IndexError:
-            return u""
+        """Fetch first text/plain body for obj, reading up to `trunc_to_size`
+        bytes """
+        first_part = find_body(obj.get_parts()).next()
 
-        return unicode_damnit(body.data[:self.trunc_to_size], self.get_body_charset(obj, body))
+        if first_part is not None:
+            return unicode_damnit(first_part.body.data[:self.trunc_to_size], first_part.charset)
+        else:
+            return ""
 
     def get_content(self, obj):
-        """Fetch all text/* bodies for obj, reading up to `trunc_to_size` bytes"""
+        """Fetch all text/plain bodies for obj, reading up to `trunc_to_size`
+        bytes"""
         data = []
         size = 0
-        for body in self.get_bodies(obj):
+        for part in find_body(obj.get_parts()):
+            if part is None:
+                break
+
             remains = self.trunc_to_size - size
-            size = size + body.size
+            size = size + part.body.size
 
             if remains <= 0:
                 break
-            elif remains < body.size:
-                data.append(unicode_damnit(body.data[:remains], self.get_body_charset(obj, body))
+            elif remains < part.body.size:
+                data.append(unicode_damnit(part.body.data[:remains], part.charset))
                 break
             else:
-                data.append(unicode_damnit(body.data, self.get_body_charset(obj, body)))
+                data.append(unicode_damnit(part.body.data, part.charset))
 
         return u"\n".join(data)
 
