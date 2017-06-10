@@ -205,29 +205,27 @@ def _render_body(request, email, attachments):
     return body
 
 
-def find_bodies(request, email, attachments, depth=0):
-    """Find bodies that should be inlined and add them to email["bodies"]
+def find_bodies(request, email, part):
+    """Find bodies that should be inlined and add them to email["bodies"]"""
+    try:
+        main, sub = part.content_type.split("/", 1)
+    except ValueError:
+        if part.is_leaf_node() and part.get_level() == 0:
+            email["bodies"] = [_render_body(request, email, [part])]
+        return
+    if part.parent:
+        parent_main, parent_sub = part.parent.content_type.split("/", 1)
+    else:
+        parent_main, parent_sub = ("", "")
 
-    `attachments` should a list like object (i.e. have the method `index`)"""
-    for part in attachments:
-        try:
-            main, sub = part.content_type.split("/", 1)
-        except ValueError:
-            if len(attachments) == 1 and depth == 0:
-                email["bodies"] = [_render_body(request, email, attachments)]
+    if main == "multipart":
+        if sub == "alternative":
+            email["bodies"].append(_render_body(request, email, part.get_children()))
             return
-        if part.parent:
-            parent_main, parent_sub = part.parent.content_type.split("/", 1)
-        else:
-            parent_main, parent_sub = ("", "")
-
-        if main == "multipart":
-            if sub == "alternative":
-                email["bodies"].append(_render_body(request, email, part.childs))
-                continue
-            find_bodies(request, email, part.childs, depth=depth+1)
-        elif part.parent and part.parent.content_type == "multipart/digest":
-            if len(part.childs) == 1:
-                email["bodies"].append(_render_body(request, email, part.childs))
-        elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
-            email["bodies"].append(_render_body(request, email, [part]))
+        for child in part.get_children():
+            find_bodies(request, email, child)
+    elif part.parent and part.parent.content_type == "multipart/digest":
+        if len(part.get_children()) == 1:
+            email["bodies"].append(_render_body(request, email, part.get_children()))
+    elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
+        email["bodies"].append(_render_body(request, email, [part]))

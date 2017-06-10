@@ -20,9 +20,10 @@
 import re
 
 from django.core import exceptions
-from django.utils import encoding
 
 from watson import search
+
+from inboxen.utils.email import unicode_damnit
 
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
@@ -77,7 +78,7 @@ class EmailSearchAdapter(search.SearchAdapter):
             )
             subject = subject[0]
 
-            return encoding.smart_text(subject.data, errors='replace')
+            return unicode_damnit(subject.data)
         except IndexError:
             return u""
 
@@ -89,7 +90,7 @@ class EmailSearchAdapter(search.SearchAdapter):
         except IndexError:
             return u""
 
-        return encoding.smart_text(body.data[:self.trunc_to_size], encoding=self.get_body_charset(obj, body), errors='replace')
+        return unicode_damnit(body.data[:self.trunc_to_size], self.get_body_charset(obj, body))
 
     def get_content(self, obj):
         """Fetch all text/* bodies for obj, reading up to `trunc_to_size` bytes"""
@@ -102,10 +103,10 @@ class EmailSearchAdapter(search.SearchAdapter):
             if remains <= 0:
                 break
             elif remains < body.size:
-                data.append(encoding.smart_text(body.data[:remains], encoding=self.get_body_charset(obj, body), errors='replace'))
+                data.append(unicode_damnit(body.data[:remains], self.get_body_charset(obj, body))
                 break
             else:
-                data.append(encoding.smart_text(body.data, encoding=self.get_body_charset(obj, body), errors='replace'))
+                data.append(unicode_damnit(body.data, self.get_body_charset(obj, body)))
 
         return u"\n".join(data)
 
@@ -119,7 +120,7 @@ class EmailSearchAdapter(search.SearchAdapter):
                 header__name__name="From",
                 header__part__email__id=obj.id,
             )[0]
-            from_header = encoding.smart_text(from_header.data, errors='replace')
+            from_header = unicode_damnit(from_header.data)
         except IndexError:
             from_header = u""
 

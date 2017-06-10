@@ -337,7 +337,7 @@ class RealExamplesTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # this email should display all leaves
-        leaf_part_count = len([i for i in self.email.get_parts() if i.is_leaf_node()])
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
         self.assertEqual(len(response.context["email"]["bodies"]), leaf_part_count)
 
     def test_signed_forwarded_digest(self):
@@ -348,7 +348,7 @@ class RealExamplesTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        leaf_part_count = len([i for i in self.email.get_parts() if i.is_leaf_node()])
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
         self.assertEqual(leaf_part_count, 12)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertEqual(response.context["email"]["bodies"][0], "<pre>Hello\n</pre>")

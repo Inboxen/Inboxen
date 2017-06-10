@@ -1,0 +1,20 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% load i18n %}
+{% if attachment.is_leaf_node %}
+    <div class="col-sm-4 col-md-3 col-lg-2">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group btn-group-justified" role="group">
+                    <a href="{% url 'email-attachment' attachmentid=attachment.id %}" class="btn btn-default">
+                        {% trans "Download" %}
+                    </a>
+                </div>
+            </div>
+            <div class="panel-body wrap-words">{{ attachment.filename }} ({{ attachment.content_type|default:"text/plain" }})</div>
+        </div>
+    </div>
+{% else %}
+    {% for child in attachment.get_children %}
+        {% include "inboxen/includes/attachment.html" with attachment=child %}
+    {% endfor %}
+{% endif %}
