@@ -73,11 +73,8 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="btn-group btn-group-justified" role="group">
-                    <a href="{% url 'email-attachment' attachmentid=attachment.id method='download' %}" class="btn btn-default">
+                    <a href="{% url 'email-attachment' attachmentid=attachment.id %}" class="btn btn-default">
                         {% trans "Download" %}
-                    </a>
-                    <a href="{% url 'email-attachment' attachmentid=attachment.id method='view' %}" class="btn btn-default">
-                        {% trans "View" %}
                     </a>
                 </div>
             </div>
