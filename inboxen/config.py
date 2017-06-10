@@ -37,14 +37,6 @@ import validate
 ##
 
 # Shorthand for Django's default database backends
-db_dict = {
-    "postgresql": "django.db.backends.postgresql_psycopg2",
-    "mysql": "django.db.backends.mysql",
-    "oracle": "django.db.backends.oracle",
-    "sqlite": "django.db.backends.sqlite3",
-}
-
-# Shorthand for Django's default database backends
 cache_dict = {
     "database": "django.core.cache.backends.db.DatabaseCache",
     "dummy": "django.core.cache.backends.dummy.DummyCache",
@@ -155,19 +147,15 @@ SENDFILE_BACKEND = "sendfile.backends.{}".format(config["tasks"]["liberation"]["
 # Databases!
 DATABASES = {
     'default': {
-        'ENGINE': db_dict[config["database"]["engine"]],
+        'ENGINE': "django.db.backends.postgresql_psycopg2",
         'USER': config["database"]["user"],
         'PASSWORD': config["database"]["password"],
+        'NAME': config["database"]["name"],
         'HOST': config["database"]["host"],
         'PORT': config["database"]["port"],
     }
 }
 
-# "name" is a path for sqlite databases
-if config["database"]["engine"] == "sqlite":
-    DATABASES["default"]["NAME"] = os.path.join(BASE_DIR, config["database"]["name"])
-else:
-    DATABASES["default"]["NAME"] = config["database"]["name"]
 
 # Caches!
 CACHES = {
