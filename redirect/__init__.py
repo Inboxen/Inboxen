@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2015, 2017 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -21,7 +21,29 @@ from django.core.urlresolvers import reverse
 from django.utils.http import urlquote
 
 
+ALLOW_URL_SCHEMES = [
+    'http',
+    'https',
+]
+
+
 def proxy_url(url):
+    url_parts = url.split(":")
+    if len(url_parts) > 1:
+        # check to see if the second item is a port number
+        try:
+            port = int(url_parts[1], 10)
+        except ValueError:
+            # second part of url was not a port
+            port = 0
+
+        # if the second part of a url is not a port, then we can assume the
+        # first must be a protocol scheme
+        if port == 0 and url_parts[0] not in ALLOW_URL_SCHEMES:
+            # url starts with a protocol, but it's not one that we can redirect
+            # to safely
+            return url
+
     proxy = reverse("redirect")
     url = urlquote(url)
     return "{proxy}?url={url}".format(proxy=proxy, url=url)

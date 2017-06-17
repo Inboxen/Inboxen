@@ -1,6 +1,6 @@
 # Changelog
 
-### Pending
+## Pending
 
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.10
@@ -11,6 +11,10 @@
 * Fix non-ASCII filename handling in attachment download (#206)
 * Drop Sqlite support (#214)
 * Remove "view" button from attachments (#202)
+* Stop proxying non-HTTP URIs (e.g. mailto:) (#211)
+* Tests are now run with the test settings module by default
+
+## Releases
 
 ### Deploy for 2017-05-20
 
