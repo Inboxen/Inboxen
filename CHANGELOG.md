@@ -1,6 +1,6 @@
 # Changelog
 
-### Pending
+## Pending
 
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.10
@@ -12,6 +12,15 @@
   * Store join date of oldest user in stats
   * Calculate disowned inboxes
   * Calculate `new` & `with_inboxes` via aggregate
+* Display the text version of the 2FA secret code at the same time as the QR code (#190)
+* Change error message feeder command gives when inbox does not exit
+* Fix non-ASCII filename handling in attachment download (#206)
+* Drop Sqlite support (#214)
+* Remove "view" button from attachments (#202)
+* Stop proxying non-HTTP URIs (e.g. mailto:) (#211)
+* Tests are now run with the test settings module by default
+
+## Releases
 
 ### Deploy for 2017-05-20
 

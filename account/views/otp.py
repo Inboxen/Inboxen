@@ -60,18 +60,10 @@ class TwoFactorSetupView(core.SetupView):
 
         return out
 
-    def get(self, request, *args, **kwargs):
-        """A special GET request won't reset the wizard"""
-        if "qr" in request.GET:
-            return self.render(self.get_form())
-        else:
-            return super(TwoFactorSetupView, self).get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(TwoFactorSetupView, self).get_context_data(**kwargs)
         if self.steps.current == 'generator':
             context["secret"] = self.request.session[self.session_key_name]
-            context["qr"] = int(self.request.GET.get("qr", "1"))
 
         return context
 

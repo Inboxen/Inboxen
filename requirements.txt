@@ -25,6 +25,7 @@ lxml
 markdown-newtab
 premailer
 progress
+psycopg2
 python-daemon<1.7
 pytz
 salmon-mail==2

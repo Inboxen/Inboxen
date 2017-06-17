@@ -21,7 +21,6 @@ from django.http import Http404, HttpResponse
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
-from csp.decorators import csp_replace
 
 from inboxen import models
 
@@ -32,9 +31,6 @@ __all__ = ["AttachmentDownloadView"]
 
 
 class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
-    file_attachment = False
-    file_status = 200
-
     def get_object(self):
         qs = models.PartList.objects.select_related('body')
         qs = qs.filter(email__flags=~models.Email.flags.deleted)
@@ -44,25 +40,13 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         except models.PartList.DoesNotExist:
             raise Http404
 
-    # csp should allow images, media, and style sheets over https.
-    # *Do not* do the same for script-src, that will make bypassing CPS on the
-    # rest of the site trivial!
-    @csp_replace(STYLE_SRC=["'self'", "'unsafe-inline'", "https:"], IMG_SRC=["'self'", "https:"], MEDIA_SRC=["https:"])
-    def get(self, *args, **kwargs):
-        if kwargs.get("method", "download") == "download":
-            self.file_attachment = True
-
-        return super(AttachmentDownloadView, self).get(*args, **kwargs)
-
     def render_to_response(self, context):
         # build the Content-Disposition header
-        disposition = []
-        if self.file_attachment:
-            disposition.append("attachment")
+        disposition = ["attachment"]
 
         headers = self.object.header_set.get_many("Content-Type", "Content-Disposition")
-        content_type = headers.pop("Content-Type", "text/plain").split(";", 1)
-        dispos = headers.pop("Content-Disposition", "")
+        content_type = headers.pop("Content-Type", u"text/plain").encode("utf-8").split(";", 1)
+        dispos = headers.pop("Content-Disposition", u"").encode("utf-8")
 
         try:
             params = dict(HEADER_PARAMS.findall(content_type[1]))
@@ -71,9 +55,9 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         params.update(dict(HEADER_PARAMS.findall(dispos)))
 
         if "filename" in params:
-            disposition.append("filename={0}".format(params["filename"]))
+            disposition.append("filename=\"{0}\"".format(params["filename"]))
         elif "name" in params:
-            disposition.append("filename={0}".format(params["name"]))
+            disposition.append("filename=\"{0}\"".format(params["name"]))
 
         disposition = "; ".join(disposition)
 
@@ -86,7 +70,7 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         data = self.object.body.data or ""
         response = HttpResponse(
             content=data,
-            status=self.file_status
+            status=200,
         )
 
         response["Content-Length"] = self.object.body.size or len(data)

@@ -27,6 +27,7 @@ You'll need the following tools:
 
 * Git
 * Python (we strongly recommend you use virtualenv too)
+* PostgreSQL
 * NodeJS
 * Sass
 * [EditorConfig](http://editorconfig.org/) *(optional)*
@@ -43,6 +44,7 @@ cd Inboxen
 pip install -r requirements-dev.txt
 mkdir node_modules
 npm update
+python manage.py collectstatic
 ```
 
 When you've made your changes, remember to run `flake8` against Python files
@@ -50,7 +52,7 @@ you've changed (and `jshint` on JS files) and run unit tests. To run the tests,
 do the following:
 
 ```
-python manage.py test --settings=inboxen.tests.settings
+python manage.py test
 ```
 
 Committing and Branching
@@ -104,6 +106,7 @@ You'll need the following tools:
 
 * Git
 * Python (we strongly recommend you use virtualenv too)
+* PostgreSQL
 * NodeJS
 * Sass
 

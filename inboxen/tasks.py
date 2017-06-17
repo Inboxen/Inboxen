@@ -63,6 +63,7 @@ def statistics():
         "inbox_count__sum": Sum("inbox_count"),
         "inbox_count__min": Min("inbox_count"),
         "inbox_count__max": Max("inbox_count"),
+        "inbox_count__stddev": StdDev("inbox_count"),
     }
 
     inbox_aggregate = {
@@ -70,6 +71,7 @@ def statistics():
         "email_count__sum": Sum("email_count"),
         "email_count__min": Min("email_count"),
         "email_count__max": Max("email_count"),
+        "email_count__stddev": StdDev("email_count"),
     }
 
     # collect user and inbox stats
