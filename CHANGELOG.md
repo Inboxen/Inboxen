@@ -8,6 +8,7 @@
 * Drop Sqlite support (#214)
 * Remove "view" button from attachments (#202)
 * Stop proxying non-HTTP URIs (e.g. mailto:) (#211)
+* Tests are now run with the test settings module by default
 
 ### Deploy for 2017-05-20
 
