@@ -2,6 +2,10 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2017-06-17
+
 * Display the text version of the 2FA secret code at the same time as the QR code (#190)
 * Change error message feeder command gives when inbox does not exit
 * Fix non-ASCII filename handling in attachment download (#206)
@@ -9,8 +13,6 @@
 * Remove "view" button from attachments (#202)
 * Stop proxying non-HTTP URIs (e.g. mailto:) (#211)
 * Tests are now run with the test settings module by default
-
-## Releases
 
 ### Deploy for 2017-05-20
 
