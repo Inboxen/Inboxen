@@ -46,6 +46,7 @@ urlpatterns = [
     urls.url(r'^_csp_report/$', views.error.csp_report, name='csp_logger'),
     urls.url(r'^stats/$', views.stats, name='stats'),
     urls.url(r'^stats_recent.json$', views.stats_recent, name='stats_recent'),
+    urls.url(r'^styleguide$', views.styleguide, name='inboxen-styleguide'),
 
     # inbox views
     urls.url(r'^inbox/add/$', views.InboxAddView.as_view(), name='inbox-add'),

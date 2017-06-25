@@ -18,5 +18,6 @@
 from .inbox import *
 from .index import *
 from .stats import *
+from .styleguide import styleguide
 from .user import *
 import error

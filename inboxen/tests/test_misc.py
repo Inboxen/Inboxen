@@ -435,3 +435,9 @@ class ErrorViewTestCase(test.TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             view_obj.get_error_code()
+
+
+class StyleguideTestCase(test.TestCase):
+    def test_get(self):
+        response = self.client.get(reverse('inboxen-styleguide'))
+        self.assertEqual(response.status_code, 200)
