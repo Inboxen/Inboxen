@@ -262,6 +262,21 @@
                         <div class="inbox-description {{ col4 }}">My inbox</div>
                     </a>
                 </div>
+                <div class="inbox-edit-form-row row">
+                    <div class="col-xs-12">
+                        <form class="form">
+                            {{ form|bootstrap }}
+                            <div class="panel panel-danger">
+                                <div class="panel-heading">Danger Area&trade;</div>
+                                <div class="panel-body">
+                                    {{ form|bootstrap }}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">Save</button>
+                            <a class="btn btn-default">Cancel</a>
+                        </form>
+                    </div>
+                </div>
                 <div class="row">
                     <span class="clickable">
                         <div class="{{ col0 }}">
