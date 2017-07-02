@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Pass attachment name to template for email view (#229)
+
 ## Releases
 
 ### Deploy for 2017-06-17
