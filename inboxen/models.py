@@ -239,7 +239,7 @@ class Email(models.Model):
             params.update(dict(HEADER_PARAMS.findall(dispos)))
 
             # find filename, could be anywhere, could be nothing
-            part_head["filename"] = params.get("filename") or params.get("name") or ""
+            part.filename = params.get("filename") or params.get("name") or ""
 
             # grab charset
             part.charset = params.get("charset", "utf-8")
