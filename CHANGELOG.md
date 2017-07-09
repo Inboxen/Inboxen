@@ -3,6 +3,7 @@
 ## Pending
 
 * Pass attachment name to template for email view (#229)
+* Change how MIME parts and headers are fetched to be more generic (#109)
 
 ## Releases
 
