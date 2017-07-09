@@ -264,23 +264,23 @@ class PartList(MPTTModel):
     def _content_headers_cache(self):
         data = {}
         part_head = self.header_set.get_many("Content-Type", "Content-Disposition")
-        content_header = part_head.pop("Content-Type", "").split(";", 1)
+        content_header = part_head.pop("Content-Type", u"").split(";", 1)
         data['content_type'] = content_header[0]
-        content_params = content_header[1] if len(content_header) > 1 else ""
+        content_params = content_header[1] if len(content_header) > 1 else u""
 
         if not self.is_leaf_node():
             return data
 
-        dispos = part_head.pop("Content-Disposition", "")
+        dispos = part_head.pop("Content-Disposition", u"")
 
         params = dict(HEADER_PARAMS.findall(content_params))
         params.update(dict(HEADER_PARAMS.findall(dispos)))
 
         # find filename, could be anywhere, could be nothing
-        data["filename"] = params.get("filename") or params.get("name") or ""
+        data["filename"] = params.get("filename") or params.get("name") or u""
 
         # grab charset
-        data["charset"] = params.get("charset", "utf-8")
+        data["charset"] = params.get("charset", u"utf-8")
 
         return data
 
