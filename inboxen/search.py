@@ -17,17 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import re
-
 from django.core import exceptions
 from django.db.models import Q
 
 from watson import search
 
 from inboxen.utils.email import unicode_damnit
-
-
-HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 
 def find_body(part):

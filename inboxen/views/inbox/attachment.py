@@ -24,7 +24,6 @@ from braces.views import LoginRequiredMixin
 
 from inboxen import models
 
-HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 HEADER_CLEAN = re.compile(r'\s+')
 
 __all__ = ["AttachmentDownloadView"]
