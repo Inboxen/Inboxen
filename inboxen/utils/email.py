@@ -225,7 +225,7 @@ def find_bodies(request, email, part):
         for child in part.get_children():
             find_bodies(request, email, child)
     elif part.parent and part.parent.content_type == "multipart/digest":
-        if len(part.get_children()) == 1:
+        if len(part.get_children()) == 1 and part.get_children()[0].content_type.startswith("text/"):
             email["bodies"].append(_render_body(request, email, part.get_children()))
     elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
         email["bodies"].append(_render_body(request, email, [part]))
