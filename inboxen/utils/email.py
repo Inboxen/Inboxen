@@ -238,6 +238,11 @@ def find_bodies(request, email, part):
         # there is only one
         if len(part.get_children()) == 1 and part.get_children()[0].content_type.startswith("text/"):
             email["bodies"].append(_render_body(request, email, part.get_children()))
+        elif part.get_children()[0].content_type == "multipart/signed":
+            # sometimes there are signed messages
+            for child in part.get_children()[0].get_children():
+                if child.is_leaf_node() and  child.content_type.startswith("text/"):
+                    email["bodies"].append(_render_body(request, email, [child]))
     elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
         # we've somehow come to a leaf node, if we're a text/plain or text/html
         # part, render it
