@@ -215,6 +215,9 @@ class Email(models.Model):
         (which is a reference to that object in the same queryset rather than a copy as
         Django would do it)
         """
+        # TODO django-mptt has a utils function that can populate a queryset
+        # cache, but there's no "walk" method, so we can't pretend the queryset
+        # is a list :/
         part_list = list(self.parts.all())
         parents = {}
         for part in part_list:
@@ -224,8 +227,8 @@ class Email(models.Model):
             part.content_type = content_header[0]
             content_params = content_header[1] if len(content_header) > 1 else ""
 
+            # cache children
             part.childs = []
-
             if part.parent:
                 part.parent.childs.append(part)
 
@@ -239,7 +242,7 @@ class Email(models.Model):
             params.update(dict(HEADER_PARAMS.findall(dispos)))
 
             # find filename, could be anywhere, could be nothing
-            part_head["filename"] = params.get("filename") or params.get("name") or ""
+            part.filename = params.get("filename") or params.get("name") or ""
 
             # grab charset
             part.charset = params.get("charset", "utf-8")
