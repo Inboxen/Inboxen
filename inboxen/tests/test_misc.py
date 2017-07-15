@@ -48,6 +48,20 @@ from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
 
 
+def reload_urlconf():
+    """
+    Reload url conf
+
+    Make sure to use clear_url_caches along with this
+    """
+    if dj_settings.ROOT_URLCONF in sys.modules:
+        conf = reload(sys.modules[dj_settings.ROOT_URLCONF])
+    else:
+        from inboxen import urls as conf
+
+    return conf
+
+
 class LoginTestCase(test.TestCase):
     """Test various login things"""
     def setUp(self):
@@ -438,6 +452,24 @@ class ErrorViewTestCase(test.TestCase):
 
 
 class StyleguideTestCase(test.TestCase):
+    def tearDown(self):
+        # make sure URLConf is reset no matter what
+        urlresolvers.clear_url_caches()
+        reload_urlconf()
+
     def test_get(self):
-        response = self.client.get(reverse('inboxen-styleguide'))
+        # make sure it's accessible when DEBUG=True
+        with override_settings(DEBUG=True):
+            urlresolvers.clear_url_caches()
+            reload_urlconf()
+            url = reverse('inboxen-styleguide')
+            response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        # make sure it's not accessible when DEBUG=False
+        with override_settings(DEBUG=False):
+            urlresolvers.clear_url_caches()
+            reload_urlconf()
+            # url should no longer exist
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
