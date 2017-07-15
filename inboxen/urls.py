@@ -85,10 +85,15 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    import debug_toolbar  # NOQA
-
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
-        urls.url(r'^__debug__/', urls.include(debug_toolbar.urls)),
         urls.url(r'^styleguide$', views.styleguide, name='inboxen-styleguide'),
     ]
+    try:
+        import debug_toolbar  # NOQA
+
+        urlpatterns += [
+            urls.url(r'^__debug__/', urls.include(debug_toolbar.urls)),
+        ]
+    except ImportError:
+        pass
