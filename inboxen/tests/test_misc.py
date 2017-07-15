@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from email.message import Message
 from StringIO import StringIO
+from email.message import Message
 from subprocess import CalledProcessError
 import sys
 
@@ -32,7 +32,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 
 import mock
@@ -180,7 +179,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
     user = get_user_model()()
 
     def test_anon_passthrough(self):
-        path = "%s/something/" % reverse("wagtailadmin_home")
+        path = "%s/something/" % urlresolvers.reverse("wagtailadmin_home")
         request = utils.MockRequest(AnonymousUser())
         request.path = path
 
@@ -188,7 +187,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
         self.assertIsNone(response)
 
     def test_non_admin_path(self):
-        path = "/something%s" % reverse("wagtailadmin_home")
+        path = "/something%s" % urlresolvers.reverse("wagtailadmin_home")
         attrs = (
             (True, True),
             (True, False),
@@ -205,7 +204,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
             self.assertIsNone(response)
 
     def test_admin_path(self):
-        path = "%s/something/" % reverse("wagtailadmin_home")
+        path = "%s/something/" % urlresolvers.reverse("wagtailadmin_home")
         attrs = (
             (True, True, False),
             (True, False, True),
@@ -225,7 +224,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
                     self.fail("Middleware raised PermissionDenied, but it should not have!")
             else:
                 if will_redirect:
-                    self.assertEqual(response["Location"], "%s?next=%s" % (reverse("user-sudo"), request.path))
+                    self.assertEqual(response["Location"], "%s?next=%s" % (urlresolvers.reverse("user-sudo"), request.path))
                 else:
                     self.assertIsNone(response)
 
@@ -462,7 +461,7 @@ class StyleguideTestCase(test.TestCase):
         with override_settings(DEBUG=True):
             urlresolvers.clear_url_caches()
             reload_urlconf()
-            url = reverse('inboxen-styleguide')
+            url = urlresolvers.reverse('inboxen-styleguide')
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
