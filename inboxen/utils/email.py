@@ -95,8 +95,7 @@ def _clean_html_body(request, email, body, charset):
     except Exception as exc:
         # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
         messages.info(request, _("Part of this message could not be parsed - it may not display correctly"))
-        msg = "Failed to render CSS: %s" % exc
-        _log.exception(msg, extra={"request": request})
+        _log.warning("Failed to render CSS for %s: %s", email["eid"], exc)
 
     # Mail Pile uses this, give back if you come up with something better
     cleaner = Cleaner(
@@ -194,8 +193,7 @@ def _render_body(request, email, attachments):
 
             plain_message = True
             messages.error(request, _("Some parts of this email contained invalid HTML and could not be displayed"))
-            msg = "Failed to display HTML: %s" % exc
-            _log.exception(msg, extra={"request": request})
+            _log.warning("Failed to render HTML for %s: %s", email["eid"], exc)
 
     if plain_message:
         body = html_utils.escape(body)
