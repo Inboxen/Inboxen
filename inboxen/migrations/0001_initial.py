@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import bitfield.models
-import django_extensions.db.fields
 import mptt.fields
 import inboxen.fields
 from django.conf import settings
@@ -87,7 +86,7 @@ class Migration(migrations.Migration):
                 ('flags', bitfield.models.BitField((b'running', b'errored'), default=0)),
                 ('data', inboxen.fields.LargeObjectField(null=True)),
                 ('content_type', models.PositiveSmallIntegerField(default=0)),
-                ('async_result', django_extensions.db.fields.UUIDField(auto=False, null=True)),
+                ('async_result', models.UUIDField(null=True)),
                 ('started', models.DateTimeField(null=True)),
                 ('last_finished', models.DateTimeField(null=True)),
                 ('size', models.PositiveIntegerField(null=True)),
