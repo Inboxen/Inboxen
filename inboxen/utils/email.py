@@ -89,8 +89,8 @@ def _clean_html_body(request, email, body, charset):
             break
 
     try:
-        # check there's a body and header for premailer
-        if html_tree.find("body"):
+        # check there's a body for premailer
+        if html_tree.find("body") is not None:
             html_tree = InboxenPremailer(html_tree).transform()
     except Exception as exc:
         # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
