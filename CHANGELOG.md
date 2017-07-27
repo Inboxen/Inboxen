@@ -3,6 +3,7 @@
 ## Pending
 
 * Pass attachment name to template for email view (#229)
+* Implement a styleguide
 
 ## Releases
 
