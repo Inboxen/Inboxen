@@ -4,6 +4,7 @@
 
 * Pass attachment name to template for email view (#229)
 * Implement a styleguide
+* Don't email admins every time there's an issue with HTML emails (#235)
 
 ## Releases
 
