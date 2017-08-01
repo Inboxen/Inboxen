@@ -4,6 +4,9 @@
 
 * Pass attachment name to template for email view (#229)
 * Change how MIME parts and headers are fetched to be more generic (#109)
+* Implement a styleguide
+* Remove last vestiges of django-extensions' UUID field (#230)
+* Fix `FutureWarning` being raised by LXML (#232)
 
 ## Releases
 
