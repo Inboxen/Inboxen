@@ -22,23 +22,20 @@ from django.db.models import Q
 
 from watson import search
 
-from inboxen.utils.email import unicode_damnit
+from inboxen.utils.email import unicode_damnit, find_bodies
 
-
-def find_body(part):
-    if part is not None:
-        try:
-            main, sub = part.content_type.split("/", 1)
-        except ValueError:
-            if part.is_leaf_node() and part.get_level() == 0:
-                yield part
-        else:
-            if main == "multipart":
-                for child in part.get_children():
-                    for grandchild in find_body(child):
-                        yield grandchild
-            elif main == "text" and sub == "plain":
-                yield part
+def choose_body(parts):
+    if len(parts) == 1:
+        return unicode_damnit(parts[0].body.data, parts[0].charset)
+    elif len(parts) > 1:
+        data = u""
+        for p in parts:
+            if p.content_type == "text/plain":
+                data = unicode_damnit(p.body.data, p.charset)
+                break
+        return data
+    else:
+        return u""
 
 
 class EmailSearchAdapter(search.SearchAdapter):
@@ -62,32 +59,30 @@ class EmailSearchAdapter(search.SearchAdapter):
     def get_description(self, obj):
         """Fetch first text/plain body for obj, reading up to `trunc_to_size`
         bytes """
-        first_part = find_body(obj.get_parts()).next()
+        bodies = find_bodies(obj.get_parts()).next()
 
-        if first_part is not None:
-            return unicode_damnit(first_part.body.data[:self.trunc_to_size], first_part.charset)
+        if bodies is not None:
+            return choose_body(bodies)[:self.trunc_to_size]
         else:
-            return ""
+            return u""
 
     def get_content(self, obj):
         """Fetch all text/plain bodies for obj, reading up to `trunc_to_size`
         bytes"""
         data = []
         size = 0
-        for part in find_body(obj.get_parts()):
-            if part is None:
-                break
-
+        for parts in find_bodies(obj.get_parts()):
             remains = self.trunc_to_size - size
-            size = size + part.body.size
 
             if remains <= 0:
                 break
-            elif remains < part.body.size:
-                data.append(unicode_damnit(part.body.data[:remains], part.charset))
-                break
-            else:
-                data.append(unicode_damnit(part.body.data, part.charset))
+
+            try:
+                body = choose_body(parts)[:remains]
+            except Exception:
+                import pdb; pdb.set_trace()
+            size += len(body)
+            data.append(body)
 
         return u"\n".join(data)
 

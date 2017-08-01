@@ -141,9 +141,9 @@ def _clean_html_body(request, email, body, charset):
     return safestring.mark_safe(body)
 
 
-def _render_body(request, email, attachments):
-    """Updates `email` with the correct body
-    """
+def render_body(request, email, attachments):
+    """Updates `email` with the correct body"""
+    # avoid circular imports
     plain_message = True
     html = None
     plain = None
@@ -205,17 +205,33 @@ def _render_body(request, email, attachments):
     return body
 
 
-def find_bodies(request, email, part):
-    """Find bodies that should be inlined and add them to email["bodies"]"""
+def find_bodies(part):
+    """Find bodies that should be displayed to the user
+
+    Generator that returns lists of sibling parts. Sibling parts should not be
+    displayed together, but are alternatives to eachother, e.g.:
+
+        >>> print [i for i in find_bodies(root_part)]
+        [[part1], [html_part2, plain_part2], [part3]]
+
+    Where part1 and part2 might be children of "multipart/mixed" (and they're
+    the only "text/" parts), and html_part2 and plain_part2 are siblings from a
+    single "multipart/alternative".
+    """
     try:
         main, sub = part.content_type.split("/", 1)
     except ValueError:
         # if there isn't a content type and it's the root part, then this is a
         # plain email
         if part.is_leaf_node() and part.get_level() == 0:
-            email["bodies"] = [_render_body(request, email, [part])]
+            yield [part]
+            return
         # whether or not this is the root part, return now as there's nothing
         # left to process
+        yield []
+        return
+    except AttributeError:
+        yield []
         return
 
     if part.parent:
@@ -225,25 +241,28 @@ def find_bodies(request, email, part):
 
     if main == "multipart":
         if sub == "alternative":
-            # multipart/alternatives should be choden by _render_body based on
-            # user and request time options, as well as validity of those parts
-            email["bodies"].append(_render_body(request, email, part.get_children()))
+            # multipart/alternatives should be chosen later
+            yield list(part.get_children())
             return
+
+        # other multiple parts need their sub trees walked before we can render
+        # anything
         for child in part.get_children():
-            # other multiple parts need their sub trees walked before we can
-            # render anything
-            find_bodies(request, email, child)
+            for grandchild in find_bodies(child):
+                yield grandchild
     elif part.parent and part.parent.content_type == "multipart/digest":
         # we must be a message/rfc822, check that our child is a text/ part and
         # there is only one
         if len(part.get_children()) == 1 and part.get_children()[0].content_type.startswith("text/"):
-            email["bodies"].append(_render_body(request, email, part.get_children()))
+            yield list(part.get_children())
         elif part.get_children()[0].content_type == "multipart/signed":
             # sometimes there are signed messages
             for child in part.get_children()[0].get_children():
                 if child.is_leaf_node() and  child.content_type.startswith("text/"):
-                    email["bodies"].append(_render_body(request, email, [child]))
+                    for grandchild in find_bodies(child):
+                        yield grandchild
     elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
         # we've somehow come to a leaf node, if we're a text/plain or text/html
         # part, render it
-        email["bodies"].append(_render_body(request, email, [part]))
+        yield [part]
+        return
