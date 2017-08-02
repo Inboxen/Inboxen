@@ -34,6 +34,7 @@ from inboxen.tests.example_emails import (
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
     EXAMPLE_PREMAILER_BROKEN_CSS,
+    EXAMPLE_PREMIME_EMAIL,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
     METALESS_BODY,
 )
@@ -372,6 +373,19 @@ class RealExamplesTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
+
+    def test_premime(self):
+        self.msg = mail.MailRequest("", "", "", EXAMPLE_PREMIME_EMAIL)
+        make_email(self.msg, self.inbox)
+        self.email = models.Email.objects.get()
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.email.parts.all().count(), 1)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertEqual(response.context["email"]["bodies"][0], "<pre>Hi,\n\nHow are you?\n\nThanks,\nTest\n</pre>")
+
 
 
 class AttachmentTestCase(test.TestCase):
