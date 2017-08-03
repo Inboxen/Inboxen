@@ -28,6 +28,7 @@ import mock
 from inboxen import models
 from inboxen.tests import factories, utils
 from inboxen.tests.example_emails import (
+    BADLY_ENCODED_BODY,
     BODILESS_BODY,
     BODY,
     CHARSETLESS_BODY,
@@ -36,6 +37,7 @@ from inboxen.tests.example_emails import (
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
     METALESS_BODY,
+    UNSUPPORTED_CSS_BODY,
 )
 from inboxen.utils import email as email_utils
 from router.app.helpers import make_email
@@ -434,6 +436,25 @@ class UtilityTestCase(test.TestCase):
     def test_clean_html_no_charset(self):
         email = {"display_images": True}
         returned_body = email_utils._clean_html_body(None, email, CHARSETLESS_BODY, "ascii")
+        self.assertIsInstance(returned_body, unicode)
+
+    def test_clean_html_unsupported_css(self):
+        email = {"display_images": True, "eid": "abc"}
+        with mock.patch("inboxen.utils.email.messages") as msg_mock:
+            returned_body = email_utils._clean_html_body(None, email, UNSUPPORTED_CSS_BODY, "ascii")
+            self.assertEqual(msg_mock.info.call_count, 1)
+        self.assertIsInstance(returned_body, unicode)
+
+    def test_render_body_bad_encoding(self):
+        email = {"display_images": True, "eid": "abc"}
+        part = mock.Mock()
+        part.content_type = "text/html"
+        part.charset = "utf-8"
+        part.body.data = BADLY_ENCODED_BODY
+
+        with mock.patch("inboxen.utils.email.messages") as msg_mock:
+            returned_body = email_utils._render_body(None, email, [part])
+            self.assertEqual(msg_mock.error.call_count, 1)
         self.assertIsInstance(returned_body, unicode)
 
     def test_invalid_charset(self):

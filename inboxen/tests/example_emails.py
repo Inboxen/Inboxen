@@ -68,8 +68,40 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """
 
+BADLY_ENCODED_BODY = """<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>Testi\xa0</p>
+<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
+<p><a>Ha!</a><img width=10 height=10></p>
+</body>
+</html>
+"""
+
 BODILESS_BODY = """<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>"""
 
+UNSUPPORTED_CSS_BODY = """<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
+<style type="text/css">
+p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
+@media screen {@media screen {p {color: #000000}}}
+</style>
+</head>
+<body>
+<p>Hello! This is a test of <img src="http://example.com/coolface.jpg"></p>
+<p>&nbsp;</p>
+<p>$$$</p><p><a href="http://example.com/?q=thing">link</a></p>
+<p><a>Ha!</a><img width=10 height=10></p>
+</body>
+</html>
+"""
 
 # example email that was causing issue #47
 EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>

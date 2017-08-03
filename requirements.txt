@@ -30,4 +30,4 @@ python-daemon<1.7
 pytz
 salmon-mail==2
 simplejson
-wagtail==1.10
+wagtail>=1.11,<1.12

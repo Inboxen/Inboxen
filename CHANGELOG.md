@@ -3,7 +3,7 @@
 ## Pending
 
 * Update to Django 1.11 (#165)
-  * Upgrade to Wagtail 1.10
+  * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
 * Update stats task
@@ -12,6 +12,16 @@
   * Store join date of oldest user in stats
   * Calculate disowned inboxes
   * Calculate `new` & `with_inboxes` via aggregate
+* Pass attachment name to template for email view (#229)
+* Implement a styleguide
+* Don't email admins every time there's an issue with HTML emails (#235)
+* Remove last vestiges of django-extensions' UUID field (#230)
+* Fix `FutureWarning` being raised by LXML (#232)
+
+## Releases
+
+### Deploy for 2017-06-17
+
 * Display the text version of the 2FA secret code at the same time as the QR code (#190)
 * Change error message feeder command gives when inbox does not exit
 * Fix non-ASCII filename handling in attachment download (#206)
@@ -19,8 +29,6 @@
 * Remove "view" button from attachments (#202)
 * Stop proxying non-HTTP URIs (e.g. mailto:) (#211)
 * Tests are now run with the test settings module by default
-
-## Releases
 
 ### Deploy for 2017-05-20
 
