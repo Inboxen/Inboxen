@@ -338,7 +338,7 @@ class RealExamplesTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # this email should display all leaves
-        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node() and i.content_type != "application/pgp-signature"])
         self.assertEqual(len(response.context["email"]["bodies"]), leaf_part_count)
 
     def test_signed_forwarded_digest(self):
