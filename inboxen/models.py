@@ -210,7 +210,11 @@ class Email(models.Model):
         return u"{0}".format(self.eid)
 
     def get_parts(self):
-        """Returns a tree of all the MIME parts of this email"""
+        """Fetches the MIME tree of the email and returns the root part.
+
+        All subsequent calls to `part.parent` or `part.get_children()` will not
+        cause additional database queries
+        """
         root_parts = self.parts.all().get_cached_trees()
 
         assert len(root_parts) <= 1, "Expected to find a single part, found %s" % len(root_parts)
@@ -262,16 +266,24 @@ class PartList(MPTTModel):
 
     @cached_property
     def _content_headers_cache(self):
+        """Fetch Content-Type and Content-Disposition headers and split them
+        out into useful bits, e.g. filename, charset, etc.
+
+        Properties content_type, filename, and charset use this cached property.
+        """
         data = {}
-        part_head = self.header_set.get_many("Content-Type", "Content-Disposition")
-        content_header = part_head.pop("Content-Type", u"").split(";", 1)
+        part_headers = self.header_set.get_many("Content-Type", "Content-Disposition")
+
+        # split off the parameters from the actual content type
+        content_header = part_headers.pop("Content-Type", u"").split(";", 1)
         data['content_type'] = content_header[0]
         content_params = content_header[1] if len(content_header) > 1 else u""
 
         if not self.is_leaf_node():
+            # only leaf nodes will have things like charsets and filenames
             return data
 
-        dispos = part_head.pop("Content-Disposition", u"")
+        dispos = part_headers.pop("Content-Disposition", u"")
 
         params = dict(HEADER_PARAMS.findall(content_params))
         params.update(dict(HEADER_PARAMS.findall(dispos)))

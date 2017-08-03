@@ -143,7 +143,6 @@ def _clean_html_body(request, email, body, charset):
 
 def render_body(request, email, attachments):
     """Updates `email` with the correct body"""
-    # avoid circular imports
     plain_message = True
     html = None
     plain = None
@@ -177,9 +176,10 @@ def render_body(request, email, attachments):
 
     # finally, set the body to something
     if plain_message:
-        if plain:
+        if plain is not None:
             body = unicode_damnit(plain.body.data, plain.charset)
         elif len(attachments) == 1:
+            # non-MIME email, only "part" must be plain text
             body = unicode_damnit(attachments[0].body.data, attachments[0].charset)
         else:
             body = u""
@@ -198,6 +198,8 @@ def render_body(request, email, attachments):
             _log.exception(msg, extra={"request": request})
 
     if plain_message:
+        # if this is a plain text body, escape any HTML and wrap it in <pre>
+        # tags
         body = html_utils.escape(body)
         body = u"<pre>{}</pre>".format(body)
         body = safestring.mark_safe(body)

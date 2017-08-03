@@ -25,6 +25,8 @@ from watson import search
 from inboxen.utils.email import unicode_damnit, find_bodies
 
 def choose_body(parts):
+    """Given a list of sibling MIME parts, choose the one with a content_type
+    of "text/plain", if it exists"""
     if len(parts) == 1:
         return unicode_damnit(parts[0].body.data, parts[0].charset)
     elif len(parts) > 1:
@@ -58,7 +60,8 @@ class EmailSearchAdapter(search.SearchAdapter):
 
     def get_description(self, obj):
         """Fetch first text/plain body for obj, reading up to `trunc_to_size`
-        bytes """
+        bytes
+        """
         bodies = find_bodies(obj.get_parts()).next()
 
         if bodies is not None:
@@ -68,7 +71,8 @@ class EmailSearchAdapter(search.SearchAdapter):
 
     def get_content(self, obj):
         """Fetch all text/plain bodies for obj, reading up to `trunc_to_size`
-        bytes"""
+        bytes and excluding those that would not be displayed
+        """
         data = []
         size = 0
         for parts in find_bodies(obj.get_parts()):
