@@ -55,6 +55,29 @@ do the following:
 python manage.py test
 ```
 
+### Local HTTP server
+
+You'll need a `settings.ini` file, for example:
+
+```
+[general]
+secret_key = some_random_string
+debug=true
+[tasks]
+always_eager=true
+```
+
+If you want to start a local HTTP server to test out your changes, run the following:
+
+```
+python manage.py runserver
+```
+
+You can connect to it on <http://localhost:8000/>.
+
+With `debug=true`, you'll have the Django Debug Toolbar enabled and you can
+find the Inboxen styleguide at <http://localhost:8000/styleguide>
+
 Committing and Branching
 ------------------------
 

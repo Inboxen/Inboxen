@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from email.message import Message
 from StringIO import StringIO
+from email.message import Message
 from subprocess import CalledProcessError
 import sys
 
@@ -32,7 +32,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.core.urlresolvers import reverse
 from django.test.client import RequestFactory
 
 import mock
@@ -46,6 +45,20 @@ from inboxen.middleware import (
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
+
+
+def reload_urlconf():
+    """
+    Reload url conf
+
+    Make sure to use clear_url_caches along with this
+    """
+    if dj_settings.ROOT_URLCONF in sys.modules:
+        conf = reload(sys.modules[dj_settings.ROOT_URLCONF])
+    else:
+        from inboxen import urls as conf
+
+    return conf
 
 
 class LoginTestCase(test.TestCase):
@@ -166,7 +179,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
     user = get_user_model()()
 
     def test_anon_passthrough(self):
-        path = "%s/something/" % reverse("wagtailadmin_home")
+        path = "%s/something/" % urlresolvers.reverse("wagtailadmin_home")
         request = utils.MockRequest(AnonymousUser())
         request.path = path
 
@@ -174,7 +187,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
         self.assertIsNone(response)
 
     def test_non_admin_path(self):
-        path = "/something%s" % reverse("wagtailadmin_home")
+        path = "/something%s" % urlresolvers.reverse("wagtailadmin_home")
         attrs = (
             (True, True),
             (True, False),
@@ -191,7 +204,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
             self.assertIsNone(response)
 
     def test_admin_path(self):
-        path = "%s/something/" % reverse("wagtailadmin_home")
+        path = "%s/something/" % urlresolvers.reverse("wagtailadmin_home")
         attrs = (
             (True, True, False),
             (True, False, True),
@@ -211,7 +224,7 @@ class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
                     self.fail("Middleware raised PermissionDenied, but it should not have!")
             else:
                 if will_redirect:
-                    self.assertEqual(response["Location"], "%s?next=%s" % (reverse("user-sudo"), request.path))
+                    self.assertEqual(response["Location"], "%s?next=%s" % (urlresolvers.reverse("user-sudo"), request.path))
                 else:
                     self.assertIsNone(response)
 
@@ -435,3 +448,27 @@ class ErrorViewTestCase(test.TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             view_obj.get_error_code()
+
+
+class StyleguideTestCase(test.TestCase):
+    def tearDown(self):
+        # make sure URLConf is reset no matter what
+        urlresolvers.clear_url_caches()
+        reload_urlconf()
+
+    def test_get(self):
+        # make sure it's accessible when DEBUG=True
+        with override_settings(DEBUG=True):
+            urlresolvers.clear_url_caches()
+            reload_urlconf()
+            url = urlresolvers.reverse('inboxen-styleguide')
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # make sure it's not accessible when DEBUG=False
+        with override_settings(DEBUG=False):
+            urlresolvers.clear_url_caches()
+            reload_urlconf()
+            # url should no longer exist
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
