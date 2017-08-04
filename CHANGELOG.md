@@ -7,6 +7,7 @@
 * Don't email admins every time there's an issue with HTML emails (#235)
 * Remove last vestiges of django-extensions' UUID field (#230)
 * Fix `FutureWarning` being raised by LXML (#232)
+* Fix translations in template tags not being lazy (#239)
 
 ## Releases
 

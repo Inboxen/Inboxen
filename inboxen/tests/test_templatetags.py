@@ -19,6 +19,7 @@
 ##
 
 from django import test
+from django.utils import translation
 
 from bitfield import BitHandler
 
@@ -26,6 +27,9 @@ from inboxen.templatetags import inboxen_flags, inboxen_selector
 
 
 class InboxFlagTestCase(test.TestCase):
+    def tearDown(self):
+        translation.deactivate_all()
+
     def test_no_error(self):
         flag_obj = BitHandler(6, ["new", "read", "somefakeflag", "someother"])
 
@@ -74,6 +78,20 @@ class InboxFlagTestCase(test.TestCase):
             inboxen_flags.render_flags(flag_obj)
         finally:
             del inboxen_flags.FLAGS_TO_TAGS["snowman"]
+
+    def test_lazy_gettext(self):
+        flag_obj = BitHandler(1, ["new"])
+        output = inboxen_flags.render_flags(flag_obj)
+        self.assertIn(">New<", output)
+
+        translation.activate("sv")
+        output = inboxen_flags.render_flags(flag_obj)
+        self.assertIn(">Ny<", output)
+
+        # test a non-existing language
+        translation.activate("bluhbluhbluh")
+        output = inboxen_flags.render_flags(flag_obj)
+        self.assertIn(">New<", output)
 
 
 class SelectorEscapeTestCase(test.TestCase):
