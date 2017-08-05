@@ -2,14 +2,16 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2017-08-05
+
 * Pass attachment name to template for email view (#229)
 * Implement a styleguide
 * Don't email admins every time there's an issue with HTML emails (#235)
 * Remove last vestiges of django-extensions' UUID field (#230)
 * Fix `FutureWarning` being raised by LXML (#232)
 * Fix translations in template tags not being lazy (#239)
-
-## Releases
 
 ### Deploy for 2017-06-17
 
