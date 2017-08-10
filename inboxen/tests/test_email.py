@@ -467,7 +467,7 @@ class UtilityTestCase(test.TestCase):
         part.body.data = BADLY_ENCODED_BODY
 
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
-            returned_body = email_utils._render_body(None, email, [part])
+            returned_body = email_utils.render_body(None, email, [part])
             self.assertEqual(msg_mock.error.call_count, 1)
         self.assertIsInstance(returned_body, unicode)
 
