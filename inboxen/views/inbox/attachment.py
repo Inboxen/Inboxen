@@ -24,7 +24,6 @@ from braces.views import LoginRequiredMixin
 
 from inboxen import models
 
-HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 HEADER_CLEAN = re.compile(r'\s+')
 
 __all__ = ["AttachmentDownloadView"]
@@ -33,10 +32,10 @@ __all__ = ["AttachmentDownloadView"]
 class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):
         qs = models.PartList.objects.select_related('body')
-        qs = qs.filter(email__flags=~models.Email.flags.deleted)
+        qs = qs.filter(email__flags=~models.Email.flags.deleted, email__inbox__user=self.request.user)
 
         try:
-            return qs.get(id=self.kwargs["attachmentid"], email__inbox__user=self.request.user)
+            return qs.get(id=self.kwargs["attachmentid"])
         except models.PartList.DoesNotExist:
             raise Http404
 
@@ -44,27 +43,18 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         # build the Content-Disposition header
         disposition = ["attachment"]
 
-        headers = self.object.header_set.get_many("Content-Type", "Content-Disposition")
-        content_type = headers.pop("Content-Type", u"text/plain").encode("utf-8").split(";", 1)
-        dispos = headers.pop("Content-Disposition", u"").encode("utf-8")
-
-        try:
-            params = dict(HEADER_PARAMS.findall(content_type[1]))
-        except IndexError:
-            params = {}
-        params.update(dict(HEADER_PARAMS.findall(dispos)))
-
-        if "filename" in params:
-            disposition.append("filename=\"{0}\"".format(params["filename"]))
-        elif "name" in params:
-            disposition.append("filename=\"{0}\"".format(params["name"]))
+        if self.object.filename:
+            disposition.append("filename=\"{0}\"".format(self.object.filename.encode("utf8")))
 
         disposition = "; ".join(disposition)
 
-        if "charset" in params:
-            content_type = "{0}; charset={1}".format(content_type[0], params["charset"])
+        if self.object.content_type:
+            content_type = "{0}; charset={1}".format(
+                self.object.content_type.encode("utf8"),
+                self.object.charset.encode("utf8"),
+            )
         else:
-            content_type = content_type[0]
+            content_type = "application/octet-stream"
 
         # make header object
         data = self.object.body.data or ""

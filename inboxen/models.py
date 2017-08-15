@@ -24,6 +24,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import cached_property
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
@@ -209,45 +210,19 @@ class Email(models.Model):
         return u"{0}".format(self.eid)
 
     def get_parts(self):
-        """Returns a list of all the MIME parts of this email
+        """Fetches the MIME tree of the email and returns the root part.
 
-        It also annotates objects with useful attributes, such as charset and parent
-        (which is a reference to that object in the same queryset rather than a copy as
-        Django would do it)
+        All subsequent calls to `part.parent` or `part.get_children()` will not
+        cause additional database queries
         """
-        # TODO django-mptt has a utils function that can populate a queryset
-        # cache, but there's no "walk" method, so we can't pretend the queryset
-        # is a list :/
-        part_list = list(self.parts.all())
-        parents = {}
-        for part in part_list:
-            part.parent = parents.get(part.parent_id, None)
-            part_head = part.header_set.get_many("Content-Type", "Content-Disposition")
-            content_header = part_head.pop("Content-Type", "").split(";", 1)
-            part.content_type = content_header[0]
-            content_params = content_header[1] if len(content_header) > 1 else ""
+        root_parts = self.parts.all().get_cached_trees()
 
-            # cache children
-            part.childs = []
-            if part.parent:
-                part.parent.childs.append(part)
+        assert len(root_parts) <= 1, "Expected to find a single part, found %s" % len(root_parts)
 
-            if not part.is_leaf_node():
-                parents[part.id] = part
-                continue
-
-            dispos = part_head.pop("Content-Disposition", "")
-
-            params = dict(HEADER_PARAMS.findall(content_params))
-            params.update(dict(HEADER_PARAMS.findall(dispos)))
-
-            # find filename, could be anywhere, could be nothing
-            part.filename = params.get("filename") or params.get("name") or ""
-
-            # grab charset
-            part.charset = params.get("charset", "utf-8")
-
-        return part_list
+        try:
+            return root_parts[0]
+        except IndexError:
+            return None
 
 
 class Body(models.Model):
@@ -288,6 +263,50 @@ class PartList(MPTTModel):
 
     def __unicode__(self):
         return unicode(self.id)
+
+    @cached_property
+    def _content_headers_cache(self):
+        """Fetch Content-Type and Content-Disposition headers and split them
+        out into useful bits, e.g. filename, charset, etc.
+
+        Properties content_type, filename, and charset use this cached property.
+        """
+        data = {}
+        part_headers = self.header_set.get_many("Content-Type", "Content-Disposition")
+
+        # split off the parameters from the actual content type
+        content_header = part_headers.pop("Content-Type", u"").split(";", 1)
+        data['content_type'] = content_header[0]
+        content_params = content_header[1] if len(content_header) > 1 else u""
+
+        if not self.is_leaf_node():
+            # only leaf nodes will have things like charsets and filenames
+            return data
+
+        dispos = part_headers.pop("Content-Disposition", u"")
+
+        params = dict(HEADER_PARAMS.findall(content_params))
+        params.update(dict(HEADER_PARAMS.findall(dispos)))
+
+        # find filename, could be anywhere, could be nothing
+        data["filename"] = params.get("filename") or params.get("name") or u""
+
+        # grab charset
+        data["charset"] = params.get("charset", u"utf-8")
+
+        return data
+
+    @property
+    def content_type(self):
+        return self._content_headers_cache.get("content_type")
+
+    @property
+    def filename(self):
+        return self._content_headers_cache.get("filename")
+
+    @property
+    def charset(self):
+        return self._content_headers_cache.get("charset")
 
 
 class HeaderName(models.Model):

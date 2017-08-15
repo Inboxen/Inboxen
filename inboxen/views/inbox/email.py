@@ -28,7 +28,7 @@ from braces.views import LoginRequiredMixin
 from watson import search
 
 from inboxen import models
-from inboxen.utils.email import find_bodies
+from inboxen.utils.email import find_bodies, render_body
 
 
 __all__ = ["EmailView"]
@@ -120,20 +120,17 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
             email_dict["ask_images"] = False
 
         # iterate over MIME parts
-        attachments = self.object.get_parts()
+        root_part = self.object.get_parts()
 
         email_dict["bodies"] = []
         email_dict["has_images"] = False
 
-        find_bodies(self.request, email_dict, attachments[:1])
-
-        for body in email_dict["bodies"]:
-            assert isinstance(body, unicode), "body is %r" % type(body)
+        email_dict["bodies"] = [render_body(self.request, email_dict, parts) for parts in find_bodies(root_part)]
 
         context = super(EmailView, self).get_context_data(**kwargs)
         context.update({
             "email": email_dict,
-            "attachments": attachments,
+            "attachments": root_part,
             "headersfetchall": headers_fetch_all,
         })
 
