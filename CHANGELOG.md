@@ -3,14 +3,14 @@
 ## Pending
 
 * Wrap long lines in plain text emails (#227)
+* Change how MIME parts and headers are fetched to be more generic (#109)
+* Search and email view now use the same function when walking the MIME tree (#109)
 
 ## Releases
 
 ### Deploy for 2017-08-05
 
 * Pass attachment name to template for email view (#229)
-* Change how MIME parts and headers are fetched to be more generic (#109)
-* Search and email view now use the same function when walking the MIME tree (#109)
 * Implement a styleguide
 * Don't email admins every time there's an issue with HTML emails (#235)
 * Remove last vestiges of django-extensions' UUID field (#230)
