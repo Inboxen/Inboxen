@@ -24,6 +24,10 @@ body {
     margin-bottom: 30px;
 }
 
+#email-body pre {
+    white-space: pre-wrap;
+}
+
 #footer {
     position: absolute;
     bottom: 0;

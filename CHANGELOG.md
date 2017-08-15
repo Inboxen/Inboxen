@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Wrap long lines in plain text emails (#227)
+
 ## Releases
 
 ### Deploy for 2017-08-05
