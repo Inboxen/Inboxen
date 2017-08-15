@@ -54,7 +54,7 @@ class InboxenPremailer(Premailer):
         return ""
 
 
-def _unicode_damnit(data, charset="utf-8", errors="replace"):
+def unicode_damnit(data, charset="utf-8", errors="replace"):
     """Makes doubley sure that we can turn the database's binary typees into
     unicode objects
     """
@@ -136,13 +136,12 @@ def _clean_html_body(request, email, body, charset):
         link.attrib["rel"] = "noreferrer"
 
     # finally, export to unicode
-    body = _unicode_damnit(etree.tostring(html_tree), charset)
+    body = unicode_damnit(etree.tostring(html_tree), charset)
     return safestring.mark_safe(body)
 
 
-def _render_body(request, email, attachments):
-    """Updates `email` with the correct body
-    """
+def render_body(request, email, attachments):
+    """Updates `email` with the correct body"""
     plain_message = True
     html = None
     plain = None
@@ -176,10 +175,11 @@ def _render_body(request, email, attachments):
 
     # finally, set the body to something
     if plain_message:
-        if plain:
-            body = _unicode_damnit(plain.body.data, plain.charset)
+        if plain is not None:
+            body = unicode_damnit(plain.body.data, plain.charset)
         elif len(attachments) == 1:
-            body = _unicode_damnit(attachments[0].body.data, attachments[0].charset)
+            # non-MIME email, only "part" must be plain text
+            body = unicode_damnit(attachments[0].body.data, attachments[0].charset)
         else:
             body = u""
     else:
@@ -187,7 +187,7 @@ def _render_body(request, email, attachments):
             body = _clean_html_body(request, email, str(html.body.data), html.charset)
         except (etree.LxmlError, ValueError) as exc:
             if plain is not None and len(plain.body.data) > 0:
-                body = _unicode_damnit(plain.body.data, plain.charset)
+                body = unicode_damnit(plain.body.data, plain.charset)
             else:
                 body = u""
 
@@ -196,6 +196,8 @@ def _render_body(request, email, attachments):
             _log.warning("Failed to render HTML for %s: %s", email["eid"], exc)
 
     if plain_message:
+        # if this is a plain text body, escape any HTML and wrap it in <pre>
+        # tags
         body = html_utils.escape(body)
         body = u"<pre>{}</pre>".format(body)
         body = safestring.mark_safe(body)
@@ -203,29 +205,64 @@ def _render_body(request, email, attachments):
     return body
 
 
-def find_bodies(request, email, attachments, depth=0):
-    """Find bodies that should be inlined and add them to email["bodies"]
+def find_bodies(part):
+    """Find bodies that should be displayed to the user
 
-    `attachments` should a list like object (i.e. have the method `index`)"""
-    for part in attachments:
-        try:
-            main, sub = part.content_type.split("/", 1)
-        except ValueError:
-            if len(attachments) == 1 and depth == 0:
-                email["bodies"] = [_render_body(request, email, attachments)]
+    Generator that returns lists of sibling parts. Sibling parts should not be
+    displayed together, but are alternatives to eachother, e.g.:
+
+        >>> print [i for i in find_bodies(root_part)]
+        [[part1], [html_part2, plain_part2], [part3]]
+
+    Where part1 and part2 might be children of "multipart/mixed" (and they're
+    the only "text/" parts), and html_part2 and plain_part2 are siblings from a
+    single "multipart/alternative".
+    """
+    try:
+        main, sub = part.content_type.split("/", 1)
+    except ValueError:
+        # if there isn't a content type and it's the root part, then this is a
+        # plain email
+        if part.is_leaf_node() and part.get_level() == 0:
+            yield [part]
             return
-        if part.parent:
-            parent_main, parent_sub = part.parent.content_type.split("/", 1)
-        else:
-            parent_main, parent_sub = ("", "")
+        # whether or not this is the root part, return now as there's nothing
+        # left to process
+        yield []
+        return
+    except AttributeError:
+        yield []
+        return
 
-        if main == "multipart":
-            if sub == "alternative":
-                email["bodies"].append(_render_body(request, email, part.childs))
-                continue
-            find_bodies(request, email, part.childs, depth=depth+1)
-        elif part.parent and part.parent.content_type == "multipart/digest":
-            if len(part.childs) == 1:
-                email["bodies"].append(_render_body(request, email, part.childs))
-        elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
-            email["bodies"].append(_render_body(request, email, [part]))
+    if part.parent:
+        parent_main, parent_sub = part.parent.content_type.split("/", 1)
+    else:
+        parent_main, parent_sub = ("", "")
+
+    if main == "multipart":
+        if sub == "alternative":
+            # multipart/alternatives should be chosen later
+            yield list(part.get_children())
+            return
+
+        # other multiple parts need their sub trees walked before we can render
+        # anything
+        for child in part.get_children():
+            for grandchild in find_bodies(child):
+                yield grandchild
+    elif part.parent and part.parent.content_type == "multipart/digest":
+        # we must be a message/rfc822, check that our child is a text/ part and
+        # there is only one
+        if len(part.get_children()) == 1 and part.get_children()[0].content_type.startswith("text/"):
+            yield list(part.get_children())
+        elif part.get_children()[0].content_type == "multipart/signed":
+            # sometimes there are signed messages
+            for child in part.get_children()[0].get_children():
+                if child.is_leaf_node() and  child.content_type.startswith("text/"):
+                    for grandchild in find_bodies(child):
+                        yield grandchild
+    elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
+        # we've somehow come to a leaf node, if we're a text/plain or text/html
+        # part, render it
+        yield [part]
+        return
