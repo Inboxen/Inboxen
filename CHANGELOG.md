@@ -6,13 +6,20 @@
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
+* Wrap long lines in plain text emails (#227)
+* Change how MIME parts and headers are fetched to be more generic (#109)
+* Search and email view now use the same function when walking the MIME tree (#109)
+
+## Releases
+
+### Deploy for 2017-08-05
+
 * Pass attachment name to template for email view (#229)
 * Implement a styleguide
 * Don't email admins every time there's an issue with HTML emails (#235)
 * Remove last vestiges of django-extensions' UUID field (#230)
 * Fix `FutureWarning` being raised by LXML (#232)
-
-## Releases
+* Fix translations in template tags not being lazy (#239)
 
 ### Deploy for 2017-06-17
 

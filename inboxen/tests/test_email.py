@@ -35,6 +35,7 @@ from inboxen.tests.example_emails import (
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
     EXAMPLE_PREMAILER_BROKEN_CSS,
+    EXAMPLE_PREMIME_EMAIL,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
     METALESS_BODY,
     UNSUPPORTED_CSS_BODY,
@@ -339,7 +340,7 @@ class RealExamplesTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # this email should display all leaves
-        leaf_part_count = len([i for i in self.email.get_parts() if i.is_leaf_node()])
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node() and i.content_type != "application/pgp-signature"])
         self.assertEqual(len(response.context["email"]["bodies"]), leaf_part_count)
 
     def test_signed_forwarded_digest(self):
@@ -350,7 +351,7 @@ class RealExamplesTestCase(test.TestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        leaf_part_count = len([i for i in self.email.get_parts() if i.is_leaf_node()])
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
         self.assertEqual(leaf_part_count, 12)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertEqual(response.context["email"]["bodies"][0], "<pre>Hello\n</pre>")
@@ -374,6 +375,19 @@ class RealExamplesTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content)
+
+    def test_premime(self):
+        self.msg = mail.MailRequest("", "", "", EXAMPLE_PREMIME_EMAIL)
+        make_email(self.msg, self.inbox)
+        self.email = models.Email.objects.get()
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(self.email.parts.all().count(), 1)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertEqual(response.context["email"]["bodies"][0], "<pre>Hi,\n\nHow are you?\n\nThanks,\nTest\n</pre>")
+
 
 
 class AttachmentTestCase(test.TestCase):
@@ -418,13 +432,13 @@ class AttachmentTestCase(test.TestCase):
 class UtilityTestCase(test.TestCase):
     def test_is_unicode(self):
         string = "Hey there!"
-        self.assertTrue(isinstance(email_utils._unicode_damnit(string), unicode))
+        self.assertTrue(isinstance(email_utils.unicode_damnit(string), unicode))
 
     def test_unicode_passthrough(self):
         already_unicode = u"€"
 
         # if this doesn't passthrough, it will error
-        email_utils._unicode_damnit(already_unicode, "ascii", "strict")
+        email_utils.unicode_damnit(already_unicode, "ascii", "strict")
 
     def test_clean_html_no_body(self):
         email = {"display_images": True}
@@ -453,11 +467,11 @@ class UtilityTestCase(test.TestCase):
         part.body.data = BADLY_ENCODED_BODY
 
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
-            returned_body = email_utils._render_body(None, email, [part])
+            returned_body = email_utils.render_body(None, email, [part])
             self.assertEqual(msg_mock.error.call_count, 1)
         self.assertIsInstance(returned_body, unicode)
 
     def test_invalid_charset(self):
         text = "Växjö"
-        self.assertEqual(email_utils._unicode_damnit(text, "utf-8"), u"Växjö")
-        self.assertEqual(email_utils._unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")
+        self.assertEqual(email_utils.unicode_damnit(text, "utf-8"), u"Växjö")
+        self.assertEqual(email_utils.unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")

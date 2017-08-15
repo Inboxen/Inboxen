@@ -20,44 +20,44 @@ from __future__ import unicode_literals
 
 from django import template
 from django.utils import safestring
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
 
 register = template.Library()
 
 FLAGS_TO_TAGS = {
     "new": {
-        "title": _("New messages"),
-        "str": _("New"),
+        "title": ugettext_lazy("New messages"),
+        "str": ugettext_lazy("New"),
         "class": "label-primary",
         "inverse": False,
     },
     "seen": {
-        "title": _("New message"),
-        "str": _("New"),
+        "title": ugettext_lazy("New message"),
+        "str": ugettext_lazy("New"),
         "class": "label-primary",
         "inverse": True,
     },
     "read": {
-        "title": _("Unread message"),
-        "str": _("Unread"),
+        "title": ugettext_lazy("Unread message"),
+        "str": ugettext_lazy("Unread"),
         "class": "label-info",
         "inverse": True,
     },
     "important": {
-        "title": _("Message has been marked as important"),
-        "str": _("Important"),
+        "title": ugettext_lazy("Message has been marked as important"),
+        "str": ugettext_lazy("Important"),
         "class": "label-danger",
         "inverse": False,
     },
     "pinned": {
-        "title": _("Inbox has been pinned"),
-        "str": _("Pinned"),
+        "title": ugettext_lazy("Inbox has been pinned"),
+        "str": ugettext_lazy("Pinned"),
         "class": "label-warning",
         "inverse": False,
     },
     "disabled": {
-        "title": _("Inbox has been disabled"),
-        "str": _("Disabled"),
+        "title": ugettext_lazy("Inbox has been disabled"),
+        "str": ugettext_lazy("Disabled"),
         "class": "label-default",
         "inverse": False,
     },
