@@ -205,6 +205,20 @@ def render_body(request, email, attachments):
     return body
 
 
+def is_leaf_text_node(part):
+    """Check that a suspected text part is actually a leaf node and is of the
+    correct mime type
+    """
+    content_type = part.content_type
+    main = ""
+    sub = ""
+
+    if u"/" in content_type:
+        main, sub = content_type.split("/", 1)
+
+    return part.is_leaf_node() and main == "text" and sub in ["html", "plain"]
+
+
 def find_bodies(part):
     """Find bodies that should be displayed to the user
 
@@ -242,27 +256,27 @@ def find_bodies(part):
     if main == "multipart":
         if sub == "alternative":
             # multipart/alternatives should be chosen later
-            yield list(part.get_children())
+            yield [child for child in part.get_children() if is_leaf_text_node(child)]
             return
 
         # other multiple parts need their sub trees walked before we can render
         # anything
         for child in part.get_children():
-            for grandchild in find_bodies(child):
-                yield grandchild
+            for returned_child in find_bodies(child):
+                yield returned_child
     elif part.parent and part.parent.content_type == "multipart/digest":
-        # we must be a message/rfc822, check that our child is a text/ part and
-        # there is only one
-        if len(part.get_children()) == 1 and part.get_children()[0].content_type.startswith("text/"):
-            yield list(part.get_children())
-        elif part.get_children()[0].content_type == "multipart/signed":
-            # sometimes there are signed messages
-            for child in part.get_children()[0].get_children():
-                if child.is_leaf_node() and  child.content_type.startswith("text/"):
-                    for grandchild in find_bodies(child):
-                        yield grandchild
-    elif part.is_leaf_node() and main == "text" and sub in ["html", "plain"]:
-        # we've somehow come to a leaf node, if we're a text/plain or text/html
-        # part, render it
+        # we must be a message/rfc822, There should only be one child, which is
+        # either a text/ part or a multipart/signed
+        if len(part.get_children()) == 1:
+            child = part.get_children()[0]
+            if child.content_type == "multipart/signed":
+                # signed messages will have at least two children, the
+                # signature and some other child if that child is a leaf text
+                # node, we should display it
+                yield [grandchild for grandchild in child.get_children() if is_leaf_text_node(grandchild)]
+            elif is_leaf_text_node(child):
+                yield [child]
+    elif is_leaf_text_node(part):
+        # part is a leaf node and has a content type that we can display
         yield [part]
         return
