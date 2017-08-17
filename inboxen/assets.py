@@ -47,7 +47,7 @@ js = Bundle(
 )
 
 chart_js = Bundle(
-    "thirdparty/chart.js/Chart.js",
+    "thirdparty/chart.js/dist/Chart.js",
     "js/stats.js",
     filters="jsmin",
     output="compiled/js/stats.%(version)s.js",
