@@ -6,11 +6,14 @@
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
+
+## Releases
+
+### Deploy for 2017-08-16
+
 * Wrap long lines in plain text emails (#227)
 * Change how MIME parts and headers are fetched to be more generic (#109)
 * Search and email view now use the same function when walking the MIME tree (#109)
-
-## Releases
 
 ### Deploy for 2017-08-05
 
