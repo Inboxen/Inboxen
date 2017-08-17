@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Update Font Awesome to 4.7.x (#185)
+
 ## Releases
 
 ### Deploy for 2017-08-16
