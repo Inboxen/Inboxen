@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Update JQuery to 3.0 (#183)
+
 ## Releases
 
 ### Deploy for 2017-08-16
