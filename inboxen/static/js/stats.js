@@ -28,6 +28,9 @@
                 ticks: {
                     beginAtZero: true
                 }
+            }],
+            xAxes: [{
+                gridLines: false
             }]
         },
         elements: {
