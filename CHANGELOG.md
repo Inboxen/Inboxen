@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Update ChartJS to a newer version (#184)
+
 ## Releases
 
 ### Deploy for 2017-08-16
