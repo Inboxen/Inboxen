@@ -280,3 +280,18 @@ def find_bodies(part):
         # part is a leaf node and has a content type that we can display
         yield [part]
         return
+
+
+def print_tree(part, func=lambda x: str(x)):
+    """Pretty print a Mime tree
+
+    For debugging emails
+
+    func should be a callable that accepts a PartList object as its only
+    argument and returns a string
+    """
+    indent = "\t" * part.get_level()
+    print "{}{}".format(indent, func(part))
+
+    for child in part.get_children():
+        print_tree(child, func)
