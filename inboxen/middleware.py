@@ -45,8 +45,17 @@ class ExtendSessionMiddleware(object):
     """Extends the expiry of sessions for logged in users"""
     def process_request(self, request):
         if request.user.is_authenticated():
-            request.session.set_expiry(None)
-            request.session.modified = True
+            if '_session_expiry' not in request.session:
+                # get_expiry_age() will return settings.SESSION_COOKIE_AGE if
+                # "no custom expiry is set". Django devs consider this a
+                # feature. We do not.
+                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+                request.session.modified = True
+            elif request.session.get_expiry_age() <= settings.SESSION_COOKIE_AGE/2:
+                # cycle session key
+                request.session.cycle_key()
+                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+                request.session.modified = True
 
 
 class RedirectWagLoginMiddleware(object):
