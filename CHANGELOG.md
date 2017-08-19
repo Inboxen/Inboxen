@@ -2,6 +2,10 @@
 
 ## Pending
 
+* Update to Django 1.11 (#165)
+  * Upgrade to Wagtail 1.11
+  * Fix incorrect `select_related` use
+  * Removed `django-session-csrf`as it is no longer needed for Django 1.11
 
 ## Releases
 
