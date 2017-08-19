@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Cycle session key to help protect against session hijacking on long lived sessions (#187)
+
 ## Releases
 
 ### Deploy for 2017-08-16
