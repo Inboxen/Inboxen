@@ -31,6 +31,7 @@ from wagtail.wagtailadmin.views.account import login, logout
 
 LOGIN_NAME = "{}.{}".format(login.__module__, login.__name__)
 LOGOUT_NAME = "{}.{}".format(logout.__module__, logout.__name__)
+SESSION_HALF_COOKIE_AGE = settings.SESSION_COOKIE_AGE / 2
 
 
 class RateLimitMiddleware(object):
@@ -51,7 +52,7 @@ class ExtendSessionMiddleware(object):
                 # feature. We do not.
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
                 request.session.modified = True
-            elif request.session.get_expiry_age() <= settings.SESSION_COOKIE_AGE/2:
+            elif request.session.get_expiry_age() <= SESSION_HALF_COOKIE_AGE:
                 # cycle session key
                 request.session.cycle_key()
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
