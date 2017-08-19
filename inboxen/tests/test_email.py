@@ -475,3 +475,31 @@ class UtilityTestCase(test.TestCase):
         text = "Växjö"
         self.assertEqual(email_utils.unicode_damnit(text, "utf-8"), u"Växjö")
         self.assertEqual(email_utils.unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")
+
+    def test_find_bodies_with_bad_mime_tree(self):
+        email = factories.EmailFactory()
+        body = factories.BodyFactory(data="This mail body is searchable")  # build 1 body and use that
+
+        # the root part, multipart/alternative
+        root_part = factories.PartListFactory(email=email, body=body)
+        factories.HeaderFactory(part=root_part, name="Content-Type", data="multipart/alternative")
+
+        # first text part
+        alt1_part = factories.PartListFactory(email=email, body=body, parent=root_part)
+        factories.HeaderFactory(part=alt1_part, name="Content-Type", data="text/plain; charset=\"ascii\"")
+
+        # second text part
+        alt2_part = factories.PartListFactory(email=email, body=body, parent=root_part)
+        factories.HeaderFactory(part=alt2_part, name="Content-Type", data="text/plain; charset=\"ascii\"")
+
+        # make first text part invalid by giving it a child
+        alt1_child_part = factories.PartListFactory(email=email, body=body, parent=alt1_part)
+        factories.HeaderFactory(part=alt1_child_part, name="Content-Type", data="text/plain; charset=\"ascii\"")
+
+        # find_bodies returns a list of lists, so flatten it out
+        bodies = [part for part_list in email_utils.find_bodies(email.get_parts()) for part in part_list]
+        # we should only see one part
+        self.assertEqual(len(bodies), 1)
+        # and it should be a leaf node
+        self.assertTrue(bodies[0].is_leaf_node())
+        self.assertEqual(bodies[0], alt2_part)
