@@ -15,6 +15,10 @@
 
 ## Releases
 
+### Deploy for 2017-08-19
+
+* Fix some corner cases in `inboxen.utils.emails.find_bodies` (#243)
+
 ### Deploy for 2017-08-16
 
 * Wrap long lines in plain text emails (#227)
