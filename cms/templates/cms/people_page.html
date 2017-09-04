@@ -1,6 +1,6 @@
 {# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'cms/help_base.html' %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load i18n wagtailcore_tags wagtailimages_tags %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -13,8 +13,13 @@
 
 {% block page_content %}
 <div class="row text-center">
-    <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-2">{{ page.intro_paragraph|richtext }}</div>
+    <div class="col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">{{ page.intro_paragraph|richtext }}</div>
 </div>
+{% if page.people.all|length > 0 %}
+<div class="text-center">
+    <h2>{% trans "The Team" %}</h2>
+</div>
+{% endif %}
 {% for person in page.people.all %}
     {# forloop.counter == forloop.counter0 + 1 #}
     {% if forloop.counter0|divisibleby:2 %}<div class="row">{% endif %}
@@ -23,7 +28,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">{{ person.name }}</h3>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body profile-body">
                     {% image person.image fill-300x400 class="profile-image" %}
                     {{ person.body|richtext }}
                 </div>
