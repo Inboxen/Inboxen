@@ -52,7 +52,7 @@ def generate_maintenance_page():
     output_path = os.path.join(output_dir, template_name)
     _log.info("Building maintenance page...")
 
-    context = Context(reduced_settings_context(None))
+    context = reduced_settings_context(None)
     rendered = template.render(context)
 
     try:
