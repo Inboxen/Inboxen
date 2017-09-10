@@ -26,7 +26,8 @@ markdown-newtab
 premailer
 progress
 psycopg2
+python-daemon<1.7
 pytz
-git+https://github.com/moggers87/salmon@299d7d8e5a4bc884def213852170dc0e666e9a59#egg=salmon
+salmon-mail==2
 simplejson
 wagtail>=1.11,<1.12
