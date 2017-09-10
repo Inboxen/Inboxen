@@ -12,7 +12,7 @@
 
 {% block content %}
 {% with col0="col-md-5 col-xs-8" col2="col-md-2 col-xs-3" col3="col-md-1 col-md-push-4 col-xs-1" col4="col-md-4 col-md-pull-1 col-xs-12" %}
-<div id="inbox-list" class="honeydew">
+<div id="inbox-list" class="honeydew" data-inbox-name=".inbox-name a" data-button-container=".inbox-options > form" data-children=".row" data-button-classes="close" data-button-title="{% trans "Copy inbox address to clipboard" %}">
     <div class="row title">
         <div class="{{ col0 }}">{% trans "Inbox" %}</div>
         <div class="{{ col2 }}">{% trans "Last activity" %}</div>
