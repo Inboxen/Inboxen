@@ -12,6 +12,8 @@
   * Store join date of oldest user in stats
   * Calculate disowned inboxes
   * Calculate `new` & `with_inboxes` via aggregate
+* Replace Javascript used to collapse navigation on smaller screens with a pure CSS solution (#241)
+* Fix issue with HTML parsing around `<meta>`, sometimes it doesn't have the attributes we want
 
 ## Releases
 
