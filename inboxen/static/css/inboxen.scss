@@ -184,6 +184,34 @@ a.soon {
     }
 }
 
+// hidden checkbox for nav collapse/expand
+#navbar-collapse-1 {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+
+    // if the checkbox is checked, thne expand the nav
+    &:checked ~ .navbar-collapse {
+        display: block;
+    }
+
+    &:hover ~ .navbar-toggle,
+    &:focus ~ .navbar-toggle {
+        background-color: $navbar-default-toggle-hover-bg;
+    }
+}
+
+.navbar-toggle {
+    // to work with keyboard focus the hidden checkbox, the toggle has to be a
+    // sibling of the checkbox. to be in the correct *order* it has to appear
+    // after .navbar-header. the default styling uses relative positioning, but
+    // that will cause the toggle to appear on a new line. so we have to resort
+    // to absolute positioning
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .inbox-btn-group .btn {
     margin-bottom: 5px;
 }
