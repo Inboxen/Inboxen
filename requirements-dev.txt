@@ -66,6 +66,7 @@ mccabe==0.6.1             # via flake8
 olefile==0.44             # via pillow
 pathlib2==2.3.0           # via ipython, pickleshare
 pexpect==4.2.1            # via ipython
+phonenumberslite==8.8.1
 pickleshare==0.7.4        # via ipython
 pillow==4.2.1
 pip-tools==1.9.0

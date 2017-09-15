@@ -24,6 +24,7 @@ jsmin
 lxml
 markdown-newtab
 pillow
+phonenumberslite
 pip-tools
 premailer
 progress
