@@ -1,0 +1,33 @@
+Django>=1.11,<1.12
+Markdown
+celery>=3.1,<4.0
+configobj
+django-annoying
+django-assets
+django-async-messages
+django-bitfield>=1.9.2
+django-bootstrap-form
+django-braces
+django-celery
+django-csp>3.0
+django-extensions
+django-formtools
+django-mptt
+django-otp
+django-ratelimit-backend
+django-sendfile
+-e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=sudo
+django-two-factor-auth>=1.5.0
+django-watson>=1.2.0
+factory-boy
+jsmin
+lxml
+markdown-newtab
+pillow
+pip-tools
+premailer
+progress
+psycopg2
+pytz
+-e git+https://github.com/moggers87/salmon@7cb96c40a9e038ceefb7f25d8f5010b82a6a23fd#egg=salmon
+simplejson
