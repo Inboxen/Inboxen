@@ -1,0 +1,21 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "inboxen/base.html" %}
+{% load i18n %}
+
+{% block navbar %}
+<div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+        <li><a href="{% url "admin:index" %}">{% trans "CMS" %}</a></li>
+        <li><a href="{% url "admin:blog:index" %}">{% trans "Blog" %}</a></li>
+        <li><a href="{% url "admin:domains:index" %}">{% trans "Domains" %}</a></li>
+        <li><a href="{% url "admin:requests:index" %}">{% trans "Requests" %}</a></li>
+        <li><a href="{% url "admin:tickets:index" %}">{% trans "Questions" %}</a></li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block breadcumbs %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}

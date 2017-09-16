@@ -54,6 +54,13 @@ class ResponseForm(forms.ModelForm):
 class ResponseAdminForm(ResponseForm):
     status = forms.ChoiceField(choices=models.Question.STATUS_CHOICES)
 
+    def __init__(self, *args, **kwargs):
+        initial = kwargs.pop("initial", {})
+        initial["status"] = kwargs["question"].status
+        kwargs["initial"] = initial
+
+        super(ResponseAdminForm, self).__init__(*args, **kwargs)
+
     def save(self, commit=True):
         instance = super(ResponseAdminForm, self).save(commit=False)
         self.question.status = self.cleaned_data["status"]

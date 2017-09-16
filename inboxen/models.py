@@ -179,6 +179,12 @@ class Request(models.Model):
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
     result = models.CharField("comment", max_length=1024, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        if self.succeeded:
+            self.requester.inboxenprofile.pool_amount = self.amount
+            self.requester.inboxenprofile.save()
+        super(Request, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return u"Request for %s (%s)" % (self.requester, self.succeeded)
 

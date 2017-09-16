@@ -1,0 +1,12 @@
+{% load i18n %}
+{% if widget.value %}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        {% trans "Preview" %}
+    </div>
+    <div class="panel-body">
+        {{ widget.value.render }}
+    </div>
+</div>
+{% endif %}
+<textarea name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>{% if widget.value %}{{ widget.value }}{% endif %}</textarea>

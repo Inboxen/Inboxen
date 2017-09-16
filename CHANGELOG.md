@@ -2,6 +2,10 @@
 
 ## Pending
 
+* New admin! (#254)
+  * Remove Wagtail admin
+  * User-facing part of CMS is complete
+  * Admin-facing part of CMS is a bit bare-bones
 
 ## Releases
 
