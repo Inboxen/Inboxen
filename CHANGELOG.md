@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Update ChartJS to a newer version (#184)
 * Update Font Awesome to 4.7.x (#185)
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.11
