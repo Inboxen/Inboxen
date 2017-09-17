@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Update Font Awesome to 4.7.x (#185)
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
