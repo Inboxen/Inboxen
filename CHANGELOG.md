@@ -3,10 +3,13 @@
 ## Pending
 
 * Update ChartJS to a newer version (#184)
+* Update Font Awesome to 4.7.x (#185)
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
+* Replace Javascript used to collapse navigation on smaller screens with a pure CSS solution (#241)
+* Fix issue with HTML parsing around `<meta>`, sometimes it doesn't have the attributes we want
 
 ## Releases
 
