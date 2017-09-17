@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Update JQuery to 3.0 (#183)
 * Update ChartJS to a newer version (#184)
 * Update Font Awesome to 4.7.x (#185)
 * Update to Django 1.11 (#165)
