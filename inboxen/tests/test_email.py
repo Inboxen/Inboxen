@@ -29,6 +29,7 @@ from inboxen import models
 from inboxen.tests import factories, utils
 from inboxen.tests.example_emails import (
     BADLY_ENCODED_BODY,
+    BAD_HTTP_EQUIV_BODY,
     BODILESS_BODY,
     BODY,
     CHARSETLESS_BODY,
@@ -469,6 +470,16 @@ class UtilityTestCase(test.TestCase):
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
             returned_body = email_utils.render_body(None, email, [part])
             self.assertEqual(msg_mock.error.call_count, 1)
+        self.assertIsInstance(returned_body, unicode)
+
+    def test_render_body_bad_http_equiv(self):
+        email = {"display_images": True, "eid": "abc"}
+        part = mock.Mock()
+        part.content_type = "text/html"
+        part.charset = "utf-8"
+        part.body.data = BAD_HTTP_EQUIV_BODY
+
+        returned_body = email_utils.render_body(None, email, [part])
         self.assertIsInstance(returned_body, unicode)
 
     def test_invalid_charset(self):

@@ -37,7 +37,7 @@ css = Bundle(
 
 js = Bundle(
     "thirdparty/jquery/dist/jquery.js",
-    "thirdparty/bootstrap-sass/assets/javascripts/bootstrap.js",
+    "js/alert.js",
     "js/menu.js",
     "js/home.js",
     "js/search.js",
@@ -47,7 +47,7 @@ js = Bundle(
 )
 
 chart_js = Bundle(
-    "thirdparty/chart.js/Chart.js",
+    "thirdparty/chart.js/dist/Chart.js",
     "js/stats.js",
     filters="jsmin",
     output="compiled/js/stats.%(version)s.js",
