@@ -48,8 +48,7 @@ class ExtendSessionMiddleware(object):
         if request.user.is_authenticated():
             if '_session_expiry' not in request.session:
                 # get_expiry_age() will return settings.SESSION_COOKIE_AGE if
-                # "no custom expiry is set". Django devs consider this a
-                # feature. We do not.
+                # no custom expiry is set.
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
                 request.session.modified = True
             elif request.session.get_expiry_age() <= SESSION_HALF_COOKIE_AGE:
