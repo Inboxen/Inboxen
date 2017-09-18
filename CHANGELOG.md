@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Cycle session key to help protect against session hijacking on long lived sessions (#187)
 * Update JQuery to 3.0 (#183)
 * Update ChartJS to a newer version (#184)
 * Update Font Awesome to 4.7.x (#185)
