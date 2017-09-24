@@ -2,6 +2,15 @@
 
 ## Pending
 
+
+## Releases
+
+### Deploy for 2017-09-24
+
+* Cycle session key to help protect against session hijacking on long lived sessions (#187)
+* Update JQuery to 3.0 (#183)
+* Update ChartJS to a newer version (#184)
+* Update Font Awesome to 4.7.x (#185)
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
@@ -14,8 +23,6 @@
   * Calculate `new` & `with_inboxes` via aggregate
 * Replace Javascript used to collapse navigation on smaller screens with a pure CSS solution (#241)
 * Fix issue with HTML parsing around `<meta>`, sometimes it doesn't have the attributes we want
-
-## Releases
 
 ### Deploy for 2017-08-19
 
