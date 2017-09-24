@@ -2,6 +2,12 @@
 
 ## Pending
 
+* Update stats task
+  * Display a running total of emails processed on stats page
+  * Remove standard deviation stat, it didn't actually mean anything for our dataset
+  * Store join date of oldest user in stats
+  * Calculate disowned inboxes
+  * Calculate `new` & `with_inboxes` via aggregate
 
 ## Releases
 
@@ -15,12 +21,6 @@
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
-* Update stats task
-  * Display a running total of emails processed on stats page
-  * Remove standard deviation stat, it didn't actually mean anything for our dataset
-  * Store join date of oldest user in stats
-  * Calculate disowned inboxes
-  * Calculate `new` & `with_inboxes` via aggregate
 * Replace Javascript used to collapse navigation on smaller screens with a pure CSS solution (#241)
 * Fix issue with HTML parsing around `<meta>`, sometimes it doesn't have the attributes we want
 
