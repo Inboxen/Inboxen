@@ -57,13 +57,10 @@
                     <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma with_emails=object.inboxes.with_emails|intcomma %}Total possible: {{ total_possible }}, With emails: {{ with_emails }}{% endblocktrans %})</i>
                 </td>
             </tr>
-            {% comment %}
-            {# uncomment once we're on django 1.11 #}
             <tr>
                 <th>{% trans "Number of disowned inboxes" %}</th>
                 <td>{{ object.inboxes.disowned|intcomma }}</td>
             </tr>
-            {% endcomment %}
             <tr>
                 <th>{% trans "Average number of inboxes per user" %}</th>
                 <td>{{ object.inboxes.inbox_count__avg|floatformat:2 }}</td>
