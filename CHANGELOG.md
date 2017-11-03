@@ -2,13 +2,22 @@
 
 ## Pending
 
+* Update to the latest Salmon (#233)
+
+## Releases
+
+### Deploy for 2017-09-24
+
+* Cycle session key to help protect against session hijacking on long lived sessions (#187)
+* Update JQuery to 3.0 (#183)
+* Update ChartJS to a newer version (#184)
+* Update Font Awesome to 4.7.x (#185)
 * Update to Django 1.11 (#165)
   * Upgrade to Wagtail 1.11
   * Fix incorrect `select_related` use
   * Removed `django-session-csrf`as it is no longer needed for Django 1.11
-* Update to the latest Salmon (#233)
-
-## Releases
+* Replace Javascript used to collapse navigation on smaller screens with a pure CSS solution (#241)
+* Fix issue with HTML parsing around `<meta>`, sometimes it doesn't have the attributes we want
 
 ### Deploy for 2017-08-19
 

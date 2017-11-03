@@ -170,10 +170,6 @@ containing random characters.
 
 The WSGI script can be found at `inboxen/wsgi.py`
 
-There is also `inboxen/wsgi_admin.py` - this enables the admin interface on
-`/admin`. It is **highly** recommended that you protect it from the outside
-world.  Solutions such as a VPN are probably the easiest for your staff to use.
-
 ### Static Files
 
 Static files are collected into `./static_content/`. You should configure your

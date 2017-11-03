@@ -164,8 +164,50 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
     def test_get_set(self):
         user = factories.UserFactory()
         request = utils.MockRequest(user)
+
+        # check that there is not a custom expiry set
+        self.assertNotIn('_session_expiry', request.session)
+
         self.middleware.process_request(request)
         self.assertTrue(request.session.modified)
+        self.assertIn('_session_expiry', request.session)
+
+        # custom expiry has been set, this time the session should not be
+        # modified
+        request.session.modified = False
+        self.middleware.process_request(request)
+        self.assertFalse(request.session.modified)
+        self.assertIn('_session_expiry', request.session)
+
+    def test_cycle_session(self):
+        user = factories.UserFactory()
+        request = utils.MockRequest(user)
+
+        # session will expire in more than a week
+        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.75)
+        session_key = request.session.session_key
+        self.middleware.process_request(request)
+        self.assertEqual(request.session.session_key, session_key)
+        self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE * 0.75)
+
+        # session will expire in exactly a week
+        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.5)
+        session_key = request.session.session_key
+        self.middleware.process_request(request)
+        self.assertNotEqual(request.session.session_key, session_key)
+        self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE)
+
+        # session will expire in less than a week
+        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE* 0.25)
+        session_key = request.session.session_key
+        self.middleware.process_request(request)
+        self.assertNotEqual(request.session.session_key, session_key)
+        self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE)
+
+        # no change in expiry, so session key should not change
+        session_key = request.session.session_key
+        self.middleware.process_request(request)
+        self.assertEqual(request.session.session_key, session_key)
 
     def test_with_anon(self):
         user = AnonymousUser()
