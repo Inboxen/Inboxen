@@ -145,7 +145,7 @@ class UsernameChangeTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), self.get_url()))
 
-        utils.grant_client_sudo(self.client)
+        utils.grant_sudo(self.client)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
@@ -188,6 +188,6 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), self.get_url()))
 
-        utils.grant_client_sudo(self.client)
+        utils.grant_sudo(self.client)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)

@@ -20,11 +20,16 @@
 from django.conf import settings
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
 from django.views import generic
 
+from blog.forms import CreateForm, EditForm
 from blog.models import BlogPost
+from cms.decorators import is_secure_admin
+from cms.forms import DeleteForm
 
 
 class BlogListView(generic.ListView):
@@ -71,3 +76,77 @@ class AtomFeed(RssFeed):
     feed_type = Atom1Feed
     subtitle = RssFeed.description
     feed_url = reverse_lazy('blog-feed-atom')
+
+
+# admin views
+
+@is_secure_admin
+def blog_admin_index(request):
+    blog_posts = BlogPost.objects.all()
+
+    return TemplateResponse(
+        request,
+        "blog/admin/index.html",
+        {"posts": blog_posts}
+    )
+
+
+@is_secure_admin
+def blog_admin_create(request):
+    if request.method == "POST":
+        form = CreateForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("admin:blog:index"))
+    else:
+        form = CreateForm(user=request.user)
+
+    return TemplateResponse(
+        request,
+        "blog/admin/create.html",
+        {"form": form},
+    )
+
+
+@is_secure_admin
+def blog_admin_edit(request, blog_pk):
+    try:
+        post = BlogPost.objects.get(pk=blog_pk)
+    except BlogPost.DoesNotExist:
+        raise Http404
+
+    if request.method == "POST":
+        form = EditForm(data=request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("admin:blog:index"))
+    else:
+        form = EditForm(instance=post)
+
+    return TemplateResponse(
+        request,
+        "blog/admin/edit.html",
+        {"form": form, "post": post},
+    )
+
+
+@is_secure_admin
+def blog_admin_delete(request, blog_pk):
+    try:
+        post = BlogPost.objects.get(pk=blog_pk)
+    except BlogPost.DoesNotExist:
+        raise Http404
+
+    if request.method == "POST":
+        form = DeleteForm(data=request.POST)
+        if form.is_valid():
+            post.delete()
+            return HttpResponseRedirect(reverse("admin:blog:index"))
+    else:
+        form = DeleteForm()
+
+    return TemplateResponse(
+        request,
+        "blog/admin/delete.html",
+        {"form": form, "post": post},
+    )

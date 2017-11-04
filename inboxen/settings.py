@@ -180,11 +180,7 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.ExtendSessionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sudo.middleware.SudoMiddleware',
-    'inboxen.middleware.WagtailAdminProtectionMiddleware',
     'csp.middleware.CSPMiddleware',
-    'wagtail.wagtailcore.middleware.SiteMiddleware',
-    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
-    'inboxen.middleware.RedirectWagLoginMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -270,7 +266,7 @@ CSP_STYLE_SRC = ("'self'",)
 if DEBUG:
     # local dev made easy
     INTERNAL_IPS = ["127.0.0.1"]
-    INSTALLED_APPS += ('debug_toolbar', 'wagtail.contrib.wagtailstyleguide')
+    INSTALLED_APPS += ('debug_toolbar',)
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
@@ -279,6 +275,8 @@ CSRF_USE_SESSIONS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
 SUDO_URL = urlresolvers.reverse_lazy("user-sudo")
+
+CMS_ROOT_URL = urlresolvers.reverse_lazy("cms-index", args=('',))
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'inboxen.wsgi.application'
@@ -304,19 +302,6 @@ except OSError, TypeError:
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
 EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
-
-# wagtail
-WAGTAIL_SITE_NAME = SITE_NAME
-WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
-WAGTAIL_PASSWORD_RESET_ENABLED = False
-
-WAGTAIL_USER_CREATION_FORM = 'cms.forms.InboxenUserCreationForm'
-WAGTAIL_USER_EDIT_FORM = 'cms.forms.InboxenUserEditForm'
-
-WAGTAIL_ADMIN_BASE_URL = urlresolvers.reverse_lazy("wagtailadmin_home")
-
-# this is the name of the collection that will contain profile pictures
-PEOPLE_PAGE_IMAGE_COLLECTION = "Profile Pictures"
 
 ## LOGGING
 if DEBUG:

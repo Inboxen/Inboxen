@@ -1,0 +1,36 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n %}
+
+{% block headline %}{% trans "Blog" %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:blog:index" %}">{% trans "Blog" %}</a></li>
+    <li class="active">{% trans "List" %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<p><a class="btn btn-primary" href="{% url "admin:blog:create" %}">{% trans "New post" %}</a></p>
+<table class="table table-hover">
+    <thead><tr>
+            <th>{% trans "Subject" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>&nbsp;</th>
+    </tr></thead>
+    <tbody>
+    {% for post in posts %}
+    <tr>
+        <td>{{ post.subject }}</td>
+        <td>{{ post.date }}</td>
+        <td>{{ post.draft }}</td>
+        <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:blog:edit" blog_pk=post.pk %}">
+            <span class="sr-only">{% trans "Edit page" %}</span>
+        </a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,43 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n bootstrap %}
+
+{% block headline %}{% blocktrans with user=req.user.username %}Editing request from {{ user }}{% endblocktrans %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:requests:index" %}">{% trans "Requests" %}</a></li>
+    <li class="active">{% blocktrans with user=req.user.username %}Editing request from {{ user }}{% endblocktrans %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+{% if req.succeeded is None %}
+    {% if previous %}
+        <p>{% blocktrans with date=previous.date %}
+            A previous request for more inboxes was created on {{ date }}.
+            {% endblocktrans %}</p>
+        {% if previous.result %}
+            <p>{% blocktrans with comment=previous.result %}
+                The following comment was left by an admin: "{{ comment }}".
+            {% endblocktrans %}</p>
+        {% endif %}
+    {% else%}
+        <p>{% trans "This is the first time this user has requested more inboxes" %}</p>
+    {% endif %}
+    <p><b>{% trans "Current pool amount" %}:</b> {{ req.requester.inboxenprofile.pool_amount }}</p>
+    <p><b>{% trans "Requested pool amount" %}:</b> {{ req.amount }}</p>
+    <p><b>{% trans "Date requested" %}:</b> {{ req.date }}</p>
+    <form class="form" method="POST">
+        {% csrf_token %}
+        {{ form|bootstrap }}
+        <button class="btn btn-primary">{% trans "Save" %}</button>
+    </form>
+{% else %}
+    <p><b>{% trans "Requested pool amount" %}:</b> {{ req.amount }}</p>
+    <p><b>{% trans "Date requested" %}:</b> {{ req.date }}</p>
+    <p><b>{% trans "Granted?" %}:</b> {{ req.succeeded }}</p>
+    <p><b>{% trans "Date decided" %}:</b> {{ req.date_decided }}</p>
+    <p><b>{% trans "Comment" %}:</b> {{ req.result }}</p>
+{% endif %}
+{% endblock %}

@@ -17,15 +17,16 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django.core.urlresolvers import reverse
 from django.db.models import Count, Max
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
-from wagtail.contrib.modeladmin.views import EditView
 
+from cms.decorators import is_secure_admin
 from cms.utils import app_reverse
 from tickets import forms, models
 
@@ -83,7 +84,7 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
         return qs
 
     def get_success_url(self):
-        return app_reverse(self.request.page, self.request.site, "tickets-detail", kwargs={"pk": self.object.pk})
+        return app_reverse(self.request.page, "tickets-detail", kwargs={"pk": self.object.pk})
 
 
 class QuestionListView(LoginRequiredMixin, generic.ListView):
@@ -134,7 +135,7 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
         return qs.filter(author=self.request.user).select_related("author")
 
     def get_success_url(self):
-        return app_reverse(self.request.page, self.request.site, "tickets-detail", kwargs={"pk": self.object.pk})
+        return app_reverse(self.request.page, "tickets-detail", kwargs={"pk": self.object.pk})
 
     def get_responses(self):
         return self.object.response_set.select_related("author").all()
@@ -144,23 +145,40 @@ class QuestionDetailView(LoginRequiredMixin, generic.DetailView, FormMixin):
         return super(QuestionDetailView, self).post(*args, **kwargs)
 
 
-class QuestionAdminEditView(EditView):
-    """View for modeladmin "edit" view"""
-    def get_form_class(self):
-        return forms.ResponseAdminForm
+@is_secure_admin
+def question_admin_index(request):
+    questions = models.Question.objects.all()
 
-    def get_form_kwargs(self):
-        kwargs = super(QuestionAdminEditView, self).get_form_kwargs()
-        kwargs["author"] = self.request.user
-        kwargs["question"] = kwargs["instance"]
-        del kwargs["instance"]
+    return TemplateResponse(
+        request,
+        "tickets/admin/index.html",
+        {"questions": questions}
+    )
 
-        return kwargs
 
-    def get_edit_handler_class(self):
-        """Return a fake edit_handler because we're not using it"""
-        class FakeHandler(object):
-            def __init__(self, *args, **kwargs):
-                pass
+@is_secure_admin
+def question_admin_response(request, question_pk):
+    try:
+        question = models.Question.objects.get(pk=question_pk)
+    except models.Question.DoesNotExist:
+        raise Http404
 
-        return FakeHandler
+    if request.method == "POST":
+        form = forms.ResponseAdminForm(data=request.POST, question=question, author=request.user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse("admin:tickets:index"))
+    else:
+        form = forms.ResponseAdminForm(question=question, author=request.user)
+
+    context = {
+        "form": form,
+        "question": question,
+        "responses": question.response_set.select_related("author").all(),
+    }
+
+    return TemplateResponse(
+        request,
+        "tickets/admin/response.html",
+        context,
+    )

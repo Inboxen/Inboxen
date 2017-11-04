@@ -23,7 +23,6 @@ from django import test
 from django.core import mail, urlresolvers
 from django.db.models import Max
 
-from wagtail.wagtailcore.models import Site
 import factory
 import factory.fuzzy
 
@@ -32,7 +31,6 @@ from cms.utils import app_reverse
 from inboxen.tests import factories, utils
 from inboxen.utils import override_settings
 from tickets import models
-from tickets.wagtail_hooks import QuestionPermissionHelper
 from tickets.templatetags import tickets_flags
 
 
@@ -73,7 +71,6 @@ class QuestionViewTestCase(test.TestCase):
         QuestionFactory.create_batch(3, author=self.other_user, status=models.Question.RESOLVED)
 
         self.page = AppPage.objects.get(app="tickets.urls")
-        self.site = Site.objects.get(is_default_site=True)
 
         login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
@@ -81,14 +78,14 @@ class QuestionViewTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return app_reverse(self.page, self.site, "tickets-index")
+        return app_reverse(self.page, "tickets-index")
 
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
         self.assertIn("More Questions", response.content)
-        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "open"})
+        list_url = app_reverse(self.page, "tickets-list", kwargs={"status": "open"})
         self.assertIn(list_url, response.content)
 
     def test_switch_open_closed(self):
@@ -99,7 +96,7 @@ class QuestionViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertIn("More Questions", response.content)
-        list_url = app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "closed"})
+        list_url = app_reverse(self.page, "tickets-list", kwargs={"status": "closed"})
         self.assertIn(list_url, response.content)
 
     def test_post_form_valid(self):
@@ -107,7 +104,7 @@ class QuestionViewTestCase(test.TestCase):
         response = self.client.post(self.get_url(), params)
         question = models.Question.objects.latest("date")
 
-        expected_url = app_reverse(self.page, self.site, "tickets-detail", kwargs={"pk": question.pk})
+        expected_url = app_reverse(self.page, "tickets-detail", kwargs={"pk": question.pk})
         self.assertRedirects(response, expected_url)
 
         self.assertEqual(question.author_id, self.user.id)
@@ -146,7 +143,6 @@ class QuestionDetailTestCase(test.TestCase):
 
         self.question = QuestionFactory(author=self.user, status=models.Question.NEW)
         self.page = AppPage.objects.get(app="tickets.urls")
-        self.site = Site.objects.get(is_default_site=True)
 
         login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
@@ -154,7 +150,7 @@ class QuestionDetailTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return app_reverse(self.page, self.site, "tickets-detail", kwargs={"pk": self.question.pk})
+        return app_reverse(self.page, "tickets-detail", kwargs={"pk": self.question.pk})
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -190,7 +186,6 @@ class QuestionListTestCase(test.TestCase):
         QuestionFactory.create_batch(75, author=self.user, status=models.Question.NEW)
 
         self.page = AppPage.objects.get(app="tickets.urls")
-        self.site = Site.objects.get(is_default_site=True)
 
         login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
 
@@ -198,7 +193,7 @@ class QuestionListTestCase(test.TestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return app_reverse(self.page, self.site, "tickets-list", kwargs={"status": "open"})
+        return app_reverse(self.page, "tickets-list", kwargs={"status": "open"})
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -297,46 +292,3 @@ class RenderStatus(test.TestCase):
         self.assertIn(unicode(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
 
         self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
-
-
-class WagtailHooksTestCase(test.TestCase):
-    def setUp(self):
-        super(WagtailHooksTestCase, self).setUp()
-        self.user = factories.UserFactory(is_superuser=True)
-        self.question = QuestionFactory()
-
-        self.admin_middleware_mock = mock.patch("inboxen.middleware.WagtailAdminProtectionMiddleware", MiddlewareMock)
-
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
-
-        self.admin_middleware_mock.start()
-
-    def tearDown(self):
-        super(WagtailHooksTestCase, self).tearDown()
-        self.admin_middleware_mock.stop()
-
-    def test_create_denied(self):
-        url = urlresolvers.reverse("tickets_question_modeladmin_create")
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
-
-    def test_delete_denied(self):
-        url = urlresolvers.reverse("tickets_question_modeladmin_delete", kwargs={"instance_pk": self.question.pk})
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
-
-    def test_permission_helper(self):
-        helper = QuestionPermissionHelper(models.Question)
-
-        # check that user_can_create always returns None
-        self.assertEqual(helper.user_can_create(self.user), False)
-        # it shouldn't even check args
-        self.assertEqual(helper.user_can_create(None), False)
-
-        # check that user_can_delete_obj always returns None
-        self.assertEqual(helper.user_can_delete_obj(self.user, self.question), False)
-        # it shouldn't even check args
-        self.assertEqual(helper.user_can_delete_obj(None, None), False)
