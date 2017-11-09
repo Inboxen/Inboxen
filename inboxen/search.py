@@ -81,10 +81,7 @@ class EmailSearchAdapter(search.SearchAdapter):
             if remains <= 0:
                 break
 
-            try:
-                body = choose_body(parts)[:remains]
-            except Exception:
-                import pdb; pdb.set_trace()
+            body = choose_body(parts)[:remains]
             size += len(body)
             data.append(body)
 
