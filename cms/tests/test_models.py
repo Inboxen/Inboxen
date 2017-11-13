@@ -203,6 +203,11 @@ class AppPageTestCase(test.TestCase):
         self.assertEqual(kwargs, {"pk": "12"})
         self.assertEqual(page._view.view_class, ticket_views.QuestionDetailView)
 
+        page.live = False
+        page.save()
+        with self.assertRaises(Http404):
+            page.route(request, ["ticket", "12"])
+
     def test_serve(self):
         page = models.AppPage.objects.get()
         page._view = lambda x: "this is a test"

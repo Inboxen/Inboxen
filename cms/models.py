@@ -219,6 +219,9 @@ class AppPage(HelpBasePage):
     allowed_children = []
 
     def route(self, request, path_components):
+        if not self.live:
+            raise Http404
+
         resolver = RegexURLResolver(r"^", self.app)
         path = request.path[len(self.url):]
         view, args, kwargs = resolver.resolve(path)
