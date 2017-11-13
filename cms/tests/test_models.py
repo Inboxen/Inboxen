@@ -104,18 +104,15 @@ class HelpBasePageTestCase(test.TestCase):
         child_page = models.HelpBasePage.objects.get(parent__isnull=False)
         request = utils.MockRequest()
 
-        child_page.live = True
-        child_page.save()
-
-        with self.assertRaises(Http404):
-            root_page.route(request, [])
-
-        root_page.live = True
-        root_page.save()
         self.assertEqual(root_page.route(request, []), (root_page, [], {}))
 
         with self.assertRaises(Http404):
             root_page.route(request, ["notapage"])
+
+        root_page.live = False
+        root_page.save()
+        with self.assertRaises(Http404):
+            root_page.route(request, [])
 
         self.assertEqual(root_page.route(request, [child_page.slug]), (child_page.specific, (), {}))
         self.assertEqual(child_page.route(request, []), (child_page, [], {}))
@@ -167,7 +164,6 @@ class HelpBasePageTestCase(test.TestCase):
 
 class HelpIndexTestCase(test.TestCase):
     def test_get_context(self):
-        models.HelpBasePage.objects.update(live=True)
         page = models.HelpIndex.objects.get()
         request = utils.MockRequest()
 
