@@ -17,10 +17,32 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-def app_reverse(page, site, viewname, args=None, kwargs=None):
+from cms.models import HelpBasePage
+
+
+def app_reverse(page, viewname, args=None, kwargs=None):
     """Reverse a URL for an app that is behind an AppPage"""
     relative_url = page.reverse(viewname, args=args, kwargs=kwargs)
-    page_url = page.relative_url(site)
+    page_url = page.url
     page_url = page_url.rstrip("/")
 
     return page_url + relative_url
+
+
+def get_root_page():
+    root_pages = HelpBasePage.objects.filter(tree_id=1).get_cached_trees()
+
+    assert len(root_pages) <= 1, "Expected to find a single tree, found %s" % len(root_pages)
+
+    try:
+        return root_pages[0]
+    except IndexError:
+        return None
+
+
+def breadcrumb_iterator(page):
+    if page.parent_id:
+        for parent in breadcrumb_iterator(page.parent):
+            yield parent
+
+    yield page

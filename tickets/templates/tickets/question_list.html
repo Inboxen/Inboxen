@@ -1,13 +1,13 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n humanize bootstrap cms_tags wagtailcore_tags %}
+{% load i18n humanize bootstrap cms_tags %}
 
 {% block headline %}{% trans "Tickets" %}{% endblock %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
         {% for pg in request.page.get_ancestors %}
-            {% if not pg.is_root %}<li><a href="{% pageurl pg %}">{{ pg.title }}</a></li>{% endif %}
+            {% if not pg.is_root %}<li><a href="{{ pg.url }}">{{ pg.title }}</a></li>{% endif %}
         {% endfor %}
         <li><a href="{% app_url 'tickets-index' %}">{{ request.page.title }}</a></li>
         <li class="active">{% blocktrans %}Status: {{ status }}{% endblocktrans %}</li>

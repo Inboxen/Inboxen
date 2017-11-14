@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014, 2015, 2016, 2017 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2017 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -18,18 +18,48 @@
 ##
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
-from wagtail.wagtailusers.forms import UserCreationForm, UserEditForm
-
-
-class InboxenUserCreationForm(UserCreationForm):
-    email = None
-    first_name = None
-    last_name = None
+from cms import models
 
 
-class InboxenUserEditForm(UserEditForm):
-    email = None
-    first_name = None
-    last_name = None
+PAGE_TYPES = (
+    models.HelpIndex,
+    models.AppPage,
+    models.HelpPage,
+#    models.PeoplePage,
+)
+
+
+class DeleteForm(forms.Form):
+    yes_delete = forms.BooleanField()
+
+
+class HelpBasePageForm(forms.ModelForm):
+    model_ct = None  # populated by get_page_form
+
+    def clean(self):
+        cleaned_data = super(HelpBasePageForm, self).clean()
+        slug = cleaned_data["slug"]
+        parent = self.instance.parent
+        if parent:
+            siblings = parent.get_children()
+            if self.instance.pk:
+                siblings = siblings.exclude(pk=self.instance.pk)
+
+            if siblings.filter(slug=slug).exists():
+                raise forms.ValidationError({'slug': "Must be unique within siblings"})
+
+        return cleaned_data
+
+
+def get_page_form(model_ct, form=HelpBasePageForm):
+    model = model_ct.model_class()
+    assert issubclass(model, models.HelpBasePage) and model != models.HelpBasePage, \
+            "Model must be a subclass of HelpBasePage, but not HelpBasePage itself."
+    assert model in PAGE_TYPES, "Not a supported model"
+
+    form = forms.modelform_factory(model, form=form, fields=model.admin_fields)
+    form.model_ct = model_ct
+
+    return form

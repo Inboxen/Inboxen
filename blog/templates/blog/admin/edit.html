@@ -1,0 +1,21 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n bootstrap %}
+
+{% block headline %}{% blocktrans with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:blog:index" %}">{% trans "Blog" %}</a></li>
+    <li class="active">{% blocktrans with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<form class="form" method="POST">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <button class="btn btn-primary">{% trans "Save" %}</button>
+    <a class="btn btn-danger" href="{% url "admin:blog:delete" blog_pk=post.pk %}">{% trans "Delete" %}</a>
+</form>
+{% endblock %}

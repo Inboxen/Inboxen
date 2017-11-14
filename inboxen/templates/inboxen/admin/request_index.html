@@ -1,0 +1,35 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n %}
+
+{% block headline %}{% trans "Requests" %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:requests:index" %}">{% trans "Requests" %}</a></li>
+    <li class="active">{% trans "List" %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<table class="table table-hover">
+    <thead><tr>
+            <th>{% trans "User" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Succeeded" %}</th>
+            <th>&nbsp;</th>
+    </tr></thead>
+    <tbody>
+    {% for req in requests %}
+    <tr>
+        <td>{{ req.requester.username }}</td>
+        <td>{{ req.date }}</td>
+        <td>{{ req.succeeded }}</td>
+        <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:requests:edit" request_pk=req.pk %}">
+            <span class="sr-only">{% trans "Edit request" %}</span>
+        </a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

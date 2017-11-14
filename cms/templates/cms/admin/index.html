@@ -1,0 +1,53 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n %}
+
+{% block headline %}{% trans "CMS" %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:index" %}">{% trans "CMS" %}</a></li>
+    {% for page in breadcrumbs %}
+    {% if forloop.last %}
+        <li class="active">{{ page.title }}</li>
+    {% else %}
+        <li><a href="{% url "admin:index" page_pk=page.pk %}">{{ page.title }}</a></li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<h1>{{ page.title }}</h1>
+<p>
+    {% if page.specific.allowed_children is None or page.specific.allowed_children|length > 0 %}
+        <a class="btn btn-primary" href="{% url "admin:choose-page-type" parent_pk=page.pk %}">{% trans "Create child page" %}</a>
+    {% endif %}
+    <a class="btn btn-primary" href="{% url "admin:edit-page" page_pk=page.pk %}">{% trans "Edit this page" %}</a>
+    {% if page.is_leaf_node %}
+        <a class="btn btn-danger" href="{% url "admin:delete-page" page_pk=page.pk %}">{% trans "Delete this page" %}</a>
+    {% endif %}
+</p>
+{% if page.specific.allowed_children is None or page.specific.allowed_children|length > 0 %}
+<table class="table table-hover">
+    <thead><tr>
+            <th>{% trans "Title" %}</th>
+            <th>{% trans "Type" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th>&nbsp;</th>
+    </tr></thead>
+    <tbody>
+    {% for child in page.get_children %}
+    <tr>
+        <td>{{ child.title }}</td>
+        <td>{{ child.content_type|capfirst }}</td>
+        <td>{{ child.live }}</td>
+        <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:index" page_pk=child.pk %}">
+            <span class="sr-only">{% trans "Go to child" %}</span>
+        </a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n bootstrap %}
+
+{% block headline %}{% blocktrans with domain=domain.domain %}Editing {{ domain }}{% endblocktrans %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:domains:index" %}">{% trans "Domains" %}</a></li>
+    <li class="active">{% trans "Create" %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<p class="alert alert-info">Please make sure that your Internet facing mailserver is configured to receive email on this domain and that the <code>mx</code> record of the domain is pointing to it.</p>
+<form class="form" method="POST">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <button class="btn btn-primary">{% trans "Create" %}</button>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n %}
+
+{% block headline %}{% trans "Create a new page" %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:index" %}">{% trans "CMS" %}</a></li>
+    <li class="active">{% trans "Choose new page type" %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<ul>
+    {% for model_opts in models %}
+    <li><a href="{% url "admin:create-page" model=model_opts.model_name parent_pk=parent_pk %}">
+            {{ model_opts.verbose_name|capfirst }}<span class="fa fa-chevron-right"></span>
+    </a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

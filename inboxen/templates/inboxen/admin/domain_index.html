@@ -1,0 +1,36 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n %}
+
+{% block headline %}{% trans "Domains" %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:domains:index" %}">{% trans "Domains" %}</a></li>
+    <li class="active">{% trans "List" %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<p><a class="btn btn-primary" href="{% url "admin:domains:create" %}">{% trans "Add domain" %}</a></p>
+<table class="table table-hover">
+    <thead><tr>
+            <th>{% trans "Domain" %}</th>
+            <th>{% trans "Owner" %}</th>
+            <th>{% trans "Enabled" %}</th>
+            <th>&nbsp;</th>
+    </tr></thead>
+    <tbody>
+    {% for domain in domains %}
+    <tr>
+        <td>{{ domain.domain }}</td>
+        <td>{{ domain.user.username|default:"None" }}</td>
+        <td>{{ domain.enabled }}</td>
+        <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:domains:edit" domain_pk=domain.pk %}">
+            <span class="sr-only">{% trans "Edit Domain" %}</span>
+        </a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

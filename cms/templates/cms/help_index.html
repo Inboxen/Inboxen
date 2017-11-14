@@ -1,6 +1,5 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'cms/help_base.html' %}
-{% load wagtailcore_tags %}
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
@@ -13,8 +12,8 @@
 <div class="text-center row">
 {% for child in menu %}
     <div class="col-sm-4 col-md-2">
-        <h3><a href="{% pageurl child %}">{{ child.title }}</a></h3>
-        <p>{{ child.specific.description }}</p>
+        <h3><a href="{{ child.url }}">{{ child.title }}</a></h3>
+        <p>{{ child.description }}</p>
     </div>
 {% endfor %}
 </div>

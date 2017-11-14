@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-28 20:12+0000\n"
+"POT-Creation-Date: 2017-11-14 18:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Question"
 msgstr ""
 
-#: tickets/forms.py:37
+#: tickets/forms.py:51 tickets/forms.py:77
 msgid "Reply"
 msgstr ""
 
@@ -42,126 +42,123 @@ msgstr ""
 msgid "Resolved"
 msgstr ""
 
-#: tickets/templates/tickets/question_detail.html:7
-#: tickets/templates/tickets/question_home.html:7
-#: tickets/templates/tickets/question_list.html:7
-msgid "Help"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:8
-#: tickets/templates/tickets/question_home.html:8
-#: tickets/templates/tickets/question_list.html:8
+#: tickets/templates/tickets/admin/index.html:5
+#: tickets/templates/tickets/admin/index.html:9
+#: tickets/templates/tickets/admin/response.html:5
+#: tickets/templates/tickets/admin/response.html:9
 msgid "Questions"
 msgstr ""
 
-#: tickets/templates/tickets/question_detail.html:15
-msgid "Asked by"
+#: tickets/templates/tickets/admin/index.html:10
+msgid "List"
 msgstr ""
 
-#: tickets/templates/tickets/question_detail.html:17
-msgid "Asked"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:17
-#: tickets/templates/tickets/question_detail.html:19
-#: tickets/templates/tickets/question_home.html:31
-#: tickets/templates/tickets/question_home.html:60
-#: tickets/templates/tickets/question_list.html:30
-msgid "ago"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:19
-msgid "Last activity"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:21
-#: tickets/templates/tickets/question_home.html:21
-#: tickets/templates/tickets/question_home.html:50
-#: tickets/templates/tickets/question_list.html:20
-msgid "Status"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:25
-msgid "Latest reply"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:26
-msgid "Reply form"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:30
-msgid "says"
-msgstr ""
-
-#: tickets/templates/tickets/question_detail.html:40
-#: tickets/templates/tickets/question_home.html:78
-msgid "Submit"
-msgstr ""
-
-#: tickets/templates/tickets/question_home.html:13
-msgid "Go to Question form"
-msgstr ""
-
-#: tickets/templates/tickets/question_home.html:19
-#: tickets/templates/tickets/question_home.html:48
-#: tickets/templates/tickets/question_list.html:18
+#: tickets/templates/tickets/admin/index.html:17
+#: tickets/templates/tickets/includes/question_list.html:4
 msgid "Subject"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:20
-#: tickets/templates/tickets/question_home.html:49
-#: tickets/templates/tickets/question_list.html:19
-msgid "Responses"
+#: tickets/templates/tickets/admin/index.html:18
+msgid "Date"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:22
-#: tickets/templates/tickets/question_home.html:51
-#: tickets/templates/tickets/question_list.html:21
+#: tickets/templates/tickets/admin/index.html:19
+#: tickets/templates/tickets/admin/response.html:22
+#: tickets/templates/tickets/question_detail.html:25
+msgid "Status"
+msgstr ""
+
+#: tickets/templates/tickets/admin/index.html:29
+msgid "View question"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:10
+#, python-format
+msgid "%(subject)s"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:16
+#: tickets/templates/tickets/question_detail.html:19
+msgid "Asked by"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:18
+#: tickets/templates/tickets/question_detail.html:21
+msgid "Asked"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:20
+#: tickets/templates/tickets/question_detail.html:23
+msgid "Last activity"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:26
+#: tickets/templates/tickets/question_detail.html:29
+msgid "Latest reply"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:27
+#: tickets/templates/tickets/question_detail.html:30
+msgid "Reply form"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:31
+#: tickets/templates/tickets/question_detail.html:34
+msgid "says"
+msgstr ""
+
+#: tickets/templates/tickets/admin/response.html:41
+#: tickets/templates/tickets/question_detail.html:44
+#: tickets/templates/tickets/question_home.html:33
+msgid "Submit"
+msgstr ""
+
+#: tickets/templates/tickets/includes/question_list.html:6
 msgid "Last Activity"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:34
-msgid "More Open Tickets"
+#: tickets/templates/tickets/includes/question_list.html:14
+msgid "Question responses"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:38
-msgid "There are no open questions."
+#: tickets/templates/tickets/includes/question_list.html:24
+msgid "More Questions"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:63
-msgid "More Closed Tickets"
+#: tickets/templates/tickets/includes/question_list.html:28
+msgid "There are no questions."
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:67
-msgid "There are no closed questions."
+#: tickets/templates/tickets/question_home.html:5
+#: tickets/templates/tickets/question_list.html:5
+msgid "Tickets"
 msgstr ""
 
-#: tickets/templates/tickets/question_list.html:9
+#: tickets/templates/tickets/question_home.html:19
+msgid "Go to Question form"
+msgstr ""
+
+#: tickets/templates/tickets/question_home.html:20
+msgid "Open Questions"
+msgstr ""
+
+#: tickets/templates/tickets/question_home.html:22
+msgid "Resolved Questions"
+msgstr ""
+
+#: tickets/templates/tickets/question_home.html:27
+msgid "Submit New Question"
+msgstr ""
+
+#: tickets/templates/tickets/question_list.html:13
 #, python-format
 msgid "Status: %(status)s"
 msgstr ""
 
-#: tickets/templates/tickets/question_list.html:34
-msgid "There are no questions."
-msgstr ""
-
-#: tickets/templates/tickets/question_list.html:43
+#: tickets/templates/tickets/question_list.html:22
 msgid "Previous"
 msgstr ""
 
-#: tickets/templates/tickets/question_list.html:49
+#: tickets/templates/tickets/question_list.html:28
 msgid "Next"
-msgstr ""
-
-#: tickets/views.py:54 tickets/views.py:133
-msgid "Tickets"
-msgstr ""
-
-#: tickets/views.py:124
-#, python-format
-msgid "Empty list and '%(class_name)s.allow_empty' is False."
-msgstr ""
-
-#: tickets/views.py:178
-msgid "Ticket"
 msgstr ""

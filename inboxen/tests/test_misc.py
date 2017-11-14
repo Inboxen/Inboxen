@@ -37,11 +37,7 @@ from django.test.client import RequestFactory
 import mock
 
 from inboxen.management.commands import router, feeder, url_stats
-from inboxen.middleware import (
-    ExtendSessionMiddleware,
-    RedirectWagLoginMiddleware,
-    WagtailAdminProtectionMiddleware,
-)
+from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.views.error import ErrorView
@@ -214,61 +210,6 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
         request = utils.MockRequest(user)
         self.middleware.process_request(request)
         self.assertFalse(request.session.modified)
-
-
-class WagtailAdminProtectionMiddlewareTestCase(test.TestCase):
-    middleware = WagtailAdminProtectionMiddleware()
-    user = get_user_model()()
-
-    def test_anon_passthrough(self):
-        path = "%s/something/" % urlresolvers.reverse("wagtailadmin_home")
-        request = utils.MockRequest(AnonymousUser())
-        request.path = path
-
-        response = self.middleware.process_request(request)
-        self.assertIsNone(response)
-
-    def test_non_admin_path(self):
-        path = "/something%s" % urlresolvers.reverse("wagtailadmin_home")
-        attrs = (
-            (True, True),
-            (True, False),
-            (False, True),
-            (False, False),
-        )
-        for is_sudo, is_verified in attrs:
-            request = utils.MockRequest(self.user)
-            request.path = path
-            request.is_sudo = lambda: is_sudo
-            request.user.is_verified = lambda: is_verified
-
-            response = self.middleware.process_request(request)
-            self.assertIsNone(response)
-
-    def test_admin_path(self):
-        path = "%s/something/" % urlresolvers.reverse("wagtailadmin_home")
-        attrs = (
-            (True, True, False),
-            (True, False, True),
-            (False, True, True),
-            (False, False, True),
-        )
-        for is_sudo, is_verified, will_redirect in attrs:
-            request = utils.MockRequest(self.user)
-            request.path = path
-            request.is_sudo = lambda: is_sudo
-            request.user.is_verified = lambda: is_verified
-
-            try:
-                response = self.middleware.process_request(request)
-            except PermissionDenied:
-                if not will_redirect:
-                    self.fail("Middleware raised PermissionDenied, but it should not have!")
-            else:
-                if will_redirect:
-                    self.assertEqual(response["Location"], "%s?next=%s" % (urlresolvers.reverse("user-sudo"), request.path))
-                else:
-                    self.assertIsNone(response)
 
 
 class UtilsTestCase(test.TestCase):

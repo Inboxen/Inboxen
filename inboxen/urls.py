@@ -23,10 +23,6 @@ from django.conf import settings, urls
 from django.conf.urls.static import static
 from django.utils.translation import ugettext as _
 
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
-from wagtail.wagtaildocs import urls as wagtaildocs_urls
-
 from inboxen import views
 
 
@@ -72,11 +68,8 @@ urlpatterns = [
     urls.url(r'^click/', urls.include("redirect.urls")),
     urls.url(r'^source/', urls.include("source.urls")),
     urls.url(r'^user/account/', urls.include("account.urls")),
-
-    # wagtail
-    urls.url(r'^admin/', urls.include(wagtailadmin_urls)),
-    urls.url(r'^documents/', urls.include(wagtaildocs_urls)),
-    urls.url(r'^help/', urls.include(wagtail_urls)),
+    urls.url(r'^help/', urls.include("cms.urls")),
+    urls.url(r'^admin/', urls.include("cms.admin_urls", namespace="admin")),
 ]
 
 if settings.DEBUG:

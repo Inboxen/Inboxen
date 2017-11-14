@@ -280,3 +280,32 @@ a.soon {
 .profile-body .rich-text {
     float: left;
 }
+
+%hover-button-in-table {
+    text-decoration: none;
+    color: white;
+    background-color: lighten($link-color, 30%);
+}
+
+.table > tbody > tr {
+    & > td.page-link {
+        padding-top: 0;
+        padding-bottom: 0;
+
+        a.fa { // only do this for icons
+            width: 100%;
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 1.5em;
+
+            &:focus {
+                @extend %hover-button-in-table;
+            }
+        }
+    }
+
+    &:hover > td.page-link a.fa {
+        @extend %hover-button-in-table;
+    }
+}
