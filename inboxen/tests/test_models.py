@@ -28,6 +28,7 @@ import mock
 
 from inboxen import models
 from inboxen.tests import factories
+from inboxen.utils import override_settings
 
 
 User = get_user_model()
@@ -100,6 +101,21 @@ class ModelTestCase(test.TestCase):
 
             self.assertEqual(new_inbox.inbox, "a" * len(inbox.inbox))
             self.assertEqual(c_mock.call_count, len(inbox.inbox) * 2)
+
+    def test_inbox_create_length(self):
+        user = factories.UserFactory()
+        domain = factories.DomainFactory()
+        default_length = settings.INBOX_LENGTH
+
+        with override_settings(INBOX_LENGTH=default_length + 1):
+            inbox = models.Inbox.objects.create(user=user, domain=domain)
+            self.assertEqual(len(inbox.inbox), default_length + 1)
+
+            inbox = models.Inbox.objects.create(user=user, domain=domain, length=default_length + 3)
+            self.assertEqual(len(inbox.inbox), default_length + 3)
+
+        with self.assertRaises(AssertionError):
+            inbox = models.Inbox.objects.create(user=user, domain=domain, length=-1)
 
     def test_inbox_from_string(self):
         user = factories.UserFactory()

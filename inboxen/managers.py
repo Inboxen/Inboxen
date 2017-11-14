@@ -58,9 +58,12 @@ class DomainQuerySet(QuerySet):
 
 
 class InboxQuerySet(QuerySet):
-    def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
+    def create(self, length=None, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
         from inboxen.models import Domain
+
+        length = length or settings.INBOX_LENGTH
+        assert length > 0, "Length must be greater than 0 (zero)"
 
         if not isinstance(domain, Domain):
             raise Domain.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
