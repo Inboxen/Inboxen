@@ -23,7 +23,7 @@ import hashlib
 import random
 
 from django.conf import settings
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
@@ -74,13 +74,13 @@ class InboxQuerySet(QuerySet):
                 continue
 
             try:
-                return super(InboxQuerySet, self).create(
-                    inbox=inbox,
-                    created=datetime.now(utc),
-                    domain=domain,
-                    **kwargs
-                )
-
+                with transaction.atomic():
+                    return super(InboxQuerySet, self).create(
+                        inbox=inbox,
+                        created=datetime.now(utc),
+                        domain=domain,
+                        **kwargs
+                    )
             except IntegrityError:
                 pass
 

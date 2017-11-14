@@ -20,11 +20,11 @@
 import datetime
 import itertools
 
-from pytz import utc
-
 from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from pytz import utc
+import mock
 
 from inboxen import models
 from inboxen.tests import factories
@@ -57,6 +57,49 @@ class ModelTestCase(test.TestCase):
 
         self.assertIsInstance(inbox.created, datetime.datetime)
         self.assertEqual(inbox.user, user)
+
+    def test_inbox_create_reserved(self):
+        user = factories.UserFactory()
+        domain = factories.DomainFactory()
+
+        def reserved_mock():
+            # return True and then False, regardless of input
+            ret_vals = [False, True]
+
+            def inner(*args, **kwargs):
+                return ret_vals.pop()
+
+            return inner
+
+        with mock.patch("inboxen.managers.is_reserved") as r_mock:
+            r_mock.side_effect = reserved_mock()
+            models.Inbox.objects.create(domain=domain, user=user)
+
+            self.assertEqual(r_mock.call_count, 2)
+
+    def test_inbox_create_integrity_error(self):
+        user = factories.UserFactory()
+        domain = factories.DomainFactory()
+        inbox = models.Inbox.objects.create(domain=domain, user=user)
+
+        def choice_mock():
+            # returned sequence should be chars of already existing inbox, then
+            # a string of "a" of the same length
+            letters = inbox.inbox + "a" * len(inbox.inbox)
+            letters = list(letters)
+            letters.reverse()
+
+            def inner(*args, **kwargs):
+                return letters.pop()
+
+            return inner
+
+        with mock.patch("inboxen.managers.random.choice") as c_mock:
+            c_mock.side_effect = choice_mock()
+            new_inbox = models.Inbox.objects.create(domain=domain, user=user)
+
+            self.assertEqual(new_inbox.inbox, "a" * len(inbox.inbox))
+            self.assertEqual(c_mock.call_count, len(inbox.inbox) * 2)
 
     def test_inbox_from_string(self):
         user = factories.UserFactory()
