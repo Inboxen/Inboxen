@@ -8,11 +8,6 @@ import django.db.models.deletion
 import mptt.fields
 
 
-# Functions from the following migrations need manual copying.
-# Move them and any dependencies into this file, then update the
-# RunPython operations to refer to the local versions:
-# cms.migrations.0006_setup_helpsite
-
 class Migration(migrations.Migration):
 
     replaces = [('cms', '0001_initial'), ('cms', '0002_auto_20170215_2100'), ('cms', '0003_helpindex_description'), ('cms', '0004_auto_20170218_2137'), ('cms', '0005_auto_20170226_2309'), ('cms', '0006_peoplepage_intro_paragraph'), ('cms', '0006_setup_helpsite'), ('cms', '0007_auto_20170916_1722'), ('cms', '0008_auto_20170916_2048')]
