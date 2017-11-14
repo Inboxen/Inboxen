@@ -73,9 +73,9 @@ class InboxQuerySet(QuerySet):
 
             inbox = "".join(inbox)
 
-            # check against reserved names
             if is_reserved(inbox):
-                raise IntegrityError(_("Inbox is reserved."))
+                # inbox is reserved, try again
+                continue
 
             try:
                 return super(InboxQuerySet, self).create(
