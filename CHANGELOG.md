@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Properly remove Wagtail as a dependency (#254)
+
 ## Releases
 
 ### Deploy for 2017-11-13
