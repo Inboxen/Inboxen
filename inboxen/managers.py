@@ -65,13 +65,9 @@ class InboxQuerySet(QuerySet):
         if not isinstance(domain, Domain):
             raise Domain.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
 
+        # loop around until we get soemthing unique
         while True:
-            # loop around until we create a unique address
-            inbox = []
-            for i in range(length):
-                inbox += random.choice(settings.INBOX_CHOICES)
-
-            inbox = "".join(inbox)
+            inbox = "".join([random.choice(settings.INBOX_CHOICES) for i in range(length)])
 
             if is_reserved(inbox):
                 # inbox is reserved, try again
