@@ -11,6 +11,13 @@
 
 ## Releases
 
+### Deploy for 2017-11-13
+
+* New admin! (#254)
+  * Remove Wagtail admin
+  * User-facing part of CMS is complete
+  * Admin-facing part of CMS is a bit bare-bones
+
 ### Deploy for 2017-09-24
 
 * Cycle session key to help protect against session hijacking on long lived sessions (#187)

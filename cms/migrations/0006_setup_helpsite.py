@@ -15,7 +15,7 @@ def initial_data(apps, schema_editor):
     default_site = Site.objects.get()
 
     Collection.objects.create(
-        name=settings.PEOPLE_PAGE_IMAGE_COLLECTION,
+        name="",
         path="00010001",
         depth=2,
         numchild=0,

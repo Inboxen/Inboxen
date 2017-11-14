@@ -1,0 +1,23 @@
+{# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends "cms/admin/base.html" %}
+{% load i18n bootstrap %}
+
+{% block headline %}{% blocktrans with title=page.title %}Editing {{ title }}{% endblocktrans %}{% endblock %}
+
+{% block breadcumbs %}
+<ul class="breadcrumb">
+    <li><a href="{% url "admin:index" %}">{% trans "CMS" %}</a></li>
+    {% for page in breadcrumbs %}
+    <li><a href="{% url "admin:index" page_pk=page.pk %}">{{ page.title }}</a></li>
+    {% endfor %}
+    <li class="active">{% trans "Edit page" %}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<form class="form" method="POST">
+    {% csrf_token %}
+    {{ form|bootstrap }}
+    <button class="btn btn-primary">{% trans "Save" %}</button>
+</form>
+{% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-28 20:12+0000\n"
+"POT-Creation-Date: 2017-11-14 18:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,50 +18,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: source/templates/source/index.html:8
+#: source/templates/source/index.html:5
+msgid "Source Code"
+msgstr ""
+
+#: source/templates/source/index.html:10
 #, python-format
 msgid "%(SITE_NAME)s Source Code"
 msgstr ""
 
-#: source/templates/source/index.html:9
+#: source/templates/source/index.html:11
 #, python-format
-msgid "%(SITE_NAME)s is licensed under the Affero General Public License, version 3."
+msgid ""
+"%(SITE_NAME)s is licensed under the Affero General Public License, version 3."
 msgstr ""
 
-#: source/templates/source/index.html:10
+#: source/templates/source/index.html:12
 msgid "What does that mean?"
 msgstr ""
 
-#: source/templates/source/index.html:11
+#: source/templates/source/index.html:13
 msgid ""
 "\n"
-"            That means you have the right to read our source code (either as a user of this service or someone who has already received a copy),\n"
-"            send it to your friends, makes changes to it and run it on your own server. You also have a responsibility to grant these same rights\n"
-"            to your users. The full text of this licence can be found with the source code linked to on this page.\n"
+"            That means you have the right to read our source code (either as "
+"a user of this service or someone who has already received a copy),\n"
+"            send it to your friends, makes changes to it and run it on your "
+"own server. You also have a responsibility to grant these same rights\n"
+"            to your users. The full text of this licence can be found with "
+"the source code linked to on this page.\n"
 "        "
 msgstr ""
 
-#: source/templates/source/index.html:16
+#: source/templates/source/index.html:18
 msgid "Third party libraries"
 msgstr ""
 
-#: source/templates/source/index.html:17
+#: source/templates/source/index.html:19
 #, python-format
 msgid ""
 "\n"
-"            %(SITE_NAME)s uses a number of third party libraries (we don't believe in reinventing the wheel). Checkout our source code to see their respective licences.\n"
+"            %(SITE_NAME)s uses a number of third party libraries (we don't "
+"believe in reinventing the wheel). Checkout our source code to see their "
+"respective licences.\n"
 "        "
 msgstr ""
 
-#: source/templates/source/index.html:24
+#: source/templates/source/index.html:26
 #, python-format
 msgid "You can find the source code <a href=\"%(SOURCE_LINK)s\">here</a>."
 msgstr ""
 
-#: source/templates/source/index.html:26
+#: source/templates/source/index.html:28
 msgid "The commit ID of the version this server is using is:"
-msgstr ""
-
-#: source/views.py:25
-msgid "Source Code"
 msgstr ""

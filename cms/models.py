@@ -18,38 +18,194 @@
 ##
 
 from django.conf import settings
-from django.db import models
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import RegexURLResolver, reverse
+from django.db import models
+from django.http import Http404
+from django.template.response import TemplateResponse
+from django.utils.functional import cached_property
+from mptt.managers import TreeManager
+from mptt.models import MPTTModel, TreeForeignKey
+from mptt.querysets import TreeQuerySet
 
-from modelcluster.fields import ParentalKey
-from wagtail.wagtailcore import fields, models as wag_models
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, InlinePanel
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from cms.fields import RichTextField
 
 
-class HelpBasePage(wag_models.Page):
-    description = models.TextField(blank=True)
+class HelpQuerySet(TreeQuerySet):
+    def in_menu(self):
+        return self.filter(in_menu=True)
 
-    promote_panels = wag_models.Page.promote_panels + [
-        FieldPanel('description'),
-    ]
+    def live(self):
+        return self.filter(live=True)
+
+class HelpManager(models.Manager.from_queryset(HelpQuerySet), TreeManager):
+    pass
+
+
+class HelpAbstractPage(MPTTModel):
+    # managers on abstract models are inherited, managers on concrete models are not!
+    objects = HelpManager()
+
     class Meta:
         abstract = True
+        manager_inheritance_from_future = True
+
+
+class HelpBasePage(HelpAbstractPage):
+    # Much of this class is taken from Wagtail 1.12.1
+    #
+    # Copyright (c) 2014 Torchbox Ltd and individual contributors.
+    # All rights reserved.
+    #
+    # Redistribution and use in source and binary forms, with or without modification,
+    # are permitted provided that the following conditions are met:
+    #
+    #     1. Redistributions of source code must retain the above copyright notice,
+    #        this list of conditions and the following disclaimer.
+    #
+    #     2. Redistributions in binary form must reproduce the above copyright
+    #        notice, this list of conditions and the following disclaimer in the
+    #        documentation and/or other materials provided with the distribution.
+    #
+    #     3. Neither the name of Torchbox nor the names of its contributors may be used
+    #        to endorse or promote products derived from this software without
+    #        specific prior written permission.
+    #
+    # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+    # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+    # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+
+    live = models.BooleanField(default=False)
+    in_menu = models.BooleanField(default=False)
+    content_type = models.ForeignKey(
+        'contenttypes.ContentType',
+        related_name='cms_pages',
+        on_delete=models.PROTECT,
+    )
+    slug = models.SlugField(max_length=255)
+    url_cache = models.CharField(max_length=255, default="")
+
+    template = "cms/help_base.html"
+
+    admin_fields = ("title", "description", "slug", "live", "in_menu")
+
+    # None means anything is allowed, set to [] if you want to
+    # disallow this model from having any parent or children
+    allowed_parents = None
+    allowed_children = None
+
+    @cached_property
+    def url(self):
+        # generate_url doesn't cache the url to url_cache (because we don't
+        # know if we're going to save), so this property is a *cached* property
+        # so we never call generate_url twice
+        if self.url_cache:
+            return self.url_cache
+        else:
+            return self.generate_url()
+
+    def generate_url(self):
+        if self.parent:
+            return self.parent.url + self.slug + "/"
+        else:
+            return settings.CMS_ROOT_URL
+
+    @cached_property
+    def specific(self):
+        """
+        Return this page in its most specific subclassed form.
+        """
+        # the ContentType.objects manager keeps a cache, so this should potentially
+        # avoid a database lookup over doing self.content_type. I think.
+        content_type = ContentType.objects.get_for_id(self.content_type_id)
+        model_class = content_type.model_class()
+        if model_class is None:
+            # Cannot locate a model class for this content type. This might happen
+            # if the codebase and database are out of sync (e.g. the model exists
+            # on a different git branch and we haven't rolled back migrations before
+            # switching branches); if so, the best we can do is return the page
+            # unchanged.
+            return self
+        elif isinstance(self, model_class):
+            # self is already the an instance of the most specific class
+            return self
+        else:
+            return content_type.get_object_for_this_type(id=self.id)
+
+    @cached_property
+    def specific_class(self):
+        """
+        Return the class that this page would be if instantiated in its
+        most specific form
+        """
+        content_type = ContentType.objects.get_for_id(self.content_type_id)
+        return content_type.model_class()
+
+    def route(self, request, path_components):
+        if path_components:
+            # request is for a child of this page
+            child_slug = path_components[0]
+            remaining_components = path_components[1:]
+
+            try:
+                subpage = self.get_children().get(slug=child_slug)
+            except HelpBasePage.DoesNotExist:
+                raise Http404
+
+            return subpage.specific.route(request, remaining_components)
+
+        else:
+            # request is for this very page
+            if self.live:
+                return (self, [], {})
+            else:
+                raise Http404
+
+    def serve(self, request, *args, **kwargs):
+        assert type(self) != HelpBasePage, "serve method was called directly on a HelpBasePage object"
+
+        return TemplateResponse(
+            request,
+            self.template,
+            self.get_context(request, *args, **kwargs)
+        )
+
+    def get_context(self, request, *args, **kwargs):
+        return {
+            "page": self,
+        }
+
+    def save(self, *args, **kwargs):
+        self.url_cache = self.generate_url()
+        return super(HelpBasePage, self).save(*args, **kwargs)
+
+    class Meta:
+        manager_inheritance_from_future = True
+        unique_together = ("slug", "parent")
 
 
 class HelpIndex(HelpBasePage):
-    subpage_types = [
-        # all Pages except itself
-        'cms.HelpPage',
-        'cms.PeoplePage',
-        'cms.AppPage',
-    ]
+    template = "cms/help_index.html"
 
     def get_context(self, request, *args, **kwargs):
         context = super(HelpIndex, self).get_context(request, *args, **kwargs)
-        context["menu"] = self.get_children().live().in_menu().public().specific()
+        context["menu"] = self.get_children().live().in_menu()
 
         return context
+
+    class Meta:
+        manager_inheritance_from_future = True
 
 
 class AppPage(HelpBasePage):
@@ -58,69 +214,90 @@ class AppPage(HelpBasePage):
     )
     app = models.CharField(max_length=255, unique=True, choices=APP_CHOICES)
 
-    content_panels = wag_models.Page.content_panels + [
-        FieldPanel('app'),
-    ]
+    admin_fields = HelpBasePage.admin_fields + ("app",)
 
-    parent_page_types = ['cms.HelpIndex']
-    subpage_types = []
+    allowed_children = []
 
     def route(self, request, path_components):
+        if not self.live:
+            raise Http404
+
         resolver = RegexURLResolver(r"^", self.app)
-        _, _, url = self.get_url_parts()
-        path = request.path[len(url):]
+        path = request.path[len(self.url):]
         view, args, kwargs = resolver.resolve(path)
 
         self._view = view
         return (self, args, kwargs)
 
     def serve(self, request, *args, **kwargs):
+        request.page = self
         return self._view(request, *args, **kwargs)
 
-    def reverse(self, viewname, args, kwargs):
+    def reverse(self, viewname, args=None, kwargs=None):
         """Gives reverse URL for view name relative to page"""
         return reverse(viewname, urlconf=self.app, args=args, kwargs=kwargs)
 
+    class Meta:
+        manager_inheritance_from_future = True
+
 
 class HelpPage(HelpBasePage):
-    body = fields.RichTextField(blank=True)
+    body = RichTextField()
 
-    content_panels = wag_models.Page.content_panels + [
-        FieldPanel('body', classname="full"),
-    ]
+    template = "cms/help_page.html"
 
-    parent_page_types = ['cms.HelpIndex', 'cms.HelpPage']
-    subpage_types = ['cms.HelpPage']
+    admin_fields = HelpBasePage.admin_fields + ("body",)
 
+    class Meta:
+        manager_inheritance_from_future = True
+
+
+##
+#   These models aren't currently used
+##
 
 class PeoplePage(HelpBasePage):
-    intro_paragraph = fields.RichTextField(blank=True, help_text="Text at the top of the page")
+    intro_paragraph = RichTextField(blank=True, help_text="Text at the top of the page")
 
-    content_panels = wag_models.Page.content_panels + [
-        FieldPanel('intro_paragraph', classname="full"),
-        InlinePanel('people', label="People"),
-    ]
+    template = "cms/people_page.html"
 
-    parent_page_types = ['cms.HelpIndex']
-    subpage_types = []
+    admin_fields = HelpBasePage.admin_fields + ("intro_paragraph",)
+
+    class Meta:
+        manager_inheritance_from_future = True
 
 
-class PersonInfo(wag_models.Orderable):
-    page = ParentalKey(PeoplePage, related_name="people")
+class PersonInfo(models.Model):
+    page = models.ForeignKey(PeoplePage, related_name="people", editable=False)
+    ordinal = models.IntegerField(null=True, blank=True, editable=False)
     name = models.CharField(max_length=255)
-    body = fields.RichTextField(blank=True)
+    body = RichTextField()
     image = models.ForeignKey(
-        'wagtailimages.Image',
+        "cms.Image",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+',
-        help_text="Images will be in the collection '%s'. Images will be displayed at 300x400" % settings.PEOPLE_PAGE_IMAGE_COLLECTION,
-        limit_choices_to={"collection__name": settings.PEOPLE_PAGE_IMAGE_COLLECTION}
+        related_name="+",
     )
 
-    content_panels = [
-        FieldPanel("name"),
-        FieldPanel('body', classname="full"),
-        ImageChooserPanel('image'),
-    ]
+    class Meta:
+        ordering = ["ordinal"]
+
+
+class Image(models.Model):
+    title = models.CharField(max_length=255)
+
+    file = models.ImageField(width_field="width", height_field="height")
+    width = models.IntegerField(editable=False)
+    height = models.IntegerField(editable=False)
+
+    created = models.DateTimeField(auto_now_add=True)
+    collection = models.CharField(max_length=255)
+    uploaded_by_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        editable=False,
+        on_delete=models.SET_NULL,
+        related_name="cms_images",
+    )
