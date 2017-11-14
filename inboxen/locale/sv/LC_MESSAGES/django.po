@@ -683,7 +683,7 @@ msgstr ""
 #: inboxen/templatetags/inboxen_flags.py:30
 #: inboxen/templatetags/inboxen_flags.py:36
 msgid "New"
-msgstr ""
+msgstr "Ny"
 
 #: inboxen/templatetags/inboxen_flags.py:35
 msgid "New message"
