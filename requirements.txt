@@ -23,6 +23,7 @@ factory-boy
 jsmin
 lxml
 markdown-newtab
+pillow
 premailer
 progress
 psycopg2
@@ -30,4 +31,3 @@ python-daemon<1.7
 pytz
 salmon-mail==2
 simplejson
-wagtail>=1.11,<1.12
