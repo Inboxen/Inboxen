@@ -216,23 +216,6 @@ INSTALLED_APPS = (
     'router',
     'source',
     'tickets',
-
-    # wagtail
-    'wagtail.wagtailforms',
-    'wagtail.wagtailredirects',
-    'wagtail.wagtailembeds',
-    'wagtail.wagtailsites',
-    'wagtail.wagtailusers',
-    'wagtail.wagtailsnippets',
-    'wagtail.wagtaildocs',
-    'wagtail.wagtailimages',
-    'wagtail.wagtailsearch',
-    'wagtail.wagtailadmin',
-    'wagtail.wagtailcore',
-    'wagtail.contrib.modeladmin',
-
-    'modelcluster',
-    'taggit',
 )
 
 SILENCED_SYSTEM_CHECKS = [
