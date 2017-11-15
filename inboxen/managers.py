@@ -23,7 +23,7 @@ import hashlib
 import random
 
 from django.conf import settings
-from django.db import IntegrityError, models
+from django.db import IntegrityError, models, transaction
 from django.db.models import Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
@@ -58,33 +58,32 @@ class DomainQuerySet(QuerySet):
 
 
 class InboxQuerySet(QuerySet):
-    def create(self, length=settings.INBOX_LENGTH, domain=None, **kwargs):
+    def create(self, length=None, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
         from inboxen.models import Domain
+
+        length = length or settings.INBOX_LENGTH
+        assert length > 0, "Length must be greater than 0 (zero)"
 
         if not isinstance(domain, Domain):
             raise Domain.DoesNotExist(_("You need to provide a Domain object for an Inbox"))
 
+        # loop around until we get soemthing unique
         while True:
-            # loop around until we create a unique address
-            inbox = []
-            for i in range(length):
-                inbox += random.choice(settings.INBOX_CHOICES)
+            inbox = "".join([random.choice(settings.INBOX_CHOICES) for i in range(length)])
 
-            inbox = "".join(inbox)
-
-            # check against reserved names
             if is_reserved(inbox):
-                raise IntegrityError(_("Inbox is reserved."))
+                # inbox is reserved, try again
+                continue
 
             try:
-                return super(InboxQuerySet, self).create(
-                    inbox=inbox,
-                    created=datetime.now(utc),
-                    domain=domain,
-                    **kwargs
-                )
-
+                with transaction.atomic():
+                    return super(InboxQuerySet, self).create(
+                        inbox=inbox,
+                        created=datetime.now(utc),
+                        domain=domain,
+                        **kwargs
+                    )
             except IntegrityError:
                 pass
 

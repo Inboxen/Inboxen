@@ -13,6 +13,7 @@ install:
     - travis_retry pip install -q -r requirements.txt
     - travis_retry pip install -q codecov
     - travis_retry gem install sass -v '< 3.5.0'
+    - python manage.py compilemessages --settings=inboxen.tests.settings
     - python manage.py collectstatic --noinput --settings=inboxen.tests.settings
 
 matrix:
