@@ -25,10 +25,12 @@ from inboxen import models
 def stats(request):
     try:
         stat = models.Statistic.objects.latest("date")
+        first_stat = models.Statistic.objects.earliest("date")
     except models.Statistic.DoesNotExist:
         stat = None
+        first_stat = None
 
-    return TemplateResponse(request, "inboxen/stats.html", {"object": stat})
+    return TemplateResponse(request, "inboxen/stats.html", {"object": stat, "first_stat": first_stat})
 
 
 def stats_recent(request):

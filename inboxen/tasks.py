@@ -29,7 +29,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.db.models import Avg, Count, F, Max, Min, StdDev, Sum
+from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When, IntegerField
 
 from pytz import utc
 from watson import search as watson_search
@@ -46,11 +46,19 @@ SEARCH_TIMEOUT = 60 * 30
 @transaction.atomic()
 def statistics():
     """Gather statistics about users and their inboxes"""
+    try:
+        last_stat = models.Statistic.objects.latest("date")
+    except models.Statistic.DoesNotExist:
+        last_stat = None
+
     # the keys of these dictionaries have awful names for historical reasons
     # don't change them unless you want to do a data migration
-
+    one_day_ago = datetime.now(utc) - timedelta(days=1)
     user_aggregate = {
         "count": Count("id"),
+        "new": Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())),
+        "with_inboxes": Sum(Case(When(inbox__isnull=False, then=1), output_field=IntegerField())),
+        "oldest_user": Min("date_joined"),
         "inbox_count__avg": Avg("inbox_count"),
         "inbox_count__sum": Sum("inbox_count"),
         "inbox_count__min": Min("inbox_count"),
@@ -66,13 +74,8 @@ def statistics():
         "email_count__stddev": StdDev("email_count"),
     }
 
+    # collect user and inbox stats
     users = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
-
-    # aggregate-if doesn't like JOINs - see https://github.com/henriquebastos/django-aggregate-if/issues/1
-    # so we'll just do a manual query
-    one_day_ago = datetime.now(utc) - timedelta(days=1)
-    users["new"] = get_user_model().objects.filter(date_joined__gte=one_day_ago).count()
-    users["with_inboxes"] = get_user_model().objects.filter(inbox__isnull=False).distinct().count()
 
     inboxes = {}
     for key in list(users.keys()):
@@ -85,11 +88,19 @@ def statistics():
 
     inboxes["total_possible"] = inboxes_possible * domain_count
 
+    # collect email state
     inbox_qs = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted).annotate(email_count=Count("email__id"))
     emails = inbox_qs.aggregate(**inbox_aggregate)
 
     inboxes["with_emails"] = inbox_qs.exclude(email_count=0).count()
+    inboxes["disowned"] = models.Inbox.objects.filter(user__isnull=True).count()
     emails["emails_read"] = models.Email.objects.filter(flags=models.Email.flags.read).count()
+
+    if last_stat:
+        email_diff = (emails["email_count__sum"] or 0) - (last_stat.emails["email_count__sum"] or 0)
+        emails["running_total"] = last_stat.emails["running_total"] + max(email_diff, 0)
+    else:
+        emails["running_total"] = emails["email_count__sum"] or 0
 
     stat = models.Statistic(
         users=users,

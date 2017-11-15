@@ -37,6 +37,40 @@ class StatsTestCase(test.TestCase):
     def test_no_exceptions(self):
         tasks.statistics.delay()
 
+        # run a second time, make sure fetching last stat doesn't cause errors
+        tasks.statistics.delay()
+
+    def test_running_total(self):
+        tasks.statistics.delay()
+        stats = models.Statistic.objects.get()
+        self.assertEqual(stats.emails["email_count__sum"], None)
+        self.assertEqual(stats.emails["running_total"], 0)
+
+        stats.delete()
+
+        inbox = factories.InboxFactory()
+        factories.EmailFactory.create_batch(2)
+
+        # first count
+        tasks.statistics.delay()
+        stats = models.Statistic.objects.get()
+        self.assertEqual(stats.emails["email_count__sum"], 2)
+        self.assertEqual(stats.emails["running_total"], 2)
+
+        # running total should not have gone down
+        models.Email.objects.first().delete()
+        tasks.statistics.delay()
+        stats = models.Statistic.objects.latest("date")
+        self.assertEqual(stats.emails["email_count__sum"], 1)
+        self.assertEqual(stats.emails["running_total"], 2)
+
+        # running total should now increase
+        factories.EmailFactory()
+        tasks.statistics.delay()
+        stats = models.Statistic.objects.latest("date")
+        self.assertEqual(stats.emails["email_count__sum"], 2)
+        self.assertEqual(stats.emails["running_total"], 3)
+
 
 class CleanSessionsTestCase(test.TestCase):
     def test_sessions_deleted(self):
