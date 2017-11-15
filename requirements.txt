@@ -27,7 +27,6 @@ pillow
 premailer
 progress
 psycopg2
-python-daemon<1.7
 pytz
-salmon-mail==2
+git+https://github.com/moggers87/salmon@7cb96c40a9e038ceefb7f25d8f5010b82a6a23fd#egg=salmon
 simplejson
