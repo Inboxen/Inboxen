@@ -57,7 +57,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                check_output([self.salmon_bin, 'start', '-pid', handler['pid'], '-boot', handler['boot']], cwd='router')
+                check_output([self.salmon_bin, 'start', '--pid', handler['pid'], '--boot', handler['boot']], cwd='router')
                 output.append(name % handler['boot'][7:])
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
@@ -68,7 +68,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                output.append(check_output([self.salmon_bin, 'stop', '-pid', handler['pid']], cwd='router'))
+                output.append(check_output([self.salmon_bin, 'stop', '--pid', handler['pid']], cwd='router'))
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 
@@ -78,7 +78,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                output.append(check_output([self.salmon_bin, 'status', '-pid', handler['pid']], cwd='router'))
+                output.append(check_output([self.salmon_bin, 'status', '--pid', handler['pid']], cwd='router'))
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 

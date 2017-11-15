@@ -8,6 +8,7 @@
   * Store join date of oldest user in stats
   * Calculate disowned inboxes
   * Calculate `new` & `with_inboxes` via aggregate
+* Update to the latest Salmon (#233)
 * Properly remove Wagtail as a dependency (#254)
 
 ## Releases

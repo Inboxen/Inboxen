@@ -47,7 +47,12 @@ def forward_to_admins(message, local=None, domain=None):
         # log and swallow the message
         log.warning("Detected message bounce %s, subject: %s", message, message["Subject"])
         return
-    Relay().deliver(message, To=[m[1] for m in settings.ADMINS], From=settings.SERVER_EMAIL)
+
+    try:
+        Relay().deliver(message, To=[m[1] for m in settings.ADMINS], From=settings.SERVER_EMAIL)
+    except Exception as excp:
+        log.exception("Error while forwarding admin message %s: %s", id(message), excp)
+        raise SMTPError(450, "Error while forwarding admin message %s" % id(message))
 
 
 @route(r"(inbox)@(domain)", inbox=INBOX_REGEX, domain=r".+")
