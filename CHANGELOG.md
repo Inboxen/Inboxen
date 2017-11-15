@@ -10,6 +10,7 @@
   * Calculate `new` & `with_inboxes` via aggregate
 * Update to the latest Salmon (#233)
 * Properly remove Wagtail as a dependency (#254)
+* Increase default Inbox length (#226)
 
 ## Releases
 
