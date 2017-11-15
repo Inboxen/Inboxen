@@ -184,7 +184,9 @@ class RouterTestCase(test.TestCase):
         Router.load(['app.server'])
 
         with mock.patch("router.app.server.Relay") as relay_mock, \
-                mock.patch("router.app.server.make_email") as mock_make_email:
+                mock.patch("router.app.server.make_email") as mock_make_email, \
+                mock.patch("salmon.server.smtplib.SMTP") as smtp_mock:
+
             deliver_mock = mock.Mock()
             relay_mock.return_value.deliver = deliver_mock
             message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
@@ -195,8 +197,8 @@ class RouterTestCase(test.TestCase):
             self.assertEqual(deliver_mock.call_count, 0)
 
             mock_make_email.reset_mock()
-            relay_mock.reset_mock();
-            deliver_mock.reset_mock();
+            relay_mock.reset_mock()
+            deliver_mock.reset_mock()
             message = MailRequest("locahost", "test@localhost", "root@localhost", TEST_MSG)
             Router.deliver(message)
 
@@ -206,11 +208,27 @@ class RouterTestCase(test.TestCase):
             self.assertEqual(message, deliver_mock.call_args[0][0])
 
             mock_make_email.reset_mock()
-            relay_mock.reset_mock();
-            deliver_mock.reset_mock();
+            relay_mock.reset_mock()
+            deliver_mock.reset_mock()
             message = MailRequest("locahost", "test@localhost", "root1@localhost", TEST_MSG)
-            with self.assertRaises(SMTPError):
+            with self.assertRaises(SMTPError) as excp:
                 Router.deliver(message)
+            self.assertEqual(excp.exception.code, 550)
+            self.assertEqual(excp.exception.message, "No such address")
+
+            self.assertEqual(mock_make_email.call_count, 0)
+            self.assertEqual(relay_mock.call_count, 0)
+            self.assertEqual(deliver_mock.call_count, 0)
+
+            mock_make_email.reset_mock()
+            relay_mock.reset_mock()
+            deliver_mock.reset_mock()
+            smtp_mock.return_value.sendmail.side_effect = Exception()
+            message = MailRequest("locahost", "test@localhost", "root@localhost", TEST_MSG)
+            with self.assertRaises(SMTPError) as excp:
+                Router.deliver(message)
+            self.assertEqual(excp.exception.code, 450)
+            self.assertEqual(excp.exception.message, "Error while forwarding admin message %s" % id(message))
 
             self.assertEqual(mock_make_email.call_count, 0)
             self.assertEqual(relay_mock.call_count, 0)

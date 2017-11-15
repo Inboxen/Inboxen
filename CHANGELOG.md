@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Update to the latest Salmon (#233)
 * Properly remove Wagtail as a dependency (#254)
 
 ## Releases
