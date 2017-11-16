@@ -9,8 +9,6 @@ This is the complete system with everything you need to set up Inboxen.
 Join us in our IRC channel! We're in the #inboxen channel on
 [MegNet](https://www.megworld.co.uk/irc/)
 
-See also: <https://etherpad.mozilla.org/inboxen>
-
 GPG keys
 --------
 
