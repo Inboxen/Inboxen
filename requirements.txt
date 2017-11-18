@@ -5,7 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 -e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=sudo
--e git+https://github.com/moggers87/salmon@7cb96c40a9e038ceefb7f25d8f5010b82a6a23fd#egg=salmon
+-e git+https://github.com/moggers87/salmon@f8896bb985f896c3d1f05bbafeb6bb626cf4bccf#egg=salmon
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 babel==2.5.1              # via django-phonenumber-field
