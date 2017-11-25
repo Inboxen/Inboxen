@@ -136,7 +136,7 @@ def _clean_html_body(request, email, body, charset):
         link.attrib["rel"] = "noreferrer"
 
     # finally, export to unicode
-    body = unicode_damnit(etree.tostring(html_tree), charset)
+    body = unicode_damnit(etree.tostring(html_tree, method="html"), charset)
     return safestring.mark_safe(body)
 
 

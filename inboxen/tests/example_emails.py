@@ -2440,3 +2440,9 @@ s+PN63nlOtiyy8KEqWnI
 --=-8OGUbXGGezXx/m8jI4KD--
 
 """
+
+
+LONELY_ANCHOR_TAG = """<a href="https://example.com">"""
+
+
+EMPTY_ANCHOR_TAG = """<a href="https://example.com"></a>"""
