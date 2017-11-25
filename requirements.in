@@ -23,6 +23,7 @@ factory-boy
 jsmin
 lxml
 markdown-newtab
+mock
 pillow
 phonenumberslite
 pip-tools
