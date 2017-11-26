@@ -11,7 +11,7 @@ def calc_running_total(apps, schema_editor):
     last_sum = 0
     stats = Statistic.objects.order_by("date")
     for obj in stats:
-        current = obj.emails["email_count__sum"] or 0
+        current = obj.emails.get("email_count__sum", 0)
         diff = current - last_sum
         diff = max(diff, 0)
         total += diff
