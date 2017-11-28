@@ -33,11 +33,13 @@ from inboxen.tests.example_emails import (
     BODILESS_BODY,
     BODY,
     CHARSETLESS_BODY,
+    EMPTY_ANCHOR_TAG,
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_PREMIME_EMAIL,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
+    LONELY_ANCHOR_TAG,
     METALESS_BODY,
     UNSUPPORTED_CSS_BODY,
 )
@@ -459,6 +461,22 @@ class UtilityTestCase(test.TestCase):
             returned_body = email_utils._clean_html_body(None, email, UNSUPPORTED_CSS_BODY, "ascii")
             self.assertEqual(msg_mock.info.call_count, 1)
         self.assertIsInstance(returned_body, unicode)
+
+    def test_clean_html_balance_tags_when_closing_tag_missing(self):
+        email = {"display_images": True, "eid": "abc"}
+        expected_html = """<a href="/click/?url=https%3A//example.com" target="_blank" rel="noreferrer"></a>"""
+
+        # unbalanced tags should be given a closing tag
+        returned_body = email_utils._clean_html_body(None, email, LONELY_ANCHOR_TAG, "ascii")
+        self.assertEqual(returned_body, expected_html)
+
+    def test_clean_html_no_strip_closing_tags_when_empty(self):
+        email = {"display_images": True, "eid": "abc"}
+        expected_html = """<a href="/click/?url=https%3A//example.com" target="_blank" rel="noreferrer"></a>"""
+
+        # empty tags should not have their closing tag removed
+        returned_body = email_utils._clean_html_body(None, email, EMPTY_ANCHOR_TAG, "ascii")
+        self.assertEqual(returned_body, expected_html)
 
     def test_render_body_bad_encoding(self):
         email = {"display_images": True, "eid": "abc"}

@@ -12,6 +12,7 @@
 * Properly remove Wagtail as a dependency (#254)
 * Pin Python dependencies with `pip-tools` (#251)
 * Increase default Inbox length (#226)
+* Make sure we have valid HTML when displaying emails (#269)
 
 ## Releases
 
