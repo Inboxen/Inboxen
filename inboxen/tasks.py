@@ -56,33 +56,41 @@ def statistics():
     # don't change them unless you want to do a data migration
     one_day_ago = datetime.now(utc) - timedelta(days=1)
     user_aggregate = {
-        "count": Count("id"),
-        "new": Coalesce(Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())), 0),
-        "with_inboxes": Coalesce(Sum(Case(When(inbox__isnull=False, then=1), output_field=IntegerField())), 0),
+        "count": Count("id", distinct=True),
+        "new": Coalesce(Count(
+            Case(
+                When(date_joined__gte=one_day_ago, then=F("id")),
+            ),
+            distinct=True,
+        ), 0),
         "oldest_user_joined": Min("date_joined"),
-        "inbox_count__avg": Coalesce(Avg("inbox_count"), 0),
-        "inbox_count__sum": Coalesce(Sum("inbox_count"), 0),
-        "inbox_count__min": Coalesce(Min("inbox_count"), 0),
-        "inbox_count__max": Coalesce(Max("inbox_count"), 0),
-        "inbox_count__stddev": Coalesce(StdDev("inbox_count"), 0),
+        "with_inboxes": Coalesce(Count(
+            Case(
+                When(inbox__isnull=False, then=F("id")),
+            ),
+            distinct=True,
+        ), 0),
     }
 
     inbox_aggregate = {
+        "inbox_count__avg": Coalesce(Avg("inbox_count"), 0),
+        "inbox_count__max": Coalesce(Max("inbox_count"), 0),
+        "inbox_count__min": Coalesce(Min("inbox_count"), 0),
+        "inbox_count__stddev": Coalesce(StdDev("inbox_count"), 0),
+        "inbox_count__sum": Coalesce(Sum("inbox_count"), 0),
+    }
+
+    email_aggregate = {
         "email_count__avg": Coalesce(Avg("email_count"), 0),
-        "email_count__sum": Coalesce(Sum("email_count"), 0),
-        "email_count__min": Coalesce(Min("email_count"), 0),
         "email_count__max": Coalesce(Max("email_count"), 0),
+        "email_count__min": Coalesce(Min("email_count"), 0),
         "email_count__stddev": Coalesce(StdDev("email_count"), 0),
+        "email_count__sum": Coalesce(Sum("email_count"), 0),
     }
 
     # collect user and inbox stats
-    users = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**user_aggregate)
-
-    inboxes = {}
-    for key in list(users.keys()):
-        if key.startswith("inbox"):
-            inboxes[key] = users[key]
-            del users[key]
+    users = get_user_model().objects.aggregate(**user_aggregate)
+    inboxes = get_user_model().objects.annotate(inbox_count=Count("inbox__id")).aggregate(**inbox_aggregate)
 
     domain_count = models.Domain.objects.available(None).count()
     inboxes_possible = len(settings.INBOX_CHOICES) ** settings.INBOX_LENGTH
@@ -91,7 +99,7 @@ def statistics():
 
     # collect email state
     inbox_qs = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted).annotate(email_count=Count("email__id"))
-    emails = inbox_qs.aggregate(**inbox_aggregate)
+    emails = inbox_qs.aggregate(**email_aggregate)
 
     inboxes["with_emails"] = inbox_qs.exclude(email_count=0).count()
     inboxes["disowned"] = models.Inbox.objects.filter(user__isnull=True).count()
