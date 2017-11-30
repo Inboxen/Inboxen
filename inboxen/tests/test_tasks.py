@@ -32,18 +32,30 @@ from inboxen.utils import override_settings
 
 
 class StatsTestCase(test.TestCase):
-    """Test flag tasks"""
-    # only testing that it doesn't raise an exception atm
     def test_no_exceptions(self):
         tasks.statistics.delay()
 
         # run a second time, make sure fetching last stat doesn't cause errors
         tasks.statistics.delay()
 
+    def test_all_zeroes(self):
+        tasks.statistics.delay()
+        stats = models.Statistic.objects.get()
+        for key, value in stats.users.items():
+            if key in ["oldest_user_joined"]:
+                continue
+            self.assertEqual(value, 0, key)
+
+        for key, value in stats.inboxes.items():
+            self.assertEqual(value, 0, key)
+
+        for key, value in stats.emails.items():
+            self.assertEqual(value, 0, key)
+
     def test_running_total(self):
         tasks.statistics.delay()
         stats = models.Statistic.objects.get()
-        self.assertEqual(stats.emails["email_count__sum"], None)
+        self.assertEqual(stats.emails["email_count__sum"], 0)
         self.assertEqual(stats.emails["running_total"], 0)
 
         stats.delete()

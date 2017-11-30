@@ -30,6 +30,7 @@ from django.core import mail
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When, IntegerField
+from django.db.models.functions import Coalesce
 
 from pytz import utc
 from watson import search as watson_search
@@ -56,22 +57,22 @@ def statistics():
     one_day_ago = datetime.now(utc) - timedelta(days=1)
     user_aggregate = {
         "count": Count("id"),
-        "new": Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())),
-        "with_inboxes": Sum(Case(When(inbox__isnull=False, then=1), output_field=IntegerField())),
-        "oldest_user": Min("date_joined"),
-        "inbox_count__avg": Avg("inbox_count"),
-        "inbox_count__sum": Sum("inbox_count"),
-        "inbox_count__min": Min("inbox_count"),
-        "inbox_count__max": Max("inbox_count"),
-        "inbox_count__stddev": StdDev("inbox_count"),
+        "new": Coalesce(Sum(Case(When(date_joined__gte=one_day_ago, then=1), output_field=IntegerField())), 0),
+        "with_inboxes": Coalesce(Sum(Case(When(inbox__isnull=False, then=1), output_field=IntegerField())), 0),
+        "oldest_user_joined": Min("date_joined"),
+        "inbox_count__avg": Coalesce(Avg("inbox_count"), 0),
+        "inbox_count__sum": Coalesce(Sum("inbox_count"), 0),
+        "inbox_count__min": Coalesce(Min("inbox_count"), 0),
+        "inbox_count__max": Coalesce(Max("inbox_count"), 0),
+        "inbox_count__stddev": Coalesce(StdDev("inbox_count"), 0),
     }
 
     inbox_aggregate = {
-        "email_count__avg": Avg("email_count"),
-        "email_count__sum": Sum("email_count"),
-        "email_count__min": Min("email_count"),
-        "email_count__max": Max("email_count"),
-        "email_count__stddev": StdDev("email_count"),
+        "email_count__avg": Coalesce(Avg("email_count"), 0),
+        "email_count__sum": Coalesce(Sum("email_count"), 0),
+        "email_count__min": Coalesce(Min("email_count"), 0),
+        "email_count__max": Coalesce(Max("email_count"), 0),
+        "email_count__stddev": Coalesce(StdDev("email_count"), 0),
     }
 
     # collect user and inbox stats
