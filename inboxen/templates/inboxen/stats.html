@@ -34,10 +34,12 @@
                 <th>{% trans "New users today" %}</th>
                 <td>{{ object.users.new|intcomma }}</td>
             </tr>
+            {% if object.users.oldest_user %}
             <tr>
                 <th>{% trans "Oldest user account" %}</th>
-                <td>{{ object.users.oldest_user }}</td>
+                <td>{{ object.users.oldest_user_joined }}</td>
             </tr>
+            {% endif %}
         </table>
     </div>
     <div class="col-xs-12 col-md-4">
