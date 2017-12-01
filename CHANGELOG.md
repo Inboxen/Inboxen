@@ -2,6 +2,10 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2017-12-01
+
 * Update stats task
   * Display a running total of emails processed on stats page
   * Remove standard deviation stat, it didn't actually mean anything for our dataset
@@ -13,8 +17,6 @@
 * Pin Python dependencies with `pip-tools` (#251)
 * Increase default Inbox length (#226)
 * Make sure we have valid HTML when displaying emails (#269)
-
-## Releases
 
 ### Deploy for 2017-11-13
 
