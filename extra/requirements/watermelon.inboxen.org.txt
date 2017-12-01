@@ -35,7 +35,7 @@ django-phonenumber-field==1.3.0  # via django-two-factor-auth
 django-ratelimit-backend==1.2
 django-sendfile==0.3.11
 django-two-factor-auth==1.6.2
-django-watson==1.4.3
+django-watson==1.4.4
 django==1.11.7
 dnspython==1.15.0
 docutils==0.14            # via python-daemon
@@ -50,7 +50,7 @@ ipython-genutils==0.2.0   # via traitlets
 ipython==5.5.0
 jsmin==2.2.2
 kombu==3.0.37             # via celery
-lmtpd==5
+lmtpd==6.0.0
 lockfile==0.12.2          # via python-daemon
 lxml==4.1.1
 markdown-newtab==0.2.0
@@ -63,7 +63,7 @@ pexpect==4.3.0            # via ipython
 phonenumberslite==8.8.6
 pickleshare==0.7.4        # via ipython
 pillow==4.3.0
-pip-tools==1.10.2
+pip-tools==1.11.0
 premailer==3.1.1
 progress==1.3
 prompt-toolkit==1.0.15    # via ipython
