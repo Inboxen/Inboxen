@@ -52,6 +52,44 @@ class StatsTestCase(test.TestCase):
         for key, value in stats.emails.items():
             self.assertEqual(value, 0, key)
 
+    def test_counts(self):
+        # test all the counting is done correctly
+        domain = factories.DomainFactory()
+
+        # user 1
+        user1 = factories.UserFactory()
+        inbox11 = factories.InboxFactory(domain=domain, user=user1)
+        inbox12 = factories.InboxFactory(domain=domain, user=user1)
+        factories.EmailFactory.create_batch(2, inbox=inbox11)
+        factories.EmailFactory.create_batch(2, inbox=inbox12)
+
+        # user 2
+        user2 = factories.UserFactory()
+        inbox21 = factories.InboxFactory(domain=domain, user=user2)
+        inbox22 = factories.InboxFactory(domain=domain, user=user2)
+        factories.EmailFactory.create_batch(2, inbox=inbox21)
+        factories.EmailFactory.create_batch(2, inbox=inbox22)
+
+        # user 3
+        factories.UserFactory()
+
+        tasks.statistics.delay()
+        stats = models.Statistic.objects.get()
+
+        self.assertEqual(stats.users["count"], 3)
+        self.assertEqual(stats.users["new"], 3)
+        self.assertEqual(stats.users["with_inboxes"], 2)
+
+        self.assertEqual(stats.inboxes["inbox_count__sum"], 4)
+        self.assertEqual(stats.inboxes["inbox_count__max"], 2)
+        self.assertEqual(stats.inboxes["inbox_count__min"], 0)
+        self.assertEqual(stats.inboxes["inbox_count__avg"], 4.0/3)
+
+        self.assertEqual(stats.emails["email_count__sum"], 8)
+        self.assertEqual(stats.emails["email_count__max"], 2)
+        self.assertEqual(stats.emails["email_count__min"], 2)
+        self.assertEqual(stats.emails["email_count__avg"], 2)
+
     def test_running_total(self):
         tasks.statistics.delay()
         stats = models.Statistic.objects.get()
