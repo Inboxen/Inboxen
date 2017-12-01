@@ -68,7 +68,7 @@
                 <td>{{ object.inboxes.inbox_count__avg|floatformat:2 }}</td>
             </tr>
             <tr>
-                <th>{% trans "Highest number of inboxes per user" %}</th>
+                <th>{% trans "Highest number of inboxes for one user" %}</th>
                 <td>{{ object.inboxes.inbox_count__max|intcomma }}</td>
             </tr>
         </table>
@@ -95,7 +95,7 @@
                 <td>{{ object.emails.email_count__avg|floatformat:2 }}</td>
             </tr>
             <tr>
-                <th>{% trans "Highest number of emails per inbox" %}</th>
+                <th>{% trans "Highest number of emails in one inbox" %}</th>
                 <td>{{ object.emails.email_count__max|intcomma }}</td>
             </tr>
             <tr>
