@@ -2,9 +2,12 @@
 
 ## Pending
 
-* Fix issue with header names not being stored in the correct format (#275)
 
 ## Releases
+
+### Deploy for 2017-12-04
+
+* Fix issue with header names not being stored in the correct format (#275)
 
 ### Deploy for 2017-12-01
 
