@@ -5,7 +5,7 @@
 #    pip-compile --output-file requirements-dev.txt requirements-dev.in
 #
 -e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=sudo
--e git+https://github.com/moggers87/salmon@f8896bb985f896c3d1f05bbafeb6bb626cf4bccf#egg=salmon
+-e git+https://github.com/moggers87/salmon@ac18b5bde1bde9df2af382359333166b7e91ff62#egg=salmon
 alabaster==0.7.10         # via sphinx
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
@@ -26,11 +26,11 @@ django-assets==0.12
 django-async-messages==0.3.1
 django-bitfield==1.9.3
 django-bootstrap-form==3.3
-django-braces==1.11.0
+django-braces==1.12.0
 django-celery==3.2.2
 django-csp==3.3
 django-debug-toolbar==1.9.1
-django-extensions==1.9.7
+django-extensions==1.9.8
 django-formtools==2.1
 django-mptt==0.8.7
 django-otp==0.4.1.1
@@ -39,7 +39,7 @@ django-ratelimit-backend==1.2
 django-sendfile==0.3.11
 django-two-factor-auth==1.6.2
 django-watson==1.4.4
-django==1.11.7
+django==1.11.8
 dnspython==1.15.0
 docutils==0.14            # via python-daemon, sphinx
 enum34==1.1.6             # via flake8, traitlets
@@ -68,7 +68,7 @@ olefile==0.44             # via pillow
 pathlib2==2.3.0           # via ipython, pickleshare
 pbr==3.1.1                # via mock
 pexpect==4.3.0            # via ipython
-phonenumberslite==8.8.6
+phonenumberslite==8.8.7
 pickleshare==0.7.4        # via ipython
 pillow==4.3.0
 pip-tools==1.11.0

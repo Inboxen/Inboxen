@@ -5,7 +5,7 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 -e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=sudo
--e git+https://github.com/moggers87/salmon@f8896bb985f896c3d1f05bbafeb6bb626cf4bccf#egg=salmon
+-e git+https://github.com/moggers87/salmon@ac18b5bde1bde9df2af382359333166b7e91ff62#egg=salmon
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 babel==2.5.1              # via django-phonenumber-field
@@ -22,10 +22,10 @@ django-assets==0.12
 django-async-messages==0.3.1
 django-bitfield==1.9.3
 django-bootstrap-form==3.3
-django-braces==1.11.0
+django-braces==1.12.0
 django-celery==3.2.2
 django-csp==3.3
-django-extensions==1.9.7
+django-extensions==1.9.8
 django-formtools==2.1
 django-mptt==0.8.7
 django-otp==0.4.1.1
@@ -34,7 +34,7 @@ django-ratelimit-backend==1.2
 django-sendfile==0.3.11
 django-two-factor-auth==1.6.2
 django-watson==1.4.4
-django==1.11.7
+django==1.11.8
 dnspython==1.15.0
 docutils==0.14            # via python-daemon
 factory-boy==2.9.2
@@ -53,7 +53,7 @@ markdown==2.6.9
 mock==2.0.0
 olefile==0.44             # via pillow
 pbr==3.1.1                # via mock
-phonenumberslite==8.8.6
+phonenumberslite==8.8.7
 pillow==4.3.0
 pip-tools==1.11.0
 premailer==3.1.1
