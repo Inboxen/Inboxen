@@ -123,10 +123,9 @@ class SearchView(LoginRequiredMixin, generic.ListView):
 class SearchApiView(SearchView):
     """Check to see if a search is running or not"""
     def get(self, request, *args, **kwargs):
-        """Some WSGI implementations convert HEAD requests to GET requests.
+        return self.http_method_not_allowed(request, *args, **kwargs)
 
-        It's very annoying
-        """
+    def head(self, request, *args, **kwargs):
         self.query = self.get_query(request)
         result = cache.get(self.get_cache_key())
         if result is not None and "task" in result:
@@ -140,6 +139,3 @@ class SearchApiView(SearchView):
             return http.HttpResponse(status=201)  # 201: search results ready
         else:
             return http.HttpResponseBadRequest()  # 400: no search is being performed
-
-    def head(self, *args, **kwargs):
-        return self.get(*args, **kwargs)
