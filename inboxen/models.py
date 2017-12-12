@@ -31,6 +31,7 @@ from bitfield import BitField
 from mptt.models import MPTTModel, TreeForeignKey
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
+from inboxen import validators
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -95,7 +96,7 @@ class Liberation(models.Model):
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
-    _path = models.CharField(max_length=255, null=True, unique=True)
+    _path = models.CharField(max_length=255, null=True, unique=True, validators=[validators.ProhibitNullCharactersValidator()])
 
     def get_path(self):
         if self._path is None:
@@ -122,7 +123,7 @@ class Domain(models.Model):
 
     `owner` is the user who controls the domain
     """
-    domain = models.CharField(max_length=253, unique=True)
+    domain = models.CharField(max_length=253, unique=True, validators=[validators.ProhibitNullCharactersValidator()])
     enabled = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, default=None, on_delete=models.PROTECT)
 
@@ -145,12 +146,12 @@ class Inbox(models.Model):
       the inbox is viewed
     * "disabled" is a bit like "deleted", but incoming mail will be deffered, not rejected
     """
-    inbox = models.CharField(max_length=64)
+    inbox = models.CharField(max_length=64, validators=[validators.ProhibitNullCharactersValidator()])
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled", "pinned"), default=0)
-    description = models.CharField(max_length=256, null=True, blank=True)
+    description = models.CharField(max_length=256, null=True, blank=True, validators=[validators.ProhibitNullCharactersValidator()])
 
     objects = InboxQuerySet.as_manager()
 
@@ -177,7 +178,7 @@ class Request(models.Model):
     authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer",
         blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
-    result = models.CharField("comment", max_length=1024, blank=True, null=True)
+    result = models.CharField("comment", max_length=1024, blank=True, null=True, validators=[validators.ProhibitNullCharactersValidator()])
 
     def save(self, *args, **kwargs):
         if self.succeeded:
@@ -239,7 +240,7 @@ class Body(models.Model):
 
     This model expects and returns binary data, converting to and from unicode happens elsewhere
     """
-    hashed = models.CharField(max_length=80, unique=True)  # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True, validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
     data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
@@ -320,7 +321,7 @@ class HeaderName(models.Model):
 
     Limited to 78 characters
     """
-    name = models.CharField(max_length=78, unique=True)
+    name = models.CharField(max_length=78, unique=True, validators=[validators.ProhibitNullCharactersValidator()])
 
     def __unicode__(self):
         return self.name
@@ -331,8 +332,8 @@ class HeaderData(models.Model):
 
     RFC 2822 implies that header data may be infinite, may as well support it!
     """
-    hashed = models.CharField(max_length=80, unique=True)  # <algo>:<hash>
-    data = models.TextField()
+    hashed = models.CharField(max_length=80, unique=True, validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
+    data = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
 
     def __unicode__(self):
         return self.hashed

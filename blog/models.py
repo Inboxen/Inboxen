@@ -25,17 +25,19 @@ from django.utils import safestring
 from django_extensions.db.fields import AutoSlugField
 import markdown
 
+from inboxen import validators
+
 
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
-    subject = models.CharField(max_length=512)
-    body = models.TextField()
+    subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])
+    body = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
     date = models.DateTimeField('posted', null=True, blank=True, editable=False)
     modified = models.DateTimeField('modified', auto_now=True, editable=False)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)
 
-    slug = AutoSlugField(populate_from="subject", max_length=64)
+    slug = AutoSlugField(populate_from="subject", max_length=64, validators=[validators.ProhibitNullCharactersValidator()])
 
     @property
     def rendered_body(self):
