@@ -25,6 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from lxml.html.clean import Cleaner
 import markdown
 
+from inboxen import validators
 from tickets import managers
 
 
@@ -63,8 +64,8 @@ class Question(models.Model, RenderBodyMixin):
     date = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    subject = models.CharField(max_length=512)
-    body = models.TextField()
+    subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])
+    body = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
 
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=NEW, db_index=True)
 
@@ -94,7 +95,7 @@ class Response(models.Model, RenderBodyMixin):
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField(auto_now_add=True)
 
-    body = models.TextField()
+    body = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
 
     class Meta:
         ordering = ["date"]

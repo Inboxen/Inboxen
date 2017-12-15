@@ -29,6 +29,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from mptt.querysets import TreeQuerySet
 
 from cms.fields import RichTextField
+from inboxen import validators
 
 
 class HelpQuerySet(TreeQuerySet):
@@ -83,8 +84,8 @@ class HelpBasePage(HelpAbstractPage):
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-    title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    title = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
+    description = models.TextField(blank=True, validators=[validators.ProhibitNullCharactersValidator()])
 
     live = models.BooleanField(default=False)
     in_menu = models.BooleanField(default=False)
@@ -93,8 +94,8 @@ class HelpBasePage(HelpAbstractPage):
         related_name='cms_pages',
         on_delete=models.PROTECT,
     )
-    slug = models.SlugField(max_length=255)
-    url_cache = models.CharField(max_length=255, default="")
+    slug = models.SlugField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
+    url_cache = models.CharField(max_length=255, default="", validators=[validators.ProhibitNullCharactersValidator()])
 
     template = "cms/help_base.html"
 
@@ -242,7 +243,7 @@ class AppPage(HelpBasePage):
 
 
 class HelpPage(HelpBasePage):
-    body = RichTextField()
+    body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])
 
     template = "cms/help_page.html"
 
@@ -257,7 +258,7 @@ class HelpPage(HelpBasePage):
 ##
 
 class PeoplePage(HelpBasePage):
-    intro_paragraph = RichTextField(blank=True, help_text="Text at the top of the page")
+    intro_paragraph = RichTextField(blank=True, help_text="Text at the top of the page", validators=[validators.ProhibitNullCharactersValidator()])
 
     template = "cms/people_page.html"
 
@@ -270,8 +271,8 @@ class PeoplePage(HelpBasePage):
 class PersonInfo(models.Model):
     page = models.ForeignKey(PeoplePage, related_name="people", editable=False)
     ordinal = models.IntegerField(null=True, blank=True, editable=False)
-    name = models.CharField(max_length=255)
-    body = RichTextField()
+    name = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
+    body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])
     image = models.ForeignKey(
         "cms.Image",
         null=True,
@@ -285,14 +286,14 @@ class PersonInfo(models.Model):
 
 
 class Image(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
 
     file = models.ImageField(width_field="width", height_field="height")
     width = models.IntegerField(editable=False)
     height = models.IntegerField(editable=False)
 
     created = models.DateTimeField(auto_now_add=True)
-    collection = models.CharField(max_length=255)
+    collection = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
     uploaded_by_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,

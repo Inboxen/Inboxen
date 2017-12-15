@@ -209,8 +209,20 @@ class ModelTestCase(test.TestCase):
 
         self.assertEqual(header1[0].name_id, header2[0].name_id)
         self.assertEqual(header1[0].data_id, header2[0].data_id)
+        self.assertEqual(header1[0].name.name, name)
+        self.assertEqual(header1[0].data.data, data)
         self.assertTrue(header1[1])
         self.assertFalse(header2[1])
+
+    def test_header_null_bytes(self):
+        name = "X-Hello"
+        data = "Hewwo \x00 test"
+        body = models.Body.objects.create(data="Hello", hashed="fakehash")
+        part = models.PartList.objects.create(email=factories.EmailFactory(), body=body)
+
+        header, _ = part.header_set.create(name=name, data=data, ordinal=0)
+        self.assertNotEqual(header.data.data, data)
+        self.assertEqual(header.data.data, "Hewwo  test")
 
     def test_body_get_or_create(self):
         body_data = "Hello"

@@ -23,7 +23,7 @@ from django.core import urlresolvers
 import factory
 import factory.fuzzy
 
-from blog import models
+from blog import models, forms
 from inboxen.tests import factories
 
 BODY = """
@@ -98,3 +98,26 @@ class BlogTestCase(test.TestCase):
         self.assertEqual(response_rss.status_code, 200)
         self.assertEqual(response_atom.status_code, 200)
         self.assertNotEqual(response_rss.content, response_atom.content)
+
+    def test_admin_forms_for_null(self):
+        user = factories.UserFactory()
+
+        form = forms.CreateForm(user=user, data={"subject": "sub\x00ject", "body": "body"})
+        self.assertFalse(form.is_valid())
+
+        form = forms.CreateForm(user=user, data={"subject": "subject", "body": "bod\x00y"})
+        self.assertFalse(form.is_valid())
+
+        form = forms.CreateForm(user=user, data={"subject": "subject", "body": "body"})
+        self.assertTrue(form.is_valid())
+
+        post = form.save(commit=False)
+
+        form = forms.EditForm(instance=post, data={"subject": "sub\x00ject", "body": "body"})
+        self.assertFalse(form.is_valid())
+
+        form = forms.EditForm(instance=post, data={"subject": "subject", "body": "bod\x00y"})
+        self.assertFalse(form.is_valid())
+
+        form = forms.EditForm(instance=post, data={"subject": "subject", "body": "body"})
+        self.assertTrue(form.is_valid())

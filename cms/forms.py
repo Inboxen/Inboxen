@@ -40,15 +40,16 @@ class HelpBasePageForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(HelpBasePageForm, self).clean()
-        slug = cleaned_data["slug"]
-        parent = self.instance.parent
-        if parent:
-            siblings = parent.get_children()
-            if self.instance.pk:
-                siblings = siblings.exclude(pk=self.instance.pk)
+        if "slug" not in self.errors:  # "slug" won't be in cleaned_data if there was an error
+            slug = cleaned_data["slug"]
+            parent = self.instance.parent
+            if parent:
+                siblings = parent.get_children()
+                if self.instance.pk:
+                    siblings = siblings.exclude(pk=self.instance.pk)
 
-            if siblings.filter(slug=slug).exists():
-                raise forms.ValidationError({'slug': "Must be unique within siblings"})
+                if siblings.filter(slug=slug).exists():
+                    raise forms.ValidationError({'slug': "Must be unique within siblings"})
 
         return cleaned_data
 

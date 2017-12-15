@@ -142,6 +142,9 @@ class HeaderQuerySet(HashedQuerySet):
     def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
         from inboxen.models import HeaderName, HeaderData
 
+        # remove null "bytes"
+        data = data.replace("\x00", "")
+
         if hashed is None:
             hashed = self.hash_it(data)
 

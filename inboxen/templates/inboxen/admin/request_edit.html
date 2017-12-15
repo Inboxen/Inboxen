@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-{% if req.succeeded is None %}
+{% if succeeded is None %}
     {% if previous %}
         <p>{% blocktrans with date=previous.date %}
             A previous request for more inboxes was created on {{ date }}.

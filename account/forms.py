@@ -30,6 +30,7 @@ from sudo.forms import SudoForm
 from account import fields
 from account.tasks import delete_account
 from inboxen import models
+from inboxen import validators
 from inboxen.forms.mixins import PlaceHolderMixin
 
 __all__ = [
@@ -68,7 +69,14 @@ class DeleteAccountForm(forms.Form):
 class PlaceHolderAuthenticationForm(PlaceHolderMixin, AuthenticationForm):
     """Same as auth.forms.AuthenticationForm but adds a label as the placeholder
     in each field"""
-    pass
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+
+        validator = validators.ProhibitNullCharactersValidator()
+        validator(username)
+
+        return username
 
 
 class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
@@ -90,8 +98,13 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+
+        validator = validators.ProhibitNullCharactersValidator()
+        validator(username)
+
         if get_user_model().objects.filter(username__iexact=username).exists():
             raise exceptions.ValidationError(_("A user with that username already exists."), code='duplicate_username')
+
         return username
 
 
@@ -170,6 +183,10 @@ class UsernameChangeForm(PlaceHolderMixin, forms.Form):
 
     def clean_new_username1(self):
         username = self.cleaned_data.get('new_username1')
+
+        validator = validators.ProhibitNullCharactersValidator()
+        validator(username)
+
         if get_user_model().objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(_("This username is already taken"))
 
