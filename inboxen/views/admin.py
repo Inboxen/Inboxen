@@ -97,7 +97,9 @@ def request_admin_edit(request, request_pk):
         filter(requester_id=request_obj.requester_id, succeeded__isnull=False).\
         order_by("date").first()
 
-    if request.method == "POST" and request_obj.succeeded is None:
+    # form will edit Request.succedded, so copy what the database has first
+    succeeded = request_obj.succeeded
+    if request.method == "POST" and succeeded is None:
         form = EditRequestForm(data=request.POST, instance=request_obj, user=request.user)
         if form.is_valid():
             form.save()
@@ -107,8 +109,9 @@ def request_admin_edit(request, request_pk):
 
     context = {
         "form": form,
-        "req": request_obj,
         "previous": previous,
+        "req": request_obj,
+        "succeeded": succeeded,
     }
 
     return TemplateResponse(
