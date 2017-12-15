@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Prevent storing NULL in char and text fields (#274)
 
 ## Releases
 
