@@ -127,6 +127,10 @@ class UsernameChangeTestCase(test.TestCase):
         form = UsernameChangeForm(request, data=params)
         self.assertFalse(form.is_valid())
 
+        params = {"new_username1": "username\x00", "new_username2": "username\x00"}
+        form = UsernameChangeForm(request, data=params)
+        self.assertFalse(form.is_valid())
+
     def test_form_good_data(self):
         username = self.user.username
 

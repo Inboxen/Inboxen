@@ -210,13 +210,19 @@ class InboxAddTestCase(test.TestCase):
 
         # vaid domain
         domain_id = form.fields["domain"].queryset[0].id
-        form_data = {"domain": domain_id}
+        form_data = {"domain": domain_id, "description": "hello"}
         form = inboxen_forms.InboxAddForm(MockRequest(self.user), data=form_data)
         self.assertTrue(form.is_valid())
 
         # invalid domain
         domain_id = models.Domain.objects.filter(enabled=False)[0].id
-        form_data = {"domain": domain_id}
+        form_data = {"domain": domain_id, "description": "hello"}
+        form = inboxen_forms.InboxAddForm(MockRequest(self.user), data=form_data)
+        self.assertFalse(form.is_valid())
+
+        # null in description
+        domain_id = models.Domain.objects.filter(enabled=True)[0].id
+        form_data = {"domain": domain_id, "description": "hello\x00null"}
         form = inboxen_forms.InboxAddForm(MockRequest(self.user), data=form_data)
         self.assertFalse(form.is_valid())
 
@@ -290,6 +296,9 @@ class InboxEditTestCase(test.TestCase):
         self.assertIn("description", form.fields)
 
     def test_inbox_add_description(self):
+        response = self.client.post(self.get_url(), {"description": "nothing\x00 at all"})
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post(self.get_url(), {"description": "nothing at all"})
         self.assertEqual(response.status_code, 302)
 
@@ -327,10 +336,18 @@ class InboxInlineEditTestCase(test.TestCase):
         self.assertIn("description", form.fields)
 
     def test_inbox_add_description(self):
+        response = self.client.post(self.get_url(), {"description": "nothing\x00 at all"})
+        self.assertEqual(response.status_code, 200)
+
         response = self.client.post(self.get_url(), {"description": "nothing at all"})
         self.assertEqual(response.status_code, 204)
 
         self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
+
+    def test_not_found(self):
+        url = urlresolvers.reverse("form-inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
 
 class InboxEmailEditTestCase(test.TestCase):

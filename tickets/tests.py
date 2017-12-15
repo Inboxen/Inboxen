@@ -134,6 +134,20 @@ class QuestionViewTestCase(test.TestCase):
         self.assertIn("body", response.context["form"].errors)
         self.assertEqual(question_count, models.Question.objects.all().count())
 
+        # subject contains null
+        response = self.client.post(self.get_url(), {"subject": "Hello\x00!", "body": "This is the body of my question"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("subject", response.context["form"].errors)
+        self.assertNotIn("body", response.context["form"].errors)
+        self.assertEqual(question_count, models.Question.objects.all().count())
+
+        # body contains null
+        response = self.client.post(self.get_url(), {"subject": "Hello!", "body": "This is the body\x00 of my question"})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("subject", response.context["form"].errors)
+        self.assertIn("body", response.context["form"].errors)
+        self.assertEqual(question_count, models.Question.objects.all().count())
+
 
 class QuestionDetailTestCase(test.TestCase):
     def setUp(self):

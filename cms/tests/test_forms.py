@@ -88,6 +88,31 @@ class HelpBasePageForm(test.TestCase):
         form.cleaned_data["slug"] = page.parent.slug
         self.assertEqual(form.clean(), form.cleaned_data)
 
+    def test_null(self):
+        class TestForm(forms.HelpBasePageForm):
+            class Meta:
+                model = models.HelpBasePage
+                fields = ["title", "description", "slug"]
+
+        TestForm.model_ct = self.TestForm.model_ct
+        page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
+
+        # clean
+        form = TestForm(instance=page, data={"title": "title", "description": "desc", "slug": "slug"})
+        self.assertTrue(form.is_valid())
+
+        # title
+        form = TestForm(instance=page, data={"title": "title\x00", "description": "desc", "slug": "slug"})
+        self.assertFalse(form.is_valid())
+
+        # description
+        form = TestForm(instance=page, data={"title": "title", "description": "desc\x00", "slug": "slug"})
+        self.assertFalse(form.is_valid())
+
+        # slug
+        form = TestForm(instance=page, data={"title": "title", "description": "desc", "slug": "slug\x00"})
+        self.assertFalse(form.is_valid())
+
 
 class GetPageFormTestCase(test.TestCase):
     def test_valid_model(self):
