@@ -23,6 +23,8 @@ from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 
+from inboxen.utils.email import unicode_damnit
+
 
 @deconstructible
 class ProhibitNullCharactersValidator(object):
@@ -68,7 +70,7 @@ class ProhibitNullCharactersValidator(object):
             self.code = code
 
     def __call__(self, value):
-        if '\x00' in str(value):
+        if '\x00' in unicode_damnit(value):
             raise ValidationError(self.message, code=self.code)
 
     def __eq__(self, other):

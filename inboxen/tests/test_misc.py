@@ -28,8 +28,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 from django.core.cache import cache
-from django.core.exceptions import ImproperlyConfigured
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
@@ -40,6 +39,7 @@ from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
+from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
 
@@ -455,3 +455,22 @@ class StyleguideTestCase(test.TestCase):
             # url should no longer exist
             response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+
+class ProhibitNullCharactersValidatorTestCase(test.TestCase):
+    def test_null(self):
+        validator = ProhibitNullCharactersValidator()
+        with self.assertRaises(ValidationError):
+            validator("some \x00text")
+
+    def test_not_null(self):
+        validator = ProhibitNullCharactersValidator()
+        self.assertIsNone(validator("some text"))
+
+    def test_None(self):
+        validator = ProhibitNullCharactersValidator()
+        self.assertIsNone(validator(None))
+
+    def test_unicode(self):
+        validator = ProhibitNullCharactersValidator()
+        self.assertIsNone(validator(u"\ufffd"))
