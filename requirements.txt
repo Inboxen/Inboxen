@@ -5,17 +5,16 @@
 #    pip-compile --output-file requirements.txt requirements.in
 #
 -e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=sudo
--e git+https://github.com/moggers87/salmon@ac18b5bde1bde9df2af382359333166b7e91ff62#egg=salmon
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 babel==2.5.1              # via django-phonenumber-field
 billiard==3.3.0.23        # via celery
 celery==3.1.25
 certifi==2017.11.5        # via requests
-chardet==3.0.4            # via requests
+chardet==3.0.4            # via requests, salmon-mail
 click==6.7                # via pip-tools
 configobj==5.0.6
-cssselect==1.0.1          # via premailer
+cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
 django-annoying==0.10.4
 django-assets==0.12
@@ -36,7 +35,7 @@ django-sendfile==0.3.11
 django-two-factor-auth==1.7.0
 django-watson==1.5.0
 django==1.11.8
-dnspython==1.15.0
+dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 factory-boy==2.9.2
 faker==0.8.8              # via factory-boy
@@ -46,7 +45,7 @@ idna==2.6                 # via requests
 ipaddress==1.0.19         # via faker
 jsmin==2.2.2
 kombu==3.0.37             # via celery
-lmtpd==6.0.0
+lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.1.1
 markdown-newtab==0.2.0
@@ -60,13 +59,14 @@ pip-tools==1.11.0
 premailer==3.1.1
 progress==1.3
 psycopg2==2.7.3.2
-python-daemon==2.1.2
+python-daemon==2.1.2      # via salmon-mail
 python-dateutil==2.6.1    # via faker
 pytz==2017.3
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
+salmon-mail==3.0.0
 simplejson==3.13.2
-six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pip-tools, python-dateutil, qrcode
+six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pip-tools, python-dateutil, qrcode, salmon-mail
 text-unidecode==1.1       # via faker
 typing==3.6.2             # via django-extensions
 urllib3==1.22             # via requests

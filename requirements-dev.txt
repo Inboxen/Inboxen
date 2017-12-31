@@ -5,7 +5,6 @@
 #    pip-compile --output-file requirements-dev.txt requirements-dev.in
 #
 -e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=sudo
--e git+https://github.com/moggers87/salmon@ac18b5bde1bde9df2af382359333166b7e91ff62#egg=salmon
 alabaster==0.7.10         # via sphinx
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
@@ -14,11 +13,11 @@ backports.shutil-get-terminal-size==1.0.0  # via ipython
 billiard==3.3.0.23        # via celery
 celery==3.1.25
 certifi==2017.11.5        # via requests
-chardet==3.0.4            # via requests
+chardet==3.0.4            # via requests, salmon-mail
 click==6.7                # via pip-tools
 configobj==5.0.6
 configparser==3.5.0       # via flake8
-cssselect==1.0.1          # via premailer
+cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
 decorator==4.1.2          # via ipython, traitlets
 django-annoying==0.10.4
@@ -41,7 +40,7 @@ django-sendfile==0.3.11
 django-two-factor-auth==1.7.0
 django-watson==1.5.0
 django==1.11.8
-dnspython==1.15.0
+dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon, sphinx
 enum34==1.1.6             # via flake8, traitlets
 factory-boy==2.9.2
@@ -57,7 +56,7 @@ ipython==5.5.0
 jinja2==2.10              # via sphinx
 jsmin==2.2.2
 kombu==3.0.37             # via celery
-lmtpd==6.0.0
+lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.1.1
 markdown-newtab==0.2.0
@@ -81,15 +80,16 @@ ptyprocess==0.5.2         # via pexpect
 pycodestyle==2.3.1        # via flake8
 pyflakes==1.6.0           # via flake8
 pygments==2.2.0           # via ipython, sphinx
-python-daemon==2.1.2
+python-daemon==2.1.2      # via salmon-mail
 python-dateutil==2.6.1    # via faker
 pytz==2017.3
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer, sphinx
+salmon-mail==3.0.0
 scandir==1.6              # via pathlib2
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
-six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, sphinx, traitlets
+six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, sphinx, traitlets
 snowballstemmer==1.2.1    # via sphinx
 sphinx==1.6.5
 sphinxcontrib-websupport==1.0.1  # via sphinx
