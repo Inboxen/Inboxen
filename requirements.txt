@@ -64,7 +64,7 @@ python-dateutil==2.6.1    # via faker
 pytz==2017.3
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
-salmon-mail==3.0.0rc1
+salmon-mail==3.0.0
 simplejson==3.13.2
 six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pip-tools, python-dateutil, qrcode, salmon-mail
 text-unidecode==1.1       # via faker

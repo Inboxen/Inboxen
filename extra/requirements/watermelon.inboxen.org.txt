@@ -76,7 +76,7 @@ python-dateutil==2.6.1    # via faker
 pytz==2017.3
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
-salmon-mail==3.0.0rc1
+salmon-mail==3.0.0
 scandir==1.6              # via pathlib2
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
