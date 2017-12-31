@@ -31,5 +31,5 @@ premailer
 progress
 psycopg2
 pytz
--e git+https://github.com/moggers87/salmon@ac18b5bde1bde9df2af382359333166b7e91ff62#egg=salmon
+salmon-mail==3.0.0rc1
 simplejson
