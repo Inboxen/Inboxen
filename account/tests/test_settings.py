@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -117,31 +118,32 @@ class UsernameChangeTestCase(test.TestCase):
         return urlresolvers.reverse("user-username")
 
     def test_form_bad_data(self):
-        request = utils.MockRequest(self.user)
-
         params = {"new_username1": self.user.username, "new_username2": self.user.username}
-        form = UsernameChangeForm(request, data=params)
+        form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
 
         params = {"new_username1": self.user.username + "1", "new_username2": self.user.username}
-        form = UsernameChangeForm(request, data=params)
+        form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
 
         params = {"new_username1": "username\x00", "new_username2": "username\x00"}
-        form = UsernameChangeForm(request, data=params)
+        form = UsernameChangeForm(data=params)
+        self.assertFalse(form.is_valid())
+
+        params = {"new_username1": "usernameß", "new_username2": "usernameß"}
+        form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
 
     def test_form_good_data(self):
         username = self.user.username
 
-        params = {"new_username1": self.user.username + "1", "new_username2": self.user.username + "1"}
-        request = utils.MockRequest(self.user)
-        form = UsernameChangeForm(request, data=params)
+        params = {"username": self.user.username + "1", "username2": self.user.username + "1"}
+        form = UsernameChangeForm(data=params)
 
         self.assertTrue(form.is_valid())
         form.save()
 
-        new_user = get_user_model().objects.get(pk=form.user.pk)
+        new_user = get_user_model().objects.get(pk=form.instance.pk)
         self.assertEqual(new_user.username, username + "1")
 
     def test_get(self):

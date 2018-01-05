@@ -58,15 +58,13 @@ class LowerCaseUsernameTestCase(test.TestCase):
         self.assertTrue(form.is_valid())
 
     def test_change_fail(self):
-        params = {"new_username1": "ISDABIZDA", "new_username2": "ISDABIZDA"}
-        request = utils.MockRequest(self.user)
-        form = forms.UsernameChangeForm(request, data=params)
+        params = {"username": "ISDABIZDA", "username2": "ISDABIZDA"}
+        form = forms.UsernameChangeForm(data=params)
 
         self.assertFalse(form.is_valid())
 
     def test_change_pass(self):
-        params = {"new_username1": "hello1", "new_username2": "hello1"}
-        request = utils.MockRequest(self.user)
-        form = forms.UsernameChangeForm(request, data=params)
+        params = {"username": "hello1", "username2": "hello1"}
+        form = forms.UsernameChangeForm(data=params)
 
         self.assertTrue(form.is_valid())
