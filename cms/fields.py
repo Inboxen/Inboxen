@@ -29,6 +29,7 @@ from cms.widgets import RichTextInput
 # easy enough to do DEFAULT_BLAH + ["new value"]
 DEFAULT_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre", "code"]
 DEFAULT_SAFE_ATTRS = ["href"]
+DEFAULT_MARKDOWN_EXTENSIONS = []
 
 
 class HTML(unicode):
@@ -36,11 +37,12 @@ class HTML(unicode):
     # rest of Django, but still has a nice render method. Avoids having to
     # write masses of conversion methods to make sure the database gets an
     # object type it understands.
-    def __new__(cls, text, allow_tags, safe_attrs):
+    def __new__(cls, text, allow_tags, safe_attrs, extensions):
         # call unicode directly, because super(HTML, HTML) will look wrong
         text = unicode.__new__(cls, text)
         text.allow_tags = allow_tags
         text.safe_attrs = safe_attrs
+        text.extensions = extensions
 
         return text
 
@@ -55,7 +57,8 @@ class HTML(unicode):
             remove_unknown_tags=False,
             safe_attrs_only=True,
         )
-        text = markdown.markdown(self)
+        markdown_obj = markdown.Markdown(extensions=self.extensions)
+        text = markdown_obj.convert(self)
         text = cleaner.clean_html(text)
         return safestring.mark_safe(text)
 
@@ -72,7 +75,7 @@ class TextDescriptor(object):
             text = getattr(instance, self.field.name)
 
         if type(text) != HTML:
-            text = HTML(text, allow_tags=self.field.allow_tags, safe_attrs=self.field.safe_attrs)
+            text = HTML(text, allow_tags=self.field.allow_tags, safe_attrs=self.field.safe_attrs, extensions=self.field.extensions)
             instance.__dict__[self.field.name] = text
             return text
         else:
@@ -86,6 +89,7 @@ class RichTextField(models.TextField):
     def __init__(self, **kwargs):
         self.allow_tags = kwargs.pop("allow_tags", DEFAULT_ALLOW_TAGS)
         self.safe_attrs = kwargs.pop("safe_attrs", DEFAULT_SAFE_ATTRS)
+        self.extensions = kwargs.pop("extensions", DEFAULT_MARKDOWN_EXTENSIONS)
 
         super(RichTextField, self).__init__(**kwargs)
 
@@ -102,6 +106,9 @@ class RichTextField(models.TextField):
 
         if self.safe_attrs != DEFAULT_SAFE_ATTRS:
             kwargs["safe_attrs"] = self.safe_attrs
+
+        if self.extensions != DEFAULT_MARKDOWN_EXTENSIONS:
+            kwargs["extensions"] = self.extensions
 
         return name, path, args, kwargs
 
