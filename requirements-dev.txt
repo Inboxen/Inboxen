@@ -59,7 +59,6 @@ kombu==3.0.37             # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.1.1
-markdown-newtab==0.2.0
 markdown==2.6.10
 markupsafe==1.0           # via jinja2
 mccabe==0.6.1             # via flake8
