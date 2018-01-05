@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.forms.widgets import TextInput
+from django.forms.widgets import Textarea
 
 
-class RichTextInput(TextInput):
+class RichTextInput(Textarea):
     template_name = 'cms/forms/widgets/rich_text.html'
