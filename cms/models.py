@@ -250,6 +250,7 @@ class AppPage(HelpBasePage):
 
 class HelpPage(HelpBasePage):
     body = RichTextField(
+        help_text=_("Markdown text, support the TOC extension."),
         validators=[validators.ProhibitNullCharactersValidator()],
         allow_tags=HELP_PAGE_TAGS,
         safe_attrs=HELP_PAGE_ATTRS,
@@ -271,7 +272,7 @@ class HelpPage(HelpBasePage):
 class PeoplePage(HelpBasePage):
     intro_paragraph = RichTextField(
         blank=True,
-        help_text=_("Text at the top of the page"),
+        help_text=_("Text at the top of the page. Supports standard markdown."),
         validators=[validators.ProhibitNullCharactersValidator()],
     )
 
