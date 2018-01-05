@@ -4,6 +4,7 @@
 
 * Prevent storing NULL in char and text fields (#274)
 * Update to the latest release of Salmon
+* Allow HTML headings in HelpPage bodies
 
 ## Releases
 
