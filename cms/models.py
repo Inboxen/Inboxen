@@ -24,6 +24,7 @@ from django.db import models
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
+from django.utils.translation import ugettext_lazy as _
 from markdown.extensions.toc import TocExtension
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
@@ -268,7 +269,11 @@ class HelpPage(HelpBasePage):
 ##
 
 class PeoplePage(HelpBasePage):
-    intro_paragraph = RichTextField(blank=True, help_text="Text at the top of the page", validators=[validators.ProhibitNullCharactersValidator()])
+    intro_paragraph = RichTextField(
+        blank=True,
+        help_text=_("Text at the top of the page"),
+        validators=[validators.ProhibitNullCharactersValidator()],
+    )
 
     template = "cms/people_page.html"
 
