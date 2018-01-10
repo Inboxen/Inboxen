@@ -118,21 +118,27 @@ class UsernameChangeTestCase(test.TestCase):
         return urlresolvers.reverse("user-username")
 
     def test_form_bad_data(self):
-        params = {"new_username1": self.user.username, "new_username2": self.user.username}
+        params = {"username": self.user.username, "username2": self.user.username}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors["username"], [u"A user with that username already exists."])
 
-        params = {"new_username1": self.user.username + "1", "new_username2": self.user.username}
-        form = UsernameChangeForm(data=params)
-        self.assertFalse(form.is_valid())
 
-        params = {"new_username1": "username\x00", "new_username2": "username\x00"}
+        params = {"username": self.user.username + "1", "username2": self.user.username}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors["username2"], [u"The two username fields don't match."])
 
-        params = {"new_username1": "usernameß", "new_username2": "usernameß"}
+        params = {"username": "username\x00".decode(), "username2": "username\x00".decode()}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors["username"], [u"Null characters are not allowed."])
+
+        params = {"username": "usernameß".decode("utf-8"), "username2": "usernameß".decode("utf-8")}
+        form = UsernameChangeForm(data=params)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors["username"],
+            [u"Enter a valid username. This value may contain only English letters, numbers, and @/./+/-/_ characters."])
 
     def test_form_good_data(self):
         username = self.user.username
