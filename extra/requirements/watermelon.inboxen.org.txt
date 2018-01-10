@@ -36,7 +36,7 @@ django-ratelimit-backend==1.2
 django-sendfile==0.3.11
 django-two-factor-auth==1.7.0
 django-watson==1.5.0
-django==1.11.8
+django==1.11.9
 dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 enum34==1.1.6             # via traitlets
@@ -53,15 +53,14 @@ kombu==3.0.37             # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.1.1
-markdown==2.6.10
+markdown==2.6.11
 mock==2.0.0
-olefile==0.44             # via pillow
 pathlib2==2.3.0           # via ipython, pickleshare
 pbr==3.1.1                # via mock
 pexpect==4.3.1            # via ipython
 phonenumberslite==8.8.8
 pickleshare==0.7.4        # via ipython
-pillow==4.3.0
+pillow==5.0.0
 pip-tools==1.11.0
 premailer==3.1.1
 progress==1.3
