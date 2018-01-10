@@ -51,11 +51,6 @@ class UsernameChangeView(LoginRequiredMixin, SudoMixin, generic.FormView):
     success_url = reverse_lazy("user-settings")
     template_name = "account/username.html"
 
-    def get_form_kwargs(self, **kwargs):
-        kwargs = super(UsernameChangeView, self).get_form_kwargs(**kwargs)
-        kwargs.setdefault("request", self.request)
-        return kwargs
-
     def form_valid(self, form, *args, **kwargs):
         form.save()
         return super(UsernameChangeView, self).form_valid(form=form, *args, **kwargs)

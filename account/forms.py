@@ -172,35 +172,31 @@ class SettingsForm(forms.Form):
         self.profile.save(update_fields=["flags", "prefered_domain"])
 
 
-class UsernameChangeForm(PlaceHolderMixin, forms.Form):
+class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
     """Change username"""
-    new_username1 = forms.CharField(label=_("New username"))
-    new_username2 = forms.CharField(label=_("Repeat new username"))
+    username2 = forms.CharField(label=_("Repeat new username"))
 
-    def __init__(self, request, *args, **kwargs):
-        self.user = request.user
-        super(UsernameChangeForm, self).__init__(*args, **kwargs)
+    class Meta:
+        model = get_user_model()
+        fields = ["username"]
+        labels = {"username": _("New username")}
+        help_texts = {"username": _("Letters, numbers, and the symbols @/./+/-/_ are allowed.")}
 
-    def clean_new_username1(self):
-        username = self.cleaned_data.get('new_username1')
+    def clean_username(self):
+        username = self.cleaned_data["username"]
 
         validator = validators.ProhibitNullCharactersValidator()
         validator(username)
 
         if get_user_model().objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError(_("This username is already taken"))
+            raise exceptions.ValidationError(_("A user with that username already exists."), code='duplicate_username')
 
         return username
 
-    def clean_new_username2(self):
-        username1 = self.cleaned_data.get('new_username1')
-        username2 = self.cleaned_data.get('new_username2')
+    def clean_username2(self):
+        username1 = self.cleaned_data.get('username')
+        username2 = self.cleaned_data.get('username2')
         if username1 and username2:
             if username1 != username2:
                 raise forms.ValidationError(_("The two username fields don't match."))
         return username2
-
-    def save(self):
-        username = self.cleaned_data["new_username1"]
-        self.user.username = username
-        self.user.save(update_fields=["username"])

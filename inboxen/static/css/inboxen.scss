@@ -236,8 +236,10 @@ a.soon {
     display: inline-block;
 }
 
-.wrap-words {
-    word-wrap: break-word;
+.attachment-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .btn-massive {
