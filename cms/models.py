@@ -24,12 +24,18 @@ from django.db import models
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
+from django.utils.translation import ugettext_lazy as _
+from markdown.extensions.toc import TocExtension
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.querysets import TreeQuerySet
 
-from cms.fields import RichTextField
+from cms.fields import RichTextField, DEFAULT_ALLOW_TAGS, DEFAULT_SAFE_ATTRS, DEFAULT_MARKDOWN_EXTENSIONS
 from inboxen import validators
+
+HELP_PAGE_TAGS = DEFAULT_ALLOW_TAGS + ["h%s" % i for i in xrange(1, 6)]
+HELP_PAGE_ATTRS = DEFAULT_SAFE_ATTRS + ["id"]
+HELP_PAGE_EXTENSIONS = DEFAULT_MARKDOWN_EXTENSIONS + [TocExtension(anchorlink=True)]
 
 
 class HelpQuerySet(TreeQuerySet):
@@ -243,7 +249,13 @@ class AppPage(HelpBasePage):
 
 
 class HelpPage(HelpBasePage):
-    body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])
+    body = RichTextField(
+        help_text=_("Markdown text, support the TOC extension."),
+        validators=[validators.ProhibitNullCharactersValidator()],
+        allow_tags=HELP_PAGE_TAGS,
+        safe_attrs=HELP_PAGE_ATTRS,
+        extensions=HELP_PAGE_EXTENSIONS,
+    )
 
     template = "cms/help_page.html"
 
@@ -258,7 +270,11 @@ class HelpPage(HelpBasePage):
 ##
 
 class PeoplePage(HelpBasePage):
-    intro_paragraph = RichTextField(blank=True, help_text="Text at the top of the page", validators=[validators.ProhibitNullCharactersValidator()])
+    intro_paragraph = RichTextField(
+        blank=True,
+        help_text=_("Text at the top of the page. Supports standard markdown."),
+        validators=[validators.ProhibitNullCharactersValidator()],
+    )
 
     template = "cms/people_page.html"
 

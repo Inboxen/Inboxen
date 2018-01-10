@@ -4,6 +4,7 @@
 
 * Prevent storing NULL in char and text fields (#274)
 * Update to the latest release of Salmon
+* Allow HTML headings in HelpPage bodies
 * Make sure user creation and username change forms use the same validation (#281)
 * Handle attachment name overflow properly (#273)
 * Update log config to include rate limit

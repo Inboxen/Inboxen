@@ -22,7 +22,6 @@ django-watson>=1.2.0
 factory-boy
 jsmin
 lxml
-markdown-newtab
 mock
 pillow
 phonenumberslite
