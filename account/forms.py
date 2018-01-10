@@ -193,7 +193,7 @@ class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
 
         return username
 
-    def clean_new_username2(self):
+    def clean_username2(self):
         username1 = self.cleaned_data.get('username')
         username2 = self.cleaned_data.get('username2')
         if username1 and username2:
