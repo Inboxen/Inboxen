@@ -2,6 +2,11 @@
 
 ## Pending
 
+
+## Releases
+
+### Deploy for 2018-01-16
+
 * Prevent storing NULL in char and text fields (#274)
 * Update to the latest release of Salmon
 * Allow HTML headings in HelpPage bodies
@@ -9,8 +14,6 @@
 * Handle attachment name overflow properly (#273)
 * Update log config to include rate limit
 * Use system fonts to avoid issues with bad substitutions of named fonts (#294)
-
-## Releases
 
 ### Deploy for 2017-12-04
 
