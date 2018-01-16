@@ -25,17 +25,27 @@ from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
-from markdown.extensions.toc import TocExtension
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.querysets import TreeQuerySet
 
-from cms.fields import RichTextField, DEFAULT_ALLOW_TAGS, DEFAULT_SAFE_ATTRS, DEFAULT_MARKDOWN_EXTENSIONS
+from cms.fields import (
+    DEFAULT_ALLOW_TAGS,
+    DEFAULT_MARKDOWN_EXTENSIONS,
+    DEFAULT_MARKDOWN_EXTENSION_CONFIGS,
+    DEFAULT_SAFE_ATTRS,
+    RichTextField,
+)
 from inboxen import validators
+
 
 HELP_PAGE_TAGS = DEFAULT_ALLOW_TAGS + ["h%s" % i for i in xrange(1, 6)]
 HELP_PAGE_ATTRS = DEFAULT_SAFE_ATTRS + ["id"]
-HELP_PAGE_EXTENSIONS = DEFAULT_MARKDOWN_EXTENSIONS + [TocExtension(anchorlink=True)]
+HELP_PAGE_EXTENSIONS = DEFAULT_MARKDOWN_EXTENSIONS + ["markdown.extensions.toc"]
+HELP_PAGE_EXTENSION_CONFIGS = {"markdown.extensions.toc": {"anchorlink": True}}
+# set default configs
+for k, v in DEFAULT_MARKDOWN_EXTENSION_CONFIGS.items():
+    HELP_PAGE_EXTENSION_CONFIGS.set_default(k, v)
 
 
 class HelpQuerySet(TreeQuerySet):

@@ -30,6 +30,7 @@ from cms.widgets import RichTextInput
 DEFAULT_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre", "code"]
 DEFAULT_SAFE_ATTRS = ["href"]
 DEFAULT_MARKDOWN_EXTENSIONS = []
+DEFAULT_MARKDOWN_EXTENSION_CONFIGS = {}
 
 
 class HTML(unicode):
@@ -37,12 +38,13 @@ class HTML(unicode):
     # rest of Django, but still has a nice render method. Avoids having to
     # write masses of conversion methods to make sure the database gets an
     # object type it understands.
-    def __new__(cls, text, allow_tags, safe_attrs, extensions):
+    def __new__(cls, text, allow_tags, safe_attrs, extensions=None, extension_configs=None):
         # call unicode directly, because super(HTML, HTML) will look wrong
         text = unicode.__new__(cls, text)
         text.allow_tags = allow_tags
         text.safe_attrs = safe_attrs
-        text.extensions = extensions
+        text.extensions = extensions or []
+        text.extension_configs = extension_configs or {}
 
         return text
 
@@ -57,7 +59,7 @@ class HTML(unicode):
             remove_unknown_tags=False,
             safe_attrs_only=True,
         )
-        markdown_obj = markdown.Markdown(extensions=self.extensions)
+        markdown_obj = markdown.Markdown(extensions=self.extensions, extension_configs=self.extension_configs)
         text = markdown_obj.convert(self)
         text = cleaner.clean_html(text)
         return safestring.mark_safe(text)
