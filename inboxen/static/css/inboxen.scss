@@ -1,8 +1,14 @@
-// override font vars
+// bootstrap/font awesome stuff
 $icon-font-path: "../../thirdparty/font-awesome/fonts/";
 $fa-font-path: "../../thirdparty/font-awesome/fonts/";
 $icon-font-name: "fontawesome-webfont";
 $icon-font-svg-id: "fontawesomeregular";
+
+// replace bootstrap's default font choices to OS font choices
+$font-family-sans-serif:  sans-serif;
+$font-family-serif:       serif;
+$font-family-monospace:   monospace;
+
 @import "bootstrap-sass/assets/stylesheets/bootstrap";
 @import "font-awesome/scss/font-awesome.scss";
 
