@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Add work-around for Django-Two-Factor-Auth bug in LoginView (#292)
 
 ## Releases
 
