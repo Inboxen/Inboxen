@@ -172,6 +172,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -219,7 +220,6 @@ INSTALLED_APPS = (
 )
 
 SILENCED_SYSTEM_CHECKS = [
-    "security.W003",  # we're using a 3rd party csrf package
     "security.W004",  # HSTS should be done via the HTTPd
     "security.W007",  # doesn't affect Firefox and Chrome?
 ]
