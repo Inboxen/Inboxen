@@ -5,6 +5,10 @@
 
 ## Releases
 
+### Deploy for 2018-01-18
+
+* Hotfix: Fix misconfiguration of CSRF
+
 ### Deploy for 2018-01-16
 
 * Prevent storing NULL in char and text fields (#274)
