@@ -221,7 +221,6 @@ INSTALLED_APPS = (
 
 SILENCED_SYSTEM_CHECKS = [
     "security.W004",  # HSTS should be done via the HTTPd
-    "security.W007",  # doesn't affect Firefox and Chrome?
 ]
 
 ROOT_URLCONF = 'inboxen.urls'
