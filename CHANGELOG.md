@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Set X-XSS-Protection to something other than its dangerous default (#297)
 
 ## Releases
 
