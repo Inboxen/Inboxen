@@ -174,6 +174,7 @@ MIDDLEWARE_CLASSES = (
     'async_messages.middleware.AsyncMiddleware',
     'inboxen.middleware.RateLimitMiddleware',
     'inboxen.middleware.ExtendSessionMiddleware',
+    'inboxen.middleware.MakeXSSFilterChromeSafeMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sudo.middleware.SudoMiddleware',
     'csp.middleware.CSPMiddleware',

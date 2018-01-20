@@ -36,7 +36,7 @@ from django.test.client import RequestFactory
 import mock
 
 from inboxen.management.commands import router, feeder, url_stats
-from inboxen.middleware import ExtendSessionMiddleware
+from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
 from inboxen.tests import factories, utils
 from inboxen.utils import is_reserved, override_settings
 from inboxen.validators import ProhibitNullCharactersValidator
@@ -474,3 +474,25 @@ class ProhibitNullCharactersValidatorTestCase(test.TestCase):
     def test_unicode(self):
         validator = ProhibitNullCharactersValidator()
         self.assertIsNone(validator(u"\ufffd"))
+
+
+class MakeXSSFilterChromeSafeMiddlewareTestCase(test.TestCase):
+    def test_middleware_before_security_middleware(self):
+        middleware = MakeXSSFilterChromeSafeMiddleware()
+        request = None  # ignored
+        response = {}  # "mock" header dict
+
+        response = middleware.process_response(request, response)
+        self.assertEqual(response["x-xss-protection"], "0")
+
+    def test_middleware_after_security_middleware(self):
+        middleware = MakeXSSFilterChromeSafeMiddleware()
+        request = None  # ignored
+        response = {"x-xss-protection": "1; mode=block"}  # "mock" header dict
+
+        response = middleware.process_response(request, response)
+        self.assertEqual(response["x-xss-protection"], "0")
+
+    def test_response(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-xss-protection"], "0")
