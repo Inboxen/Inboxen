@@ -474,3 +474,12 @@ class ProhibitNullCharactersValidatorTestCase(InboxenTestCase):
     def test_unicode(self):
         validator = ProhibitNullCharactersValidator()
         self.assertIsNone(validator(u"\ufffd"))
+
+
+class SSLRedirectTestCase(InboxenTestCase):
+    def test_redirect(self):
+        response = self.client.get("/", secure=False)
+        self.assertEqual(response.status_code, 301)
+
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
