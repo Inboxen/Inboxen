@@ -22,7 +22,6 @@ from email.message import Message
 from subprocess import CalledProcessError
 import sys
 
-from django import test
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -37,8 +36,9 @@ import mock
 
 from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware
-from inboxen.tests import factories, utils
-from inboxen.utils import is_reserved, override_settings
+from inboxen.tests import factories
+from inboxen.utils import is_reserved
+from inboxen.test import MockRequest, override_settings, InboxenTestCase
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -57,7 +57,7 @@ def reload_urlconf():
     return conf
 
 
-class LoginTestCase(test.TestCase):
+class LoginTestCase(InboxenTestCase):
     """Test various login things"""
     def setUp(self):
         super(LoginTestCase, self).setUp()
@@ -69,14 +69,14 @@ class LoginTestCase(test.TestCase):
         cache.clear()
 
     def test_logout_message(self):
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
         self.assertEqual(login, True)
 
         response = self.client.get(dj_settings.LOGOUT_URL, follow=True)
         self.assertIn("You are now logged out. Have a nice day!", response.content)
 
     def test_last_login(self):
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
         self.assertEqual(login, True)
 
         user = get_user_model().objects.get(id=self.user.id)
@@ -129,7 +129,7 @@ class LoginTestCase(test.TestCase):
         self.assertIn("sessionid", response.cookies)
 
 
-class IndexTestCase(test.TestCase):
+class IndexTestCase(InboxenTestCase):
     def test_index_page(self):
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
@@ -142,7 +142,7 @@ class IndexTestCase(test.TestCase):
 
     def test_index_page_logged_in(self):
         user = factories.UserFactory()
-        assert self.client.login(username=user.username, password="123456", request=utils.MockRequest(user))
+        assert self.client.login(username=user.username, password="123456", request=MockRequest(user))
 
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
@@ -154,12 +154,12 @@ class IndexTestCase(test.TestCase):
             self.assertNotIn("Join", response.content)
 
 
-class ExtendSessionMiddlewareTestCase(test.TestCase):
+class ExtendSessionMiddlewareTestCase(InboxenTestCase):
     middleware = ExtendSessionMiddleware()
 
     def test_get_set(self):
         user = factories.UserFactory()
-        request = utils.MockRequest(user)
+        request = MockRequest(user)
 
         # check that there is not a custom expiry set
         self.assertNotIn('_session_expiry', request.session)
@@ -177,7 +177,7 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
 
     def test_cycle_session(self):
         user = factories.UserFactory()
-        request = utils.MockRequest(user)
+        request = MockRequest(user)
 
         # session will expire in more than a week
         request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.75)
@@ -207,18 +207,18 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
 
     def test_with_anon(self):
         user = AnonymousUser()
-        request = utils.MockRequest(user)
+        request = MockRequest(user)
         self.middleware.process_request(request)
         self.assertFalse(request.session.modified)
 
 
-class UtilsTestCase(test.TestCase):
+class UtilsTestCase(InboxenTestCase):
     def test_reserved(self):
         self.assertTrue(is_reserved("root"))
         self.assertFalse(is_reserved("root1"))
 
 
-class FeederCommandTest(test.TestCase):
+class FeederCommandTest(InboxenTestCase):
     class MboxMock(dict):
         def __init__(self, *args, **kwargs):
             self._removed = {}
@@ -318,7 +318,7 @@ class FeederCommandTest(test.TestCase):
             self.assertFalse(smtp_mock.called)
 
 
-class UrlStatsCommandTest(test.TestCase):
+class UrlStatsCommandTest(InboxenTestCase):
     def test_command(self):
         with self.assertRaises(CommandError):
             # too few args
@@ -363,7 +363,7 @@ class UrlStatsCommandTest(test.TestCase):
         self.assertEqual(urls["unified-inbox"], 3)
 
 
-class RouterCommandTest(test.TestCase):
+class RouterCommandTest(InboxenTestCase):
     def test_command(self):
         with self.assertRaises(CommandError) as error:
             call_command("router")
@@ -406,7 +406,7 @@ class RouterCommandTest(test.TestCase):
         self.assertEqual(output, ["Starting Salmon handler: boot\n"])
 
 
-class ErrorViewTestCase(test.TestCase):
+class ErrorViewTestCase(InboxenTestCase):
     def test_view(self):
         view_func = ErrorView.as_view(
             error_message="some message or other",
@@ -433,7 +433,7 @@ class ErrorViewTestCase(test.TestCase):
             view_obj.get_error_code()
 
 
-class StyleguideTestCase(test.TestCase):
+class StyleguideTestCase(InboxenTestCase):
     def tearDown(self):
         # make sure URLConf is reset no matter what
         urlresolvers.clear_url_caches()
@@ -457,7 +457,7 @@ class StyleguideTestCase(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class ProhibitNullCharactersValidatorTestCase(test.TestCase):
+class ProhibitNullCharactersValidatorTestCase(InboxenTestCase):
     def test_null(self):
         validator = ProhibitNullCharactersValidator()
         with self.assertRaises(ValidationError):

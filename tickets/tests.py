@@ -28,8 +28,8 @@ import factory.fuzzy
 
 from cms.models import AppPage, HelpIndex
 from cms.utils import app_reverse
-from inboxen.tests import factories, utils
-from inboxen.utils import override_settings
+from inboxen.tests import factories
+from inboxen.test import override_settings, InboxenTestCase, MockRequest
 from tickets import models
 from tickets.templatetags import tickets_flags
 
@@ -61,7 +61,7 @@ class MiddlewareMock(object):
     pass
 
 
-class QuestionViewTestCase(test.TestCase):
+class QuestionViewTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionViewTestCase, self).setUp()
         self.user = factories.UserFactory()
@@ -72,7 +72,7 @@ class QuestionViewTestCase(test.TestCase):
 
         self.page = AppPage.objects.get(app="tickets.urls")
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -101,7 +101,7 @@ class QuestionViewTestCase(test.TestCase):
 
     def test_post_form_valid(self):
         params = {"subject": "Hello!", "body": "This is the body of my question"}
-        response = self.client.post(self.get_url(), params)
+        response = self.client.post(self.get_url(), params, follow=True)
         question = models.Question.objects.latest("date")
 
         expected_url = app_reverse(self.page, "tickets-detail", kwargs={"pk": question.pk})
@@ -149,7 +149,7 @@ class QuestionViewTestCase(test.TestCase):
         self.assertEqual(question_count, models.Question.objects.all().count())
 
 
-class QuestionDetailTestCase(test.TestCase):
+class QuestionDetailTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionDetailTestCase, self).setUp()
         self.user = factories.UserFactory()
@@ -158,7 +158,7 @@ class QuestionDetailTestCase(test.TestCase):
         self.question = QuestionFactory(author=self.user, status=models.Question.NEW)
         self.page = AppPage.objects.get(app="tickets.urls")
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -172,7 +172,7 @@ class QuestionDetailTestCase(test.TestCase):
         self.assertIn(self.question.render_body(), response.content)
 
     def test_post_form_valid(self):
-        response = self.client.post(self.get_url(), {"body": "hello"})
+        response = self.client.post(self.get_url(), {"body": "hello"}, follow=True)
         self.assertRedirects(response, self.get_url())
 
         responses = self.question.response_set.all()
@@ -192,7 +192,7 @@ class QuestionDetailTestCase(test.TestCase):
         self.assertEqual(response_count, models.Response.objects.all().count())
 
 
-class QuestionListTestCase(test.TestCase):
+class QuestionListTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionListTestCase, self).setUp()
         self.user = factories.UserFactory()
@@ -201,7 +201,7 @@ class QuestionListTestCase(test.TestCase):
 
         self.page = AppPage.objects.get(app="tickets.urls")
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -221,7 +221,7 @@ class QuestionListTestCase(test.TestCase):
 
 
 @override_settings(ADMINS=(("admin", "root@localhost"),))
-class QuestionModelTestCase(test.TestCase):
+class QuestionModelTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionModelTestCase, self).setUp()
         self.user = factories.UserFactory()
@@ -270,7 +270,7 @@ class QuestionModelTestCase(test.TestCase):
         self.assertEqual(type(response.__unicode__()), unicode)
 
 
-class RenderBodyTestCase(test.TestCase):
+class RenderBodyTestCase(InboxenTestCase):
     def test_empty_body(self):
         obj = MockModel("")
         self.assertEqual(obj.render_body(), "")
@@ -299,7 +299,7 @@ class RenderBodyTestCase(test.TestCase):
         self.assertHtmlEqual(obj.render_body(), expected)
 
 
-class RenderStatus(test.TestCase):
+class RenderStatus(InboxenTestCase):
     def test_render(self):
         result = tickets_flags.render_status(models.Question.NEW)
         self.assertIn(unicode(tickets_flags.STATUSES[models.Question.NEW]), result)

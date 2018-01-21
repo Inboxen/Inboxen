@@ -27,11 +27,11 @@ from django.urls.exceptions import NoReverseMatch
 
 from cms import models
 from cms.tests import factories
-from inboxen.tests import utils
+from inboxen.test import MockRequest, InboxenTestCase
 from tickets import views as ticket_views
 
 
-class HelpQuerySetTestCase(test.TestCase):
+class HelpQuerySetTestCase(InboxenTestCase):
     def test_in_menu(self):
         is_menu = factories.HelpBasePageFactory(tree_id=2, in_menu=True)
         not_menu = factories.HelpBasePageFactory(tree_id=2, in_menu=False)
@@ -47,7 +47,7 @@ class HelpQuerySetTestCase(test.TestCase):
         self.assertEqual(list(qs), [is_live])
 
 
-class HelpBasePageTestCase(test.TestCase):
+class HelpBasePageTestCase(InboxenTestCase):
     def test_url_property(self):
         page = models.HelpBasePage.objects.get(parent__isnull=False)
         old_url = page.url
@@ -102,7 +102,7 @@ class HelpBasePageTestCase(test.TestCase):
     def test_route(self):
         root_page = models.HelpBasePage.objects.get(parent__isnull=True)
         child_page = models.HelpBasePage.objects.get(parent__isnull=False)
-        request = utils.MockRequest()
+        request = MockRequest()
 
         self.assertEqual(root_page.route(request, []), (root_page, [], {}))
 
@@ -118,14 +118,14 @@ class HelpBasePageTestCase(test.TestCase):
         self.assertEqual(child_page.route(request, []), (child_page, [], {}))
 
     def test_serve(self):
-        request = utils.MockRequest()
+        request = MockRequest()
         # you can't call this method on the base class
         with self.assertRaises(AssertionError):
             models.HelpBasePage().serve(request)
 
     def test_get_context(self):
         page = models.HelpBasePage.objects.first()
-        request = utils.MockRequest()
+        request = MockRequest()
 
         ctx = page.get_context(request)
         self.assertEqual(ctx, {"page": page})
@@ -162,10 +162,10 @@ class HelpBasePageTestCase(test.TestCase):
         second_child.save()
 
 
-class HelpIndexTestCase(test.TestCase):
+class HelpIndexTestCase(InboxenTestCase):
     def test_get_context(self):
         page = models.HelpIndex.objects.get()
-        request = utils.MockRequest()
+        request = MockRequest()
 
         ctx = page.get_context(request)
         self.assertItemsEqual(ctx.keys(), ["page", "menu"])
@@ -174,7 +174,7 @@ class HelpIndexTestCase(test.TestCase):
 
     def test_serve(self):
         page = models.HelpIndex.objects.get()
-        request = utils.MockRequest()
+        request = MockRequest()
 
         response =  page.serve(request)
 
@@ -185,10 +185,10 @@ class HelpIndexTestCase(test.TestCase):
         self.assertEqual(type(models.HelpIndex.objects), models.HelpManager)
 
 
-class AppPageTestCase(test.TestCase):
+class AppPageTestCase(InboxenTestCase):
     def test_route(self):
         page = models.AppPage.objects.get()
-        request = utils.MockRequest()
+        request = MockRequest()
 
         pg, args, kwargs = page.route(request, [])
         self.assertEqual(pg, page)
@@ -211,7 +211,7 @@ class AppPageTestCase(test.TestCase):
     def test_serve(self):
         page = models.AppPage.objects.get()
         page._view = lambda x: "this is a test"
-        request = utils.MockRequest()
+        request = MockRequest()
 
         response = page.serve(request)
         self.assertEqual(response, "this is a test")
@@ -232,10 +232,10 @@ class AppPageTestCase(test.TestCase):
         self.assertEqual(type(models.AppPage.objects), models.HelpManager)
 
 
-class HelpPageTestCase(test.TestCase):
+class HelpPageTestCase(InboxenTestCase):
     def test_serve(self):
         page = models.HelpIndex.objects.get()
-        request = utils.MockRequest()
+        request = MockRequest()
 
         response =  page.serve(request)
 
@@ -247,16 +247,16 @@ class HelpPageTestCase(test.TestCase):
 
 
 @expectedFailure
-class PeoplePageTestCase(test.TestCase):
+class PeoplePageTestCase(InboxenTestCase):
     def test_serve(self):
         pass
 
 
 @expectedFailure
-class PersonInfoTestCase(test.TestCase):
+class PersonInfoTestCase(InboxenTestCase):
     pass
 
 
 @expectedFailure
-class ImageTestCase(test.TestCase):
+class ImageTestCase(InboxenTestCase):
     pass

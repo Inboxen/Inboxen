@@ -23,12 +23,13 @@ from pytz import utc
 from django import test
 from django.contrib.auth import get_user_model
 
-from inboxen import models
-from inboxen.tests import factories
 from account import tasks
+from inboxen import models
+from inboxen.test import InboxenTestCase
+from inboxen.tests import factories
 
 
-class DeleteTestCase(test.TestCase):
+class DeleteTestCase(InboxenTestCase):
     """Test account deleting"""
     def setUp(self):
         self.user = factories.UserFactory()

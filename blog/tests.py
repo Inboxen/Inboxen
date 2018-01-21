@@ -17,7 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.core import urlresolvers
 
 import factory
@@ -25,6 +24,7 @@ import factory.fuzzy
 
 from blog import models, forms
 from inboxen.tests import factories
+from inboxen.test import InboxenTestCase
 
 BODY = """
 Hey there!
@@ -48,7 +48,7 @@ class BlogPostFactory(factory.django.DjangoModelFactory):
     body = factory.fuzzy.FuzzyText()
 
 
-class BlogTestCase(test.TestCase):
+class BlogTestCase(InboxenTestCase):
     def test_blog_index(self):
         user = factories.UserFactory()
         BlogPostFactory.create_batch(10, draft=False, author=user)

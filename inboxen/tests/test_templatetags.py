@@ -24,9 +24,10 @@ from django.utils import translation
 from bitfield import BitHandler
 
 from inboxen.templatetags import inboxen_flags, inboxen_selector
+from inboxen.test import InboxenTestCase
 
 
-class InboxFlagTestCase(test.TestCase):
+class InboxFlagTestCase(InboxenTestCase):
     def tearDown(self):
         translation.deactivate_all()
 
@@ -94,7 +95,7 @@ class InboxFlagTestCase(test.TestCase):
         self.assertIn(">New<", output)
 
 
-class SelectorEscapeTestCase(test.TestCase):
+class SelectorEscapeTestCase(InboxenTestCase):
     def test_escapes(self):
         input_string = "me@inboxen.org"
         expected_string = r"me\\@inboxen\\.org"

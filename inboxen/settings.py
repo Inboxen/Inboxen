@@ -103,7 +103,7 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-TEST_RUNNER = 'inboxen.utils.InboxenTestRunner'
+TEST_RUNNER = 'inboxen.test.InboxenTestRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
 

@@ -26,7 +26,7 @@ from salmon import mail
 import mock
 
 from inboxen import models
-from inboxen.tests import factories, utils
+from inboxen.tests import factories
 from inboxen.tests.example_emails import (
     BADLY_ENCODED_BODY,
     BAD_HTTP_EQUIV_BODY,
@@ -43,11 +43,12 @@ from inboxen.tests.example_emails import (
     METALESS_BODY,
     UNSUPPORTED_CSS_BODY,
 )
+from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.utils import email as email_utils
 from router.app.helpers import make_email
 
 
-class EmailViewTestCase(test.TestCase):
+class EmailViewTestCase(InboxenTestCase):
     def setUp(self):
         super(EmailViewTestCase, self).setUp()
 
@@ -59,7 +60,7 @@ class EmailViewTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"utf-8\"")
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -226,7 +227,7 @@ class EmailViewTestCase(test.TestCase):
     # TODO: test body choosing with multipart emails
 
 
-class BadEmailTestCase(test.TestCase):
+class BadEmailTestCase(InboxenTestCase):
     def setUp(self):
         super(BadEmailTestCase, self).setUp()
 
@@ -246,7 +247,7 @@ class BadEmailTestCase(test.TestCase):
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"ascii\"")
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -316,12 +317,12 @@ class BadEmailTestCase(test.TestCase):
         self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
 
 
-class RealExamplesTestCase(test.TestCase):
+class RealExamplesTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -393,7 +394,7 @@ class RealExamplesTestCase(test.TestCase):
 
 
 
-class AttachmentTestCase(test.TestCase):
+class AttachmentTestCase(InboxenTestCase):
     def setUp(self):
         super(AttachmentTestCase, self).setUp()
 
@@ -403,7 +404,7 @@ class AttachmentTestCase(test.TestCase):
         self.part = factories.PartListFactory(email=self.email, body=body)
         self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type", data="text/html; charset=\"utf-8\"")
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -432,7 +433,7 @@ class AttachmentTestCase(test.TestCase):
         self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
 
-class UtilityTestCase(test.TestCase):
+class UtilityTestCase(InboxenTestCase):
     def test_is_unicode(self):
         string = "Hey there!"
         self.assertTrue(isinstance(email_utils.unicode_damnit(string), unicode))

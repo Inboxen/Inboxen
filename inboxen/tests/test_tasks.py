@@ -19,7 +19,6 @@
 
 from datetime import datetime, timedelta
 
-from django import test
 from django.core import mail
 from django.contrib.sessions.models import Session
 
@@ -28,10 +27,10 @@ import mock
 
 from inboxen import models, tasks
 from inboxen.tests import factories
-from inboxen.utils import override_settings
+from inboxen.test import override_settings, InboxenTestCase
 
 
-class StatsTestCase(test.TestCase):
+class StatsTestCase(InboxenTestCase):
     def test_no_exceptions(self):
         tasks.statistics.delay()
 
@@ -122,7 +121,7 @@ class StatsTestCase(test.TestCase):
         self.assertEqual(stats.emails["running_total"], 3)
 
 
-class CleanSessionsTestCase(test.TestCase):
+class CleanSessionsTestCase(InboxenTestCase):
     def test_sessions_deleted(self):
         Session.objects.create(
             session_key="1234",
@@ -134,7 +133,7 @@ class CleanSessionsTestCase(test.TestCase):
         self.assertEqual(Session.objects.count(), 0)
 
 
-class FlagTestCase(test.TestCase):
+class FlagTestCase(InboxenTestCase):
     """Test flag tasks"""
     # only testing that it doesn't raise an exception atm
     # TODO: actually test
@@ -159,7 +158,7 @@ class FlagTestCase(test.TestCase):
         )
 
 
-class SearchTestCase(test.TestCase):
+class SearchTestCase(InboxenTestCase):
     def test_search(self):
         user = factories.UserFactory()
         result = tasks.search.delay(user.id, "bizz").get()
@@ -170,7 +169,7 @@ class SearchTestCase(test.TestCase):
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
     ADMINS=(("Travis", "ci@example.com"),),
 )
-class RequestReportTestCase(test.TestCase):
+class RequestReportTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
         self.user.inboxenprofile  # autocreate a profile
@@ -199,7 +198,7 @@ class RequestReportTestCase(test.TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
-class DeleteTestCase(test.TestCase):
+class DeleteTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 

@@ -20,16 +20,10 @@
 import os
 import re
 import logging
-import sys
-import warnings
 
 from django.conf import settings
-from django.template import loader, Context
-from django import test
-from django.utils.translation import ugettext as _
-
+from django.template import loader
 from django_assets import env as assets_env
-from djcelery.contrib.test_runner import CeleryTestSuiteRunner
 from webassets.script import GenericArgparseImplementation
 
 from inboxen.context_processors import reduced_settings_context
@@ -84,48 +78,3 @@ def is_reserved(inbox):
     Assumes `inbox` has been lowercased
     """
     return RESERVED_LOCAL_PARTS.search(inbox) is not None
-
-
-class WebAssetsOverrideMixin(object):
-    """Reset Django Assets crap
-
-    Work around for https://github.com/miracle2k/django-assets/issues/44
-    """
-
-    asset_modules = ["inboxen.assets"]
-
-    def disable(self, *args, **kwargs):
-        ret_value = super(WebAssetsOverrideMixin, self).disable(*args, **kwargs)
-
-        # reset asset env
-        assets_env.reset()
-        assets_env._ASSETS_LOADED = False
-
-        # unload asset modules so python reimports them
-        for module in self.asset_modules:
-            try:
-                del sys.modules[module]
-                __import__(module)
-            except (KeyError, ImportError):
-                _log.debug("Couldn't find %s in sys.modules", module)
-
-        return ret_value
-
-
-class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
-    pass
-
-
-class InboxenTestRunner(CeleryTestSuiteRunner):
-    """Test runner for Inboxen
-
-    Build on top of djcelery's test runner
-    """
-    def setup_test_environment(self, **kwargs):
-        self.is_testing_var_set = int(os.getenv('INBOXEN_TESTING', '0')) > 0
-        super(InboxenTestRunner, self).setup_test_environment(**kwargs)
-
-    def teardown_test_environment(self, **kwargs):
-        super(InboxenTestRunner, self).teardown_test_environment(**kwargs)
-        if not self.is_testing_var_set:
-            warnings.warn("You did not set 'INBOXEN_TESTING' in your environment. Test results will be unreliable!")
