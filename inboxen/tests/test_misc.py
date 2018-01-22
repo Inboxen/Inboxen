@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2015, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -38,7 +38,7 @@ from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories
 from inboxen.utils import is_reserved
-from inboxen.test import MockRequest, override_settings, InboxenTestCase
+from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -482,4 +482,43 @@ class SSLRedirectTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 301)
 
         response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+
+
+class CSRFCheckedTestCase(InboxenTestCase):
+    def setUp(self):
+        self.client = SecureClient(enforce_csrf_checks=True)
+        self.url = urlresolvers.reverse('user-registration')
+
+    def test_csrf_token_missing(self):
+        data = {
+            "username": "new_user",
+            "password1": "bob1",
+            "password2": "bob2",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_csrf_referer_check(self):
+        self.client.get(self.url)  # generate token in session
+        data = {
+            "username": "new_user",
+            "password1": "bob1",
+            "password2": "bob2",
+            "csrfmiddlewaretoken": self.client.session["_csrftoken"],
+        }
+
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_csrf_token_present(self):
+        self.client.get(self.url)  # generate token in session
+        data = {
+            "username": "new_user",
+            "password1": "bob1",
+            "password2": "bob2",
+            "csrfmiddlewaretoken": self.client.session["_csrftoken"],
+        }
+
+        response = self.client.post(self.url, data, HTTP_REFERER="https://testserver")
         self.assertEqual(response.status_code, 200)
