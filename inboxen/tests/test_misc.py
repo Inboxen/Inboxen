@@ -544,3 +544,9 @@ class MakeXSSFilterChromeSafeMiddlewareTestCase(InboxenTestCase):
     def test_response(self):
         response = self.client.get("/")
         self.assertEqual(response["x-xss-protection"], "0")
+
+
+class HSTSTestCase(InboxenTestCase):
+    def test_hsts_header(self):
+        response = self.client.get("/")
+        self.assertEqual(response["strict-transport-security"], "max-age=31536000; includeSubDomains; preload")

@@ -215,10 +215,6 @@ INSTALLED_APPS = (
     'tickets',
 )
 
-SILENCED_SYSTEM_CHECKS = [
-    "security.W004",  # HSTS should be done via the HTTPd
-]
-
 ROOT_URLCONF = 'inboxen.urls'
 
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")
@@ -232,6 +228,11 @@ X_FRAME_OPTIONS = "DENY"
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
+
+# HSTS
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # CSP settings
 CSP_REPORT_ONLY = False
