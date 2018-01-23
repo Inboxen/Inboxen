@@ -50,3 +50,14 @@ class ExtendSessionMiddleware(object):
                 request.session.cycle_key()
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
                 request.session.modified = True
+
+
+class MakeXSSFilterChromeSafeMiddleware(object):
+    def process_response(self, request, response):
+        # we have CSP and filter user input to protect against CSP, adding
+        # X-XSS-Protection would be great as a defence in depth. However, there
+        # are a few bugs in Chrome that can cause information to be leaked to
+        # an attacker. Some of these rely on iframes which we might use in
+        # future for sandboxing HTML parts.
+        response['x-xss-protection'] = '0'
+        return response

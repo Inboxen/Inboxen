@@ -35,10 +35,20 @@ from django.test.client import RequestFactory
 import mock
 
 from inboxen.management.commands import router, feeder, url_stats
+<<<<<<< HEAD
 from inboxen.middleware import ExtendSessionMiddleware
 from inboxen.tests import factories
 from inboxen.utils import is_reserved
 from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
+||||||| merged common ancestors
+from inboxen.middleware import ExtendSessionMiddleware
+from inboxen.tests import factories, utils
+from inboxen.utils import is_reserved, override_settings
+=======
+from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
+from inboxen.tests import factories, utils
+from inboxen.utils import is_reserved, override_settings
+>>>>>>> 297-x-xss-header
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -522,3 +532,25 @@ class CSRFCheckedTestCase(InboxenTestCase):
 
         response = self.client.post(self.url, data, HTTP_REFERER="https://testserver")
         self.assertEqual(response.status_code, 200)
+
+
+class MakeXSSFilterChromeSafeMiddlewareTestCase(test.TestCase):
+    def test_middleware_before_security_middleware(self):
+        middleware = MakeXSSFilterChromeSafeMiddleware()
+        request = None  # ignored
+        response = {}  # "mock" header dict
+
+        response = middleware.process_response(request, response)
+        self.assertEqual(response["x-xss-protection"], "0")
+
+    def test_middleware_after_security_middleware(self):
+        middleware = MakeXSSFilterChromeSafeMiddleware()
+        request = None  # ignored
+        response = {"x-xss-protection": "1; mode=block"}  # "mock" header dict
+
+        response = middleware.process_response(request, response)
+        self.assertEqual(response["x-xss-protection"], "0")
+
+    def test_response(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-xss-protection"], "0")
