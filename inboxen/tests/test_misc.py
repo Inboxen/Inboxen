@@ -550,3 +550,23 @@ class HSTSTestCase(InboxenTestCase):
     def test_hsts_header(self):
         response = self.client.get("/")
         self.assertEqual(response["strict-transport-security"], "max-age=31536000; includeSubDomains; preload")
+
+
+@override_settings(SESSION_SAVE_EVERY_REQUEST=True)
+class SecureSessionCookieTestCase(InboxenTestCase):
+    def test_secure(self):
+        # session cookie won't get saved regardless of setting if session is empty
+        self.client.session["test"] = "test"
+
+        response = self.client.get("/", secure=False)
+        self.assertEqual(response.cookies.output(), "")
+
+        response = self.client.get("/")
+        self.assertEqual(response.cookies["sessionid"]["secure"], True)
+
+    def test_httponly(self):
+        # session cookie won't get saved regardless of setting if session is empty
+        self.client.session["test"] = "test"
+
+        response = self.client.get("/")
+        self.assertEqual(response.cookies["sessionid"]["httponly"], True)
