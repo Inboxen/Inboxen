@@ -570,3 +570,9 @@ class SecureSessionCookieTestCase(InboxenTestCase):
 
         response = self.client.get("/")
         self.assertEqual(response.cookies["sessionid"]["httponly"], True)
+
+
+class XFrameOptionsTestCase(InboxenTestCase):
+    def test_x_frame_options_header(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-frame-options"], "DENY")
