@@ -499,6 +499,16 @@ class CSRFCheckedTestCase(InboxenTestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 403)
 
+    def test_csrf_cookie_not_present(self):
+        response = self.client.get(self.url)
+
+        # no csrftokenmiddleware cookie
+        self.assertEqual(response.cookies.keys(), ["sessionid"])
+
+        # if we move back to cookie based csrf, uncomment these tests
+        #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["secure"], True)
+        #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["httponly"], True)
+
     def test_csrf_referer_check(self):
         self.client.get(self.url)  # generate token in session
         data = {
