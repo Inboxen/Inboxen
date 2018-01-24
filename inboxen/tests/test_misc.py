@@ -576,3 +576,10 @@ class XFrameOptionsTestCase(InboxenTestCase):
     def test_x_frame_options_header(self):
         response = self.client.get("/")
         self.assertEqual(response["x-frame-options"], "DENY")
+
+
+class XContentTypeOptionsTestCase(InboxenTestCase):
+    # no sniffles!
+    def test_x_content_type_options(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-content-type-options"], "nosniff")
