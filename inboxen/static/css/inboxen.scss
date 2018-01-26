@@ -205,6 +205,10 @@ a.soon {
     &:focus ~ .navbar-toggle {
         background-color: $navbar-default-toggle-hover-bg;
     }
+
+    @media (min-width: $screen-sm-min) {
+        display: none;
+    }
 }
 
 .navbar-toggle {
