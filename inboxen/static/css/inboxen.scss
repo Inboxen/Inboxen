@@ -80,12 +80,22 @@ body {
             padding: $table-cell-padding;
         }
 
-        &:hover {
+        & > a.clickable {
+            &:hover, &:focus-within, &:focus {
+                & > div {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        &:hover, &:focus-within, &:focus {
             background-color: $table-bg-hover;
         }
 
-        &.title:hover, &.inbox-edit-form-row:hover, &.empty-message:hover, &.more-questions:hover {
-            background-color: initial;
+        &.title, &.inbox-edit-form-row, &.empty-message, &.more-questions {
+            &:hover, &:focus-within, &:focus {
+                background-color: initial;
+            }
         }
     }
 
@@ -117,7 +127,7 @@ body {
 #unified {
     background-color: $state-warning-bg;
 
-    &:hover {
+    &:hover, &:focus-within, &:focus {
         background-color: darken($state-warning-bg, 5%);
     }
 }
