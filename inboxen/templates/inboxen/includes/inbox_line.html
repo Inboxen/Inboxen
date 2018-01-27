@@ -17,10 +17,10 @@
                 {# form per line because we can't have forms within forms when inlining edit inbox forms #}
                 {% csrf_token %}
                 <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
-                    <span class="fa fa-pencil fa-lg" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
+                    <span class="fa fa-pencil fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
                 </a>
                 <button title="{% trans "Pin" %}" type="submit" name="pin-inbox" value="{{ inbox }}@{{ domain }}" class="close">
-                    <span class="fa fa-thumb-tack fa-lg" aria-hidden="true"></span><span class="sr-only">{% trans "Pin Inbox" %}</span>
+                    <span class="fa fa-thumb-tack fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">{% trans "Pin Inbox" %}</span>
                 </button>
             </form>
         </div>

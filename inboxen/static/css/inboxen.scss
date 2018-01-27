@@ -20,6 +20,7 @@ $font-family-monospace:   monospace;
  */
 
 $profile-margin: 10px;
+$honeydew-button-size: 1em;
 
 html {
     position: relative;
@@ -157,8 +158,17 @@ body {
 }
 
 .email-buttons, .inbox-options {
+    text-align: right;
+
     .close {
         margin: 5px;
+        display: inline-block;
+        float: none;
+    }
+
+    .fa-fw {
+        height: $honeydew-button-size;
+        width: $honeydew-button-size;
     }
 }
 
