@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Improve keyboard accessibility on home and inbox pages (#278)
 
 ## Releases
 
