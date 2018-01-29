@@ -15,6 +15,7 @@
 <table class="table table-hover">
     <thead><tr>
             <th>{% trans "Subject" %}</th>
+            <th>{% trans "Asker" %}</th>
             <th>{% trans "Date" %}</th>
             <th>{% trans "Status" %}</th>
             <th>&nbsp;</th>
@@ -23,6 +24,7 @@
     {% for question in questions %}
     <tr>
         <td>{{ question.subject }}</td>
+        <td>{{ question.author.username }}</td>
         <td>{{ question.date }}</td>
         <td>{{ question.status|render_status }}</td>
         <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:tickets:response" question_pk=question.pk %}">
