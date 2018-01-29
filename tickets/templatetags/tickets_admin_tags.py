@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014, 2015, 2016, 2017 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -16,59 +16,45 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from __future__ import unicode_literals
 
 from django import template
 from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
-from cms.utils import app_reverse
+from tickets.models import Question
 
 register = template.Library()
 
-LIVE_TO_TAGS = {
-    True: {
-        "title": ugettext_lazy("Live post"),
-        "str": ugettext_lazy("Live"),
+STATUS_TO_TAGS = {
+    Question.NEW: {
+        "title": ugettext_lazy("New question"),
+        "str": ugettext_lazy("New"),
         "class": "label-primary",
     },
-    False: {
-        "title": ugettext_lazy("Draft post"),
-        "str": ugettext_lazy("Draft"),
+    Question.IN_PROGRESS: {
+        "title": ugettext_lazy("In progress"),
+        "str": ugettext_lazy("In progress"),
+        "class": "label-info",
+    },
+    Question.NEED_INFO: {
+        "title": ugettext_lazy("Need more info from user"),
+        "str": ugettext_lazy("Needs info"),
+        "class": "label-warning",
+    },
+    Question.RESOLVED: {
+        "title": ugettext_lazy("Resolved question"),
+        "str": ugettext_lazy("Resolved"),
         "class": "label-default",
     },
 }
 
-IN_MENU_TO_TAGS = {
-    True: {
-        "title": ugettext_lazy("Page will appear in menu"),
-        "str": ugettext_lazy("In menu"),
-        "class": "label-primary",
-    },
-}
 
 LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
 
 
-@register.simple_tag(takes_context=True)
-def app_url(context, viewname, *args, **kwargs):
-    request = context['request']
-
-    return app_reverse(request.page, viewname, args, kwargs)
-
-
 @register.filter()
-def render_live(live):
-    flag = LIVE_TO_TAGS[live]
+def render_status(status):
+    flag = STATUS_TO_TAGS[status]
 
     return safestring.mark_safe(LABEL_STR.format(**flag))
-
-
-@register.filter()
-def render_in_menu(in_menu):
-    try:
-        flag = IN_MENU_TO_TAGS[in_menu]
-        output = LABEL_STR.format(**flag)
-    except KeyError:
-        output = "&nbsp;"
-
-    return safestring.mark_safe(output)

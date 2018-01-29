@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014, 2015, 2016, 2017 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -16,59 +16,59 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from __future__ import unicode_literals
 
 from django import template
 from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
-from cms.utils import app_reverse
-
 register = template.Library()
 
-LIVE_TO_TAGS = {
+DOMAIN_TO_TAGS = {
     True: {
-        "title": ugettext_lazy("Live post"),
-        "str": ugettext_lazy("Live"),
+        "title": ugettext_lazy("Domain enabled"),
+        "str": ugettext_lazy("Enabled"),
         "class": "label-primary",
     },
     False: {
-        "title": ugettext_lazy("Draft post"),
-        "str": ugettext_lazy("Draft"),
+        "title": ugettext_lazy("Domain disabled"),
+        "str": ugettext_lazy("Disabled"),
         "class": "label-default",
     },
 }
 
-IN_MENU_TO_TAGS = {
+
+REQUEST_TO_TAGS = {
     True: {
-        "title": ugettext_lazy("Page will appear in menu"),
-        "str": ugettext_lazy("In menu"),
+        "title": ugettext_lazy("Granted request"),
+        "str": ugettext_lazy("Granted"),
         "class": "label-primary",
     },
+    False: {
+        "title": ugettext_lazy("Rejected request"),
+        "str": ugettext_lazy("Rejected"),
+        "class": "label-default",
+    },
+    None: {
+        "title": ugettext_lazy("Request pending"),
+        "str": ugettext_lazy("Pending"),
+        "class": "label-danger",
+    },
 }
+
 
 LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
 
 
-@register.simple_tag(takes_context=True)
-def app_url(context, viewname, *args, **kwargs):
-    request = context['request']
-
-    return app_reverse(request.page, viewname, args, kwargs)
-
-
 @register.filter()
-def render_live(live):
-    flag = LIVE_TO_TAGS[live]
+def render_domain(enabled):
+    flag = DOMAIN_TO_TAGS[enabled]
 
     return safestring.mark_safe(LABEL_STR.format(**flag))
 
 
 @register.filter()
-def render_in_menu(in_menu):
-    try:
-        flag = IN_MENU_TO_TAGS[in_menu]
-        output = LABEL_STR.format(**flag)
-    except KeyError:
-        output = "&nbsp;"
+def render_request(succeeded):
+    flag = REQUEST_TO_TAGS[succeeded]
 
-    return safestring.mark_safe(output)
+    return safestring.mark_safe(LABEL_STR.format(**flag))

@@ -1,6 +1,6 @@
 {# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends "cms/admin/base.html" %}
-{% load i18n %}
+{% load i18n cms_tags %}
 
 {% block headline %}{% trans "CMS" %}{% endblock %}
 
@@ -34,6 +34,7 @@
             <th>{% trans "Title" %}</th>
             <th>{% trans "Type" %}</th>
             <th>{% trans "Status" %}</th>
+            <th>{% trans "In menu" %}</th>
             <th>&nbsp;</th>
     </tr></thead>
     <tbody>
@@ -41,7 +42,8 @@
     <tr>
         <td>{{ child.title }}</td>
         <td>{{ child.content_type|capfirst }}</td>
-        <td>{{ child.live }}</td>
+        <td>{{ child.live|render_live }}</td>
+        <td>{{ child.in_menu|render_in_menu }}</td>
         <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:index" page_pk=child.pk %}">
             <span class="sr-only">{% trans "Go to child" %}</span>
         </a></td>

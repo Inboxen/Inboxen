@@ -1,6 +1,6 @@
 {# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends "cms/admin/base.html" %}
-{% load i18n %}
+{% load i18n inboxen_admin_tags %}
 
 {% block headline %}{% trans "Requests" %}{% endblock %}
 
@@ -24,7 +24,7 @@
     <tr>
         <td>{{ req.requester.username }}</td>
         <td>{{ req.date }}</td>
-        <td>{{ req.succeeded }}</td>
+        <td>{{ req.succeeded|render_request }}</td>
         <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:requests:edit" request_pk=req.pk %}">
             <span class="sr-only">{% trans "Edit request" %}</span>
         </a></td>
