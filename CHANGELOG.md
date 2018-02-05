@@ -5,6 +5,8 @@
 * Set X-XSS-Protection to something other than its dangerous default (#297)
 * Set HSTS headers in Django - this makes HSTS no longer optional (#298)
 * Test security features (#298)
+* Used Sixer to make source code compatible with Python 3
+  * This is just a first step ot make Inboxen work on Python 3
 
 ## Releases
 
