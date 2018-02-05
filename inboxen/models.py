@@ -25,6 +25,7 @@ from django.db import models, transaction
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import cached_property
+import six
 
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
@@ -81,7 +82,7 @@ class Statistic(models.Model):
     inboxes = JSONField()
 
     def __unicode__(self):
-        return unicode(self.date)
+        return six.text_type(self.date)
 
 
 class Liberation(models.Model):
@@ -159,7 +160,7 @@ class Inbox(models.Model):
         return u"%s@%s" % (self.inbox, self.domain.domain)
 
     def __repr__(self):
-        u_rep = unicode(self)
+        u_rep = six.text_type(self)
         if self.flags.deleted:
             u_rep = "%s (deleted)" % u_rep
         return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep), errors="replace")
@@ -238,7 +239,7 @@ class Body(models.Model):
     Object manager has a get_or_create() method that deals with duplicated
     bodies.
 
-    This model expects and returns binary data, converting to and from unicode happens elsewhere
+    This model expects and returns binary data, converting to and from six.text_type happens elsewhere
     """
     hashed = models.CharField(max_length=80, unique=True, validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
     data = models.BinaryField(default="")
@@ -269,7 +270,7 @@ class PartList(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
     def __unicode__(self):
-        return unicode(self.id)
+        return six.text_type(self.id)
 
     @cached_property
     def _content_headers_cache(self):

@@ -24,6 +24,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from pytz import utc
 import mock
+import six
 
 from inboxen import models
 from inboxen.tests import factories
@@ -250,7 +251,7 @@ class ModelTestCase(InboxenTestCase):
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
 
-        self.assertEqual(type(models.Request.objects.get().__unicode__()), unicode)
+        self.assertEqual(type(models.Request.objects.get().__unicode__()), six.text_type)
 
 
 class ModelFlagsTestCase(InboxenTestCase):

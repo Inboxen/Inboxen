@@ -19,9 +19,9 @@
 ##
 
 import mock
-import urllib
 
 from django.core import urlresolvers, cache
+from six.moves import urllib
 
 from inboxen.tests import factories
 from inboxen.test import MockRequest, InboxenTestCase
@@ -36,7 +36,7 @@ class SearchViewTestCase(InboxenTestCase):
 
         self.url = urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
         key = "%s-cheddär" % self.user.id
-        self.key = urllib.quote(key)
+        self.key = urllib.parse.quote(key)
 
         if not login:
             raise Exception("Could not log in")

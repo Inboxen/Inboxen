@@ -22,6 +22,7 @@ from django import test
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
+import six
 
 import mock
 
@@ -436,7 +437,7 @@ class AttachmentTestCase(InboxenTestCase):
 class UtilityTestCase(InboxenTestCase):
     def test_is_unicode(self):
         string = "Hey there!"
-        self.assertTrue(isinstance(email_utils.unicode_damnit(string), unicode))
+        self.assertTrue(isinstance(email_utils.unicode_damnit(string), six.text_type))
 
     def test_unicode_passthrough(self):
         already_unicode = u"€"
@@ -454,14 +455,14 @@ class UtilityTestCase(InboxenTestCase):
     def test_clean_html_no_charset(self):
         email = {"display_images": True}
         returned_body = email_utils._clean_html_body(None, email, CHARSETLESS_BODY, "ascii")
-        self.assertIsInstance(returned_body, unicode)
+        self.assertIsInstance(returned_body, six.text_type)
 
     def test_clean_html_unsupported_css(self):
         email = {"display_images": True, "eid": "abc"}
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
             returned_body = email_utils._clean_html_body(None, email, UNSUPPORTED_CSS_BODY, "ascii")
             self.assertEqual(msg_mock.info.call_count, 1)
-        self.assertIsInstance(returned_body, unicode)
+        self.assertIsInstance(returned_body, six.text_type)
 
     def test_clean_html_balance_tags_when_closing_tag_missing(self):
         email = {"display_images": True, "eid": "abc"}
@@ -489,7 +490,7 @@ class UtilityTestCase(InboxenTestCase):
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
             returned_body = email_utils.render_body(None, email, [part])
             self.assertEqual(msg_mock.error.call_count, 1)
-        self.assertIsInstance(returned_body, unicode)
+        self.assertIsInstance(returned_body, six.text_type)
 
     def test_render_body_bad_http_equiv(self):
         email = {"display_images": True, "eid": "abc"}
@@ -499,12 +500,12 @@ class UtilityTestCase(InboxenTestCase):
         part.body.data = BAD_HTTP_EQUIV_BODY
 
         returned_body = email_utils.render_body(None, email, [part])
-        self.assertIsInstance(returned_body, unicode)
+        self.assertIsInstance(returned_body, six.text_type)
 
     def test_invalid_charset(self):
         text = "Växjö"
         self.assertEqual(email_utils.unicode_damnit(text, "utf-8"), u"Växjö")
-        self.assertEqual(email_utils.unicode_damnit(text, "unicode"), u"V\ufffd\ufffdxj\ufffd\ufffd")
+        self.assertEqual(email_utils.unicode_damnit(text, "six.text_type"), u"V\ufffd\ufffdxj\ufffd\ufffd")
 
     def test_find_bodies_with_bad_mime_tree(self):
         email = factories.EmailFactory()

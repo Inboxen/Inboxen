@@ -22,6 +22,7 @@ from django.utils import safestring
 from django.utils.functional import cached_property
 from lxml.html.clean import Cleaner
 import markdown
+import six
 
 from cms.widgets import RichTextInput
 
@@ -33,14 +34,14 @@ DEFAULT_MARKDOWN_EXTENSIONS = []
 DEFAULT_MARKDOWN_EXTENSION_CONFIGS = {}
 
 
-class HTML(unicode):
+class HTML(six.text_type):
     # Unicode subclass so that it looks like a normal unicode object to the
     # rest of Django, but still has a nice render method. Avoids having to
     # write masses of conversion methods to make sure the database gets an
     # object type it understands.
     def __new__(cls, text, allow_tags, safe_attrs, extensions=None, extension_configs=None):
         # call unicode directly, because super(HTML, HTML) will look wrong
-        text = unicode.__new__(cls, text)
+        text = six.text_type.__new__(cls, text)
         text.allow_tags = allow_tags
         text.safe_attrs = safe_attrs
         text.extensions = extensions or []

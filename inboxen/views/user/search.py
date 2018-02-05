@@ -17,13 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib
 
 from django import http
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.translation import ugettext as _
 from django.views import generic
+from six.moves import urllib
 
 from braces.views import LoginRequiredMixin
 
@@ -53,7 +53,7 @@ class SearchView(LoginRequiredMixin, generic.ListView):
 
     def get_cache_key(self):
         key = u"{0}-{1}".format(self.request.user.id, self.query)
-        return urllib.quote(key.encode("utf-8"))
+        return urllib.parse.quote(key.encode("utf-8"))
 
     def get_results(self):
         """Fetch result from either the cache or the queue

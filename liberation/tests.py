@@ -18,7 +18,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from StringIO import StringIO
 from importlib import import_module
 import base64
 import itertools
@@ -36,6 +35,7 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse
 from salmon import mail
+from six import StringIO
 
 from inboxen import models
 from inboxen.tests.example_emails import (

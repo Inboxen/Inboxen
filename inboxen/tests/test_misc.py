@@ -17,7 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from StringIO import StringIO
 from email.message import Message
 from subprocess import CalledProcessError
 import sys
@@ -31,6 +30,8 @@ from django.core.exceptions import ImproperlyConfigured, PermissionDenied, Valid
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
+from six import StringIO
+from six.moves import reload_module
 
 import mock
 
@@ -50,7 +51,7 @@ def reload_urlconf():
     Make sure to use clear_url_caches along with this
     """
     if dj_settings.ROOT_URLCONF in sys.modules:
-        conf = reload(sys.modules[dj_settings.ROOT_URLCONF])
+        conf = reload_module(sys.modules[dj_settings.ROOT_URLCONF])
     else:
         from inboxen import urls as conf
 
