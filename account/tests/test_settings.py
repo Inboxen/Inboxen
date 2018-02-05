@@ -20,16 +20,16 @@
 
 import itertools
 
-from django import test
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
-from inboxen.tests import factories, utils
+from inboxen.tests import factories
+from inboxen.test import MockRequest, InboxenTestCase, grant_sudo
 
 
-class SettingsTestCase(test.TestCase):
+class SettingsTestCase(InboxenTestCase):
     def setUp(self):
         super(SettingsTestCase, self).setUp()
         self.user = factories.UserFactory()
@@ -38,7 +38,7 @@ class SettingsTestCase(test.TestCase):
         for args in itertools.product([True, False], [self.user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -58,13 +58,13 @@ class SettingsTestCase(test.TestCase):
 
     def test_form_bad_data(self):
         params = {"images": "12213"}
-        request = utils.MockRequest(self.user)
+        request = MockRequest(self.user)
         form = SettingsForm(request, data=params)
 
         self.assertFalse(form.is_valid())
 
     def test_form_good_data(self):
-        request = utils.MockRequest(self.user)
+        request = MockRequest(self.user)
 
         params = {"images": "1"}
         form = SettingsForm(request, data=params)
@@ -96,7 +96,7 @@ class SettingsTestCase(test.TestCase):
         self.assertTrue(form.profile.flags.prefer_html_email)
 
     def test_form_domains_valid(self):
-        request = utils.MockRequest(self.user)
+        request = MockRequest(self.user)
         form = SettingsForm(request)
 
         for domain in form.fields["prefered_domain"].queryset:
@@ -104,12 +104,12 @@ class SettingsTestCase(test.TestCase):
                 self.fail("Domain shouldn't be available")
 
 
-class UsernameChangeTestCase(test.TestCase):
+class UsernameChangeTestCase(InboxenTestCase):
     def setUp(self):
         super(UsernameChangeTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -157,17 +157,17 @@ class UsernameChangeTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), self.get_url()))
 
-        utils.grant_sudo(self.client)
+        grant_sudo(self.client)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
 
-class DeleteTestCase(test.TestCase):
+class DeleteTestCase(InboxenTestCase):
     def setUp(self):
         super(DeleteTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -177,7 +177,7 @@ class DeleteTestCase(test.TestCase):
 
     def test_form_good_data(self):
         params = {"username": self.user.username}
-        request = utils.MockRequest(self.user)
+        request = MockRequest(self.user)
         form = DeleteAccountForm(request, data=params)
 
         self.assertTrue(form.is_valid())
@@ -190,7 +190,7 @@ class DeleteTestCase(test.TestCase):
 
     def test_form_bad_data(self):
         params = {"username": "derp" + self.user.username}
-        request = utils.MockRequest(self.user)
+        request = MockRequest(self.user)
         form = DeleteAccountForm(request, data=params)
 
         self.assertFalse(form.is_valid())
@@ -200,6 +200,6 @@ class DeleteTestCase(test.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), self.get_url()))
 
-        utils.grant_sudo(self.client)
+        grant_sudo(self.client)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)

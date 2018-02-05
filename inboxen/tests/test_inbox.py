@@ -19,13 +19,12 @@
 
 import itertools
 
-from django import test
 from django.core import urlresolvers
 
 from inboxen import models
 from inboxen.tests import factories
 from inboxen import forms as inboxen_forms
-from inboxen.tests.utils import MockRequest
+from inboxen.test import MockRequest, InboxenTestCase
 
 
 class InboxTestAbstract(object):
@@ -133,7 +132,7 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 404)
 
 
-class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
+class SingleInboxTestCase(InboxTestAbstract, InboxenTestCase):
     """Test Inbox specific views"""
     def setUp(self):
         self.user = factories.UserFactory()
@@ -157,7 +156,7 @@ class SingleInboxTestCase(InboxTestAbstract, test.TestCase):
         return urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
 
-class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
+class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
     """Test Unified Inbox specific views"""
     def setUp(self):
         self.user = factories.UserFactory()
@@ -179,7 +178,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, test.TestCase):
         return urlresolvers.reverse("unified-inbox")
 
 
-class InboxAddTestCase(test.TestCase):
+class InboxAddTestCase(InboxenTestCase):
     """Test the add inbox page"""
     def setUp(self):
         """Create the client and grab the user"""
@@ -239,7 +238,7 @@ class InboxAddTestCase(test.TestCase):
         self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
 
 
-class InboxAddInlineTestCase(test.TestCase):
+class InboxAddInlineTestCase(InboxenTestCase):
     """Test the add inbox inline form page"""
     def setUp(self):
         """Create the client and grab the user"""
@@ -270,7 +269,7 @@ class InboxAddInlineTestCase(test.TestCase):
         self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
 
 
-class InboxEditTestCase(test.TestCase):
+class InboxEditTestCase(InboxenTestCase):
     """Test the edit inbox page"""
     def setUp(self):
         """Create the client and grab the user"""
@@ -310,7 +309,7 @@ class InboxEditTestCase(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class InboxInlineEditTestCase(test.TestCase):
+class InboxInlineEditTestCase(InboxenTestCase):
     """Test the inline version of the inbox edit page"""
     def setUp(self):
         """Create the client and grab the user"""
@@ -350,7 +349,7 @@ class InboxInlineEditTestCase(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class InboxEmailEditTestCase(test.TestCase):
+class InboxEmailEditTestCase(InboxenTestCase):
     """Test the post only email edit view"""
     def setUp(self):
         self.user = factories.UserFactory()

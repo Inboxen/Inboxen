@@ -27,10 +27,11 @@ import mock
 
 from cms import models, forms
 from cms.tests import factories
-from inboxen.tests import utils, factories
+from inboxen.tests import factories
+from inboxen.test import InboxenTestCase
 
 
-class DeleteFormTestCase(test.TestCase):
+class DeleteFormTestCase(InboxenTestCase):
     def test_form_invalid(self):
         form = forms.DeleteForm(data={"yes_delete": False})
         self.assertFalse(form.is_valid())
@@ -43,7 +44,7 @@ class DeleteFormTestCase(test.TestCase):
         self.assertTrue(form.is_valid())
 
 
-class HelpBasePageForm(test.TestCase):
+class HelpBasePageForm(InboxenTestCase):
     def setUp(self):
         model_ct = ContentType.objects.get_for_model(models.HelpBasePage)
 
@@ -114,7 +115,7 @@ class HelpBasePageForm(test.TestCase):
         self.assertFalse(form.is_valid())
 
 
-class GetPageFormTestCase(test.TestCase):
+class GetPageFormTestCase(InboxenTestCase):
     def test_valid_model(self):
         model_ct = ContentType.objects.get_for_model(models.HelpPage)
         form = forms.get_page_form(model_ct)

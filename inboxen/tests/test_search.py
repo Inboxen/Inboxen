@@ -21,18 +21,18 @@
 import mock
 import urllib
 
-from django import test
 from django.core import urlresolvers, cache
 
-from inboxen.tests import factories, utils
+from inboxen.tests import factories
+from inboxen.test import MockRequest, InboxenTestCase
 
 
-class SearchViewTestCase(test.TestCase):
+class SearchViewTestCase(InboxenTestCase):
     def setUp(self):
         super(SearchViewTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.url = urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
         key = "%s-cheddär" % self.user.id

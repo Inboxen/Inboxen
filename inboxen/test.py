@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2015, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,17 +17,27 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
+import os
+import sys
+import warnings
+
+from django import test
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.session import SessionStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest, HttpResponse
-
+from django_assets import env as assets_env
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.middleware import OTPMiddleware
 from django_otp.plugins.otp_static.models import StaticDevice
+from djcelery.contrib.test_runner import CeleryTestSuiteRunner
 from sudo import settings as sudo_settings
 from sudo.middleware import SudoMiddleware
 from sudo.utils import get_random_string
+
+
+_log = logging.getLogger(__name__)
 
 
 class MockRequest(HttpRequest):
@@ -95,3 +105,79 @@ def grant_otp(client_or_request, user):
     session = client_or_request.session
     session[DEVICE_ID_SESSION_KEY] = device.persistent_id
     session.save()
+
+
+class WebAssetsOverrideMixin(object):
+    """Reset Django Assets crap
+
+    Work around for https://github.com/miracle2k/django-assets/issues/44
+    """
+
+    asset_modules = ["inboxen.assets"]
+
+    def disable(self, *args, **kwargs):
+        ret_value = super(WebAssetsOverrideMixin, self).disable(*args, **kwargs)
+
+        # reset asset env
+        assets_env.reset()
+        assets_env._ASSETS_LOADED = False
+
+        # unload asset modules so python reimports them
+        for module in self.asset_modules:
+            try:
+                del sys.modules[module]
+                __import__(module)
+            except (KeyError, ImportError):
+                _log.debug("Couldn't find %s in sys.modules", module)
+
+        return ret_value
+
+
+class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
+    pass
+
+
+class InboxenTestRunner(CeleryTestSuiteRunner):
+    """Test runner for Inboxen
+
+    Build on top of djcelery's test runner
+    """
+    def setup_test_environment(self, **kwargs):
+        self.is_testing_var_set = int(os.getenv('INBOXEN_TESTING', '0')) > 0
+        super(InboxenTestRunner, self).setup_test_environment(**kwargs)
+
+    def teardown_test_environment(self, **kwargs):
+        super(InboxenTestRunner, self).teardown_test_environment(**kwargs)
+        if not self.is_testing_var_set:
+            warnings.warn("You did not set 'INBOXEN_TESTING' in your environment. Test results will be unreliable!")
+
+
+CLIENT_METHODS_TO_MAKE_SECURE = [
+    'get',
+    'post',
+    'head',
+    'trace',
+    'options',
+    'put',
+    'patch',
+    'delete',
+]
+
+
+class SecureClient(test.Client):
+    """Like Client, but changes the deafult "secure" kwargs to True on certain methods"""
+    def __getattribute__(self, name):
+        attr = super(SecureClient, self).__getattribute__(name)
+        if name in CLIENT_METHODS_TO_MAKE_SECURE:
+
+            def be_secure(*args, **kwargs):
+                kwargs.setdefault("secure", True)
+                return attr(*args, **kwargs)
+
+            return be_secure
+        else:
+            return attr
+
+
+class InboxenTestCase(test.TestCase):
+    client_class = SecureClient

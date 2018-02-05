@@ -18,14 +18,15 @@
 ##
 
 
-from django import test
 from django.urls.exceptions import NoReverseMatch
 
 from cms.utils import app_reverse, get_root_page, breadcrumb_iterator
 from cms.models import HelpBasePage, AppPage
 from cms.tests.factories import HelpBasePageFactory
+from inboxen.test import InboxenTestCase
 
-class AppReverseTestCase(test.TestCase):
+
+class AppReverseTestCase(InboxenTestCase):
     def setUp(self):
         self.page = AppPage()
         self.page.url = "/help/someapp/"
@@ -46,7 +47,7 @@ class AppReverseTestCase(test.TestCase):
         self.assertEqual(url, "/help/someapp/status/test/")
 
 
-class GetRootPageTestCase(test.TestCase):
+class GetRootPageTestCase(InboxenTestCase):
     def test_get_root(self):
         root_page = HelpBasePage.objects.get(parent__isnull=True)
         page = get_root_page()
@@ -84,7 +85,7 @@ class GetRootPageTestCase(test.TestCase):
             get_root_page()
 
 
-class BreadcrumbTestCase(test.TestCase):
+class BreadcrumbTestCase(InboxenTestCase):
     def test_iterators(self):
         root_page = get_root_page()
         self.assertEqual([root_page], [i for i in breadcrumb_iterator(root_page)])

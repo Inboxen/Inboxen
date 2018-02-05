@@ -17,16 +17,17 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.core.exceptions import ValidationError
 
 from account import fields, validators
+from inboxen.test import InboxenTestCase
+
 
 BAD_PASSWORD = "aaaaaaaaaaaaa"
 GOOD_PASSWORD = "abcdefgh!!!!!"  # for smaller values of "good"
 
 
-class PasswordFieldTestCase(test.TestCase):
+class PasswordFieldTestCase(InboxenTestCase):
     def setUp(self):
         self.field = fields.PasswordCheckField()
 
@@ -80,7 +81,7 @@ class PasswordFieldTestCase(test.TestCase):
         self.assertIn("This field is required.", errors)
 
 
-class ValidatorTestCase(test.TestCase):
+class ValidatorTestCase(InboxenTestCase):
     def test_entropy(self):
         validator = validators.EntropyValidation()
 

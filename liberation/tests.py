@@ -44,15 +44,15 @@ from inboxen.tests.example_emails import (
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
 )
-from inboxen.tests import factories, utils
-from inboxen.utils import override_settings
+from inboxen.tests import factories
+from inboxen.test import override_settings, InboxenTestCase, MockRequest
 from liberation import tasks
 from liberation.forms import LiberationForm
 from liberation.utils import make_message, INBOXEN_ENCODING_ERROR_HEADER_NAME
 from router.app.helpers import make_email
 
 
-class LiberateTestCase(test.TestCase):
+class LiberateTestCase(InboxenTestCase):
     """Test account liberating"""
     def setUp(self):
         self.user = factories.UserFactory()
@@ -117,7 +117,7 @@ class LiberateTestCase(test.TestCase):
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
 
 
-class LiberateNewUserTestCase(test.TestCase):
+class LiberateNewUserTestCase(InboxenTestCase):
     """Liberate a new user, with no data"""
     def setUp(self):
         self.user = get_user_model().objects.create(username="atester")
@@ -144,11 +144,11 @@ class LiberateNewUserTestCase(test.TestCase):
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
 
 
-class LiberateViewTestCase(test.TestCase):
+class LiberateViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
@@ -173,12 +173,12 @@ class LiberateViewTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class LiberationDownloadViewTestCase(test.TestCase):
+class LiberationDownloadViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
         self.tmp_dir = tempfile.mkdtemp()
 
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def test_sendfile_no_liberation(self):
         response = self.client.get(reverse("user-liberate-get"))
@@ -209,13 +209,13 @@ class LiberationDownloadViewTestCase(test.TestCase):
             self.assertEqual(response["X-Sendfile"], os.path.join(self.tmp_dir, "test.txt"))
 
 
-class MakeMessageUtilTestCase(test.TestCase):
+class MakeMessageUtilTestCase(InboxenTestCase):
     """Test that example emails are serialisable"""
     def setUp(self):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

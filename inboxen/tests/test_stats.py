@@ -19,14 +19,14 @@
 
 import json
 
-from django import test
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 
 from inboxen import models
+from inboxen.test import InboxenTestCase
 
 
-class StatsViewTestCase(test.TestCase):
+class StatsViewTestCase(InboxenTestCase):
     def tearDown(self):
         super(StatsViewTestCase, self).tearDown()
         cache.clear()

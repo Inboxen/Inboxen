@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2015, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -22,7 +22,6 @@ from email.message import Message
 from subprocess import CalledProcessError
 import sys
 
-from django import test
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
@@ -36,9 +35,10 @@ from django.test.client import RequestFactory
 import mock
 
 from inboxen.management.commands import router, feeder, url_stats
-from inboxen.middleware import ExtendSessionMiddleware
-from inboxen.tests import factories, utils
-from inboxen.utils import is_reserved, override_settings
+from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
+from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
+from inboxen.tests import factories
+from inboxen.utils import is_reserved
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -57,7 +57,7 @@ def reload_urlconf():
     return conf
 
 
-class LoginTestCase(test.TestCase):
+class LoginTestCase(InboxenTestCase):
     """Test various login things"""
     def setUp(self):
         super(LoginTestCase, self).setUp()
@@ -69,14 +69,14 @@ class LoginTestCase(test.TestCase):
         cache.clear()
 
     def test_logout_message(self):
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
         self.assertEqual(login, True)
 
         response = self.client.get(dj_settings.LOGOUT_URL, follow=True)
         self.assertIn("You are now logged out. Have a nice day!", response.content)
 
     def test_last_login(self):
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
         self.assertEqual(login, True)
 
         user = get_user_model().objects.get(id=self.user.id)
@@ -129,7 +129,7 @@ class LoginTestCase(test.TestCase):
         self.assertIn("sessionid", response.cookies)
 
 
-class IndexTestCase(test.TestCase):
+class IndexTestCase(InboxenTestCase):
     def test_index_page(self):
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
@@ -142,7 +142,7 @@ class IndexTestCase(test.TestCase):
 
     def test_index_page_logged_in(self):
         user = factories.UserFactory()
-        assert self.client.login(username=user.username, password="123456", request=utils.MockRequest(user))
+        assert self.client.login(username=user.username, password="123456", request=MockRequest(user))
 
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
@@ -154,12 +154,12 @@ class IndexTestCase(test.TestCase):
             self.assertNotIn("Join", response.content)
 
 
-class ExtendSessionMiddlewareTestCase(test.TestCase):
+class ExtendSessionMiddlewareTestCase(InboxenTestCase):
     middleware = ExtendSessionMiddleware()
 
     def test_get_set(self):
         user = factories.UserFactory()
-        request = utils.MockRequest(user)
+        request = MockRequest(user)
 
         # check that there is not a custom expiry set
         self.assertNotIn('_session_expiry', request.session)
@@ -177,7 +177,7 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
 
     def test_cycle_session(self):
         user = factories.UserFactory()
-        request = utils.MockRequest(user)
+        request = MockRequest(user)
 
         # session will expire in more than a week
         request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.75)
@@ -207,18 +207,18 @@ class ExtendSessionMiddlewareTestCase(test.TestCase):
 
     def test_with_anon(self):
         user = AnonymousUser()
-        request = utils.MockRequest(user)
+        request = MockRequest(user)
         self.middleware.process_request(request)
         self.assertFalse(request.session.modified)
 
 
-class UtilsTestCase(test.TestCase):
+class UtilsTestCase(InboxenTestCase):
     def test_reserved(self):
         self.assertTrue(is_reserved("root"))
         self.assertFalse(is_reserved("root1"))
 
 
-class FeederCommandTest(test.TestCase):
+class FeederCommandTest(InboxenTestCase):
     class MboxMock(dict):
         def __init__(self, *args, **kwargs):
             self._removed = {}
@@ -318,7 +318,7 @@ class FeederCommandTest(test.TestCase):
             self.assertFalse(smtp_mock.called)
 
 
-class UrlStatsCommandTest(test.TestCase):
+class UrlStatsCommandTest(InboxenTestCase):
     def test_command(self):
         with self.assertRaises(CommandError):
             # too few args
@@ -363,7 +363,7 @@ class UrlStatsCommandTest(test.TestCase):
         self.assertEqual(urls["unified-inbox"], 3)
 
 
-class RouterCommandTest(test.TestCase):
+class RouterCommandTest(InboxenTestCase):
     def test_command(self):
         with self.assertRaises(CommandError) as error:
             call_command("router")
@@ -406,7 +406,7 @@ class RouterCommandTest(test.TestCase):
         self.assertEqual(output, ["Starting Salmon handler: boot\n"])
 
 
-class ErrorViewTestCase(test.TestCase):
+class ErrorViewTestCase(InboxenTestCase):
     def test_view(self):
         view_func = ErrorView.as_view(
             error_message="some message or other",
@@ -433,7 +433,7 @@ class ErrorViewTestCase(test.TestCase):
             view_obj.get_error_code()
 
 
-class StyleguideTestCase(test.TestCase):
+class StyleguideTestCase(InboxenTestCase):
     def tearDown(self):
         # make sure URLConf is reset no matter what
         urlresolvers.clear_url_caches()
@@ -457,7 +457,7 @@ class StyleguideTestCase(test.TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-class ProhibitNullCharactersValidatorTestCase(test.TestCase):
+class ProhibitNullCharactersValidatorTestCase(InboxenTestCase):
     def test_null(self):
         validator = ProhibitNullCharactersValidator()
         with self.assertRaises(ValidationError):
@@ -474,3 +474,122 @@ class ProhibitNullCharactersValidatorTestCase(test.TestCase):
     def test_unicode(self):
         validator = ProhibitNullCharactersValidator()
         self.assertIsNone(validator(u"\ufffd"))
+
+
+class SSLRedirectTestCase(InboxenTestCase):
+    def test_redirect(self):
+        response = self.client.get("/", secure=False)
+        self.assertEqual(response.status_code, 301)
+
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+
+
+class CSRFCheckedTestCase(InboxenTestCase):
+    def setUp(self):
+        self.client = SecureClient(enforce_csrf_checks=True)
+        self.url = urlresolvers.reverse('user-registration')
+
+    def test_csrf_token_missing(self):
+        data = {
+            "username": "new_user",
+            "password1": "bob1",
+            "password2": "bob2",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_csrf_cookie_not_present(self):
+        response = self.client.get(self.url)
+
+        # no csrftokenmiddleware cookie
+        self.assertEqual(response.cookies.keys(), ["sessionid"])
+
+        # if we move back to cookie based csrf, uncomment these tests
+        #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["secure"], True)
+        #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["httponly"], True)
+
+    def test_csrf_referer_check(self):
+        self.client.get(self.url)  # generate token in session
+        data = {
+            "username": "new_user",
+            "password1": "bob1",
+            "password2": "bob2",
+            "csrfmiddlewaretoken": self.client.session["_csrftoken"],
+        }
+
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 403)
+
+    def test_csrf_token_present(self):
+        self.client.get(self.url)  # generate token in session
+        data = {
+            "username": "new_user",
+            "password1": "bob1",
+            "password2": "bob2",
+            "csrfmiddlewaretoken": self.client.session["_csrftoken"],
+        }
+
+        response = self.client.post(self.url, data, HTTP_REFERER="https://testserver")
+        self.assertEqual(response.status_code, 200)
+
+
+class MakeXSSFilterChromeSafeMiddlewareTestCase(InboxenTestCase):
+    def test_middleware_before_security_middleware(self):
+        middleware = MakeXSSFilterChromeSafeMiddleware()
+        request = None  # ignored
+        response = {}  # "mock" header dict
+
+        response = middleware.process_response(request, response)
+        self.assertEqual(response["x-xss-protection"], "0")
+
+    def test_middleware_after_security_middleware(self):
+        middleware = MakeXSSFilterChromeSafeMiddleware()
+        request = None  # ignored
+        response = {"x-xss-protection": "1; mode=block"}  # "mock" header dict
+
+        response = middleware.process_response(request, response)
+        self.assertEqual(response["x-xss-protection"], "0")
+
+    def test_response(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-xss-protection"], "0")
+
+
+class HSTSTestCase(InboxenTestCase):
+    def test_hsts_header(self):
+        response = self.client.get("/")
+        self.assertEqual(response["strict-transport-security"], "max-age=31536000; includeSubDomains; preload")
+
+
+@override_settings(SESSION_SAVE_EVERY_REQUEST=True)
+class SecureSessionCookieTestCase(InboxenTestCase):
+    def test_secure(self):
+        # session cookie won't get saved regardless of setting if session is empty
+        self.client.session["test"] = "test"
+
+        response = self.client.get("/", secure=False)
+        self.assertEqual(response.cookies.output(), "")
+
+        response = self.client.get("/")
+        self.assertEqual(response.cookies["sessionid"]["secure"], True)
+
+    def test_httponly(self):
+        # session cookie won't get saved regardless of setting if session is empty
+        self.client.session["test"] = "test"
+
+        response = self.client.get("/")
+        self.assertEqual(response.cookies["sessionid"]["httponly"], True)
+
+
+class XFrameOptionsTestCase(InboxenTestCase):
+    def test_x_frame_options_header(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-frame-options"], "DENY")
+
+
+class XContentTypeOptionsTestCase(InboxenTestCase):
+    # no sniffles!
+    def test_x_content_type_options(self):
+        response = self.client.get("/")
+        self.assertEqual(response["x-content-type-options"], "nosniff")
