@@ -45,7 +45,7 @@ class SearchViewTestCase(InboxenTestCase):
         cache.cache.set(self.key, {"emails": [], "inboxes": []})
         response = self.client.get(self.url)
         self.assertIn("search_results", response.context)
-        self.assertItemsEqual(response.context["search_results"], ["emails", "inboxes"])
+        self.assertCountEqual(response.context["search_results"], ["emails", "inboxes"])
 
     def test_content(self):
         cache.cache.set(self.key, {"emails": [], "inboxes": []})

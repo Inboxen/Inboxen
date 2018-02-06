@@ -168,7 +168,7 @@ class HelpIndexTestCase(InboxenTestCase):
         request = MockRequest()
 
         ctx = page.get_context(request)
-        self.assertItemsEqual(ctx.keys(), ["page", "menu"])
+        self.assertCountEqual(ctx.keys(), ["page", "menu"])
         self.assertEqual(ctx["page"], page)
         self.assertEqual(list(ctx["menu"]), [models.HelpBasePage.objects.get(parent__pk=page.pk)])
 

@@ -94,7 +94,7 @@ class LiberateTestCase(InboxenTestCase):
         self.assertTrue(os.path.exists(os.path.join(self.mail_dir, '.' + result["folder"])))
 
         email_ids = models.Email.objects.filter(inbox=self.inboxes[0]).values_list("id", flat=True)
-        self.assertItemsEqual(email_ids, result["ids"])
+        self.assertCountEqual(email_ids, result["ids"])
 
     def test_liberate_message(self):
         inbox = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)["folder"]

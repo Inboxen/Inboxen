@@ -162,7 +162,7 @@ class SearchTestCase(InboxenTestCase):
     def test_search(self):
         user = factories.UserFactory()
         result = tasks.search.delay(user.id, "bizz").get()
-        self.assertItemsEqual(result.keys(), ["emails", "inboxes"])
+        self.assertCountEqual(result.keys(), ["emails", "inboxes"])
 
 
 @override_settings(
