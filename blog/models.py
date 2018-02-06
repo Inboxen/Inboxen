@@ -21,13 +21,14 @@
 from django.conf import settings
 from django.db import models
 from django.utils import safestring
-
 from django_extensions.db.fields import AutoSlugField
 import markdown
+import six
 
 from inboxen import validators
 
 
+@six.python_2_unicode_compatible
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])
@@ -44,8 +45,8 @@ class BlogPost(models.Model):
         """Render MarkDown to HTML"""
         return safestring.mark_safe(markdown.markdown(self.body))
 
-    def __unicode__(self):
-        draft = ""
+    def __str__(self):
+        draft = u""
         if self.draft:
             draft = u" (draft)"
 

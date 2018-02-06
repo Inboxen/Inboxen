@@ -20,16 +20,15 @@
 import os.path
 import re
 
+from annoying.fields import AutoOneToOneField, JSONField
+from bitfield import BitField
 from django.conf import settings
 from django.db import models, transaction
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import cached_property
-import six
-
-from annoying.fields import AutoOneToOneField, JSONField
-from bitfield import BitField
+from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
+import six
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import validators
@@ -37,6 +36,7 @@ from inboxen import validators
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 
+@six.python_2_unicode_compatible
 class UserProfile(models.Model):
     """This is auto-created when accessed via a RelatedManager
 
@@ -69,10 +69,11 @@ class UserProfile(models.Model):
 
         return left
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Profile for %s" % self.user
 
 
+@six.python_2_unicode_compatible
 class Statistic(models.Model):
     """Statistics about users"""
     date = models.DateTimeField('date', auto_now_add=True)
@@ -81,10 +82,11 @@ class Statistic(models.Model):
     emails = JSONField()
     inboxes = JSONField()
 
-    def __unicode__(self):
+    def __str__(self):
         return six.text_type(self.date)
 
 
+@six.python_2_unicode_compatible
 class Liberation(models.Model):
     """Liberation data
 
@@ -110,7 +112,7 @@ class Liberation(models.Model):
 
     path = property(get_path, set_path)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Liberation for %s" % self.user
 
 
@@ -119,6 +121,7 @@ class Liberation(models.Model):
 ##
 
 
+@six.python_2_unicode_compatible
 class Domain(models.Model):
     """Domain model
 
@@ -130,10 +133,11 @@ class Domain(models.Model):
 
     objects = DomainQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.domain
 
 
+@six.python_2_unicode_compatible
 class Inbox(models.Model):
     """Inbox model
 
@@ -156,7 +160,7 @@ class Inbox(models.Model):
 
     objects = InboxQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s@%s" % (self.inbox, self.domain.domain)
 
     def __repr__(self):
@@ -170,6 +174,7 @@ class Inbox(models.Model):
         unique_together = (('inbox', 'domain'),)
 
 
+@six.python_2_unicode_compatible
 class Request(models.Model):
     """Inbox allocation request model"""
     amount = models.IntegerField(help_text=_("Pool increase requested"))
@@ -187,7 +192,7 @@ class Request(models.Model):
             self.requester.inboxenprofile.save()
         super(Request, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Request for %s (%s)" % (self.requester, self.succeeded)
 
 ##
@@ -195,6 +200,7 @@ class Request(models.Model):
 ##
 
 
+@six.python_2_unicode_compatible
 class Email(models.Model):
     """Email model
 
@@ -214,7 +220,7 @@ class Email(models.Model):
         """Return a hexidecimal version of ID"""
         return hex(self.id)[2:].rstrip("L")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{0}".format(self.eid)
 
     def get_parts(self):
@@ -233,6 +239,7 @@ class Email(models.Model):
             return None
 
 
+@six.python_2_unicode_compatible
 class Body(models.Model):
     """Body model
 
@@ -252,10 +259,11 @@ class Body(models.Model):
             self.size = len(self.data)
         return super(Body, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.hashed
 
 
+@six.python_2_unicode_compatible
 class PartList(MPTTModel):
     """Part model
 
@@ -269,7 +277,7 @@ class PartList(MPTTModel):
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
-    def __unicode__(self):
+    def __str__(self):
         return six.text_type(self.id)
 
     @cached_property
@@ -317,6 +325,7 @@ class PartList(MPTTModel):
         return self._content_headers_cache.get("charset")
 
 
+@six.python_2_unicode_compatible
 class HeaderName(models.Model):
     """Header name model
 
@@ -324,10 +333,11 @@ class HeaderName(models.Model):
     """
     name = models.CharField(max_length=78, unique=True, validators=[validators.ProhibitNullCharactersValidator()])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
+@six.python_2_unicode_compatible
 class HeaderData(models.Model):
     """Header data model
 
@@ -336,10 +346,11 @@ class HeaderData(models.Model):
     hashed = models.CharField(max_length=80, unique=True, validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
     data = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
 
-    def __unicode__(self):
+    def __str__(self):
         return self.hashed
 
 
+@six.python_2_unicode_compatible
 class Header(models.Model):
     """Header model
 
@@ -355,5 +366,5 @@ class Header(models.Model):
 
     objects = HeaderQuerySet.as_manager()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{0}".format(self.name.name)

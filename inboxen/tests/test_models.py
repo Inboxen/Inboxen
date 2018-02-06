@@ -251,7 +251,8 @@ class ModelTestCase(InboxenTestCase):
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
 
-        self.assertEqual(type(models.Request.objects.get().__unicode__()), six.text_type)
+        request = models.Request.objects.get()
+        self.assertEqual(six.text_type(request), "Request for {} ({})".format(request.requester, request.succeeded))
 
 
 class ModelFlagsTestCase(InboxenTestCase):

@@ -265,10 +265,10 @@ class QuestionModelTestCase(InboxenTestCase):
 
     def test_unicode(self):
         question = QuestionFactory(author=self.user)
-        self.assertEqual(type(question.__unicode__()), six.text_type)
+        self.assertEqual(six.text_type(question), "{} from {}".format(question.subject, question.author))
 
         response = ResponseFactory(question=question, author=self.user)
-        self.assertEqual(type(response.__unicode__()), six.text_type)
+        self.assertEqual(six.text_type(response), "Response to {} from {} from {}".format(question.subject, question.author, response.author))
 
 
 class RenderBodyTestCase(InboxenTestCase):
