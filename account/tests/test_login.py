@@ -17,11 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.core import urlresolvers
 
+from inboxen.test import InboxenTestCase
 
-class LoginTestCase(test.TestCase):
+
+class LoginTestCase(InboxenTestCase):
     def test_missing_mgmt_data(self):
         good_data = {
             "auth-username": "user1",
