@@ -21,9 +21,9 @@ from django.conf import settings
 from django.db import models
 from django.utils import safestring
 from django.utils.translation import ugettext_lazy as _
-
 from lxml.html.clean import Cleaner
 import markdown
+import six
 
 from inboxen import validators
 from tickets import managers
@@ -45,6 +45,7 @@ class RenderBodyMixin(object):
         return safestring.mark_safe(body)
 
 
+@six.python_2_unicode_compatible
 class Question(models.Model, RenderBodyMixin):
     # status contants
     NEW = 0
@@ -83,13 +84,14 @@ class Question(models.Model, RenderBodyMixin):
         else:
             return self.last_modified
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s from %s" % (self.subject, self.author)
 
     class Meta:
         ordering = ["-date"]
 
 
+@six.python_2_unicode_compatible
 class Response(models.Model, RenderBodyMixin):
     question = models.ForeignKey(Question)
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -100,5 +102,5 @@ class Response(models.Model, RenderBodyMixin):
     class Meta:
         ordering = ["date"]
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Response to %s from %s" %(self.question, self.author)

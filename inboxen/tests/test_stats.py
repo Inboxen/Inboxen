@@ -47,7 +47,7 @@ class StatsViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
         data = json.loads(response.content)
-        self.assertItemsEqual(["dates", "users", "inboxes", "emails", "now", "read_emails", "active_users", "active_inboxes"], data.keys())
+        self.assertCountEqual(["dates", "users", "inboxes", "emails", "now", "read_emails", "active_users", "active_inboxes"], data.keys())
 
     def test_recent_missing_points(self):
         def format_date(date):
@@ -69,7 +69,7 @@ class StatsViewTestCase(InboxenTestCase):
         # remove "now" - it will be current time
         del data["now"]
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             data.items(),
             (
                 ("dates", [format_date(stat1.date), format_date(stat2.date)]),

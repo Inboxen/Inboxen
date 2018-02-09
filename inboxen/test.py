@@ -35,6 +35,7 @@ from djcelery.contrib.test_runner import CeleryTestSuiteRunner
 from sudo import settings as sudo_settings
 from sudo.middleware import SudoMiddleware
 from sudo.utils import get_random_string
+import six
 
 
 _log = logging.getLogger(__name__)
@@ -181,3 +182,9 @@ class SecureClient(test.Client):
 
 class InboxenTestCase(test.TestCase):
     client_class = SecureClient
+
+    def assertCountEqual(self, actual, expected, msg=None):
+        if six.PY3:
+            return super(InboxenTestCase, self).assertCountEqual(actual, expected, msg)
+        else:
+            return self.assertItemsEqual(actual, expected, msg)

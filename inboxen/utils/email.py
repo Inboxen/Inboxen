@@ -21,6 +21,8 @@ models.py) for emails
 
 It's in "utils" because "domain.py" would get confusing :P """
 
+from __future__ import print_function
+
 import re
 import logging
 
@@ -28,6 +30,7 @@ from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils import html as html_utils, safestring
 from django.utils.translation import ugettext as _
+import six
 
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
@@ -56,15 +59,15 @@ class InboxenPremailer(Premailer):
 
 def unicode_damnit(data, charset="utf-8", errors="replace"):
     """Makes doubley sure that we can turn the database's binary typees into
-    unicode objects
+    six.text_type objects
     """
-    if isinstance(data, unicode):
+    if isinstance(data, six.text_type):
         return data
 
     try:
-        return unicode(str(data), charset, errors)
+        return six.text_type(six.binary_type(data), charset, errors)
     except LookupError:
-        return unicode(str(data), "ascii", errors)
+        return six.text_type(six.binary_type(data), "ascii", errors)
 
 
 def _clean_html_body(request, email, body, charset):
@@ -225,7 +228,7 @@ def find_bodies(part):
     Generator that returns lists of sibling parts. Sibling parts should not be
     displayed together, but are alternatives to eachother, e.g.:
 
-        >>> print [i for i in find_bodies(root_part)]
+        >>> print([i for i in find_bodies(root_part)])
         [[part1], [html_part2, plain_part2], [part3]]
 
     Where part1 and part2 might be children of "multipart/mixed" (and they're
@@ -291,7 +294,7 @@ def print_tree(part, func=lambda x: str(x)):
     argument and returns a string
     """
     indent = "\t" * part.get_level()
-    print "{}{}".format(indent, func(part))
+    print("{}{}".format(indent, func(part)))
 
     for child in part.get_children():
         print_tree(child, func)

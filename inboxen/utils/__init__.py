@@ -50,7 +50,7 @@ def generate_maintenance_page():
     rendered = template.render(context)
 
     try:
-        os.mkdir(output_dir, 0711)
+        os.mkdir(output_dir, 0o711)
     except OSError:
         pass
 

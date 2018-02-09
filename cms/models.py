@@ -39,7 +39,7 @@ from cms.fields import (
 from inboxen import validators
 
 
-HELP_PAGE_TAGS = DEFAULT_ALLOW_TAGS + ["h%s" % i for i in xrange(1, 6)]
+HELP_PAGE_TAGS = DEFAULT_ALLOW_TAGS + ["h%s" % i for i in range(1, 6)]
 HELP_PAGE_ATTRS = DEFAULT_SAFE_ATTRS + ["id"]
 HELP_PAGE_EXTENSIONS = DEFAULT_MARKDOWN_EXTENSIONS + ["markdown.extensions.toc"]
 HELP_PAGE_EXTENSION_CONFIGS = {"markdown.extensions.toc": {"anchorlink": True}}

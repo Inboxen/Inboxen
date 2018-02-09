@@ -48,7 +48,7 @@ class PasswordFieldTestCase(InboxenTestCase):
             u'You password should contain at least 2 of the following: letters, numbers, spaces, punctuation.',
         ]
 
-        self.assertItemsEqual(validation_errors, errors)
+        self.assertCountEqual(validation_errors, errors)
 
     def test_field_min(self):
         password = "a !"

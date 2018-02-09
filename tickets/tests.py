@@ -18,6 +18,7 @@
 ##
 
 import mock
+import six
 
 from django import test
 from django.core import mail, urlresolvers
@@ -264,10 +265,10 @@ class QuestionModelTestCase(InboxenTestCase):
 
     def test_unicode(self):
         question = QuestionFactory(author=self.user)
-        self.assertEqual(type(question.__unicode__()), unicode)
+        self.assertEqual(six.text_type(question), "{} from {}".format(question.subject, question.author))
 
         response = ResponseFactory(question=question, author=self.user)
-        self.assertEqual(type(response.__unicode__()), unicode)
+        self.assertEqual(six.text_type(response), "Response to {} from {} from {}".format(question.subject, question.author, response.author))
 
 
 class RenderBodyTestCase(InboxenTestCase):
@@ -302,7 +303,7 @@ class RenderBodyTestCase(InboxenTestCase):
 class RenderStatus(InboxenTestCase):
     def test_render(self):
         result = tickets_flags.render_status(models.Question.NEW)
-        self.assertIn(unicode(tickets_flags.STATUSES[models.Question.NEW]), result)
-        self.assertIn(unicode(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
+        self.assertIn(six.text_type(tickets_flags.STATUSES[models.Question.NEW]), result)
+        self.assertIn(six.text_type(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
 
         self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)

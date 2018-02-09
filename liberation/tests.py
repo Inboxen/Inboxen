@@ -18,7 +18,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from StringIO import StringIO
 from importlib import import_module
 import base64
 import itertools
@@ -36,6 +35,7 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse
 from salmon import mail
+from six import StringIO
 
 from inboxen import models
 from inboxen.tests.example_emails import (
@@ -94,7 +94,7 @@ class LiberateTestCase(InboxenTestCase):
         self.assertTrue(os.path.exists(os.path.join(self.mail_dir, '.' + result["folder"])))
 
         email_ids = models.Email.objects.filter(inbox=self.inboxes[0]).values_list("id", flat=True)
-        self.assertItemsEqual(email_ids, result["ids"])
+        self.assertCountEqual(email_ids, result["ids"])
 
     def test_liberate_message(self):
         inbox = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)["folder"]
