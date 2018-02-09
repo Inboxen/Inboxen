@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Add work-around for Django-Two-Factor-Auth bug in LoginView (#292)
 * Set X-XSS-Protection to something other than its dangerous default (#297)
 * Set HSTS headers in Django - this makes HSTS no longer optional (#298)
 * Test security features (#298)
