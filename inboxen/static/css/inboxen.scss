@@ -20,6 +20,7 @@ $font-family-monospace:   monospace;
  */
 
 $profile-margin: 10px;
+$honeydew-button-size: 1em;
 
 html {
     position: relative;
@@ -79,12 +80,22 @@ body {
             padding: $table-cell-padding;
         }
 
-        &:hover {
+        & > a.clickable {
+            &:hover, &:focus-within, &:focus {
+                & > div {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+        &:hover, &:focus-within, &:focus {
             background-color: $table-bg-hover;
         }
 
-        &.title:hover, &.inbox-edit-form-row:hover, &.empty-message:hover, &.more-questions:hover {
-            background-color: initial;
+        &.title, &.inbox-edit-form-row, &.empty-message, &.more-questions {
+            &:hover, &:focus-within, &:focus {
+                background-color: initial;
+            }
         }
     }
 
@@ -116,7 +127,7 @@ body {
 #unified {
     background-color: $state-warning-bg;
 
-    &:hover {
+    &:hover, &:focus-within, &:focus {
         background-color: darken($state-warning-bg, 5%);
     }
 }
@@ -157,8 +168,17 @@ body {
 }
 
 .email-buttons, .inbox-options {
+    text-align: right;
+
     .close {
         margin: 5px;
+        display: inline-block;
+        float: none;
+    }
+
+    .fa-fw {
+        height: $honeydew-button-size;
+        width: $honeydew-button-size;
     }
 }
 
@@ -204,6 +224,10 @@ a.soon {
     &:hover ~ .navbar-toggle,
     &:focus ~ .navbar-toggle {
         background-color: $navbar-default-toggle-hover-bg;
+    }
+
+    @media (min-width: $screen-sm-min) {
+        display: none;
     }
 }
 
