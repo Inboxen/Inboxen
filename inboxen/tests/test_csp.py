@@ -18,11 +18,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.core.urlresolvers import reverse
 
+from inboxen.test import InboxenTestCase
 
-class CSPTestCase(test.TestCase):
+
+class CSPTestCase(InboxenTestCase):
     def test_csp_report_view(self):
         url = reverse("csp_logger")
         response = self.client.post(url)

@@ -24,17 +24,18 @@ from django.conf import settings as dj_settings
 from django.core import urlresolvers
 
 from inboxen import models
-from inboxen.tests import factories, utils
+from inboxen.tests import factories
+from inboxen.test import InboxenTestCase, MockRequest
 
 
-class HomeViewTestCase(test.TestCase):
+class HomeViewTestCase(InboxenTestCase):
     def setUp(self):
         super(HomeViewTestCase, self).setUp()
         self.user = factories.UserFactory()
         domain = factories.DomainFactory()
         self.inboxes = factories.InboxFactory.create_batch(150, domain=domain, user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")

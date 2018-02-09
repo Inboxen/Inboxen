@@ -24,9 +24,10 @@ from django.template import Template, Context
 import mock
 
 from account.templatetags import inboxen_account
+from inboxen.test import InboxenTestCase
 
 
-class AccountMenuTestCase(test.TestCase):
+class AccountMenuTestCase(InboxenTestCase):
 
     def test_handles_utf8(self):
         test_dict = (("user-settings", u"☃"),)

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,13 +17,28 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django import test
 from django.core import urlresolvers
 
-from inboxen.test import InboxenTestCase
+from inboxen.tests import factories, utils
 
 
-class SourceViewTestCase(InboxenTestCase):
-    def test_get(self):
-        url = urlresolvers.reverse("source-index")
-        response = self.client.get(url)
+class LoginTestCase(test.TestCase):
+    def test_missing_mgmt_data(self):
+        good_data = {
+            "auth-username": "user1",
+            "auth-username": "pass1",
+            "login_view-current_step": "auth",
+        }
+
+        response = self.client.post(urlresolvers.reverse("user-login"), good_data)
+        # form was validated and *form* errors returned
         self.assertEqual(response.status_code, 200)
+
+        bad_data = {
+            "auth-username": "user1",
+            "auth-username": "pass1",
+        }
+        response = self.client.post(urlresolvers.reverse("user-login"), bad_data)
+        # Bad request, but no exception generated
+        self.assertEqual(response.status_code, 400)

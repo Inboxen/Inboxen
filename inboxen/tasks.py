@@ -21,7 +21,6 @@ from datetime import datetime, timedelta
 from importlib import import_module
 import gc
 import logging
-import urllib
 
 from django.apps import apps
 from django.conf import settings
@@ -31,6 +30,7 @@ from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When, IntegerField
 from django.db.models.functions import Coalesce
+from six.moves import urllib
 
 from pytz import utc
 from watson import search as watson_search
@@ -219,7 +219,7 @@ def search(user_id, search_term):
     }
 
     key = u"{0}-{1}".format(user_id, search_term)
-    key = urllib.quote(key.encode("utf-8"))
+    key = urllib.parse.quote(key.encode("utf-8"))
 
     cache.set(key, results, SEARCH_TIMEOUT)
 

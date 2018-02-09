@@ -46,14 +46,9 @@ INBOX_CHOICES = string.ascii_lowercase
 # variable DJANGO_SETTINGS_MODULE to your module. See Django docs for details
 ##
 
+# assets building options
 ASSETS_DEBUG = DEBUG
 ASSETS_AUTO_BUILD = DEBUG
-
-if not DEBUG:
-    # These security settings are annoying while debugging
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
 
 ##
 # Celery options
@@ -103,7 +98,7 @@ MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
-TEST_RUNNER = 'inboxen.utils.InboxenTestRunner'
+TEST_RUNNER = 'inboxen.test.InboxenTestRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
 
@@ -179,6 +174,7 @@ MIDDLEWARE_CLASSES = (
     'async_messages.middleware.AsyncMiddleware',
     'inboxen.middleware.RateLimitMiddleware',
     'inboxen.middleware.ExtendSessionMiddleware',
+    'inboxen.middleware.MakeXSSFilterChromeSafeMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sudo.middleware.SudoMiddleware',
     'csp.middleware.CSPMiddleware',
@@ -219,11 +215,6 @@ INSTALLED_APPS = (
     'tickets',
 )
 
-SILENCED_SYSTEM_CHECKS = [
-    "security.W004",  # HSTS should be done via the HTTPd
-    "security.W007",  # doesn't affect Firefox and Chrome?
-]
-
 ROOT_URLCONF = 'inboxen.urls'
 
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")
@@ -234,6 +225,14 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
 X_FRAME_OPTIONS = "DENY"
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+
+# HSTS
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # CSP settings
 CSP_REPORT_ONLY = False
@@ -246,14 +245,7 @@ CSP_IMG_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'",)
 
-if DEBUG:
-    # local dev made easy
-    INTERNAL_IPS = ["127.0.0.1"]
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
-    CSP_REPORT_ONLY = True
-
+CSRF_COOKIE_SECURE = True
 CSRF_USE_SESSIONS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
 
@@ -277,11 +269,12 @@ SALMON_SERVER = {"host": "localhost", "port": 8823, "type": "smtp"}
 try:
     process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=BASE_DIR)
     output = process.communicate()[0].strip()
+    output = output.decode()
     if not process.returncode:
         os.environ["INBOXEN_COMMIT_ID"] = output
     else:
         os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
-except OSError, TypeError:
+except (OSError, TypeError):
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
 EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
@@ -362,3 +355,14 @@ LOGGING = {
         },
     },
 }
+
+if DEBUG:
+    # local dev made easy
+    INTERNAL_IPS = ["127.0.0.1"]
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
+    CSP_REPORT_ONLY = True
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False

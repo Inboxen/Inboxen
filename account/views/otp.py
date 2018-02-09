@@ -19,11 +19,11 @@
 
 from django import forms
 from django.contrib import messages
+from django.core.exceptions import ValidationError, SuspiciousOperation
 from django.utils.translation import ugettext as _
-
+from sudo.decorators import sudo_required
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
-from sudo.decorators import sudo_required
 
 from account.forms import PlaceHolderAuthenticationForm
 from account.decorators import anonymous_required
@@ -42,6 +42,12 @@ class LoginView(core.LoginView):
             return {"request": self.request}
         else:
             return super(LoginView, self).get_form_kwargs(step)
+
+    def post(self, *args, **kwargs):
+        try:
+            return super(LoginView, self).post(*args, **kwargs)
+        except ValidationError:
+            raise SuspiciousOperation("ManagementForm data is missing or has been tampered.")
 
 
 class TwoFactorSetupView(core.SetupView):
@@ -66,6 +72,12 @@ class TwoFactorSetupView(core.SetupView):
             context["secret"] = self.request.session[self.session_key_name]
 
         return context
+
+    def post(self, *args, **kwargs):
+        try:
+            return super(TwoFactorSetupView, self).post(*args, **kwargs)
+        except ValidationError:
+            raise SuspiciousOperation("ManagementForm data is missing or has been tampered.")
 
 
 backup_view = sudo_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", success_url="user-twofactor-backup"))

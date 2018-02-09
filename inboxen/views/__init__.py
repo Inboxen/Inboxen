@@ -20,4 +20,4 @@ from .index import *
 from .stats import *
 from .styleguide import styleguide
 from .user import *
-import error
+from . import error

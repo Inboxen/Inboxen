@@ -17,13 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.core import urlresolvers
 
+from inboxen.test import InboxenTestCase
 import redirect
 
 
-class RedirectTestCase(test.TestCase):
+class RedirectTestCase(InboxenTestCase):
     def test_get(self):
         url = urlresolvers.reverse("redirect")
         url = "%s?url=/" % url

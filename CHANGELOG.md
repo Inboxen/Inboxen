@@ -3,6 +3,12 @@
 ## Pending
 
 * Improve keyboard accessibility on home and inbox pages (#278)
+* Add work-around for Django-Two-Factor-Auth bug in LoginView (#292)
+* Set X-XSS-Protection to something other than its dangerous default (#297)
+* Set HSTS headers in Django - this makes HSTS no longer optional (#298)
+* Test security features (#298)
+* Used Sixer to make source code compatible with Python 3
+  * This is just a first step ot make Inboxen work on Python 3
 
 ## Releases
 

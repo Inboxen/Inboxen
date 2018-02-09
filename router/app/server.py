@@ -76,7 +76,7 @@ def process_message(message, inbox=None, domain=None):
             profile.flags.unified_has_new_messages = True
             profile.save(update_fields=["flags"])
 
-    except DatabaseError, e:
+    except DatabaseError as e:
         log.exception("DB error: %s", e)
         raise SMTPError(451, "Error processing message, try again later.")
     except Inbox.DoesNotExist:
