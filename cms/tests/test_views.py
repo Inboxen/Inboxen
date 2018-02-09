@@ -17,7 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
@@ -26,16 +25,17 @@ from django.urls.exceptions import NoReverseMatch
 
 from cms import models, views
 from cms.tests import factories
-from inboxen.tests import utils, factories
+from inboxen.tests import factories
+from inboxen.test import InboxenTestCase, MockRequest, grant_sudo, grant_otp
 
 
-class PageTestCase(test.TestCase):
+class PageTestCase(InboxenTestCase):
     def setUp(self):
         models.HelpBasePage.objects.update(live=True)
         self.user = factories.UserFactory()
 
     def test_view(self):
-        request = utils.MockRequest(user=self.user)
+        request = MockRequest(user=self.user)
 
         response = views.page(request, "")
         self.assertEqual(response.status_code, 200)
@@ -44,7 +44,7 @@ class PageTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_integration(self):
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user)), \
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         response = self.client.get(reverse("cms-index", args=("",)))
@@ -56,17 +56,17 @@ class PageTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class AdminIndexTestCase(test.TestCase):
+class AdminIndexTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
         """Check URLs are attached to the correct view"""
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user)), \
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
-        utils.grant_otp(self.client, self.user)
-        utils.grant_sudo(self.client)
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
 
         response = self.client.get(reverse("admin:index"))
         self.assertEqual(response.resolver_match.func, views.index)
@@ -79,7 +79,7 @@ class AdminIndexTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_index(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
 
         response = views.index(request)
         self.assertEqual(response.status_code, 200)
@@ -101,7 +101,7 @@ class AdminIndexTestCase(test.TestCase):
 
 
     def test_child_page(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
 
         response = views.index(request, page_pk=page.pk)
@@ -114,7 +114,7 @@ class AdminIndexTestCase(test.TestCase):
         self.assertEqual(breadcrumbs, [page.parent, page])
 
     def test_404(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
 
         with self.assertRaises(Http404):
             views.index(request, page_pk="123")
@@ -123,17 +123,17 @@ class AdminIndexTestCase(test.TestCase):
         self.assertIn(views.is_secure_admin, views.index._inboxen_decorators)
 
 
-class ChoosePageTypeTestCase(test.TestCase):
+class ChoosePageTypeTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
         """Check URLs are attached to the correct view"""
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user)), \
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
-        utils.grant_otp(self.client, self.user)
-        utils.grant_sudo(self.client)
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
 
         parent_pk = models.HelpIndex.objects.get().pk
         response = self.client.get(reverse("admin:choose-page-type", kwargs={"parent_pk": parent_pk}))
@@ -141,7 +141,7 @@ class ChoosePageTypeTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_choose_type_get(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=True).get()
 
         response = views.choose_page_type(request, parent_pk=page.pk)
@@ -154,7 +154,7 @@ class ChoosePageTypeTestCase(test.TestCase):
         self.assertEqual(breadcrumbs, [page])
 
     def test_404(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
 
         with self.assertRaises(Http404):
             views.choose_page_type(request, parent_pk=123)
@@ -163,17 +163,17 @@ class ChoosePageTypeTestCase(test.TestCase):
         self.assertIn(views.is_secure_admin, views.choose_page_type._inboxen_decorators)
 
 
-class CreatePageTestCase(test.TestCase):
+class CreatePageTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
         """Check URLs are attached to the correct view"""
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user)), \
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
-        utils.grant_otp(self.client, self.user)
-        utils.grant_sudo(self.client)
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
 
         parent_pk = models.HelpIndex.objects.get().pk
         response = self.client.get(reverse("admin:create-page", kwargs={"model": "helpindex", "parent_pk": parent_pk}))
@@ -181,14 +181,14 @@ class CreatePageTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_create_page_get(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
 
         page = models.HelpBasePage.objects.filter(parent__isnull=True).get()
         response = views.create_page(request, "helppage", page.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_create_page_post(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         request.method = "POST"
         request.POST = {"title": "Test Page", "slug": "test-page"}
 
@@ -206,7 +206,7 @@ class CreatePageTestCase(test.TestCase):
         self.assertEqual(new_page.specific_class, models.HelpPage)
 
     def test_404(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=True).get()
 
         with self.assertRaises(Http404):
@@ -222,17 +222,17 @@ class CreatePageTestCase(test.TestCase):
         self.assertIn(views.is_secure_admin, views.create_page._inboxen_decorators)
 
 
-class EditPageTestCase(test.TestCase):
+class EditPageTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
         """Check URLs are attached to the correct view"""
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user)), \
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
-        utils.grant_otp(self.client, self.user)
-        utils.grant_sudo(self.client)
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
 
         parent_pk = models.HelpIndex.objects.get().pk
         response = self.client.get(reverse("admin:edit-page", kwargs={"page_pk": parent_pk}))
@@ -240,14 +240,14 @@ class EditPageTestCase(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_edit_page_get(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
 
         response = views.edit_page(request, page_pk=page.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_edit_page_post(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         request.method = "POST"
         request.POST = {"title": "Test Page", "slug": "test-page"}
         page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
@@ -265,7 +265,7 @@ class EditPageTestCase(test.TestCase):
         self.assertEqual(page.slug, "test-page")
 
     def test_404(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
 
         with self.assertRaises(Http404):
             views.edit_page(request, page_pk="123")
@@ -274,31 +274,31 @@ class EditPageTestCase(test.TestCase):
         self.assertIn(views.is_secure_admin, views.edit_page._inboxen_decorators)
 
 
-class DeletePageTestCase(test.TestCase):
+class DeletePageTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
         """Check URLs are attached to the correct view"""
-        assert self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user)), \
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
-        utils.grant_otp(self.client, self.user)
-        utils.grant_sudo(self.client)
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
 
         response = self.client.get(reverse("admin:delete-page", kwargs={"page_pk": 1}))
         self.assertEqual(response.resolver_match.func, views.delete_page)
         self.assertEqual(response.status_code, 404)
 
     def test_delete_page_get(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
 
         response = views.delete_page(request, page_pk=page.pk)
         self.assertEqual(response.status_code, 200)
 
     def test_delete_page_post(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         request.method = "POST"
         request.POST = {}
 
@@ -320,7 +320,7 @@ class DeletePageTestCase(test.TestCase):
             page.refresh_from_db()
 
     def test_404(self):
-        request = utils.MockRequest(self.user, has_otp=True, has_sudo=True)
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
 
         # page parent can't be deleted yet

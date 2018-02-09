@@ -17,12 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from StringIO import StringIO
 from email.header import Header
 from email.message import Message
 import base64
 import quopri
 import uu
+
+from six import StringIO
 
 from inboxen.models import HEADER_PARAMS
 

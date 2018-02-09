@@ -30,12 +30,12 @@ from config import settings
 __all__ = ["settings"]
 
 try:
-    os.mkdir("logs", 0700)
+    os.mkdir("logs", 0o700)
 except OSError:
     pass
 
 try:
-    os.mkdir("run", 0710)  # group can access files in "run"
+    os.mkdir("run", 0o710)  # group can access files in "run"
 except OSError:
     pass
 

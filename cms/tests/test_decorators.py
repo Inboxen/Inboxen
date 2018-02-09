@@ -19,7 +19,6 @@
 
 import itertools
 
-from django import test
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
@@ -28,7 +27,7 @@ import mock
 
 from cms.decorators import is_secure_admin
 from inboxen.tests.factories import UserFactory
-from inboxen.tests.utils import MockRequest
+from inboxen.test import MockRequest, InboxenTestCase
 
 
 @is_secure_admin
@@ -36,7 +35,7 @@ def test_view(requset):
     return HttpResponse()
 
 
-class IsSecureAdminTestCase(test.TestCase):
+class IsSecureAdminTestCase(InboxenTestCase):
     def setUp(self):
         self.user = UserFactory()
 

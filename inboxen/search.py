@@ -21,6 +21,7 @@ from django.core import exceptions
 from django.db.models import Q
 
 from watson import search
+import six
 
 from inboxen.utils.email import unicode_damnit, find_bodies
 
@@ -62,7 +63,7 @@ class EmailSearchAdapter(search.SearchAdapter):
         """Fetch first text/plain body for obj, reading up to `trunc_to_size`
         bytes
         """
-        bodies = find_bodies(obj.get_parts()).next()
+        bodies = six.next(find_bodies(obj.get_parts()))
 
         if bodies is not None:
             return choose_body(bodies)[:self.trunc_to_size]

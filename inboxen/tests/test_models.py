@@ -20,21 +20,21 @@
 import datetime
 import itertools
 
-from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from pytz import utc
 import mock
+import six
 
 from inboxen import models
 from inboxen.tests import factories
-from inboxen.utils import override_settings
+from inboxen.test import override_settings, InboxenTestCase
 
 
 User = get_user_model()
 
 
-class ModelTestCase(test.TestCase):
+class ModelTestCase(InboxenTestCase):
     """Test our custom methods"""
     def test_domain_queryset_methods(self):
         user = factories.UserFactory()
@@ -251,10 +251,11 @@ class ModelTestCase(test.TestCase):
         profile.available_inboxes()
         self.assertEqual(models.Request.objects.count(), 1)
 
-        self.assertEqual(type(models.Request.objects.get().__unicode__()), unicode)
+        request = models.Request.objects.get()
+        self.assertEqual(six.text_type(request), "Request for {} ({})".format(request.requester, request.succeeded))
 
 
-class ModelFlagsTestCase(test.TestCase):
+class ModelFlagsTestCase(InboxenTestCase):
     def test_email_flags_order(self):
         # DON'T CHANGE ORDER OF THIS LIST
         flag_order = [
@@ -308,7 +309,7 @@ class ModelFlagsTestCase(test.TestCase):
         self.assertEqual(flag_order, liberation_flags)
 
 
-class ModelReprTestCase(test.TestCase):
+class ModelReprTestCase(InboxenTestCase):
     """Repr is very useful when debugging via the shell"""
 
     def test_body(self):

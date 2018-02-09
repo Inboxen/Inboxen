@@ -29,7 +29,7 @@ from salmon.mail import MailRequest
 from salmon.server import SMTPError
 from salmon.routing import Router
 
-from inboxen.utils import override_settings
+from inboxen.test import override_settings, InboxenTestCase
 from inboxen import models
 from inboxen.tests import factories
 from router.app.helpers import make_email
@@ -81,7 +81,7 @@ BODIES = [
 ]
 
 
-class RouterTestCase(test.TestCase):
+class RouterTestCase(InboxenTestCase):
     def setUp(self):
         sys.path.append("router")
 

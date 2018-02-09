@@ -17,14 +17,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.core import urlresolvers
 
 import factory
 import factory.fuzzy
+import six
 
 from blog import models, forms
 from inboxen.tests import factories
+from inboxen.test import InboxenTestCase
 
 BODY = """
 Hey there!
@@ -48,7 +49,7 @@ class BlogPostFactory(factory.django.DjangoModelFactory):
     body = factory.fuzzy.FuzzyText()
 
 
-class BlogTestCase(test.TestCase):
+class BlogTestCase(InboxenTestCase):
     def test_blog_index(self):
         user = factories.UserFactory()
         BlogPostFactory.create_batch(10, draft=False, author=user)
@@ -71,7 +72,7 @@ class BlogTestCase(test.TestCase):
         self.assertEqual(post.subject, SUBJECT)
         self.assertEqual(post.body, BODY)
         self.assertEqual(post.date, None)
-        self.assertEqual(type(post.__unicode__()), unicode)
+        self.assertEqual(six.text_type(post), "{} (draft)".format(post.subject))
 
         url = urlresolvers.reverse('blog-post', kwargs={"slug": post.slug})
 
@@ -84,6 +85,7 @@ class BlogTestCase(test.TestCase):
         post = models.BlogPost.objects.get()
         self.assertNotEqual(post.date, None)
         self.assertNotEqual(post.modified, old_mod)
+        self.assertEqual(six.text_type(post), "{}".format(post.subject))
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

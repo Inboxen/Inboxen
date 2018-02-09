@@ -23,14 +23,15 @@ from django import test
 from django.core import urlresolvers
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
-from inboxen.tests import factories, utils
+from inboxen.test import InboxenTestCase, MockRequest
+from inboxen.tests import factories
 
 
-class OtpTestCase(test.TestCase):
+class OtpTestCase(InboxenTestCase):
     def setUp(self):
         super(OtpTestCase, self).setUp()
         self.user = factories.UserFactory()
-        login = self.client.login(username=self.user.username, password="123456", request=utils.MockRequest(self.user))
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         if not login:
             raise Exception("Could not log in")
