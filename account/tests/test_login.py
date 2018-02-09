@@ -20,8 +20,6 @@
 from django import test
 from django.core import urlresolvers
 
-from inboxen.tests import factories, utils
-
 
 class LoginTestCase(test.TestCase):
     def test_missing_mgmt_data(self):
