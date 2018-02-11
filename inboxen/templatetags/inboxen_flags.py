@@ -19,17 +19,19 @@
 from __future__ import unicode_literals
 
 from django import template
-from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
+from inboxen.utils.flags import create_render_bitfield_template_tag
+
+
 register = template.Library()
+
 
 FLAGS_TO_TAGS = {
     "new": {
         "title": ugettext_lazy("New messages"),
         "str": ugettext_lazy("New"),
         "class": "label-primary",
-        "inverse": False,
     },
     "seen": {
         "title": ugettext_lazy("New message"),
@@ -47,47 +49,22 @@ FLAGS_TO_TAGS = {
         "title": ugettext_lazy("Message has been marked as important"),
         "str": ugettext_lazy("Important"),
         "class": "label-danger",
-        "inverse": False,
     },
     "pinned": {
         "title": ugettext_lazy("Inbox has been pinned"),
         "str": ugettext_lazy("Pinned"),
         "class": "label-warning",
-        "inverse": False,
     },
     "disabled": {
         "title": ugettext_lazy("Inbox has been disabled"),
         "str": ugettext_lazy("Disabled"),
         "class": "label-default",
-        "inverse": False,
+        "singleton": True,
     },
 }
 
 # alias certain flags
 FLAGS_TO_TAGS["unified_has_new_messages"] = FLAGS_TO_TAGS["new"]
 
-LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
-
-
-@register.filter()
-def render_flags(flags_obj):
-    """Takes a Bitfield BitHandler from an object and outputs Bootstrap labels"""
-    if getattr(flags_obj, "disabled", False):
-        return safestring.mark_safe(LABEL_STR.format(**FLAGS_TO_TAGS["disabled"]))
-
-    flags = []
-    for name, value in flags_obj:
-        if name not in FLAGS_TO_TAGS:
-            continue
-        flag = FLAGS_TO_TAGS[name]
-
-        # flag["inverse"] is also the flag value when it is *not* displayed
-        if value == flag["inverse"]:
-            continue
-
-        flags.append(LABEL_STR.format(**flag))
-    if len(flags) > 0:
-        flags = "".join(flags)
-        return safestring.mark_safe(flags)
-    else:
-        return safestring.mark_safe("&nbsp;")
+render_flags = create_render_bitfield_template_tag(FLAGS_TO_TAGS)
+register.filter("render_flags", render_flags)

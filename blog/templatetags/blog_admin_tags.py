@@ -22,7 +22,11 @@ from django import template
 from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
+from inboxen.utils.flags import create_render_bool_template_tag
+
+
 register = template.Library()
+
 
 DRAFT_TO_TAGS = {
     True: {
@@ -37,11 +41,6 @@ DRAFT_TO_TAGS = {
     },
 }
 
-LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
 
-
-@register.filter()
-def render_draft(draft):
-    flag = DRAFT_TO_TAGS[draft]
-
-    return safestring.mark_safe(LABEL_STR.format(**flag))
+render_draft = create_render_bool_template_tag(DRAFT_TO_TAGS)
+register.filter("render_draft", render_draft)

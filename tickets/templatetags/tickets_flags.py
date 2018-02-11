@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2016 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2016, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -19,37 +19,41 @@
 from __future__ import unicode_literals
 
 from django import template
-from django.utils import safestring
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
 
+from inboxen.utils.flags import create_render_bool_template_tag
 from tickets.models import Question
+
 
 register = template.Library()
 
-LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{str}\">{str}</span></div>"
 
-STATUSES = {k: v for k, v in Question.STATUS_CHOICES}
+STATUS = {k: v for k, v in Question.STATUS_CHOICES}
+
 
 STATUS_TO_TAGS = {
     Question.NEW: {
-        "str": STATUSES[Question.NEW],
+        "title": ugettext_lazy("New question"),
+        "str": STATUS[Question.NEW],
         "class": "label-primary",
     },
     Question.IN_PROGRESS: {
-        "str": STATUSES[Question.IN_PROGRESS],
+        "title": ugettext_lazy("In progress"),
+        "str": STATUS[Question.IN_PROGRESS],
         "class": "label-info",
     },
     Question.NEED_INFO: {
-        "str": STATUSES[Question.NEED_INFO],
-        "class": "label-danger",
+        "title": ugettext_lazy("Need more info from user"),
+        "str": STATUS[Question.NEED_INFO],
+        "class": "label-warning",
     },
     Question.RESOLVED: {
-        "str": STATUSES[Question.RESOLVED],
+        "title": ugettext_lazy("Resolved question"),
+        "str": STATUS[Question.RESOLVED],
         "class": "label-default",
     },
 }
 
 
-@register.filter()
-def render_status(status):
-    return safestring.mark_safe(LABEL_STR.format(**STATUS_TO_TAGS[status]))
+render_status = create_render_bool_template_tag(STATUS_TO_TAGS)
+register.filter("render_status", render_status)

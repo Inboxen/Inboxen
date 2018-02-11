@@ -19,10 +19,13 @@
 from __future__ import unicode_literals
 
 from django import template
-from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
+from inboxen.utils.flags import create_render_bool_template_tag
+
+
 register = template.Library()
+
 
 DOMAIN_TO_TAGS = {
     True: {
@@ -57,18 +60,9 @@ REQUEST_TO_TAGS = {
 }
 
 
-LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
+render_domain = create_render_bool_template_tag(DOMAIN_TO_TAGS)
+register.filter("render_domain", render_domain)
 
 
-@register.filter()
-def render_domain(enabled):
-    flag = DOMAIN_TO_TAGS[enabled]
-
-    return safestring.mark_safe(LABEL_STR.format(**flag))
-
-
-@register.filter()
-def render_request(succeeded):
-    flag = REQUEST_TO_TAGS[succeeded]
-
-    return safestring.mark_safe(LABEL_STR.format(**flag))
+render_request = create_render_bool_template_tag(REQUEST_TO_TAGS)
+register.filter("render_request", render_request)

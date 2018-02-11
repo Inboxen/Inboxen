@@ -22,8 +22,11 @@ from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
 from cms.utils import app_reverse
+from inboxen.utils.flags import create_render_bool_template_tag
+
 
 register = template.Library()
+
 
 LIVE_TO_TAGS = {
     True: {
@@ -46,8 +49,6 @@ IN_MENU_TO_TAGS = {
     },
 }
 
-LABEL_STR = "<div class=\"inline-block__wrapper\"><span class=\"label {class}\" title=\"{title}\">{str}</span></div>"
-
 
 @register.simple_tag(takes_context=True)
 def app_url(context, viewname, *args, **kwargs):
@@ -56,19 +57,9 @@ def app_url(context, viewname, *args, **kwargs):
     return app_reverse(request.page, viewname, args, kwargs)
 
 
-@register.filter()
-def render_live(live):
-    flag = LIVE_TO_TAGS[live]
-
-    return safestring.mark_safe(LABEL_STR.format(**flag))
+render_live = create_render_bool_template_tag(LIVE_TO_TAGS)
+register.filter("render_live", render_live)
 
 
-@register.filter()
-def render_in_menu(in_menu):
-    try:
-        flag = IN_MENU_TO_TAGS[in_menu]
-        output = LABEL_STR.format(**flag)
-    except KeyError:
-        output = "&nbsp;"
-
-    return safestring.mark_safe(output)
+render_in_menu = create_render_bool_template_tag(IN_MENU_TO_TAGS)
+register.filter("render_in_menu", render_in_menu)

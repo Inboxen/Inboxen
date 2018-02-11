@@ -303,7 +303,7 @@ class RenderBodyTestCase(InboxenTestCase):
 class RenderStatus(InboxenTestCase):
     def test_render(self):
         result = tickets_flags.render_status(models.Question.NEW)
-        self.assertIn(six.text_type(tickets_flags.STATUSES[models.Question.NEW]), result)
+        self.assertIn(six.text_type(tickets_flags.STATUS[models.Question.NEW]), result)
         self.assertIn(six.text_type(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
 
         self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
