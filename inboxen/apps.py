@@ -43,5 +43,4 @@ class InboxenConfig(AppConfig):
         watson_search.register(Email, search.EmailSearchAdapter)
         watson_search.register(Inbox, search.InboxSearchAdapter)
 
-        pre_save.connect(signals.decided_checker, sender=Request, dispatch_uid="request_decided_checker")
         user_logged_out.connect(signals.logout_message)

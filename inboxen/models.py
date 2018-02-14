@@ -188,8 +188,8 @@ class Request(models.Model):
 
     def save(self, *args, **kwargs):
         if self.succeeded:
-            self.requester.inboxenprofile.pool_amount = self.amount
-            self.requester.inboxenprofile.save()
+            self.requester.inboxenprofile.pool_amount = models.F("pool_amount") + self.amount
+            self.requester.inboxenprofile.save(update_fields=["pool_amount"])
         super(Request, self).save(*args, **kwargs)
 
     def __str__(self):
