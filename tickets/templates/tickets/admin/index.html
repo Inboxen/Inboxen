@@ -1,6 +1,6 @@
 {# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends "cms/admin/base.html" %}
-{% load i18n %}
+{% load i18n tickets_flags %}
 
 {% block headline %}{% trans "Questions" %}{% endblock %}
 
@@ -15,6 +15,7 @@
 <table class="table table-hover">
     <thead><tr>
             <th>{% trans "Subject" %}</th>
+            <th>{% trans "Asker" %}</th>
             <th>{% trans "Date" %}</th>
             <th>{% trans "Status" %}</th>
             <th>&nbsp;</th>
@@ -23,8 +24,9 @@
     {% for question in questions %}
     <tr>
         <td>{{ question.subject }}</td>
+        <td>{{ question.author.username }}</td>
         <td>{{ question.date }}</td>
-        <td>{{ question.status }}</td>
+        <td>{{ question.status|render_status }}</td>
         <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:tickets:response" question_pk=question.pk %}">
             <span class="sr-only">{% trans "View question" %}</span>
         </a></td>

@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2016, 2018 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -22,38 +22,47 @@ from django import template
 from django.utils.translation import ugettext_lazy
 
 from inboxen.utils.flags import create_render_bool_template_tag
-from tickets.models import Question
 
 
 register = template.Library()
 
 
-STATUS = {k: v for k, v in Question.STATUS_CHOICES}
-
-
-STATUS_TO_TAGS = {
-    Question.NEW: {
-        "title": ugettext_lazy("New question"),
-        "str": STATUS[Question.NEW],
+DOMAIN_TO_TAGS = {
+    True: {
+        "title": ugettext_lazy("Domain enabled"),
+        "str": ugettext_lazy("Enabled"),
         "class": "label-primary",
     },
-    Question.IN_PROGRESS: {
-        "title": ugettext_lazy("In progress"),
-        "str": STATUS[Question.IN_PROGRESS],
-        "class": "label-info",
-    },
-    Question.NEED_INFO: {
-        "title": ugettext_lazy("Need more info from user"),
-        "str": STATUS[Question.NEED_INFO],
-        "class": "label-warning",
-    },
-    Question.RESOLVED: {
-        "title": ugettext_lazy("Resolved question"),
-        "str": STATUS[Question.RESOLVED],
+    False: {
+        "title": ugettext_lazy("Domain disabled"),
+        "str": ugettext_lazy("Disabled"),
         "class": "label-default",
     },
 }
 
 
-render_status = create_render_bool_template_tag(STATUS_TO_TAGS)
-register.filter("render_status", render_status)
+REQUEST_TO_TAGS = {
+    True: {
+        "title": ugettext_lazy("Granted request"),
+        "str": ugettext_lazy("Granted"),
+        "class": "label-primary",
+    },
+    False: {
+        "title": ugettext_lazy("Rejected request"),
+        "str": ugettext_lazy("Rejected"),
+        "class": "label-default",
+    },
+    None: {
+        "title": ugettext_lazy("Request pending"),
+        "str": ugettext_lazy("Pending"),
+        "class": "label-danger",
+    },
+}
+
+
+render_domain = create_render_bool_template_tag(DOMAIN_TO_TAGS)
+register.filter("render_domain", render_domain)
+
+
+render_request = create_render_bool_template_tag(REQUEST_TO_TAGS)
+register.filter("render_request", render_request)

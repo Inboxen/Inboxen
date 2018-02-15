@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2016, 2018 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -19,41 +19,28 @@
 from __future__ import unicode_literals
 
 from django import template
+from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
 from inboxen.utils.flags import create_render_bool_template_tag
-from tickets.models import Question
 
 
 register = template.Library()
 
 
-STATUS = {k: v for k, v in Question.STATUS_CHOICES}
-
-
-STATUS_TO_TAGS = {
-    Question.NEW: {
-        "title": ugettext_lazy("New question"),
-        "str": STATUS[Question.NEW],
+DRAFT_TO_TAGS = {
+    True: {
+        "title": ugettext_lazy("Draft post"),
+        "str": ugettext_lazy("Draft"),
         "class": "label-primary",
     },
-    Question.IN_PROGRESS: {
-        "title": ugettext_lazy("In progress"),
-        "str": STATUS[Question.IN_PROGRESS],
-        "class": "label-info",
-    },
-    Question.NEED_INFO: {
-        "title": ugettext_lazy("Need more info from user"),
-        "str": STATUS[Question.NEED_INFO],
-        "class": "label-warning",
-    },
-    Question.RESOLVED: {
-        "title": ugettext_lazy("Resolved question"),
-        "str": STATUS[Question.RESOLVED],
+    False: {
+        "title": ugettext_lazy("Live post"),
+        "str": ugettext_lazy("Live"),
         "class": "label-default",
     },
 }
 
 
-render_status = create_render_bool_template_tag(STATUS_TO_TAGS)
-register.filter("render_status", render_status)
+render_draft = create_render_bool_template_tag(DRAFT_TO_TAGS)
+register.filter("render_draft", render_draft)

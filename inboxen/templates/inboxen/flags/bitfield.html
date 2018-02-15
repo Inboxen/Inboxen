@@ -1,0 +1,6 @@
+{# Copyright (c) 2018 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% for value in flags %}
+    {% include "inboxen/includes/flag.html" with class=value.class str=value.str title=value.title %}
+{% empty %}
+    &nbsp;
+{% endfor %}

@@ -1,6 +1,6 @@
 {# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends "cms/admin/base.html" %}
-{% load i18n %}
+{% load i18n inboxen_admin_tags %}
 
 {% block headline %}{% trans "Domains" %}{% endblock %}
 
@@ -25,7 +25,7 @@
     <tr>
         <td>{{ domain.domain }}</td>
         <td>{{ domain.user.username|default:"None" }}</td>
-        <td>{{ domain.enabled }}</td>
+        <td>{{ domain.enabled|render_domain }}</td>
         <td class="page-link"><a class="fa fa-chevron-right fa-3x" href="{% url "admin:domains:edit" domain_pk=domain.pk %}">
             <span class="sr-only">{% trans "Edit Domain" %}</span>
         </a></td>

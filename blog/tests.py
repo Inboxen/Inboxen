@@ -24,8 +24,10 @@ import factory.fuzzy
 import six
 
 from blog import models, forms
+from blog.templatetags import blog_admin_tags
 from inboxen.tests import factories
 from inboxen.test import InboxenTestCase
+
 
 BODY = """
 Hey there!
@@ -123,3 +125,14 @@ class BlogTestCase(InboxenTestCase):
 
         form = forms.EditForm(instance=post, data={"subject": "subject", "body": "body"})
         self.assertTrue(form.is_valid())
+
+    def test_templatetag(self):
+        output = blog_admin_tags.render_draft(True)
+        self.assertIn('<span class="label label-primary"', output)
+        self.assertIn("Draft", output)
+        self.assertNotIn("Live", output)
+
+        output = blog_admin_tags.render_draft(False)
+        self.assertIn('<span class="label label-default"', output)
+        self.assertIn("Live", output)
+        self.assertNotIn("Draft", output)
