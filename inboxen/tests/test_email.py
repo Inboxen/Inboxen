@@ -86,8 +86,8 @@ class EmailViewTestCase(InboxenTestCase):
         # check that premailer removes invalid CSS
         self.assertNotIn("awesomebar-sprite.png", response.content)
 
-        # check for no-referrer
-        self.assertIn('<meta name="referrer" content="no-referrer">', response.content)
+        # check for same-origin
+        self.assertIn('<meta name="referrer" content="same-origin">', response.content)
 
     def test_get_with_headers(self):
         response = self.client.get(self.get_url() + "?all-headers=1")
