@@ -11,6 +11,7 @@
   * This is just a first step ot make Inboxen work on Python 3
 * Use labels on admin lists for better readability (#263)
 * Change text on error pages to be slightly more verbose (#302)
+* Change referrer policy on email view to same-origin (#307)
 
 ## Releases
 
