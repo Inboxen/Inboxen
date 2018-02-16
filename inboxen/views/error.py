@@ -32,7 +32,6 @@ _log = logging.getLogger(__name__)
 
 class ErrorView(TemplateView):
     error_message = None
-    error_css_class = "warning"
     error_code = None
 
     headline = _("Some sort of error or something")
@@ -46,7 +45,6 @@ class ErrorView(TemplateView):
 
     def get_context_data(self, **kwargs):
         kwargs["error_message"] = self.get_error_message()
-        kwargs["error_css_class"] = self.get_error_css_class()
         kwargs["error_code"] = self.get_error_code()
         kwargs["headline"] = self.headline
         return super(ErrorView, self).get_context_data(**kwargs)
@@ -57,10 +55,6 @@ class ErrorView(TemplateView):
             raise ImproperlyConfigured("Set 'error_message' or override 'get_error_message'")
         else:
             return self.error_message
-
-    def get_error_css_class(self):
-        """Returns a CSS class to be used whatever template is being used"""
-        return self.error_css_class
 
     def get_error_code(self):
         """Returns the numeric HTTP status code"""
@@ -77,7 +71,6 @@ class ErrorView(TemplateView):
 
 not_found = ErrorView.as_view(
     error_message=_("The page you requested cannot be found."),
-    error_css_class="info",
     error_code=404,
     headline=_("Not Found"),
 )
@@ -85,7 +78,6 @@ not_found = ErrorView.as_view(
 
 permission_denied = ErrorView.as_view(
     error_message=_("You do not have permission to view this page."),
-    error_css_class="warning",
     error_code=403,
     headline=_("Permission Denied"),
 )
@@ -93,7 +85,6 @@ permission_denied = ErrorView.as_view(
 
 server_error = ErrorView.as_view(
     error_message=_("There has been an error with our software. Our administrators have been notified."),
-    error_css_class="danger",
     error_code=500,
     headline=_("Error"),
 )
@@ -101,9 +92,8 @@ server_error = ErrorView.as_view(
 
 bad_request = ErrorView.as_view(
     error_message=_("I have no idea what you were trying to do, but you probably shouldn't be doing it!"),
-    error_css_class="info",
     error_code=400,
-    headline=_("No Idea"),
+    headline=_("Bad Request"),
 )
 
 

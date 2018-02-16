@@ -4,6 +4,6 @@
 {% block headline %}{{ headline }}{% endblock %}
 
 {% block content %}
-    <h2>{{ headline }}</h2>
-    <p class="alert alert-{{ error_css_class }}"> {{ error_message }} </p>
+    <h2>{{ headline }} <small>{{ error_code }}</small></h2>
+    <p>{{ error_message }}</p>
 {% endblock %}
