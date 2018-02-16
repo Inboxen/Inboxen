@@ -20,10 +20,12 @@ from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.db.models import Case, When, Value, IntegerField
 
+from cms.decorators import is_secure_admin
 from inboxen.models import Domain, Request
 from inboxen.forms.admin import CreateDomainForm, EditDomainForm, EditRequestForm
 
 
+@is_secure_admin
 def domain_admin_index(request):
     domains = Domain.objects.all()
 
@@ -34,6 +36,7 @@ def domain_admin_index(request):
     )
 
 
+@is_secure_admin
 def domain_admin_create(request):
     if request.method == "POST":
         form = CreateDomainForm(data=request.POST)
@@ -50,6 +53,7 @@ def domain_admin_create(request):
     )
 
 
+@is_secure_admin
 def domain_admin_edit(request, domain_pk):
     try:
         domain = Domain.objects.get(pk=domain_pk)
@@ -71,6 +75,7 @@ def domain_admin_edit(request, domain_pk):
     )
 
 
+@is_secure_admin
 def request_admin_index(request):
     requests = Request.objects.all().annotate(decided=Case(
             When(succeeded__isnull=True, then=Value(1)),
@@ -87,6 +92,7 @@ def request_admin_index(request):
     )
 
 
+@is_secure_admin
 def request_admin_edit(request, request_pk):
     try:
         request_obj = Request.objects.get(pk=request_pk)

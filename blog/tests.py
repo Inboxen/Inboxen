@@ -18,15 +18,17 @@
 ##
 
 from django.core import urlresolvers
+from django.http import Http404
 
 import factory
 import factory.fuzzy
 import six
 
-from blog import models, forms
+from blog import models, forms, views
 from blog.templatetags import blog_admin_tags
+from cms.decorators import is_secure_admin
 from inboxen.tests import factories
-from inboxen.test import InboxenTestCase
+from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 
 
 BODY = """
@@ -136,3 +138,182 @@ class BlogTestCase(InboxenTestCase):
         self.assertIn('<span class="label label-default"', output)
         self.assertIn("Live", output)
         self.assertNotIn("Draft", output)
+
+
+class BlogAdminIndexTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(is_superuser=True)
+
+    def test_url(self):
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+                "Could not log in"
+
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
+
+        response = self.client.get(urlresolvers.reverse("admin:blog:index"))
+        self.assertEqual(response.resolver_match.func, views.blog_admin_index)
+        self.assertEqual(response.status_code, 200)
+
+    def test_index(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        BlogPostFactory.create_batch(2, draft=factory.Iterator([True, False]), author=self.user)
+
+        response = views.blog_admin_index(request)
+        self.assertEqual(response.status_code, 200)
+
+        expected_posts = models.BlogPost.objects.all()
+        self.assertEqual(list(response.context_data["posts"]), list(expected_posts))
+
+    def test_decorated(self):
+        self.assertIn(is_secure_admin, views.blog_admin_index._inboxen_decorators)
+
+
+class BlogAdminCreateTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(is_superuser=True)
+
+    def test_url(self):
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+                "Could not log in"
+
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
+
+        response = self.client.get(urlresolvers.reverse("admin:blog:create"))
+        self.assertEqual(response.resolver_match.func, views.blog_admin_create)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+
+        response = views.blog_admin_create(request)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        request.method = "POST"
+        request.POST = {}
+
+        response = views.blog_admin_create(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(models.BlogPost.objects.count(), 0)
+
+        request.POST = {"subject": "Test", "body": "Hello"}
+
+        response = views.blog_admin_create(request)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("admin:blog:index"))
+
+        self.assertEqual(models.BlogPost.objects.count(), 1)
+        post = models.BlogPost.objects.get()
+        self.assertEqual(post.subject, "Test")
+        self.assertEqual(post.body, "Hello")
+        self.assertEqual(post.draft, True)
+
+    def test_decorated(self):
+        self.assertIn(is_secure_admin, views.blog_admin_create._inboxen_decorators)
+
+
+class BlogAdminEditTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(is_superuser=True)
+
+    def test_url(self):
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+                "Could not log in"
+
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
+
+        post = BlogPostFactory(author=self.user)
+
+        response = self.client.get(urlresolvers.reverse("admin:blog:edit", kwargs={"blog_pk": post.pk}))
+        self.assertEqual(response.resolver_match.func, views.blog_admin_edit)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        post = BlogPostFactory(author=self.user)
+
+        with self.assertRaises(Http404):
+            views.blog_admin_edit(request, 0)
+
+        response = views.blog_admin_edit(request, post.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data["form"].instance, post)
+
+    def test_post(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        request.method = "POST"
+        request.POST = {}
+        post = BlogPostFactory(author=self.user, draft=True, subject="no", body="no")
+
+        response = views.blog_admin_edit(request, post.pk)
+        self.assertEqual(response.status_code, 200)
+
+        request.POST = {"subject": "Test", "body": "Hello"}
+
+        response = views.blog_admin_edit(request, post.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("admin:blog:index"))
+
+        self.assertEqual(models.BlogPost.objects.count(), 1)
+        post = models.BlogPost.objects.get()
+        self.assertEqual(post.subject, "Test")
+        self.assertEqual(post.body, "Hello")
+        self.assertEqual(post.draft, False)
+
+    def test_decorated(self):
+        self.assertIn(is_secure_admin, views.blog_admin_edit._inboxen_decorators)
+
+
+class BlogAdminDeleteTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(is_superuser=True)
+
+    def test_url(self):
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+                "Could not log in"
+
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
+
+        post = BlogPostFactory(author=self.user)
+
+        response = self.client.get(urlresolvers.reverse("admin:blog:delete", kwargs={"blog_pk": post.pk}))
+        self.assertEqual(response.resolver_match.func, views.blog_admin_delete)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        post = BlogPostFactory(author=self.user)
+
+        with self.assertRaises(Http404):
+            views.blog_admin_delete(request, 0)
+
+        response = views.blog_admin_delete(request, post.pk)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        request.method = "POST"
+        request.POST = {}
+        post = BlogPostFactory(author=self.user)
+        other_post = BlogPostFactory(author=self.user)
+
+        response = views.blog_admin_delete(request, post.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(models.BlogPost.objects.count(), 2)
+
+        request.POST = {"yes_delete": True}
+
+        response = views.blog_admin_delete(request, post.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("admin:blog:index"))
+
+        self.assertEqual(models.BlogPost.objects.count(), 1)
+        self.assertEqual(models.BlogPost.objects.get(), other_post)
+
+    def test_decorated(self):
+        self.assertIn(is_secure_admin, views.blog_admin_delete._inboxen_decorators)

@@ -23,15 +23,17 @@ import six
 from django import test
 from django.core import mail, urlresolvers
 from django.db.models import Max
+from django.http import Http404
 
 import factory
 import factory.fuzzy
 
+from cms.decorators import is_secure_admin
 from cms.models import AppPage, HelpIndex
 from cms.utils import app_reverse
 from inboxen.tests import factories
-from inboxen.test import override_settings, InboxenTestCase, MockRequest
-from tickets import models
+from inboxen.test import override_settings, InboxenTestCase, MockRequest, grant_otp, grant_sudo
+from tickets import models, views
 from tickets.templatetags import tickets_flags
 
 
@@ -56,10 +58,6 @@ class ResponseFactory(factory.django.DjangoModelFactory):
 class MockModel(models.RenderBodyMixin):
     def __init__(self, body):
         self.body = body
-
-
-class MiddlewareMock(object):
-    pass
 
 
 class QuestionViewTestCase(InboxenTestCase):
@@ -307,3 +305,107 @@ class RenderStatus(InboxenTestCase):
         self.assertIn(six.text_type(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
 
         self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
+
+
+class QuestionAdminIndexTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(is_superuser=True)
+
+    def test_url(self):
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+                "Could not log in"
+
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
+
+        response = self.client.get(urlresolvers.reverse("admin:tickets:index"))
+        self.assertEqual(response.resolver_match.func, views.question_admin_index)
+        self.assertEqual(response.status_code, 200)
+
+    def test_index(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        QuestionFactory.create_batch(len(models.Question.STATUS_CHOICES), status=factory.Iterator([i[0] for i in models.Question.STATUS_CHOICES]))
+
+        response = views.question_admin_index(request)
+        self.assertEqual(response.status_code, 200)
+
+        expected_questions = models.Question.objects.all()
+        self.assertEqual(list(response.context_data["questions"]), list(expected_questions))
+
+    def test_decorated(self):
+        self.assertIn(is_secure_admin, views.question_admin_index._inboxen_decorators)
+
+
+class QuestionAdminResponseTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(is_superuser=True)
+
+    def test_url(self):
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+                "Could not log in"
+
+        grant_otp(self.client, self.user)
+        grant_sudo(self.client)
+        question = QuestionFactory()
+
+        response = self.client.get(urlresolvers.reverse("admin:tickets:response", kwargs={"question_pk": question.pk}))
+        self.assertEqual(response.resolver_match.func, views.question_admin_response)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        question = QuestionFactory()
+
+        with self.assertRaises(Http404):
+            views.question_admin_response(request, 0)
+
+        response = views.question_admin_response(request, question.pk)
+        self.assertEqual(response.status_code, 200)
+
+        expected_questions = models.Question.objects.all()
+        self.assertEqual(response.context_data["question"], question)
+        self.assertEqual(response.context_data["form"].question, question)
+
+    def test_post(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        request.method = "POST"
+        request.POST = {"body": "hi"}
+        question = QuestionFactory(status=0)
+        self.assertEqual(question.response_set.count(), 0)
+
+        # status is required
+        response = views.question_admin_response(request, question.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(question.response_set.count(), 0)
+        question.refresh_from_db()
+        self.assertEqual(question.status, 0)
+
+        # new response, but not status change
+        request.POST = {"body": "reply", "status": 0}
+        response = views.question_admin_response(request, question.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("admin:tickets:index"))
+        self.assertEqual(question.response_set.count(), 1)
+        self.assertEqual(question.response_set.get().body, "reply")
+        question.refresh_from_db()
+        self.assertEqual(question.status, 0)
+
+        # new response, but not status change
+        request.POST = {"status": 1}
+        response = views.question_admin_response(request, question.pk)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(question.response_set.count(), 1)
+        question.refresh_from_db()
+        self.assertEqual(question.status, 0)
+
+        # new response, status change
+        request.POST = {"body": "reply2", "status": 1}
+        response = views.question_admin_response(request, question.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("admin:tickets:index"))
+        self.assertEqual(question.response_set.count(), 2)
+        question.refresh_from_db()
+        self.assertEqual(question.status, 1)
+
+    def test_decorated(self):
+        self.assertIn(is_secure_admin, views.question_admin_response._inboxen_decorators)
