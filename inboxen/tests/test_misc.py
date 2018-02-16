@@ -411,7 +411,6 @@ class ErrorViewTestCase(InboxenTestCase):
     def test_view(self):
         view_func = ErrorView.as_view(
             error_message="some message or other",
-            error_css_class="some-css-class",
             error_code=499,
             headline="some headline"
         )
@@ -422,7 +421,6 @@ class ErrorViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 499)
         self.assertIn("some message or other", response.content)
         self.assertIn("some headline", response.content)
-        self.assertIn("some-css-class", response.content)
 
     def test_misconfigured(self):
         view_obj = ErrorView()

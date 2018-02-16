@@ -247,7 +247,7 @@ CSP_STYLE_SRC = ("'self'",)
 
 CSRF_COOKIE_SECURE = True
 CSRF_USE_SESSIONS = True
-CSRF_FAILURE_VIEW = "inboxen.views.error.permission_denied"
+CSRF_FAILURE_VIEW = "inboxen.views.error.csrf_failure"
 
 SUDO_URL = urlresolvers.reverse_lazy("user-sudo")
 
