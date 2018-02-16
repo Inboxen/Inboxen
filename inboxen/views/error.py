@@ -83,6 +83,13 @@ permission_denied = ErrorView.as_view(
 )
 
 
+csrf_failure = ErrorView.as_view(
+    error_message=_("Oh no! Your browser isn't submitting forms correctly."),
+    error_code=403,
+    headline=_("Permission Denied"),
+)
+
+
 server_error = ErrorView.as_view(
     error_message=_("There has been an error with our software. Our administrators have been notified."),
     error_code=500,
