@@ -70,35 +70,42 @@ class ErrorView(TemplateView):
 
 
 not_found = ErrorView.as_view(
-    error_message=_("The page you requested cannot be found."),
+    error_message=_("The page you requested does not exist, or it does exist "
+        "but we don't want to show it to you."),
     error_code=404,
     headline=_("Not Found"),
 )
 
 
 permission_denied = ErrorView.as_view(
-    error_message=_("You do not have permission to view this page."),
+    error_message=_("You do not have permission to view this page and you "
+        "probably know that."),
     error_code=403,
     headline=_("Permission Denied"),
 )
 
 
 csrf_failure = ErrorView.as_view(
-    error_message=_("Oh no! Your browser isn't submitting forms correctly."),
+    error_message=_("Oh no! Your browser is either not sending us the correct "
+        "referer header (no, that's not a spelling mistake) or has removed the "
+        "hidden token from the form you just tried to submit."),
     error_code=403,
     headline=_("Permission Denied"),
 )
 
 
 server_error = ErrorView.as_view(
-    error_message=_("There has been an error with our software. Our administrators have been notified."),
+    error_message=_("There has been an error with our software and our "
+        "administrators have been notified. Check the Help pages for how to "
+        "contact the administrators."),
     error_code=500,
     headline=_("Error"),
 )
 
 
 bad_request = ErrorView.as_view(
-    error_message=_("I have no idea what you were trying to do, but you probably shouldn't be doing it!"),
+    error_message=_("I have no idea what you were trying to do, but you "
+        "probably shouldn't be doing it!"),
     error_code=400,
     headline=_("Bad Request"),
 )
