@@ -19,10 +19,9 @@
 #
 ##
 
-from datetime import datetime
 import logging
 
-from pytz import utc
+from django.utils import timezone
 from watson import search
 import six
 
@@ -37,7 +36,7 @@ def make_email(message, inbox):
     """Push message to the database.
     """
     base = message.base
-    received_date = datetime.now(utc)
+    received_date = timezone.now()
 
     email = Email(inbox=inbox, received_date=received_date)
     email.save()

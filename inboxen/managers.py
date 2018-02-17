@@ -18,7 +18,6 @@
 ##
 
 from collections import OrderedDict
-from datetime import datetime
 import hashlib
 
 from django.conf import settings
@@ -26,11 +25,10 @@ from django.db import IntegrityError, models, transaction
 from django.db.models import Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
-
-from pytz import utc
 
 from inboxen.utils import is_reserved
 
@@ -80,7 +78,7 @@ class InboxQuerySet(QuerySet):
                 with transaction.atomic():
                     return super(InboxQuerySet, self).create(
                         inbox=inbox,
-                        created=datetime.now(utc),
+                        created=timezone.now(),
                         domain=domain,
                         **kwargs
                     )

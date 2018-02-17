@@ -21,10 +21,9 @@ import logging
 from datetime import datetime
 
 from celery import chord
-from pytz import utc
-
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from pytz import utc
 
 from inboxen.celery import app
 from inboxen.models import Inbox
@@ -44,11 +43,11 @@ def disown_inbox(inbox_id):
     # delete emails in another task(s)
     batch_delete_items.delay("email", kwargs={'inbox__id': inbox.pk})
 
-    # okay now mark the inbox as deleted
-    inbox.created = datetime.fromtimestamp(0, utc)
+    # remove identifying data from inbox
     inbox.flags.deleted = True
     inbox.description = ""
     inbox.user = None
+    inbox.created = datetime.utcfromtimestamp(0).replace(tzinfo=utc)
     inbox.save()
 
     return True

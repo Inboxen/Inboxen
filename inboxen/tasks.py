@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from importlib import import_module
 import gc
 import logging
@@ -30,9 +30,9 @@ from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When, IntegerField
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 from six.moves import urllib
 
-from pytz import utc
 from watson import search as watson_search
 
 from inboxen import models
@@ -54,7 +54,7 @@ def statistics():
 
     # the keys of these dictionaries have awful names for historical reasons
     # don't change them unless you want to do a data migration
-    one_day_ago = datetime.now(utc) - timedelta(days=1)
+    one_day_ago = timezone.now() - timedelta(days=1)
     user_aggregate = {
         "count": Count("id", distinct=True),
         "new": Coalesce(Count(
