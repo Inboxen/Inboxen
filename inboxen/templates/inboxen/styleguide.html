@@ -156,68 +156,17 @@
             <h2>Inbox/Email/Question list</h2>
 
             <h3>Email list</h3>
+            <h4>Normal inbox view</h4>
             <div class="honeydew">
-                <div class="row">
-                    <span class="clickable">
-                        <div class="col-md-2 col-xs-5">
-                            <div class="row">
-                                <div class="email-checkbox col-sm-2 col-xs-12"><input type="checkbox"/></div>
-                                <div class="clearfix visible-xs-block"></div>
-                                <div class="email-flags col-sm-10 col-xs-12">
-                                    <div class="inline-block__wrapper"><span class="label label-primary" title="New message">New</span></div>
-                                    <div class="inline-block__wrapper"><span class="label label-danger" title="Important">Important</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div title="2017-01-01" class="email-reveived col-xs-5 col-md-1 col-md-push-8">Tuesday</div>
-                        <div class="email-buttons col-xs-2 col-md-1 col-md-push-8">
-                            <button title="Delete" class="close">
-                                <span class="fa fa-times fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Delete</span>
-                            </button>
-                            <button title="Toggle Importantance" class="close">
-                                <span class="fa fa-star fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Toggle Importantance</span>
-                            </button>
-                            <a class="close" title="Inbox">
-                                <span class="fa fa-inbox fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Inbox</span>
-                            </a>
-                        </div>
-                    </span>
-                    <a class="clickable" href="#">
-                        <div class="clearfix visible-sm-block"></div>
-                        <div class="email-sender col-xs-12 col-sm-5 col-md-3 col-md-pull-2">Sender</div>
-                        <div class="email-subject col-xs-12 col-sm-7 col-md-5 col-md-pull-2">{% spaceless %}<i>No Subject</i>{% endspaceless %}</div>
-                    </a>
-                </div>
-                <div class="row">
-                    <span class="clickable">
-                        <div class="col-md-2 col-xs-5">
-                            <div class="row">
-                                <div class="email-checkbox col-sm-2 col-xs-12"><input type="checkbox"/></div>
-                                <div class="clearfix visible-xs-block"></div>
-                                <div class="email-flags col-sm-10 col-xs-12">
-                                    <div class="inline-block__wrapper"><span class="label label-primary" title="New message">New</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div title="2017-01-01" class="email-reveived col-xs-5 col-md-1 col-md-push-8">Tuesday</div>
-                        <div class="email-buttons col-xs-2 col-md-1 col-md-push-8">
-                            <button title="Delete" class="close">
-                                <span class="fa fa-times fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Delete</span>
-                            </button>
-                            <button title="Toggle Importantance" class="close">
-                                <span class="fa fa-star fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Toggle Importantance</span>
-                            </button>
-                            <a class="close" title="Inbox">
-                                <span class="fa fa-inbox fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Inbox</span>
-                            </a>
-                        </div>
-                    </span>
-                    <a class="clickable" href="#">
-                        <div class="clearfix visible-sm-block"></div>
-                        <div class="email-sender col-xs-12 col-sm-5 col-md-3 col-md-pull-2">Sender</div>
-                        <div class="email-subject col-xs-12 col-sm-7 col-md-5 col-md-pull-2">{% spaceless %}Subject{% endspaceless %}</div>
-                    </a>
-                </div>
+                {% for email in emails %}
+                    {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
+                {% endfor %}
+            </div>
+            <h4>Unified inbox view</h4>
+            <div class="honeydew">
+                {% for email in emails %}
+                    {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender unified=True %}
+                {% endfor %}
             </div>
 
             <h3>Inbox list</h3>
@@ -246,75 +195,16 @@
                         <div class="{{ col4 }}">&nbsp;</div>
                     </a>
                 </div>
-                <div class="row inbox-disabled">
-                    <span class="clickable">
-                        <div class="{{ col0 }}">
-                            <div class="row">
-                                <div class="inbox-name col-xs-12 col-sm-8"><a href="#">user@example.com</a></div>
-                                <div class="inbox-flags col-xs-12 col-sm-4">
-                                    <div class="inline-block__wrapper"><span class="label label-default" title="Disabled">Disabled</span></div>
-                                </div>
-                            </div>
+                {% for inbox in inboxes %}
+                    {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
+                    {% if inbox.form %}
+                    <div class="inbox-edit-form-row row">
+                        <div class="col-xs-12">
+                            {% include "inboxen/forms/inbox/edit.html" with inbox=inbox form=inbox.form %}
                         </div>
-                        <div class="inbox-activity {{ col2 }}">
-                            <span title="2017-01-01">Tuesday</span>
-                        </div>
-                        <div class="inbox-options {{ col3 }}">
-                            <form>
-                                <a title="Options" class="close" href="#">
-                                    <span class="fa fa-pencil fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Inbox Options</span>
-                                </a>
-                            </form>
-                        </div>
-                    </span>
-                    <a class="clickable" href="#">
-                        <div class="inbox-description {{ col4 }}">My inbox</div>
-                    </a>
-                </div>
-                <div class="inbox-edit-form-row row">
-                    <div class="col-xs-12">
-                        <form class="form">
-                            {{ form|bootstrap }}
-                            <div class="panel panel-danger">
-                                <div class="panel-heading">Danger Area&trade;</div>
-                                <div class="panel-body">
-                                    {{ form|bootstrap }}
-                                </div>
-                            </div>
-                            <button class="btn btn-primary">Save</button>
-                            <a class="btn btn-default">Cancel</a>
-                        </form>
                     </div>
-                </div>
-                <div class="row">
-                    <span class="clickable">
-                        <div class="{{ col0 }}">
-                            <div class="row">
-                                <div class="inbox-name col-xs-12 col-sm-8"><a href="#">user@example.com</a></div>
-                                <div class="inbox-flags col-xs-12 col-sm-4">
-                                    <div class="inline-block__wrapper"><span class="label label-primary" title="New messages">New</span></div>
-                                    <div class="inline-block__wrapper"><span class="label label-warning" title="Inbox has been pinned">Pinned</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="inbox-activity {{ col2 }}">
-                            <span title="2017-01-01">Tuesday</span>
-                        </div>
-                        <div class="inbox-options {{ col3 }}">
-                            <form>
-                                <a title="Options" class="close" href="#">
-                                    <span class="fa fa-pencil fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Inbox Options</span>
-                                </a>
-                                <button title="Pin" class="close">
-                                    <span class="fa fa-thumb-tack fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">Pin Inbox</span>
-                                </button>
-                            </form>
-                        </div>
-                    </span>
-                    <a class="clickable" href="#">
-                        <div class="inbox-description {{ col4 }}">My inbox</div>
-                    </a>
-                </div>
+                    {% endif %}
+                {% endfor %}
             </div>
             {% endwith %}
 
@@ -330,28 +220,12 @@
         <div class="container-fluid">
             <h2>MIME part download</h2>
             <div class="row">
-                <div class="col-sm-4 col-md-3 col-lg-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-default">Download</a>
-                            </div>
-                        </div>
-                        <div class="panel-body attachment-name">My file (text/plain)</div>
-                    </div>
-                </div>
-                <div class="col-sm-4 col-md-3 col-lg-2">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <div class="btn-group btn-group-justified" role="group">
-                                <a class="btn btn-default">Download</a>
-                            </div>
-                        </div>
-                        <div class="panel-body attachment-name">Your file (text/plain)</div>
-                    </div>
-                </div>
+                {% for attachment in attachments %}
+                    {% include "inboxen/includes/attachment.html" with attachment=attachment %}
+                {% endfor %}
             </div>
         </div>
+
         <div class="container-fluid">
             <h2>Email plain text body</h2>
             <div id="email-body">
