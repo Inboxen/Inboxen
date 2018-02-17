@@ -37,7 +37,7 @@ djcelery.setup_loader()
 # if you change this, you'll need to do a datamigration to change the rest
 COLUMN_HASHER = "sha1"
 
-# passed directly to random.choice when creating an Inbox
+# passed directly to get_random_string when creating an Inbox
 INBOX_CHOICES = string.ascii_lowercase
 
 ##
