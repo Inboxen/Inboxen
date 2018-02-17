@@ -22,7 +22,6 @@ import hashlib
 import logging
 import mailbox
 import os
-import random
 import string
 import tarfile
 import time
@@ -36,6 +35,7 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.db import IntegrityError, transaction
 from django.utils import safestring
+from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
 from pytz import utc
 import six
@@ -63,9 +63,7 @@ def liberate(user_id, options):
 
     tar_type = TAR_TYPES[options.get('compression_type', '0')]
 
-    rstr = ""
-    for i in range(7):
-        rstr += string.ascii_letters[random.randint(0, 50)]
+    rstr = get_random_string(7, string.ascii_letters)
     basename = "%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
     path = os.path.join(settings.LIBERATION_PATH, basename)
     tarname = "%s.%s" % (basename, tar_type["ext"])
