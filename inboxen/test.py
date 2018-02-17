@@ -27,6 +27,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.session import SessionStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest, HttpResponse
+from django.utils.crypto import get_random_string
 from django_assets import env as assets_env
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.middleware import OTPMiddleware
@@ -34,7 +35,6 @@ from django_otp.plugins.otp_static.models import StaticDevice
 from djcelery.contrib.test_runner import CeleryTestSuiteRunner
 from sudo import settings as sudo_settings
 from sudo.middleware import SudoMiddleware
-from sudo.utils import get_random_string
 import six
 
 

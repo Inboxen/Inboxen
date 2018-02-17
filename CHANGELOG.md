@@ -12,6 +12,7 @@
 * Use labels on admin lists for better readability (#263)
 * Change text on error pages to be slightly more verbose (#302)
 * Change referrer policy on email view to same-origin (#307)
+* Use a more secure method to produce the random part of inboxes (#312)
 
 ## Releases
 

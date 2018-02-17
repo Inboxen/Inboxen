@@ -20,13 +20,13 @@
 from collections import OrderedDict
 from datetime import datetime
 import hashlib
-import random
 
 from django.conf import settings
 from django.db import IntegrityError, models, transaction
 from django.db.models import Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
+from django.utils.crypto import get_random_string
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
@@ -70,7 +70,7 @@ class InboxQuerySet(QuerySet):
 
         # loop around until we get soemthing unique
         while True:
-            inbox = "".join([random.choice(settings.INBOX_CHOICES) for i in range(length)])
+            inbox = get_random_string(length, settings.INBOX_CHOICES)
 
             if is_reserved(inbox):
                 # inbox is reserved, try again
