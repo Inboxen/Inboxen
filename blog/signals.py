@@ -17,11 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
-from pytz import utc
+from django.utils import timezone
 
 
 def published_checker(sender, instance=None, **kwargs):
     if not instance.draft and instance.date is None:
-        instance.date = datetime.now(utc)
+        instance.date = timezone.now()

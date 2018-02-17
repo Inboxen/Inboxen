@@ -49,7 +49,7 @@ class DeleteTestCase(InboxenTestCase):
         self.assertTrue(result)
 
         new_inbox = models.Inbox.objects.get(id=inbox.id)
-        self.assertEqual(new_inbox.created, datetime.fromtimestamp(0, utc))
+        self.assertEqual(new_inbox.created, datetime.utcfromtimestamp(0).replace(tzinfo=utc))
         self.assertNotEqual(new_inbox.description, inbox.description)
         self.assertTrue(new_inbox.flags.deleted)
         self.assertEqual(new_inbox.user, None)

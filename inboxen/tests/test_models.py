@@ -22,7 +22,7 @@ import itertools
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from pytz import utc
+from django.utils import timezone
 import mock
 import six
 
@@ -181,7 +181,7 @@ class ModelTestCase(InboxenTestCase):
         self.assertEqual(count, 4)
 
     def test_add_last_activity(self):
-        now = datetime.datetime.now(utc)
+        now = timezone.now()
 
         email = factories.EmailFactory(received_date=now)
         email.inbox.created = now - datetime.timedelta(2)
@@ -355,7 +355,7 @@ class ModelReprTestCase(InboxenTestCase):
         self.assertEqual(repr(request), "<Request: Request for example (False)>")
 
     def test_statistic(self):
-        now = datetime.datetime.now()
+        now = timezone.now()
         stat = models.Statistic(date=now)
         self.assertEqual(repr(stat), "<Statistic: %s>" % now)
 

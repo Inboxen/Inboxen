@@ -17,12 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.core import mail
 from django.contrib.sessions.models import Session
-
-from pytz import utc
+from django.utils import timezone
 import mock
 
 from inboxen import models, tasks
@@ -126,7 +125,7 @@ class CleanSessionsTestCase(InboxenTestCase):
         Session.objects.create(
             session_key="1234",
             session_data="{}",
-            expire_date=datetime.now() - timedelta(1),
+            expire_date=timezone.now() - timedelta(1),
         )
         self.assertEqual(Session.objects.count(), 1)
         tasks.clean_expired_session.delay()
@@ -174,7 +173,7 @@ class RequestReportTestCase(InboxenTestCase):
         self.user = factories.UserFactory()
         self.user.inboxenprofile  # autocreate a profile
 
-        now = datetime.now(utc)
+        now = timezone.now()
 
         models.Request.objects.create(amount=200, date=now, succeeded=True, requester=self.user, authorizer=self.user)
         self.waiting = models.Request.objects.create(amount=200, date=now, requester=self.user)

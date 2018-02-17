@@ -25,7 +25,6 @@ import os
 import string
 import tarfile
 import time
-from datetime import datetime
 from shutil import rmtree
 
 from async_messages import message_user
@@ -34,10 +33,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.db import IntegrityError, transaction
-from django.utils import safestring
+from django.utils import safestring, timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
-from pytz import utc
 import six
 
 from inboxen.celery import app
@@ -250,7 +248,7 @@ def liberation_finish(result, options):
     user = get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
     lib_status.flags.running = False
-    lib_status.last_finished = datetime.now(utc)
+    lib_status.last_finished = timezone.now()
     lib_status.content_type = int(options.get('compression_type', '0'))
 
     lib_status.save()

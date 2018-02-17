@@ -17,12 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
-
 from django import forms
+from django.utils import timezone
 from django.utils.translation import ugettext as _
-
-from pytz import utc
 
 from inboxen import models
 from liberation.tasks import liberate as data_liberate
@@ -62,7 +59,7 @@ class LiberationForm(forms.ModelForm):
         lib_status = self.user.liberation
         if not lib_status.flags.running:
             lib_status.flags = models.Liberation.flags.running
-            lib_status.started = datetime.now(utc)
+            lib_status.started = timezone.now()
 
             result = data_liberate.apply_async(
                 kwargs={"user_id": self.user.id, "options": self.cleaned_data},
