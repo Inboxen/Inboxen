@@ -2,6 +2,11 @@
 
 ## Pending
 
+
+## Releases
+
+### Deploy for 2018-02-18
+
 * Improve keyboard accessibility on home and inbox pages (#278)
 * Add work-around for Django-Two-Factor-Auth bug in LoginView (#292)
 * Set X-XSS-Protection to something other than its dangerous default (#297)
@@ -18,8 +23,6 @@
 * Removed single delete button from inbox view (#76)
   * Those buttons are too easy to hit accidentally for an not-undoable action
     like deleting an email
-
-## Releases
 
 ### Deploy for 2018-01-18
 
