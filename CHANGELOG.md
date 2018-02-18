@@ -15,6 +15,9 @@
 * Use a more secure method to produce the random part of inboxes (#312)
 * Cleaned up our use of datetime to make sure we're always using timezone away
   datetime objects
+* Removed single delete button from inbox view (#76)
+  * Those buttons are too easy to hit accidentally for an not-undoable action
+    like deleting an email
 
 ## Releases
 
