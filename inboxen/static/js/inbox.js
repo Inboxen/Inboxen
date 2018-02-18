@@ -56,11 +56,9 @@
             complete: function(xhr, statusText) {
                 if (xhr.status === 204) {
                     var $row = $("#email-" + button.value);
+                    // was the important toggle pressed?
                     if (button.name === "important-single") {
                         ToggleImportant($row);
-                        return;
-                    } else if (button.name === "delete-single") {
-                        DeleteRow($row);
                         return;
                     }
 
