@@ -61,3 +61,19 @@ class OtpTestCase(InboxenTestCase):
                 self.assertIn(response.status_code, [200, 404])
             except AssertionError as exp:
                 raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
+
+    def test_otp_required(self):
+        urls = [
+            urlresolvers.reverse("user-twofactor-backup"),
+            urlresolvers.reverse("user-twofactor-disable"),
+        ]
+
+        grant_sudo(self.client)
+
+        for url in urls:
+            response = self.client.get(url)
+            try:
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-login"), url))
+            except AssertionError as exp:
+                raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
