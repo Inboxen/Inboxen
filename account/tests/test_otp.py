@@ -23,13 +23,12 @@ from django import test
 from django.core import urlresolvers
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
-from inboxen.test import InboxenTestCase, MockRequest
+from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories
 
 
 class OtpTestCase(InboxenTestCase):
     def setUp(self):
-        super(OtpTestCase, self).setUp()
         self.user = factories.UserFactory()
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
@@ -43,3 +42,22 @@ class OtpTestCase(InboxenTestCase):
             urlresolvers.reverse("user-twofactor-disable"),
             urlresolvers.reverse("user-twofactor-qrcode"),
         ]
+
+        grant_otp(self.client, self.user)
+
+        for url in urls:
+            response = self.client.get(url)
+            try:
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), url))
+            except AssertionError as exp:
+                raise AssertionError("{} did not redirect correcrlty: {}".format(url, exp))
+
+        grant_sudo(self.client)
+
+        for url in urls:
+            response = self.client.get(url)
+            try:
+                self.assertIn(response.status_code, [200, 404])
+            except AssertionError as exp:
+                raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
