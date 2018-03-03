@@ -77,3 +77,31 @@ class OtpTestCase(InboxenTestCase):
                 self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-login"), url))
             except AssertionError as exp:
                 raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
+
+
+class SetupTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def test_missing_mgmt_data(self):
+        grant_sudo(self.client)
+
+        good_data = {
+            "two_factor_setup_view-current_step": "generator",
+            "generator-token": "123456",
+        }
+
+        response = self.client.post(urlresolvers.reverse("user-twofactor-setup"), good_data)
+        # form was validated and *form* errors returned
+        self.assertEqual(response.status_code, 200)
+
+        bad_data = {
+            "generator-token": "123456",
+        }
+        response = self.client.post(urlresolvers.reverse("user-twofactor-setup"), bad_data)
+        # Bad request, but no exception generated
+        self.assertEqual(response.status_code, 400)
