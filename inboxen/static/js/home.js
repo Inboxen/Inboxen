@@ -22,14 +22,11 @@
         var $this = $(this);
         if ($this.data("clicked") === "yes") {
             return false;
-        } else {
-            $this.data("clicked", "yes");
-            $this.addClass("disabled");
-            setTimeout(function() {
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-            }, 3000);
         }
+
+        $this.data("clicked", "yes");
+        $this.addClass("disabled");
+        $this.children("span.fa").addClass("fa-spinner fa-spin");
 
         var button = {"name": $this.attr("name"), "value": $this.attr("value")};
         var $form = $this.parent("form");
@@ -45,12 +42,20 @@
                     var $row = $("#" + $form.data("inbox-selector"));
                     if (button.name === "pin-inbox") {
                         TogglePinned($row);
+                    } else {
+                        // don't know what was pressed
+                        return
                     }
                 } else {
                     var $messageBlock = $("#alertmessages");
                     var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
+
+                // finally, re-enable button
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+                $this.children("span.fa").removeClass("fa-spinner fa-spin");
             }
         });
     });
@@ -67,13 +72,14 @@
             $this = $(this);
             $this.$form = $form;
 
-            if ($this.data("sending") === "yes") {
+            if ($this.data("clicked") === "yes") {
                 return false;
             }
 
-            $this.find("button").prop("disabled", true);
+            $this.data("clicked", "yes");
+            $this.find("button").prop("disabled", true).addClass("disabled");
+            $this.children("button span.fa").addClass("fa-spinner fa-spin");
             $this.find("a.btn").addClass("disabled");
-            $this.data("sending", "yes");
 
             $.ajax({
                 type: "POST",
@@ -173,14 +179,11 @@
         if (!$row.next().hasClass("inbox-edit-form-row")) {
             if ($this.data("clicked") === "yes") {
                 return false;
-            } else {
-                $this.data("clicked", "yes");
-                $this.addClass("disabled");
-                setTimeout(function() {
-                    $this.data("clicked", "no");
-                    $this.removeClass("disabled");
-                }, 3000);
             }
+
+            $this.data("clicked", "yes");
+            $this.addClass("disabled");
+            $this.children("span.fa").addClass("fa-spinner fa-spin");
 
             $.get(formURL, function(data) {
                 // double check
@@ -191,6 +194,11 @@
                         $row.next().remove();
                     });
                 }
+
+                // finally, re-enable button
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+                $this.children("span.fa").removeClass("fa-spinner fa-spin");
             });
         } else if ($row.next().hasClass("inbox-edit-form-row")) {
             $row.next().remove();
@@ -207,14 +215,11 @@
         if (!$table.children(":first").hasClass("inbox-edit-form-row")) {
             if ($this.data("clicked") === "yes") {
                 return false;
-            } else {
-                $this.data("clicked", "yes");
-                $this.addClass("disabled");
-                setTimeout(function() {
-                    $this.data("clicked", "no");
-                    $this.removeClass("disabled");
-                }, 3000);
             }
+
+            $this.data("clicked", "yes");
+            $this.addClass("disabled");
+            $this.children("span.fa").addClass("fa-spinner fa-spin");
 
             $.get(formURL, function(data) {
                 // double check
@@ -225,6 +230,11 @@
                         $table.children(":first").remove();
                     });
                 }
+
+                // finally, re-enable button
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+                $this.children("span.fa").removeClass("fa-spinner fa-spin");
             });
         } else if ($table.children(":first").hasClass("inbox-edit-form-row")) {
             $table.children(":first").remove();
@@ -238,14 +248,9 @@
 
         if ($this.data("clicked") === "yes") {
             return false;
-        } else {
-            $this.data("clicked", "yes");
-            $this.addClass("disabled");
-            setTimeout(function() {
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-            }, 3000);
         }
+
+        $this.data("clicked", "yes");
 
         $.get($this.data("form-url"), function(data) {
             var $addForm;

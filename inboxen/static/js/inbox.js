@@ -36,14 +36,11 @@
         var $this = $(this);
         if ($this.data("clicked") === "yes") {
             return false;
-        } else {
-            $this.data("clicked", "yes");
-            $this.addClass("disabled");
-            setTimeout(function() {
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-            }, 3000);
         }
+
+        $this.data("clicked", "yes");
+        $this.addClass("disabled");
+        $this.children("span.fa").addClass("fa-spinner fa-spin");
 
         var button = {"name": $this.attr("name"), "value": $this.attr("value")};
         var form_data = $("#email-list").serializeArray();
@@ -59,31 +56,36 @@
                     // was the important toggle pressed?
                     if (button.name === "important-single") {
                         ToggleImportant($row);
-                        return;
-                    }
-
-                    var fn;
-                    if (button.name === "important") {
-                        fn = MarkImportant;
-                    } else if (button.name === "unimportant") {
-                        fn = UnmarkImportant;
-                    } else if (button.name === "delete") {
-                        fn = DeleteRow;
                     } else {
-                        // return early, I don't know what button was pressed
-                        return;
-                    }
-
-                    $.each(form_data, function(index, value) {
-                        if (value.value === "email") {
-                            fn($("#email-" + value.name));
+                        // multiple emails were selected
+                        var fn;
+                        if (button.name === "important") {
+                            fn = MarkImportant;
+                        } else if (button.name === "unimportant") {
+                            fn = UnmarkImportant;
+                        } else if (button.name === "delete") {
+                            fn = DeleteRow;
+                        } else {
+                            // return early, I don't know what button was pressed
+                            return;
                         }
-                    });
+
+                        $.each(form_data, function(index, value) {
+                            if (value.value === "email") {
+                                fn($("#email-" + value.name));
+                            }
+                        });
+                    }
                 } else {
                     var $messageBlock = $("#alertmessages");
                     var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
+
+                // finally, re-enable button
+                $this.data("clicked", "no");
+                $this.removeClass("disabled");
+                $this.children("span.fa").removeClass("fa-spinner fa-spin");
             }
         });
     });
