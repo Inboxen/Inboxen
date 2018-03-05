@@ -150,10 +150,8 @@
 
     function addInboxComplete(xhr, statusText) {
         if (xhr.status === 204) {
-            // TODO: add an alert message
-            $("#inbox-add-form").remove();
-
             // hacky, but this will have to do for now
+            // in fact very hacky as it will lock up the window!
             document.location.reload(true);
         } else {
             if (xhr.status === 200) {
