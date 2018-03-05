@@ -12,18 +12,18 @@
         if ($row.find("span.label-danger").length === 0) {
            $row.find("div.email-flags").append(important_label);
         } else {
-            $row.find("span.label-danger").remove();
+            $row.find("div.email-flags span.label-danger").remove();
         }
     }
 
     function MarkImportant($row) {
-        if ($row.find("span.label-danger").length === 0) {
+        if ($row.find("div.email-flags span.label-danger").length === 0) {
            $row.find("div.email-flags").append(important_label);
         }
     }
 
     function UnmarkImportant($row) {
-        $row.find("span.label-danger").remove();
+        $row.find("div.email-flags span.label-danger").remove();
     }
 
     function DeleteRow($row) {
