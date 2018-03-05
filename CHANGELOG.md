@@ -2,6 +2,7 @@
 
 ## Pending
 
+* Tests for OTP views (#283)
 
 ## Releases
 
