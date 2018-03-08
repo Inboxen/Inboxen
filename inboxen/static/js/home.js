@@ -8,7 +8,7 @@
 
     var pinned_label = '<span class="label label-warning" title="Inbox has been pinned">Pinned</span>';
 
-    function TogglePinned($row) {
+    function togglePinned($row) {
         if ($row.find("span.label-warning").length === 0) {
            $row.find("div.inbox-flags").append(pinned_label);
         } else {
@@ -39,7 +39,7 @@
                 if (xhr.status === 204) {
                     var $row = $("#" + $form.data("inbox-selector"));
                     if (button.name === "pin-inbox") {
-                        TogglePinned($row);
+                        togglePinned($row);
                     } else {
                         // don't know what was pressed
                         return;

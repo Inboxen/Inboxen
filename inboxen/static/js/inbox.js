@@ -8,7 +8,7 @@
 
     var important_label = '<span class="label label-danger" title="Message has been marked as important">Important</span>';
 
-    function ToggleImportant($row) {
+    function toggleImportant($row) {
         if ($row.find("span.label-danger").length === 0) {
            $row.find("div.email-flags").append(important_label);
         } else {
@@ -16,17 +16,17 @@
         }
     }
 
-    function MarkImportant($row) {
+    function markImportant($row) {
         if ($row.find("div.email-flags span.label-danger").length === 0) {
            $row.find("div.email-flags").append(important_label);
         }
     }
 
-    function UnmarkImportant($row) {
+    function unmarkImportant($row) {
         $row.find("div.email-flags span.label-danger").remove();
     }
 
-    function DeleteRow($row) {
+    function deleteRow($row) {
         $row.remove();
     }
 
@@ -53,16 +53,16 @@
                     var $row = $("#email-" + button.value);
                     // was the important toggle pressed?
                     if (button.name === "important-single") {
-                        ToggleImportant($row);
+                        toggleImportant($row);
                     } else {
                         // multiple emails were selected
                         var fn;
                         if (button.name === "important") {
-                            fn = MarkImportant;
+                            fn = markImportant;
                         } else if (button.name === "unimportant") {
-                            fn = UnmarkImportant;
+                            fn = unmarkImportant;
                         } else if (button.name === "delete") {
-                            fn = DeleteRow;
+                            fn = deleteRow;
                         } else {
                             // return early, I don't know what button was pressed
                             return;
