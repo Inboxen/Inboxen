@@ -78,19 +78,19 @@
                 type: "POST",
                 url: $this.attr('action'),
                 data: $this.serializeArray(),
-                complete: completeCallback.bind($this)
+                complete: completeCallback.bind(null, $this)
             });
         });
     }
 
-    function homeFormComplete(xhr, statusText) {
+    function homeFormComplete($this, xhr, statusText) {
         var description, inboxSelector, is_disabled, is_pinned, $row;
 
-        inboxSelector = this.$form.data("inbox-selector");
+        inboxSelector = $this.$form.data("inbox-selector");
         $row = $("#" + inboxSelector + " + .row");
-        description = this.find("#id_description").val();
-        is_disabled = this.find("#id_disable_inbox").prop("checked");
-        is_pinned = this.find("#id_pinned").prop("checked");
+        description = $this.find("#id_description").val();
+        is_disabled = $this.find("#id_disable_inbox").prop("checked");
+        is_pinned = $this.find("#id_pinned").prop("checked");
 
         if (xhr.status === 204) {
             var $inbox_row = $("#" + inboxSelector);
@@ -113,48 +113,48 @@
 
             $row.remove();
         } else if (xhr.status === 200) {
-            this.$form.html(xhr.responseText);
-            initForm(this.$form, homeFormComplete);
+            $this.$form.html(xhr.responseText);
+            initForm($this.$form, homeFormComplete);
             $row.find("a").click(function() {
                 $row.remove();
             });
         } else {
-            this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+            $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
             console.log("Form for " + inboxSelector + " failed to POST (" + xhr.status + ")");
         }
     }
 
-    function inboxFormComplete(xhr, statusText) {
+    function inboxFormComplete($this, xhr, statusText) {
         if (xhr.status === 204) {
-            this.$form.parents(".inbox-edit-form-row").remove();
+            $this.$form.parents(".inbox-edit-form-row").remove();
         } else {
             if (xhr.status === 200) {
-                this.$form.html(xhr.responseText);
-                initForm(this.$form, inboxFormComplete);
-                this.$form.parents(".inbox-edit-form-row").find("a").click(function() {
-                    this.$form.parents(".inbox-edit-form-row").remove();
-                }.bind(this));
+                $this.$form.html(xhr.responseText);
+                initForm($this.$form, inboxFormComplete);
+                $this.$form.parents(".inbox-edit-form-row").find("a").click(function($this) {
+                    $this.$form.parents(".inbox-edit-form-row").remove();
+                }.bind(null, $this));
             } else {
-                this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+                $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
                 console.log("Form failed to POST (" + xhr.status + ")");
             }
         }
     }
 
-    function addInboxComplete(xhr, statusText) {
+    function addInboxComplete($this, xhr, statusText) {
         if (xhr.status === 204) {
             // hacky, but this will have to do for now
             // in fact very hacky as it will lock up the window!
             document.location.reload(true);
         } else {
             if (xhr.status === 200) {
-                this.$form.html(xhr.responseText);
-                initForm(this.$form, addInboxComplete);
+                $this.$form.html(xhr.responseText);
+                initForm($this.$form, addInboxComplete);
                 $("#inbox-add-form").find("a").click(function() {
                     $("#inbox-add-form").remove();
                 });
             } else {
-                this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
+                $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
                 console.log("Form failed to POST (" + xhr.status + ")");
             }
         }
