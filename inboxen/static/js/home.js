@@ -24,9 +24,7 @@
             return false;
         }
 
-        $this.data("clicked", "yes");
-        $this.addClass("disabled");
-        $this.children("span.fa").addClass("fa-spinner fa-spin");
+        $this.inboxenSpinnerToggle();
 
         var button = {"name": $this.attr("name"), "value": $this.attr("value")};
         var $form = $this.parent("form");
@@ -44,7 +42,7 @@
                         TogglePinned($row);
                     } else {
                         // don't know what was pressed
-                        return
+                        return;
                     }
                 } else {
                     var $messageBlock = $("#alertmessages");
@@ -53,9 +51,7 @@
                 }
 
                 // finally, re-enable button
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-                $this.children("span.fa").removeClass("fa-spinner fa-spin");
+                $this.inboxenSpinnerToggle();
             }
         });
     });
@@ -76,10 +72,7 @@
                 return false;
             }
 
-            $this.data("clicked", "yes");
-            $this.find("button").prop("disabled", true).addClass("disabled");
-            $this.children("button span.fa").addClass("fa-spinner fa-spin");
-            $this.find("a.btn").addClass("disabled");
+            $this.inboxenSpinnerToggle();
 
             $.ajax({
                 type: "POST",
@@ -179,9 +172,7 @@
                 return false;
             }
 
-            $this.data("clicked", "yes");
-            $this.addClass("disabled");
-            $this.children("span.fa").addClass("fa-spinner fa-spin");
+            $this.inboxenSpinnerToggle();
 
             $.get(formURL, function(data) {
                 // double check
@@ -194,9 +185,7 @@
                 }
 
                 // finally, re-enable button
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-                $this.children("span.fa").removeClass("fa-spinner fa-spin");
+                $this.inboxenSpinnerToggle();
             });
         } else if ($row.next().hasClass("inbox-edit-form-row")) {
             $row.next().remove();
@@ -215,9 +204,7 @@
                 return false;
             }
 
-            $this.data("clicked", "yes");
-            $this.addClass("disabled");
-            $this.children("span.fa").addClass("fa-spinner fa-spin");
+            $this.inboxenSpinnerToggle();
 
             $.get(formURL, function(data) {
                 // double check
@@ -230,9 +217,7 @@
                 }
 
                 // finally, re-enable button
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-                $this.children("span.fa").removeClass("fa-spinner fa-spin");
+                $this.inboxenSpinnerToggle();
             });
         } else if ($table.children(":first").hasClass("inbox-edit-form-row")) {
             $table.children(":first").remove();

@@ -38,9 +38,7 @@
             return false;
         }
 
-        $this.data("clicked", "yes");
-        $this.addClass("disabled");
-        $this.children("span.fa").addClass("fa-spinner fa-spin");
+        $this.inboxenSpinnerToggle();
 
         var button = {"name": $this.attr("name"), "value": $this.attr("value")};
         var form_data = $("#email-list").serializeArray();
@@ -83,9 +81,7 @@
                 }
 
                 // finally, re-enable button
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-                $this.children("span.fa").removeClass("fa-spinner fa-spin");
+                $this.inboxenSpinnerToggle();
             }
         });
     });

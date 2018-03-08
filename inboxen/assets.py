@@ -37,6 +37,7 @@ css = Bundle(
 
 js = Bundle(
     "thirdparty/jquery/dist/jquery.js",
+    "js/utils.js",
     "js/alert.js",
     "js/menu.js",
     "js/home.js",
