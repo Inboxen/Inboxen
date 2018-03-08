@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2018 Jessica Tallon & Matt Molyneaux
+ * Copyright (c) 2015, 2018 Jessica Tallon & Matt Molyneaux
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
  */
 
@@ -41,4 +41,13 @@
         return this;
     };
 
+})(jQuery);
+
+(function($) {
+    'use strict';
+    // alert buttons
+    var button = '<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button>';
+    $("div[role=alert]").each(function() {
+        $(this).append(button);
+    });
 })(jQuery);
