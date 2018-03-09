@@ -113,7 +113,7 @@
 
             $row.remove();
         } else if (xhr.status === 200) {
-            $this.$form.html(xhr.responseText);
+            $this.$form.removeData().html(xhr.responseText);
             initForm($this.$form, homeFormComplete);
             $row.find("a").click(function() {
                 $row.remove();
@@ -129,7 +129,7 @@
             $this.$form.parents(".inbox-edit-form-row").remove();
         } else {
             if (xhr.status === 200) {
-                $this.$form.html(xhr.responseText);
+                $this.$form.removeData().html(xhr.responseText);
                 initForm($this.$form, inboxFormComplete);
                 $this.$form.parents(".inbox-edit-form-row").find("a").click(function($this) {
                     $this.$form.parents(".inbox-edit-form-row").remove();
@@ -148,7 +148,7 @@
             document.location.reload(true);
         } else {
             if (xhr.status === 200) {
-                $this.$form.html(xhr.responseText);
+                $this.$form.removeData().html(xhr.responseText);
                 initForm($this.$form, addInboxComplete);
                 $("#inbox-add-form").find("a").click(function() {
                     $("#inbox-add-form").remove();
