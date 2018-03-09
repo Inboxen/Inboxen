@@ -53,6 +53,11 @@
     $.get(statsUrl, function(data) {
         var userChart, inboxChart, emailChart, fakeLabels;
 
+        if (data.dates === undefined) {
+            console.error("No data returned from server");
+            return;
+        }
+
         // horrible hack to avoid printing the full dates under the X axis
         fakeLabels = new Array(data.dates.length);
         for (var i = 0; i < data.dates.length; i++) {
