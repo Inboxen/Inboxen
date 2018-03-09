@@ -7,7 +7,9 @@
     'use strict';
 
     $.fn.inboxenSpinnerToggle = function() {
-        //
+        // disable or re-enable buttons to prevent over eager users from double
+        // submitting, as well as giving some visual feedback that something is
+        // happening
 
         this.each(function() {
             var $this = $(this);
@@ -45,7 +47,7 @@
 
 (function($) {
     'use strict';
-    // alert buttons
+    // alert close buttons, but only when JS is enabled
     var button = '<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button>';
     $("div[role=alert]").each(function() {
         $(this).append(button);
