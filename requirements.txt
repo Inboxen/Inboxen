@@ -66,5 +66,6 @@ salmon-mail==3.0.0
 simplejson==3.13.2
 six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pip-tools, python-dateutil, qrcode, salmon-mail
 text-unidecode==1.2       # via faker
+typing==3.6.4
 urllib3==1.22             # via requests
 webassets==0.12.1         # via django-assets

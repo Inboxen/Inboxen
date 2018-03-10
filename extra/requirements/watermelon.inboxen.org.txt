@@ -81,6 +81,7 @@ simplejson==3.13.2
 six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, traitlets
 text-unidecode==1.2       # via faker
 traitlets==4.3.2          # via ipython
+typing==3.6.4
 urllib3==1.22             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
 webassets==0.12.1         # via django-assets
