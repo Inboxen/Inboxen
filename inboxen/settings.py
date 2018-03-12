@@ -189,18 +189,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.humanize',
 
-    # third party
-    'bootstrapform',
-    'django_assets',
-    'django_extensions',
-    'djcelery',
-    'django_otp',
-    'django_otp.plugins.otp_static',
-    'django_otp.plugins.otp_totp',
-    'sudo',
-    'two_factor',
-    'watson',
-
     # Main Inboxen app
     'inboxen',
 
@@ -213,6 +201,18 @@ INSTALLED_APPS = (
     'router',
     'source',
     'tickets',
+
+    # third party
+    'bootstrapform',
+    'django_assets',
+    'django_extensions',
+    'djcelery',
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
+    'sudo',
+    'two_factor',
+    'watson',
 )
 
 ROOT_URLCONF = 'inboxen.urls'

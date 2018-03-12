@@ -7,7 +7,7 @@
     'use strict';
     var timer;
 
-    function AreWeReadyYet($refreshNote, $searchInfo, timer) {
+    function areWeReadyYet($refreshNote, $searchInfo, timer) {
         var http = new XMLHttpRequest();
         http.open("HEAD", $refreshNote.data("url"), true);
         http.onload = function (e) {
@@ -48,5 +48,5 @@
     }
     $refreshNote.html("");
     // poll the server every 7000 ms
-    timer = setInterval(function(){AreWeReadyYet($refreshNote, $searchInfo, timer);}, 7000);
+    timer = setInterval(function(){areWeReadyYet($refreshNote, $searchInfo, timer);}, 7000);
 })(jQuery);

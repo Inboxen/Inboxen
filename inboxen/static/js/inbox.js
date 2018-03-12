@@ -8,25 +8,25 @@
 
     var important_label = '<span class="label label-danger" title="Message has been marked as important">Important</span>';
 
-    function ToggleImportant($row) {
+    function toggleImportant($row) {
         if ($row.find("span.label-danger").length === 0) {
            $row.find("div.email-flags").append(important_label);
         } else {
-            $row.find("span.label-danger").remove();
+            $row.find("div.email-flags span.label-danger").remove();
         }
     }
 
-    function MarkImportant($row) {
-        if ($row.find("span.label-danger").length === 0) {
+    function markImportant($row) {
+        if ($row.find("div.email-flags span.label-danger").length === 0) {
            $row.find("div.email-flags").append(important_label);
         }
     }
 
-    function UnmarkImportant($row) {
-        $row.find("span.label-danger").remove();
+    function unmarkImportant($row) {
+        $row.find("div.email-flags span.label-danger").remove();
     }
 
-    function DeleteRow($row) {
+    function deleteRow($row) {
         $row.remove();
     }
 
@@ -36,14 +36,9 @@
         var $this = $(this);
         if ($this.data("clicked") === "yes") {
             return false;
-        } else {
-            $this.data("clicked", "yes");
-            $this.addClass("disabled");
-            setTimeout(function() {
-                $this.data("clicked", "no");
-                $this.removeClass("disabled");
-            }, 3000);
         }
+
+        $this.inboxenSpinnerToggle();
 
         var button = {"name": $this.attr("name"), "value": $this.attr("value")};
         var form_data = $("#email-list").serializeArray();
@@ -58,32 +53,35 @@
                     var $row = $("#email-" + button.value);
                     // was the important toggle pressed?
                     if (button.name === "important-single") {
-                        ToggleImportant($row);
-                        return;
-                    }
-
-                    var fn;
-                    if (button.name === "important") {
-                        fn = MarkImportant;
-                    } else if (button.name === "unimportant") {
-                        fn = UnmarkImportant;
-                    } else if (button.name === "delete") {
-                        fn = DeleteRow;
+                        toggleImportant($row);
                     } else {
-                        // return early, I don't know what button was pressed
-                        return;
-                    }
-
-                    $.each(form_data, function(index, value) {
-                        if (value.value === "email") {
-                            fn($("#email-" + value.name));
+                        // multiple emails were selected
+                        var fn;
+                        if (button.name === "important") {
+                            fn = markImportant;
+                        } else if (button.name === "unimportant") {
+                            fn = unmarkImportant;
+                        } else if (button.name === "delete") {
+                            fn = deleteRow;
+                        } else {
+                            // return early, I don't know what button was pressed
+                            return;
                         }
-                    });
+
+                        $.each(form_data, function(index, value) {
+                            if (value.value === "email") {
+                                fn($("#email-" + value.name));
+                            }
+                        });
+                    }
                 } else {
                     var $messageBlock = $("#alertmessages");
                     var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
+
+                // finally, re-enable button
+                $this.inboxenSpinnerToggle();
             }
         });
     });

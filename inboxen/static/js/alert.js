@@ -7,7 +7,7 @@
  * ======================================================================== */
 
 
-+function ($) {
+(function ($) {
   'use strict';
 
   // ALERT CLASS DEFINITION
@@ -31,7 +31,8 @@
       selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
     }
 
-    var $parent = $(selector === '#' ? [] : selector)
+    selector = selector === '#' ? [] : selector
+    var $parent = $(document).find(selector)
 
     if (e) e.preventDefault()
 
@@ -91,4 +92,4 @@
 
   $(document).on('click.bs.alert.data-api', dismiss, Alert.prototype.close)
 
-}(jQuery);
+})(jQuery);

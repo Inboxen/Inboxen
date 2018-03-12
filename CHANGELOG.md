@@ -3,6 +3,7 @@
 ## Pending
 
 * Tests for OTP views (#283)
+* Buttons should give some visual feedback that they're doing something (#279)
 
 ## Releases
 
