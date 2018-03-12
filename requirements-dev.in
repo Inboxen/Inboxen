@@ -1,5 +1,6 @@
 -r requirements.in
+Sphinx
 django-debug-toolbar
 flake8
 ipython
-Sphinx
+jasmine
