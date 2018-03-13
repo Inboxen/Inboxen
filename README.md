@@ -41,7 +41,7 @@ git clone https://github.com/Inboxen/Inboxen.git
 cd Inboxen
 pip install -r requirements-dev.txt
 mkdir node_modules
-npm update
+npm install
 python manage.py collectstatic
 ```
 
@@ -159,7 +159,7 @@ git clone https://github.com/Inboxen/Inboxen.git
 cd Inboxen
 pip install -r requirements.txt
 mkdir node_modules
-npm update
+npm install
 ```
 
 After this has completed, see the next section on minimum configuration. Also,

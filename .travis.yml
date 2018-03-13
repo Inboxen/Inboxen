@@ -8,7 +8,7 @@ before_script:
 
 before_install:
     - mkdir node_modules
-    - travis_retry npm update
+    - travis_retry npm install
 
 install:
     - travis_retry pip install -q -U setuptools
