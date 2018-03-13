@@ -33,8 +33,8 @@ from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.middleware import OTPMiddleware
 from django_otp.plugins.otp_static.models import StaticDevice
 from djcelery.contrib.test_runner import CeleryTestSuiteRunner
-from sudo import settings as sudo_settings
-from sudo.middleware import SudoMiddleware
+from elevate import settings as elevate_settings
+from elevate.middleware import ElevateMiddleware
 import six
 
 
@@ -59,7 +59,7 @@ class MockRequest(HttpRequest):
         self.META = {"REMOTE_ADDR": "127.0.0.1"}
 
         # sudo
-        SudoMiddleware().process_request(self)
+        ElevateMiddleware().process_request(self)
         if has_sudo:
             grant_sudo(self)
 
@@ -69,32 +69,32 @@ class MockRequest(HttpRequest):
         OTPMiddleware().process_request(self)
 
 
-# TODO: submit to django-sudo?
+# TODO: submit to django-elevate?
 def grant_sudo(client_or_request):
-    """Sets a cookie on the test client or request that django-sudo will use"""
+    """Sets a cookie on the test client or request that django-elevate will use"""
     response = HttpResponse()
     token = get_random_string()
 
     response.set_signed_cookie(
-        sudo_settings.COOKIE_NAME, token,
-                salt=sudo_settings.COOKIE_SALT,
-                max_age=sudo_settings.COOKIE_AGE,
+        elevate_settings.COOKIE_NAME, token,
+                salt=elevate_settings.COOKIE_SALT,
+                max_age=elevate_settings.COOKIE_AGE,
                 secure=False,
                 httponly=True,
-                path=sudo_settings.COOKIE_PATH,
-                domain=sudo_settings.COOKIE_DOMAIN,
+                path=elevate_settings.COOKIE_PATH,
+                domain=elevate_settings.COOKIE_DOMAIN,
     )
 
     if hasattr(client_or_request, "cookies"):
-        client_or_request.cookies[sudo_settings.COOKIE_NAME] = response.cookies[sudo_settings.COOKIE_NAME]
+        client_or_request.cookies[elevate_settings.COOKIE_NAME] = response.cookies[elevate_settings.COOKIE_NAME]
     elif hasattr(client_or_request, "COOKIES"):
-        client_or_request.COOKIES[sudo_settings.COOKIE_NAME] = response.cookies[sudo_settings.COOKIE_NAME].value
+        client_or_request.COOKIES[elevate_settings.COOKIE_NAME] = response.cookies[elevate_settings.COOKIE_NAME].value
     else:
         raise TypeError("%r has neither cookies nor COOKIES" % client_or_request)
 
     # client.session is a property that returns new objects
     session = client_or_request.session
-    session[sudo_settings.COOKIE_NAME] = token
+    session[elevate_settings.COOKIE_NAME] = token
     session.save()
 
 
