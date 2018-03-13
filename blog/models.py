@@ -33,7 +33,7 @@ class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])
     body = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
-    date = models.DateTimeField('posted', null=True, blank=True, editable=False)
+    date = models.DateTimeField('posted', null=True, blank=True, editable=False, db_index=True)
     modified = models.DateTimeField('modified', auto_now=True, editable=False)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)

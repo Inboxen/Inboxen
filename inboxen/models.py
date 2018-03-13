@@ -76,7 +76,7 @@ class UserProfile(models.Model):
 @six.python_2_unicode_compatible
 class Statistic(models.Model):
     """Statistics about users"""
-    date = models.DateTimeField('date', auto_now_add=True)
+    date = models.DateTimeField('date', auto_now_add=True, db_index=True)
 
     users = JSONField()
     emails = JSONField()
@@ -179,7 +179,7 @@ class Request(models.Model):
     """Inbox allocation request model"""
     amount = models.IntegerField(help_text=_("Pool increase requested"))
     succeeded = models.NullBooleanField("accepted", default=None, help_text=_("has the request been accepted?"))
-    date = models.DateTimeField("requested", auto_now_add=True, help_text=_("date requested"))
+    date = models.DateTimeField("requested", auto_now_add=True, db_index=True, help_text=_("date requested"))
     date_decided = models.DateTimeField(null=True, help_text=_("date staff accepted/rejected request"))
     authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer",
         blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
@@ -211,7 +211,7 @@ class Email(models.Model):
     """
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted", "read", "seen", "important", "view_all_headers"), default=0)
-    received_date = models.DateTimeField()
+    received_date = models.DateTimeField(db_index=True)
 
     objects = EmailQuerySet.as_manager()
 
