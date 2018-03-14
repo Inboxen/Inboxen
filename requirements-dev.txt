@@ -31,7 +31,7 @@ django-braces==1.12.0
 django-celery==3.2.2
 django-csp==3.3
 django-debug-toolbar==1.9.1
-django-extensions==2.0.3
+django-extensions==2.0.5
 django-formtools==2.1
 django-js-asset==1.0.0    # via django-mptt
 django-mptt==0.9.0
@@ -46,7 +46,7 @@ dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon, sphinx
 enum34==1.1.6             # via flake8, traitlets
 factory-boy==2.10.0
-faker==0.8.11             # via factory-boy
+faker==0.8.5
 first==2.0.1              # via pip-tools
 flake8==3.5.0
 funcsigs==1.0.2           # via mock
@@ -63,7 +63,7 @@ jsmin==2.2.2
 kombu==3.0.37             # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
-lxml==4.1.1
+lxml==4.2.0
 markdown==2.6.11
 markupsafe==1.0           # via jinja2
 mccabe==0.6.1             # via flake8
@@ -89,14 +89,14 @@ pyflakes==1.6.0           # via flake8
 pygments==2.2.0           # via ipython, sphinx
 pyparsing==2.2.0          # via packaging
 python-daemon==2.1.2      # via salmon-mail
-python-dateutil==2.6.1    # via faker
+python-dateutil==2.7.0    # via faker
 pytz==2018.3
 pyyaml==3.10              # via jasmine
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer, sphinx
 salmon-mail==3.0.0
 scandir==1.7              # via pathlib2
-selenium==3.10.0          # via jasmine
+selenium==3.11.0          # via jasmine
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
 six==1.11.0               # via cheroot, cherrypy, configobj, django-bitfield, django-extensions, faker, mock, more-itertools, packaging, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, sphinx, tempora, traitlets
@@ -104,10 +104,10 @@ snowballstemmer==1.2.1    # via sphinx
 sphinx==1.7.1
 sphinxcontrib-websupport==1.0.1  # via sphinx
 sqlparse==0.2.4           # via django-debug-toolbar
-tempora==1.10             # via portend
-text-unidecode==1.2       # via faker
+tempora==1.11             # via portend
 traitlets==4.3.2          # via ipython
 typing==3.6.4
+unidecode==1.0.22         # via faker
 urllib3==1.22             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
 webassets==0.12.1         # via django-assets

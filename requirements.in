@@ -19,6 +19,7 @@ django-sendfile
 -e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=django-sudo
 django-two-factor-auth>=1.5.0
 django-watson>=1.2.0
+faker==0.8.5  # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
 factory-boy
 jsmin
 lxml
