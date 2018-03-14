@@ -25,7 +25,7 @@ from django_assets import Bundle, register
 from webassets.filter import get_filter
 
 thirdparty_path = os.path.join(settings.BASE_DIR, "node_modules")
-sass = get_filter('scss', style="compressed", load_paths=(thirdparty_path,))
+sass = get_filter('scss', style="compressed", load_paths=("./css", thirdparty_path))
 
 
 css = Bundle(
