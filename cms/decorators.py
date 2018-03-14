@@ -21,13 +21,13 @@ from functools import wraps
 
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
-from sudo.views import redirect_to_sudo
+from elevate.views import redirect_to_elevate
 
 
 def is_secure_admin(func):
     """
     Checks that current request is from a superuser, who has 2FA enabled, and
-    checks for the sudo cookie
+    checks for the elevate cookie
     """
     @wraps(func)
     def inner(request, *args, **kwargs):
@@ -37,8 +37,8 @@ def is_secure_admin(func):
             # OTP has a decorator for this, but it bounces the user back to the
             # login page - which will fail because the user is already logged in
             raise PermissionDenied("Admins must have Two Factor Authentication enabled")
-        elif not request.is_sudo():
-            return redirect_to_sudo(request.get_full_path())
+        elif not request.is_elevated():
+            return redirect_to_elevate(request.get_full_path())
 
         return func(request, *args, **kwargs)
 

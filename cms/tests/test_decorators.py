@@ -86,7 +86,7 @@ class IsSecureAdminTestCase(InboxenTestCase):
         def setup_request(request):
             request.user.is_superuser = False
             request.user.is_verified.return_value = False
-            request.is_sudo.return_value = False
+            request.is_elevated.return_value = False
 
         def noop(requset):
             pass
@@ -98,7 +98,7 @@ class IsSecureAdminTestCase(InboxenTestCase):
             request.user.is_verified.return_value = True
 
         def set_sudo(request):
-            request.is_sudo.return_value = True
+            request.is_elevated.return_value = True
 
         # collect fiunctions and then add them together in all possible combinations
         funcs = [set_superuser, set_otp, set_sudo]

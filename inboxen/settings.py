@@ -176,7 +176,7 @@ MIDDLEWARE_CLASSES = (
     'inboxen.middleware.ExtendSessionMiddleware',
     'inboxen.middleware.MakeXSSFilterChromeSafeMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'sudo.middleware.SudoMiddleware',
+    'elevate.middleware.ElevateMiddleware',
     'csp.middleware.CSPMiddleware',
 )
 
@@ -210,7 +210,7 @@ INSTALLED_APPS = (
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
-    'sudo',
+    'elevate',
     'two_factor',
     'watson',
 )
@@ -249,7 +249,7 @@ CSRF_COOKIE_SECURE = True
 CSRF_USE_SESSIONS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.csrf_failure"
 
-SUDO_URL = urlresolvers.reverse_lazy("user-sudo")
+ELEVATE_URL = urlresolvers.reverse_lazy("user-sudo")
 
 CMS_ROOT_URL = urlresolvers.reverse_lazy("cms-index", args=('',))
 
