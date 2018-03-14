@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
 #
--e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=django-sudo
+-e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
 amqp==1.4.9               # via kombu
 anyjson==0.3.3            # via kombu
 babel==2.5.3              # via django-phonenumber-field
@@ -26,7 +26,7 @@ django-bootstrap-form==3.3
 django-braces==1.12.0
 django-celery==3.2.2
 django-csp==3.3
-django-extensions==2.0.3
+django-extensions==2.0.5
 django-formtools==2.1
 django-js-asset==1.0.0    # via django-mptt
 django-mptt==0.9.0
@@ -41,7 +41,7 @@ dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 enum34==1.1.6             # via traitlets
 factory-boy==2.10.0
-faker==0.8.11             # via factory-boy
+faker==0.8.5
 first==2.0.1              # via pip-tools
 funcsigs==1.0.2           # via mock
 idna==2.6                 # via requests
@@ -52,7 +52,7 @@ jsmin==2.2.2
 kombu==3.0.37             # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
-lxml==4.1.1
+lxml==4.2.0
 markdown==2.6.11
 mock==2.0.0
 pathlib2==2.3.0           # via ipython, pickleshare
@@ -70,7 +70,7 @@ ptyprocess==0.5.2         # via pexpect
 pygments==2.2.0           # via ipython
 pylibmc==1.5.2
 python-daemon==2.1.2      # via salmon-mail
-python-dateutil==2.6.1    # via faker
+python-dateutil==2.7.0    # via faker
 pytz==2018.3
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
@@ -79,9 +79,9 @@ scandir==1.7              # via pathlib2
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
 six==1.11.0               # via configobj, django-bitfield, django-extensions, faker, mock, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, traitlets
-text-unidecode==1.2       # via faker
 traitlets==4.3.2          # via ipython
 typing==3.6.4
+unidecode==1.0.22         # via faker
 urllib3==1.22             # via requests
 wcwidth==0.1.7            # via prompt-toolkit
 webassets==0.12.1         # via django-assets

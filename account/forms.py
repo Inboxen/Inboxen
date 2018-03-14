@@ -24,8 +24,8 @@ from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.core import exceptions
 from django.utils.translation import ugettext as _
 
+from elevate.forms import ElevateForm
 from ratelimitbackend.forms import AuthenticationForm
-from sudo.forms import SudoForm
 
 from account import fields
 from account.tasks import delete_account
@@ -84,7 +84,7 @@ class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
     new_password1 = fields.PasswordCheckField(label=_("New password"))
 
 
-class PlaceHolderSudoForm(PlaceHolderMixin, SudoForm):
+class PlaceHolderSudoForm(PlaceHolderMixin, ElevateForm):
     pass
 
 

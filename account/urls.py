@@ -22,8 +22,7 @@ from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
-
-import sudo.views
+import elevate.views
 
 from account.decorators import anonymous_required
 from account.forms import PlaceHolderPasswordChangeForm, PlaceHolderSudoForm
@@ -40,7 +39,7 @@ urlpatterns = [
         },
         name='user-password',
     ),
-    urls.url(r'^security/sudo/$', sudo.views.sudo, {'form_class': PlaceHolderSudoForm}, name='user-sudo'),
+    urls.url(r'^security/sudo/$', elevate.views.elevate, {'form_class': PlaceHolderSudoForm}, name='user-sudo'),
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
     urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),

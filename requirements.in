@@ -16,9 +16,10 @@ django-mptt
 django-otp
 django-ratelimit-backend
 django-sendfile
--e git+https://github.com/moggers87/django-sudo.git@77072be6be149f9c4fca5e27968746fc58692943#egg=django-sudo
+-e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
 django-two-factor-auth>=1.5.0
 django-watson>=1.2.0
+faker==0.8.5  # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
 factory-boy
 jsmin
 lxml

@@ -21,14 +21,14 @@ from django.views import generic
 from django.core.urlresolvers import reverse_lazy
 
 from braces.views import LoginRequiredMixin
-from sudo.mixins import SudoMixin
+from elevate.mixins import ElevateMixin
 
 from account import forms
 
 __all__ = ["AccountDeletionView"]
 
 
-class AccountDeletionView(LoginRequiredMixin, SudoMixin, generic.FormView):
+class AccountDeletionView(LoginRequiredMixin, ElevateMixin, generic.FormView):
     """ View to delete an account """
 
     form_class = forms.DeleteAccountForm
