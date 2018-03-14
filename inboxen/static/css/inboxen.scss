@@ -9,7 +9,7 @@ $font-family-sans-serif:  sans-serif;
 $font-family-serif:       serif;
 $font-family-monospace:   monospace;
 
-@import "bootstrap-sass/assets/stylesheets/bootstrap";
+@import "./bootstrap.scss";
 @import "font-awesome/scss/font-awesome.scss";
 
 // Inboxen styles

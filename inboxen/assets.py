@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015-2016 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2015-2016, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -24,8 +24,13 @@ from django.conf import settings
 from django_assets import Bundle, register
 from webassets.filter import get_filter
 
+
 thirdparty_path = os.path.join(settings.BASE_DIR, "node_modules")
-sass = get_filter('scss', style="compressed", load_paths=(thirdparty_path,))
+sass = get_filter("scss", style="compressed", load_paths=("./css", thirdparty_path))
+
+
+uglify_args = ["--comments", "/^!/", "-m", "-c"]
+uglify = get_filter("uglifyjs", binary=os.path.join(thirdparty_path, ".bin", "uglifyjs"), extra_args=uglify_args)
 
 
 css = Bundle(
@@ -33,6 +38,7 @@ css = Bundle(
     filters=(sass,),
     output="compiled/css/website.%(version)s.css",
 )
+register("inboxen_css", css)
 
 
 js = Bundle(
@@ -42,17 +48,16 @@ js = Bundle(
     "js/home.js",
     "js/search.js",
     "js/inbox.js",
-    filters="jsmin",
+    filters=(uglify,),
     output="compiled/js/website.%(version)s.js",
 )
+register("inboxen_js", js)
+
 
 chart_js = Bundle(
     "thirdparty/chart.js/dist/Chart.js",
     "js/stats.js",
-    filters="jsmin",
+    filters=(uglify,),
     output="compiled/js/stats.%(version)s.js",
 )
-
-register("inboxen_css", css)
-register("inboxen_js", js)
 register("chart_js", chart_js)
