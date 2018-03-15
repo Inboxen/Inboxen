@@ -260,7 +260,7 @@ class AppPage(HelpBasePage):
 
 class HelpPage(HelpBasePage):
     body = RichTextField(
-        help_text=_("Markdown text, support the TOC extension."),
+        help_text=_("Markdown text, supports the TOC extension."),
         validators=[validators.ProhibitNullCharactersValidator()],
         allow_tags=HELP_PAGE_TAGS,
         safe_attrs=HELP_PAGE_ATTRS,
