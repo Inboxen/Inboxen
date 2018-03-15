@@ -35,6 +35,8 @@ urls.handler500 = views.error.server_error
 urlpatterns = [
     urls.url(r'^$', views.Index.as_view(), name='index'),
     urls.url(r'^_csp_report/$', views.error.csp_report, name='csp_logger'),
+    urls.url(r'^manifest.json$', views.manifest, name='inboxen-manifest'),
+
     urls.url(r'^stats/$', views.stats, name='stats'),
     urls.url(r'^stats_recent.json$', views.stats_recent, name='stats_recent'),
 
