@@ -9,6 +9,7 @@
 * Reduce static asset sizes
   * Use UglifyJS to mangle our JS reducing each of our JS bundles by about 50KB
   * Only import the parts of Bootstrap that we actually use, reducing our CSS bundle by about 40KB
+* Add favicons for various devices (#181)
 
 ## Releases
 

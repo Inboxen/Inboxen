@@ -592,3 +592,10 @@ class XContentTypeOptionsTestCase(InboxenTestCase):
     def test_x_content_type_options(self):
         response = self.client.get("/")
         self.assertEqual(response["x-content-type-options"], "nosniff")
+
+
+class ManifestTestCase(InboxenTestCase):
+    def test_get(self):
+        url = urlresolvers.reverse('inboxen-manifest')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)

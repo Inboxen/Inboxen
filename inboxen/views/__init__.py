@@ -15,9 +15,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from . import error
 from .inbox import *
 from .index import *
+from .manifest import manifest
 from .stats import *
 from .styleguide import styleguide
 from .user import *
-from . import error

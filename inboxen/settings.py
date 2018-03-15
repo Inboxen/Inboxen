@@ -244,6 +244,7 @@ CSP_FONT_SRC = ("'self'",)
 CSP_IMG_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'",)
 CSP_STYLE_SRC = ("'self'",)
+CSP_MANIFEST_SRC = ("'self'",)
 
 CSRF_COOKIE_SECURE = True
 CSRF_USE_SESSIONS = True

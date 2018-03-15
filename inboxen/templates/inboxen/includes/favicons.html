@@ -1,0 +1,13 @@
+{# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% load staticfiles %}
+<link rel="icon" type="image/png" href="{% static "imgs/megmelon-icon.png" %}" />
+<link rel="icon" type="image/png" sizes="32x32" href="{% static "imgs/favicon-32.png" %}" />
+<link rel="icon" type="image/png" sizes="16x16" href="{% static "imgs/favicon-16.png" %}" />
+
+<link rel="apple-touch-icon" sizes="128x128" href="{% static "imgs/megmelon-icon-white.png" %}" />
+<link rel="mask-icon" href="{% static "imgs/safari-pinned-tab.svg" %}" color="#ffffff" />
+
+<link rel="manifest" href="{% url "inboxen-manifest" %}" />
+<meta name="apple-mobile-web-app-title" content="{{ settings.SITE_NAME }}" />
+<meta name="application-name" content="{{ settings.SITE_NAME }}" />
+<meta name="theme-color" content="#ffffff" />
