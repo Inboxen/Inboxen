@@ -17,6 +17,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from __future__ import unicode_literals
 
 import itertools
 
@@ -129,12 +130,12 @@ class UsernameChangeTestCase(InboxenTestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["username2"], [u"The two username fields don't match."])
 
-        params = {"username": "username\x00".decode(), "username2": "username\x00".decode()}
+        params = {"username": "username\x00", "username2": "username\x00"}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["username"], [u"Null characters are not allowed."])
 
-        params = {"username": "usernameß".decode("utf-8"), "username2": "usernameß".decode("utf-8")}
+        params = {"username": "usernameß", "username2": "usernameß"}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["username"],
