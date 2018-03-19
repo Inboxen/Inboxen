@@ -62,7 +62,9 @@ def liberate(user_id, options):
     tar_type = TAR_TYPES[options.get('compression_type', '0')]
 
     rstr = get_random_string(7, string.ascii_letters)
-    basename = "%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(user.username + rstr).hexdigest()[:50])
+    username = user.username + rstr
+    username = username.encode("utf-8")
+    basename = "%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(username).hexdigest()[:50])
     path = os.path.join(settings.LIBERATION_PATH, basename)
     tarname = "%s.%s" % (basename, tar_type["ext"])
 

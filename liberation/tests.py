@@ -35,7 +35,7 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse
 from salmon import mail
-from six import StringIO
+from six import BytesIO
 
 from inboxen import models
 from inboxen.tests.example_emails import (
@@ -198,12 +198,12 @@ class LiberationDownloadViewTestCase(InboxenTestCase):
             self.assertEqual(os.path.join(self.tmp_dir, "test.txt"), self.user.liberation.path)
 
             file_obj = open(self.user.liberation.path, "wb")
-            file_obj.write("hello\n")
+            file_obj.write(b"hello\n")
             file_obj.close()
 
             response = self.client.get(reverse("user-liberate-get"))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.content, "")
+            self.assertEqual(response.content, b"")
             self.assertEqual(response["Content-Type"], "application/x-gzip")
             self.assertEqual(response["Content-Disposition"], 'attachment; filename="liberated_data.tar.gz"')
             self.assertEqual(response["X-Sendfile"], os.path.join(self.tmp_dir, "test.txt"))
@@ -265,10 +265,10 @@ class MakeMessageUtilTestCase(InboxenTestCase):
     def test_encoders_used(self):
         # make message with base64 part, uuencode part, 8bit part, 7bit part,
         # quopri part, and some invalid part
-        body_data = "Hello\n\nHow are you?\n"
+        body_data = b"Hello\n\nHow are you?\n"
         email = factories.EmailFactory(inbox=self.inbox)
         body = factories.BodyFactory(data=body_data)
-        first_part = factories.PartListFactory(email=email, body=factories.BodyFactory(data=""))
+        first_part = factories.PartListFactory(email=email, body=factories.BodyFactory(data=b""))
         factories.HeaderFactory(part=first_part, name="Content-Type", data="multipart/mixed; boundary=\"=-3BRZDE/skgKPPh+RuFa/\"")
 
         encodings = {
@@ -309,19 +309,19 @@ class MakeMessageUtilTestCase(InboxenTestCase):
 
 
 def check_noop(msg, data):
-    assert msg._payload == data, "Payload has been transformed"
+    assert msg._payload.encode() == data, "Payload has been transformed"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
 
 
 def check_unknown(msg, data):
-    assert msg._payload == data, "Payload has been transformed"
+    assert msg._payload.encode() == data, "Payload has been transformed"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME in msg.keys(), "Missing error header"
 
 
 def check_base64(msg, data):
-    assert msg._payload != data, "Payload has not been transformed"
+    assert msg._payload.encode() != data, "Payload has not been transformed"
     try:
         payload = base64.standard_b64decode(msg._payload)
     except TypeError:
@@ -331,17 +331,17 @@ def check_base64(msg, data):
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
 
 def check_quopri(msg, data):
-    assert msg._payload != data, "Payload has not been transformed"
+    assert msg._payload.encode() != data, "Payload has not been transformed"
     assert quopri.decodestring(msg._payload) == data, "Payload was not encoded correctly"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
 
 def check_uu(msg, data):
-    assert msg._payload != data, "Payload has not been transformed"
+    assert msg._payload.encode() != data, "Payload has not been transformed"
 
-    outfile = StringIO()
+    outfile = BytesIO()
     try:
-        uu.decode(StringIO(msg._payload), outfile)
+        uu.decode(BytesIO(msg._payload.encode()), outfile)
         payload = outfile.getvalue()
     except uu.Error:
         assert False, "Payload could not be decoded"
