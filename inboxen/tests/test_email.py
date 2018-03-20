@@ -82,13 +82,13 @@ class EmailViewTestCase(InboxenTestCase):
         # check that delete button has correct value
         button = "value=\"%s\" name=\"delete-single\""
         button = button % self.email.eid
-        self.assertIn(button, str(response.content))
+        self.assertIn(button, response.content.decode("utf-8"))
 
         # check that premailer removes invalid CSS
-        self.assertNotIn("awesomebar-sprite.png", str(response.content))
+        self.assertNotIn("awesomebar-sprite.png", response.content.decode("utf-8"))
 
         # check for same-origin
-        self.assertIn('<meta name="referrer" content="same-origin">', str(response.content))
+        self.assertIn('<meta name="referrer" content="same-origin">', response.content.decode("utf-8"))
 
     def test_get_with_headers(self):
         response = self.client.get(self.get_url() + "?all-headers=1")
@@ -120,7 +120,7 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertNotIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
@@ -143,7 +143,7 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
@@ -167,7 +167,7 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
@@ -276,7 +276,7 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
@@ -289,7 +289,7 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
     def test_body_with_no_meta(self):
         response = self.client.get(self.get_url(self.email_metaless) + "?imgDisplay=1")
@@ -302,21 +302,24 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
     def test_attachments_get(self):
         part = self.email.parts.get()
         url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
+        if six.PY3:
+            self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
+        else:
+            self.assertIn("He l lo ß.jpg".encode("utf-8"), response["Content-Disposition"])
 
     def test_html_a(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
+        self.assertIn('<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
 
 
 class RealExamplesTestCase(InboxenTestCase):
@@ -380,7 +383,7 @@ class RealExamplesTestCase(InboxenTestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", str(response.content))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
 
     def test_premime(self):
         self.msg = mail.MailRequest("", "", "", EXAMPLE_PREMIME_EMAIL)
@@ -425,14 +428,20 @@ class AttachmentTestCase(InboxenTestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+        if six.PY3:
+            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+        else:
+            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"".encode("utf-8"))
 
     def test_name_in_cd(self):
         factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
         url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+        if six.PY3:
+            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+        else:
+            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"".encode("utf-8"))
 
 
 class UtilityTestCase(InboxenTestCase):

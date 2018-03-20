@@ -19,7 +19,7 @@
 ##
 
 
-BODY = """<html>
+BODY = u"""<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
@@ -35,9 +35,9 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p onClick="alert('Idiot!')">Click me!</p>
 </body>
 </html>
-""".encode()
+""".encode("utf-8")
 
-METALESS_BODY = """<html>
+METALESS_BODY = u"""<html>
 <head>
 <style type="text/css">
 p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
@@ -52,7 +52,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """.encode()
 
-CHARSETLESS_BODY = """<html>
+CHARSETLESS_BODY = u"""<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <style type="text/css">
@@ -68,7 +68,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """.encode()
 
-BADLY_ENCODED_BODY = """<html>
+BADLY_ENCODED_BODY = u"""<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
@@ -84,7 +84,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """.encode("latin-1")
 
-BAD_HTTP_EQUIV_BODY = """<html>
+BAD_HTTP_EQUIV_BODY = u"""<html>
 <head>
 <meta http-equiv="Content-Type">
 <style type="text/css">
@@ -100,9 +100,9 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p onClick="alert('Idiot!')">Click me!</p>
 </body>
 </html>
-""".encode()
+""".encode("utf-8")
 
-BODILESS_BODY = """<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>""".encode()
+BODILESS_BODY = u"""<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>""".encode()
 
 EXAMPLE_PREMIME_EMAIL = """From: test@example.com
 To: test@example.com
