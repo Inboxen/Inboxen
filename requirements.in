@@ -15,7 +15,7 @@ django-formtools
 django-mptt
 django-otp
 django-ratelimit-backend
-django-sendfile
+django-sendfile2
 -e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
 django-two-factor-auth>=1.5.0
 django-watson>=1.2.0
