@@ -198,7 +198,7 @@ class ModelTestCase(InboxenTestCase):
     def test_header_create(self):
         name = "X-Hello"
         data = "Hewwo"
-        body = models.Body.objects.create(data="Hello", hashed="fakehash")
+        body = models.Body.objects.create(data=b"Hello", hashed="fakehash")
         part = models.PartList.objects.create(email=factories.EmailFactory(), body=body)
 
         header1 = part.header_set.create(name=name, data=data, ordinal=0)
@@ -214,7 +214,7 @@ class ModelTestCase(InboxenTestCase):
     def test_header_null_bytes(self):
         name = "X-Hello"
         data = "Hewwo \x00 test"
-        body = models.Body.objects.create(data="Hello", hashed="fakehash")
+        body = models.Body.objects.create(data=b"Hello", hashed="fakehash")
         part = models.PartList.objects.create(email=factories.EmailFactory(), body=body)
 
         header, _ = part.header_set.create(name=name, data=data, ordinal=0)
@@ -222,7 +222,7 @@ class ModelTestCase(InboxenTestCase):
         self.assertEqual(header.data.data, "Hewwo  test")
 
     def test_body_get_or_create(self):
-        body_data = "Hello"
+        body_data = b"Hello"
 
         body1 = models.Body.objects.get_or_create(data=body_data)
         body2 = models.Body.objects.get_or_create(data=body_data)

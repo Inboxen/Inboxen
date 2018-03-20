@@ -74,7 +74,7 @@ class LoginTestCase(InboxenTestCase):
         self.assertEqual(login, True)
 
         response = self.client.get(dj_settings.LOGOUT_URL, follow=True)
-        self.assertIn("You are now logged out. Have a nice day!", response.content)
+        self.assertIn("You are now logged out. Have a nice day!", str(response.content))
 
     def test_last_login(self):
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
@@ -134,12 +134,12 @@ class IndexTestCase(InboxenTestCase):
     def test_index_page(self):
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Join", response.content)
+        self.assertIn("Join", str(response.content))
 
         with override_settings(ENABLE_REGISTRATION=False):
             response = self.client.get(urlresolvers.reverse("index"))
             self.assertEqual(response.status_code, 200)
-            self.assertNotIn("Join", response.content)
+            self.assertNotIn("Join", str(response.content))
 
     def test_index_page_logged_in(self):
         user = factories.UserFactory()
@@ -147,12 +147,12 @@ class IndexTestCase(InboxenTestCase):
 
         response = self.client.get(urlresolvers.reverse("index"))
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn("Join", response.content)
+        self.assertNotIn("Join", str(response.content))
 
         with override_settings(ENABLE_REGISTRATION=False):
             response = self.client.get(urlresolvers.reverse("index"))
             self.assertEqual(response.status_code, 200)
-            self.assertNotIn("Join", response.content)
+            self.assertNotIn("Join", str(response.content))
 
 
 class ExtendSessionMiddlewareTestCase(InboxenTestCase):
@@ -270,12 +270,12 @@ class FeederCommandTest(InboxenTestCase):
         with self.assertRaises(CommandError) as error:
             # non-existing mbox
             call_command("feeder", "some_file")
-        self.assertEqual(error.exception.message, "No such path: some_file")
+        self.assertEqual(str(error.exception), "No such path: some_file")
 
         with self.assertRaises(CommandError) as error:
             # non-existing inbox
             call_command("feeder", "some_file", inbox="something@localhost")
-        self.assertEqual(error.exception.message, "Inbox does not exist")
+        self.assertEqual(str(error.exception), "Inbox does not exist")
 
         with mock.patch("inboxen.management.commands.feeder.mailbox.mbox") as mock_box:
             mock_box.return_value = mock.Mock()
@@ -283,7 +283,7 @@ class FeederCommandTest(InboxenTestCase):
 
             with self.assertRaises(CommandError) as error:
                 call_command("feeder", "/")
-            self.assertEqual(error.exception.message, "Your mbox is empty!")
+            self.assertEqual(str(error.exception), "Your mbox is empty!")
 
     def test_get_address(self):
         mgmt_command = feeder.Command()
@@ -368,7 +368,7 @@ class RouterCommandTest(InboxenTestCase):
     def test_command(self):
         with self.assertRaises(CommandError) as error:
             call_command("router")
-        self.assertEqual(error.exception.message, "Error: one of the arguments --start --stop --status is required")
+        self.assertEqual(str(error.exception), "Error: one of the arguments --start --stop --status is required")
 
     def test_handle(self):
         def func():
@@ -378,7 +378,7 @@ class RouterCommandTest(InboxenTestCase):
 
         with self.assertRaises(CommandError) as error:
             mgmt_command.handle(cmd=func)
-        self.assertEqual(error.exception.message, "OSError from subprocess, salmon is probably not in your path.")
+        self.assertEqual(str(error.exception), "OSError from subprocess, salmon is probably not in your path.")
 
         mgmt_command.stdout = StringIO()
         mgmt_command.handle(cmd=lambda: "test")
@@ -419,8 +419,8 @@ class ErrorViewTestCase(InboxenTestCase):
         response = view_func(request)
 
         self.assertEqual(response.status_code, 499)
-        self.assertIn("some message or other", response.content)
-        self.assertIn("some headline", response.content)
+        self.assertIn("some message or other", str(response.content))
+        self.assertIn("some headline", str(response.content))
 
     def test_misconfigured(self):
         view_obj = ErrorView()
@@ -502,7 +502,7 @@ class CSRFCheckedTestCase(InboxenTestCase):
         response = self.client.get(self.url)
 
         # no csrftokenmiddleware cookie
-        self.assertEqual(response.cookies.keys(), ["sessionid"])
+        self.assertEqual(list(response.cookies.keys()), ["sessionid"])
 
         # if we move back to cookie based csrf, uncomment these tests
         #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["secure"], True)

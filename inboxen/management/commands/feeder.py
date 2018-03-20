@@ -71,7 +71,7 @@ class Command(BaseCommand):
         self.stdout.flush()
 
     def _iterate(self):
-        for key in bar.ShadyBar("Feeding").iter(self.mbox.keys()):
+        for key in bar.ShadyBar("Feeding").iter(list(self.mbox.keys())):
             server = self._get_server()
             message = self.mbox.get(key)
 
