@@ -24,10 +24,10 @@ import sys
 from django import test
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
-
 from salmon.mail import MailRequest
-from salmon.server import SMTPError
 from salmon.routing import Router
+from salmon.server import SMTPError
+import six
 
 from inboxen.test import override_settings, InboxenTestCase
 from inboxen import models
@@ -72,12 +72,12 @@ Last part!
 """
 
 BODIES = [
-    "",
-    "Hi,\n\nThis is a plain text message!\n",
-    "",
-    "Last part!\n",
-    "Inside part\n",
-    "Another inside part\n",
+    b"",
+    b"Hi,\n\nThis is a plain text message!\n",
+    b"",
+    b"Last part!\n",
+    b"Inside part\n",
+    b"Another inside part\n",
 ]
 
 
@@ -154,7 +154,7 @@ class RouterTestCase(InboxenTestCase):
         self.assertEqual(models.Email.objects.count(), 1)
         self.assertEqual(models.PartList.objects.count(), 6)
 
-        bodies = [str(part.body.data) for part in models.PartList.objects.select_related("body").order_by("level", "lft")]
+        bodies = [six.binary_type(part.body.data) for part in models.PartList.objects.select_related("body").order_by("level", "lft")]
         self.assertEqual(bodies, BODIES)
 
     @override_settings(ADMINS=(("admin", "root@localhost"),))
