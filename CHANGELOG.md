@@ -2,9 +2,11 @@
 
 ## Pending
 
-* Fix username change form to actually change the username (#327)
-
 ## Releases
+
+### Deploy for 2018-03-23
+
+* Fix username change form to actually change the username (#327)
 
 ### Deploy for 2018-03-15
 
