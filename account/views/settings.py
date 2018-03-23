@@ -54,6 +54,7 @@ class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
     def get_form_kwargs(self, **kwargs):
         kwargs = super(UsernameChangeView, self).get_form_kwargs(**kwargs)
         kwargs.setdefault("instance", self.request.user)
+        kwargs["initial"] = {"username": ""}  # override initial value for username
         return kwargs
 
     def form_valid(self, form, *args, **kwargs):
