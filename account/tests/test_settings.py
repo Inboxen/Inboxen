@@ -161,6 +161,38 @@ class UsernameChangeTestCase(InboxenTestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
+    def test_post(self):
+        grant_sudo(self.client)
+        other_user = factories.UserFactory(username=self.user.username + "2")
+        new_username = self.user.username + "1"
+        old_username = self.user.username
+        other_username = other_user.username
+        user_count = get_user_model().objects.count()
+
+        # invalid form
+        params = {"username": new_username, "username2": old_username}
+        response = self.client.post(self.get_url(), params)
+        self.user.refresh_from_db()
+        other_user.refresh_from_db()
+
+        # username should remain unchanged
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.user.username, old_username)
+        self.assertEqual(other_user.username, other_username)
+        self.assertEqual(get_user_model().objects.count(), user_count)
+
+        # valid form
+        params = {"username": new_username, "username2": new_username}
+        response = self.client.post(self.get_url(), params)
+        self.user.refresh_from_db()
+        other_user.refresh_from_db()
+
+        # username should changed
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("user-settings"))
+        self.assertEqual(self.user.username, new_username)
+        self.assertEqual(other_user.username, other_username)
+        self.assertEqual(get_user_model().objects.count(), user_count)
 
 class DeleteTestCase(InboxenTestCase):
     def setUp(self):
