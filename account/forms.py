@@ -21,6 +21,7 @@ from django import forms
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
+from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.core import exceptions
 from django.utils.translation import ugettext as _
 
@@ -185,8 +186,8 @@ class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
     def clean_username(self):
         username = self.cleaned_data["username"]
 
-        validator = validators.ProhibitNullCharactersValidator()
-        validator(username)
+        for validator in [validators.ProhibitNullCharactersValidator(), ASCIIUsernameValidator()]:
+            validator(username)
 
         if get_user_model().objects.filter(username__iexact=username).exists():
             raise exceptions.ValidationError(_("A user with that username already exists."), code='duplicate_username')

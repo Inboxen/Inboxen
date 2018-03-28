@@ -78,6 +78,6 @@ def encode_body(part):
         data = part.body
 
     if not data:
-        data = ''
+        data = b''
 
     return data

@@ -34,13 +34,13 @@ class StatsViewTestCase(InboxenTestCase):
     def test_get_blank(self):
         response = self.client.get(reverse("stats"))
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Sorry, we don't seem to have any statistics", response.content)
+        self.assertIn("Sorry, we don't seem to have any statistics", response.content.decode("utf-8"))
 
     def test_get_broken(self):
         models.Statistic.objects.create(users={}, inboxes={}, emails={})
         response = self.client.get(reverse("stats"))
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn("Sorry, we don't seem to have any statistics", response.content)
+        self.assertNotIn("Sorry, we don't seem to have any statistics", response.content.decode("utf-8"))
 
     def test_recent_empty(self):
         response = self.client.get(reverse("stats_recent"))

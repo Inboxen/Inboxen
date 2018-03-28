@@ -122,7 +122,7 @@ class GetPageFormTestCase(InboxenTestCase):
 
         self.assertEqual(form._meta.model, models.HelpPage)
         self.assertEqual(form.model_ct, model_ct)
-        self.assertEqual(form.base_fields.keys(), [i for i in models.HelpPage.admin_fields])
+        self.assertEqual(list(form.base_fields.keys()), [i for i in models.HelpPage.admin_fields])
 
     def test_invalid_model(self):
         model_ct = ContentType.objects.get_for_model(models.HelpBasePage)

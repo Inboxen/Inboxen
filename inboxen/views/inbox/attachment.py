@@ -15,12 +15,14 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from __future__ import unicode_literals
+
 import re
 
+from braces.views import LoginRequiredMixin
 from django.http import Http404, HttpResponse
 from django.views import generic
-
-from braces.views import LoginRequiredMixin
+import six
 
 from inboxen import models
 
@@ -44,14 +46,17 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         disposition = ["attachment"]
 
         if self.object.filename:
-            disposition.append("filename=\"{0}\"".format(self.object.filename.encode("utf8")))
+            disposition.append("filename=\"{0}\"".format(self.object.filename))
 
         disposition = "; ".join(disposition)
+        disposition = HEADER_CLEAN.sub(" ", disposition)
+        if six.PY2:
+            disposition = disposition.encode("utf-8")
 
         if self.object.content_type:
             content_type = "{0}; charset={1}".format(
-                self.object.content_type.encode("utf8"),
-                self.object.charset.encode("utf8"),
+                self.object.content_type,
+                self.object.charset,
             )
         else:
             content_type = "application/octet-stream"
@@ -64,7 +69,7 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         )
 
         response["Content-Length"] = self.object.body.size or len(data)
-        response["Content-Disposition"] = HEADER_CLEAN.sub(" ", disposition)
+        response["Content-Disposition"] = disposition
         response["Content-Type"] = HEADER_CLEAN.sub(" ", content_type)
 
         return response

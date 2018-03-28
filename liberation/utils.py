@@ -23,7 +23,8 @@ import base64
 import quopri
 import uu
 
-from six import StringIO
+from six import BytesIO
+import six
 
 from inboxen.models import HEADER_PARAMS
 
@@ -50,7 +51,7 @@ def set_quopri_payload(msg, data):
 
 def set_uuencode_payload(msg, data):
     """Encodees the payload with uuencode"""
-    outfile = StringIO()
+    outfile = BytesIO()
 
     ct = msg.get("Content-Type", "")
     cd = msg.get("Content-Disposition", "")
@@ -60,7 +61,7 @@ def set_uuencode_payload(msg, data):
 
     name = params.get("filename") or params.get("name")
 
-    uu.encode(StringIO(data), outfile, name=name)
+    uu.encode(BytesIO(data), outfile, name=name)
     enc_data = outfile.getvalue()
     msg.set_payload(enc_data)
 
@@ -88,11 +89,14 @@ def make_message(message):
 
         header_set = part.header_set.order_by("ordinal").select_related("name", "data")
         for header in header_set:
-            msg[header.name.name] = Header(header.data.data, "utf-8").encode()
+            try:
+                msg[header.name.name] = Header(header.data.data).encode()
+            except UnicodeDecodeError:
+                msg[header.name.name] = Header(header.data.data, "utf-8").encode()
 
         if part.is_leaf_node():
             cte = msg.get("Content-Transfer-Encoding", "7-bit")
-            data = str(part.body.data)
+            data = six.binary_type(part.body.data)
 
             if cte == "base64":
                 set_base64_payload(msg, data)

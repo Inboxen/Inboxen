@@ -63,6 +63,8 @@ def unicode_damnit(data, charset="utf-8", errors="replace"):
     """
     if isinstance(data, six.text_type):
         return data
+    elif data is None:
+        return u""
 
     try:
         return six.text_type(six.binary_type(data), charset, errors)
@@ -187,7 +189,7 @@ def render_body(request, email, attachments):
             body = u""
     else:
         try:
-            body = _clean_html_body(request, email, str(html.body.data), html.charset)
+            body = _clean_html_body(request, email, six.binary_type(html.body.data), html.charset)
         except (etree.LxmlError, ValueError) as exc:
             if plain is not None and len(plain.body.data) > 0:
                 body = unicode_damnit(plain.body.data, plain.charset)

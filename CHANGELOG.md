@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Proper Python 3 support (#261)
+
 ## Releases
 
 ### Deploy for 2018-03-23

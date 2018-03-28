@@ -248,9 +248,7 @@ class HelpPageTestCase(InboxenTestCase):
 
 @expectedFailure
 class PeoplePageTestCase(InboxenTestCase):
-    def test_serve(self):
-        pass
-
+    pass
 
 @expectedFailure
 class PersonInfoTestCase(InboxenTestCase):

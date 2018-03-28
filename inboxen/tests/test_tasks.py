@@ -202,7 +202,7 @@ class DeleteTestCase(InboxenTestCase):
         self.user = factories.UserFactory()
 
     def test_delete_orphans(self):
-        models.Body.objects.get_or_create(data="this is a test")
+        models.Body.objects.get_or_create(data=b"this is a test")
         models.HeaderName.objects.create(name="bluhbluh")
         models.HeaderData.objects.create(data="bluhbluh", hashed="fakehash")
         tasks.clean_orphan_models.delay()
