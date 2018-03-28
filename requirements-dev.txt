@@ -6,12 +6,11 @@
 #
 -e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
 alabaster==0.7.10         # via sphinx
-amqp==1.4.9               # via kombu
-anyjson==0.3.3            # via kombu
+amqp==2.2.2               # via kombu
 babel==2.5.3              # via django-phonenumber-field, sphinx
 backports.shutil-get-terminal-size==1.0.0  # via ipython
-billiard==3.3.0.23        # via celery
-celery==3.1.25
+billiard==3.5.0.3         # via celery
+celery==4.1.0
 certifi==2018.1.18        # via requests
 chardet==3.0.4            # via requests, salmon-mail
 cheroot==6.0.0            # via cherrypy
@@ -28,7 +27,6 @@ django-async-messages==0.3.1
 django-bitfield==1.9.3
 django-bootstrap-form==3.3
 django-braces==1.12.0
-django-celery==3.2.2
 django-csp==3.3
 django-debug-toolbar==1.9.1
 django-extensions==2.0.5
@@ -60,7 +58,7 @@ jasmine-core==3.1.0       # via jasmine
 jasmine==3.1.0
 jinja2==2.10              # via jasmine, sphinx
 jsmin==2.2.2
-kombu==3.0.37             # via celery
+kombu==4.1.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.2.0
@@ -109,5 +107,6 @@ traitlets==4.3.2          # via ipython
 typing==3.6.4
 unidecode==1.0.22         # via faker
 urllib3==1.22             # via requests
+vine==1.1.4               # via amqp
 wcwidth==0.1.7            # via prompt-toolkit
 webassets==0.12.1         # via django-assets

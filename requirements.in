@@ -1,6 +1,6 @@
 Django>=1.11,<1.12
 Markdown
-celery>=3.1,<4.0
+celery>=4.1,<4.2
 configobj
 django-annoying
 django-assets
@@ -8,7 +8,6 @@ django-async-messages
 django-bitfield>=1.9.2
 django-bootstrap-form
 django-braces
-django-celery
 django-csp>3.0
 django-extensions
 django-formtools
