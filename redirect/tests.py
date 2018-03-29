@@ -69,7 +69,7 @@ class RedirectTestCase(InboxenTestCase):
         self.assertEqual(response.redirect_chain[0][0], "http://localhost/?bizz=iss")
         self.assertEqual(response.redirect_chain[0][1], 302)
 
-    def test_proxy_url_http_proto(self):
+    def test_proxy_url_wrong_proto(self):
         url = "mailto:user@example.com"
         proxied = redirect.proxy_url(url)
 
