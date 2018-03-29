@@ -22,7 +22,7 @@ import logging
 from django.conf import settings
 from django.core.mail import mail_admins
 
-from celery import task
+from inboxen.celery import app
 
 
 log = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ Message:
 """
 
 
-@task(ignore_result=True)
+@app.task(ignore_result=True)
 def new_question_notification(question_id):
     from tickets.models import Question
 

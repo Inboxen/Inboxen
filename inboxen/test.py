@@ -32,7 +32,7 @@ from django_assets import env as assets_env
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.middleware import OTPMiddleware
 from django_otp.plugins.otp_static.models import StaticDevice
-from djcelery.contrib.test_runner import CeleryTestSuiteRunner
+from django.test.runner import DiscoverRunner
 from elevate import settings as elevate_settings
 from elevate.middleware import ElevateMiddleware
 import six
@@ -138,11 +138,8 @@ class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
     pass
 
 
-class InboxenTestRunner(CeleryTestSuiteRunner):
-    """Test runner for Inboxen
-
-    Build on top of djcelery's test runner
-    """
+class InboxenTestRunner(DiscoverRunner):
+    """Test runner for Inboxen"""
     def setup_test_environment(self, **kwargs):
         self.is_testing_var_set = int(os.getenv('INBOXEN_TESTING', '0')) > 0
         super(InboxenTestRunner, self).setup_test_environment(**kwargs)

@@ -27,11 +27,9 @@ from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 
 from kombu.common import Broadcast, Exchange, Queue
-import djcelery
 
 from inboxen.config import *  # noqa
 
-djcelery.setup_loader()
 
 # Hash used to store uniqueness of certain models
 # if you change this, you'll need to do a datamigration to change the rest
@@ -56,22 +54,22 @@ ASSETS_AUTO_BUILD = DEBUG
 
 # load custom kombu encoder
 CELERY_SEND_TASK_ERROR_EMAILS = True
-CELERY_RESULT_BACKEND = BROKER_URL
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
-CELERY_QUEUES = (
+CELERY_TASK_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
     Broadcast('broadcast_tasks'),
 )
-CELERY_ROUTES = {'inboxen.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
+CELERY_TASK_ROUTES = {'inboxen.tasks.force_garbage_collection': {'queue': 'broadcast_tasks'}}
 
-CELERY_DEFAULT_QUEUE = 'default'
-CELERY_DEFAULT_EXCHANGE = 'default'
-CELERY_DEFAULT_ROUTING_KEY = 'default'
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'statistics': {
         'task': 'inboxen.tasks.statistics',
         'schedule': datetime.timedelta(days=1),
@@ -206,7 +204,6 @@ INSTALLED_APPS = (
     'bootstrapform',
     'django_assets',
     'django_extensions',
-    'djcelery',
     'django_otp',
     'django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',

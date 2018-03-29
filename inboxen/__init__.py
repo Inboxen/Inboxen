@@ -16,5 +16,8 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from __future__ import absolute_import
+
+from .celery import app as celery_app
 
 default_app_config = 'inboxen.apps.InboxenConfig'
