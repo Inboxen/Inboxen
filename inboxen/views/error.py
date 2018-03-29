@@ -21,7 +21,7 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse, UnreadablePostError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
