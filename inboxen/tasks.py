@@ -37,6 +37,7 @@ from watson import search as watson_search
 
 from inboxen import models
 from inboxen.celery import app
+from inboxen.utils.tasks import task_group_skew
 
 log = logging.getLogger(__name__)
 
@@ -241,6 +242,7 @@ def force_garbage_collection():
 @transaction.atomic()
 def delete_inboxen_item(model, item_pk):
     _model = apps.get_app_config("inboxen").get_model(model)
+
     try:
         item = _model.objects.only('pk').get(pk=item_pk)
         item.delete()
@@ -276,7 +278,7 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
         return
 
     items = delete_inboxen_item.chunks(items, batch_number).group()
-    items.skew(step=batch_number/10.0)
+    task_group_skew(items, step=batch_number/10.0)
     items.apply_async()
 
 

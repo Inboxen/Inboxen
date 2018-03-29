@@ -27,8 +27,8 @@ from braces.views import LoginRequiredMixin
 from watson import search
 
 from inboxen import models
-from inboxen.tasks import deal_with_flags
-from inboxen.tasks import delete_inboxen_item
+from inboxen.tasks import deal_with_flags, delete_inboxen_item
+from inboxen.utils.tasks import task_group_skew
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 
@@ -105,7 +105,7 @@ class InboxView(LoginRequiredMixin, generic.ListView):
             email_ids = [("email", email.id) for email in qs]
             qs.update(flags=F('flags').bitor(self.model.flags.deleted))
             delete_task = delete_inboxen_item.chunks(email_ids, 500).group()
-            delete_task.skew(step=50)
+            task_group_skew(delete_task, step=50)
             delete_task.apply_async()
 
         return HttpResponseRedirect(self.get_success_url())
