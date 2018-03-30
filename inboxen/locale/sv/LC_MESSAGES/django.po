@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-30 21:53+0000\n"
+"POT-Creation-Date: 2018-03-30 22:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,44 +30,48 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: inboxen/forms/inbox.py:33 inboxen/forms/inbox.py:94
-msgid "Exclude from Unified Inbox"
+#: inboxen/forms/inbox.py:33 inboxen/forms/inbox.py:95
+msgid "Hide from All Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:60
+#: inboxen/forms/inbox.py:34 inboxen/forms/inbox.py:96
+msgid "Emails sent to this address won't appear in \"All\""
+msgstr ""
+
+#: inboxen/forms/inbox.py:61
 msgid "You have too many Inboxes."
 msgstr ""
 
-#: inboxen/forms/inbox.py:74
+#: inboxen/forms/inbox.py:75
 #, python-brace-format
 msgid "{0}@{1} has been created."
 msgstr ""
 
-#: inboxen/forms/inbox.py:83
+#: inboxen/forms/inbox.py:84
 msgid "Empty Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:84
+#: inboxen/forms/inbox.py:85
 msgid "Delete all emails in this Inbox. Cannot be undone."
 msgstr ""
 
-#: inboxen/forms/inbox.py:85
+#: inboxen/forms/inbox.py:86
 msgid "Disable Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:86
+#: inboxen/forms/inbox.py:87
 msgid "This Inbox will no longer receive emails."
 msgstr ""
 
-#: inboxen/forms/inbox.py:95
+#: inboxen/forms/inbox.py:97
 msgid "Pin Inbox to top"
 msgstr ""
 
-#: inboxen/forms/inbox.py:116
+#: inboxen/forms/inbox.py:118
 msgid "Inbox cannot be disabled and pinned at the same time"
 msgstr ""
 
-#: inboxen/forms/inbox.py:129
+#: inboxen/forms/inbox.py:131
 #, python-brace-format
 msgid "All emails in {0}@{1} are being deleted."
 msgstr ""
@@ -100,7 +104,7 @@ msgstr ""
 msgid "who accepted (or rejected) this request?"
 msgstr ""
 
-#: inboxen/settings.py:221
+#: inboxen/settings.py:225
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
@@ -384,7 +388,7 @@ msgstr ""
 
 #: inboxen/templates/inboxen/inbox/inbox.html:13
 #: inboxen/templates/inboxen/user/home.html:26
-msgid "Unified Inbox"
+msgid "All Inbox"
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/inbox.html:22
