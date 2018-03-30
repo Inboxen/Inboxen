@@ -43,7 +43,7 @@ class UserProfile(models.Model):
     Flag definitions are as follows, order !!important!!:
     prefer_html_email - if we have both HTML and plaintext available, prefer
                         HTML if set, prefer plain if not
-    unified_has_new_messages - controls the display of the `new` badge on the Unified inbox
+    unified_has_new_messages - controls the display of the `new` badge on the All Inbox
     ask_images - should we offer to enable image display for HTML emails?
     display_images - should we display images in HTML emails by default? Implies we should never ask
     """
