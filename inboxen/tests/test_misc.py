@@ -26,7 +26,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
 from django.core.cache import cache
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied, ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
@@ -195,7 +195,7 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE)
 
         # session will expire in less than a week
-        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE* 0.25)
+        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.25)
         session_key = request.session.session_key
         self.middleware.process_request(request)
         self.assertNotEqual(request.session.session_key, session_key)
@@ -505,8 +505,8 @@ class CSRFCheckedTestCase(InboxenTestCase):
         self.assertEqual(list(response.cookies.keys()), ["sessionid"])
 
         # if we move back to cookie based csrf, uncomment these tests
-        #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["secure"], True)
-        #self.assertEqual(response.cookies["csrfmiddlewaretoken"]["httponly"], True)
+        # self.assertEqual(response.cookies["csrfmiddlewaretoken"]["secure"], True)
+        # self.assertEqual(response.cookies["csrfmiddlewaretoken"]["httponly"], True)
 
     def test_csrf_referer_check(self):
         self.client.get(self.url)  # generate token in session

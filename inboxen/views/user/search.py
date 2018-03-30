@@ -21,7 +21,6 @@
 from django import http
 from django.conf import settings
 from django.core.cache import cache
-from django.utils.translation import ugettext as _
 from django.views import generic
 from six.moves import urllib
 
@@ -87,12 +86,14 @@ class SearchView(LoginRequiredMixin, generic.ListView):
 
         # some rubbish about not liking empty sets during IN statements :\
         if len(results["emails"]) > 0:
-            queryset["emails"] = watson_models.SearchEntry.objects.filter(id__in=results["emails"][:10]).prefetch_related("object")
+            queryset["emails"] = watson_models.SearchEntry.objects.filter(id__in=results["emails"][:10])\
+                    .prefetch_related("object")
         else:
             queryset["emails"] = []
 
         if len(results["inboxes"]) > 0:
-            queryset["inboxes"] = watson_models.SearchEntry.objects.filter(id__in=results["inboxes"][:10]).prefetch_related("object")
+            queryset["inboxes"] = watson_models.SearchEntry.objects.filter(id__in=results["inboxes"][:10])\
+                    .prefetch_related("object")
         else:
             queryset["inboxes"] = []
 

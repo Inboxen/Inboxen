@@ -19,7 +19,6 @@
 
 from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.http import Http404
-from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin

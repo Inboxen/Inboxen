@@ -56,7 +56,8 @@ class SearchViewTestCase(InboxenTestCase):
         # TODO test the template directly
         with mock.patch("inboxen.views.user.search.SearchView.get_queryset", return_value={}):
             response = self.client.get(self.url)
-            self.assertIn(u'data-url="%s"' % urlresolvers.reverse("user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
+            self.assertIn(u'data-url="%s"' % urlresolvers.reverse(
+                          "user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
 
     def test_get(self):
         cache.cache.set(self.key, {"emails": [], "inboxes": []})

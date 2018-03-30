@@ -99,7 +99,8 @@ class Liberation(models.Model):
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
     last_finished = models.DateTimeField(null=True)
-    _path = models.CharField(max_length=255, null=True, unique=True, validators=[validators.ProhibitNullCharactersValidator()])
+    _path = models.CharField(max_length=255, null=True, unique=True,
+                             validators=[validators.ProhibitNullCharactersValidator()])
 
     def get_path(self):
         if self._path is None:
@@ -156,7 +157,8 @@ class Inbox(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
     flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled", "pinned"), default=0)
-    description = models.CharField(max_length=256, null=True, blank=True, validators=[validators.ProhibitNullCharactersValidator()])
+    description = models.CharField(max_length=256, null=True, blank=True,
+                                   validators=[validators.ProhibitNullCharactersValidator()])
 
     objects = InboxQuerySet.as_manager()
 
@@ -181,10 +183,11 @@ class Request(models.Model):
     succeeded = models.NullBooleanField("accepted", default=None, help_text=_("has the request been accepted?"))
     date = models.DateTimeField("requested", auto_now_add=True, db_index=True, help_text=_("date requested"))
     date_decided = models.DateTimeField(null=True, help_text=_("date staff accepted/rejected request"))
-    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer",
-        blank=True, null=True, on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
+    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True,
+                                   on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
     requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
-    result = models.CharField("comment", max_length=1024, blank=True, null=True, validators=[validators.ProhibitNullCharactersValidator()])
+    result = models.CharField("comment", max_length=1024, blank=True, null=True,
+                              validators=[validators.ProhibitNullCharactersValidator()])
 
     def save(self, *args, **kwargs):
         if self.succeeded:
@@ -248,7 +251,8 @@ class Body(models.Model):
 
     This model expects and returns binary data, converting to and from six.text_type happens elsewhere
     """
-    hashed = models.CharField(max_length=80, unique=True, validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True,
+                              validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
     data = models.BinaryField(default="")
     size = models.PositiveIntegerField(null=True)
 
@@ -343,7 +347,8 @@ class HeaderData(models.Model):
 
     RFC 2822 implies that header data may be infinite, may as well support it!
     """
-    hashed = models.CharField(max_length=80, unique=True, validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
+    hashed = models.CharField(max_length=80, unique=True,
+                              validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
     data = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
 
     def __str__(self):

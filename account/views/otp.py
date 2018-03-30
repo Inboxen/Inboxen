@@ -81,8 +81,10 @@ class TwoFactorSetupView(core.SetupView):
             raise SuspiciousOperation("ManagementForm data is missing or has been tampered.")
 
 
-backup_view = elevate_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html", success_url="user-twofactor-backup"))
-disable_view = elevate_required(otp_required(profile.DisableView.as_view(template_name="account/twofactor-disable.html", success_url="user-security")))
+backup_view = elevate_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html",
+                                                             success_url="user-twofactor-backup"))
+disable_view = elevate_required(otp_required(profile.DisableView.as_view(template_name="account/twofactor-disable.html",
+                                                                         success_url="user-security")))
 login = anonymous_required(LoginView.as_view())
 setup_view = elevate_required(TwoFactorSetupView.as_view())
 qrcode_view = elevate_required(core.QRGeneratorView.as_view())

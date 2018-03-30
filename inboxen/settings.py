@@ -45,16 +45,15 @@ INBOX_CHOICES = string.ascii_lowercase
 ##
 
 # assets building options
-ASSETS_DEBUG = DEBUG
-ASSETS_AUTO_BUILD = DEBUG
-
+ASSETS_DEBUG = DEBUG  # noqa: F405
+ASSETS_AUTO_BUILD = DEBUG  # noqa: F405
 ##
 # Celery options
 ##
 
 # load custom kombu encoder
 CELERY_SEND_TASK_ERROR_EMAILS = True
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL  # noqa: F405
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -117,7 +116,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-    ("thirdparty", os.path.join(BASE_DIR, "node_modules")),
+        ("thirdparty", os.path.join(BASE_DIR, "node_modules")),  # noqa: F405
 ]
 
 STATICFILES_FINDERS = (
@@ -156,7 +155,7 @@ TEMPLATES = [{
                 'django.template.loaders.app_directories.Loader',
             )),
         ],
-        'debug': DEBUG,
+        'debug': DEBUG,  # noqa: F405
     },
 }]
 
@@ -265,7 +264,7 @@ SALMON_SERVER = {"host": "localhost", "port": 8823, "type": "smtp"}
 ##
 
 try:
-    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=BASE_DIR)
+    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=BASE_DIR)  # noqa: F405
     output = process.communicate()[0].strip()
     output = output.decode()
     if not process.returncode:
@@ -275,10 +274,13 @@ try:
 except (OSError, TypeError):
     os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
 
-EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # trailing space is important
+# trailing space is important
+EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # noqa: F405
 
-## LOGGING
-if DEBUG:
+##
+# LOGGING
+##
+if DEBUG:  # noqa: F405
     log_level = "INFO"
 else:
     log_level = "WARNING"
@@ -354,7 +356,7 @@ LOGGING = {
     },
 }
 
-if DEBUG:
+if DEBUG:  # noqa: F405
     # local dev made easy
     INTERNAL_IPS = ["127.0.0.1"]
     INSTALLED_APPS += ('debug_toolbar',)

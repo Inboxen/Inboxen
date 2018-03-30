@@ -18,7 +18,6 @@
 ##
 
 from django import template
-from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
 from cms.utils import app_reverse

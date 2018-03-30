@@ -28,7 +28,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When, IntegerField
+from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 from six.moves import urllib

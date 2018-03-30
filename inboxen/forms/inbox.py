@@ -57,7 +57,7 @@ class InboxAddForm(forms.ModelForm):
 
     def clean(self):
         if self.request.user.inboxenprofile.available_inboxes() <= 0:
-            raise forms.ValidationError( _("You have too many Inboxes."))
+            raise forms.ValidationError(_("You have too many Inboxes."))
 
     def save(self):
         # We want this instance created by .create() so we will ignore self.instance
@@ -71,7 +71,8 @@ class InboxAddForm(forms.ModelForm):
         self.instance.flags.exclude_from_unified = excludes
         self.instance.save()
 
-        messages.success(self.request, _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain))
+        msg = _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain)
+        messages.success(self.request, msg)
         return self.instance
 
 
@@ -79,8 +80,10 @@ class InboxSecondaryEditForm(forms.Form):
     """A subform to hold dangerous operations that will result in loss
     of data.
     """
-    clear_inbox = forms.BooleanField(required=False, label=_("Empty Inbox"), help_text=_("Delete all emails in this Inbox. Cannot be undone."))
-    disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"), help_text=_("This Inbox will no longer receive emails."))
+    clear_inbox = forms.BooleanField(required=False, label=_("Empty Inbox"),
+                                     help_text=_("Delete all emails in this Inbox. Cannot be undone."))
+    disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"),
+                                       help_text=_("This Inbox will no longer receive emails."))
 
     def __init__(self, instance, *args, **kwargs):
         super(InboxSecondaryEditForm, self).__init__(*args, **kwargs)
@@ -123,7 +126,9 @@ class InboxEditForm(forms.ModelForm):
             emails = self.instance.email_set.all()
             emails.update(flags=F('flags').bitor(models.Email.flags.deleted))
             tasks.batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
-            messages.warning(self.request, _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox, self.instance.domain.domain))
+            warn_msg = _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox,
+                                                                            self.instance.domain.domain)
+            messages.warning(self.request, warn_msg)
 
         self.instance.save()
 

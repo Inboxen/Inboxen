@@ -153,7 +153,8 @@ class SingleInboxTestCase(InboxTestAbstract, InboxenTestCase):
             factories.HeaderFactory(part=part, name="Subject")
 
     def get_url(self):
-        return urlresolvers.reverse("single-inbox", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        return urlresolvers.reverse("single-inbox",
+                                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
 
 class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
@@ -283,7 +284,8 @@ class InboxEditTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("inbox-edit", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        return urlresolvers.reverse("inbox-edit",
+                                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
     def test_inbox_form(self):
         response = self.client.get(self.get_url())
@@ -323,7 +325,8 @@ class InboxInlineEditTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("form-inbox-edit", kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        return urlresolvers.reverse("form-inbox-edit",
+                                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
     def test_inbox_form(self):
         response = self.client.get(self.get_url())

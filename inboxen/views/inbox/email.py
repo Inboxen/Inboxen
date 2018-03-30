@@ -21,7 +21,6 @@ import logging
 
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
-from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
@@ -133,7 +132,6 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
             "attachments": root_part,
             "headersfetchall": headers_fetch_all,
         })
-
 
         self._has_images = email_dict["display_images"]
         return context

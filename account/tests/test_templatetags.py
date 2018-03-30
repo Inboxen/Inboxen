@@ -18,7 +18,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
 from django.template import Template, Context
 
 import mock

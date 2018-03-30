@@ -17,9 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import mock
-
-from django import test
 from django.conf import settings as dj_settings
 from django.core import urlresolvers
 
@@ -176,7 +173,7 @@ class HomeViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_post_form_view(self):
-        url =  urlresolvers.reverse("form-home")
+        url = urlresolvers.reverse("form-home")
 
         inbox = self.inboxes[0]
         was_pinned = bool(inbox.flags.pinned)

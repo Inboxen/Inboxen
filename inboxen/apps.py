@@ -18,7 +18,6 @@
 ##
 
 from django.apps import AppConfig
-from django.db.models.signals import pre_save
 
 
 class InboxenConfig(AppConfig):
@@ -30,11 +29,11 @@ class InboxenConfig(AppConfig):
         from django.contrib.auth.signals import user_logged_in, user_logged_out
         from watson import search as watson_search
 
-        from inboxen import checks, search, signals
+        from inboxen import checks  # noqa
+        from inboxen import search, signals
 
         Inbox = self.get_model("Inbox")
         Email = self.get_model("Email")
-        Request = self.get_model("Request")
 
         # Unregister update_last_login handler
         user_logged_in.disconnect(update_last_login)

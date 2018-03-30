@@ -17,13 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import exceptions
-from django.db.models import Q
-
 from watson import search
 import six
 
 from inboxen.utils.email import unicode_damnit, find_bodies
+
 
 def choose_body(parts):
     """Given a list of sibling MIME parts, choose the one with a content_type

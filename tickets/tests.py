@@ -17,10 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import mock
 import six
 
-from django import test
 from django.core import mail, urlresolvers
 from django.db.models import Max
 from django.http import Http404
@@ -29,7 +27,7 @@ import factory
 import factory.fuzzy
 
 from cms.decorators import is_secure_admin
-from cms.models import AppPage, HelpIndex
+from cms.models import AppPage
 from cms.utils import app_reverse
 from inboxen.tests import factories
 from inboxen.test import override_settings, InboxenTestCase, MockRequest, grant_otp, grant_sudo
@@ -134,14 +132,16 @@ class QuestionViewTestCase(InboxenTestCase):
         self.assertEqual(question_count, models.Question.objects.all().count())
 
         # subject contains null
-        response = self.client.post(self.get_url(), {"subject": "Hello\x00!", "body": "This is the body of my question"})
+        response = self.client.post(self.get_url(),
+                                    {"subject": "Hello\x00!", "body": "This is the body of my question"})
         self.assertEqual(response.status_code, 200)
         self.assertIn("subject", response.context["form"].errors)
         self.assertNotIn("body", response.context["form"].errors)
         self.assertEqual(question_count, models.Question.objects.all().count())
 
         # body contains null
-        response = self.client.post(self.get_url(), {"subject": "Hello!", "body": "This is the body\x00 of my question"})
+        response = self.client.post(self.get_url(),
+                                    {"subject": "Hello!", "body": "This is the body\x00 of my question"})
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("subject", response.context["form"].errors)
         self.assertIn("body", response.context["form"].errors)
@@ -266,7 +266,8 @@ class QuestionModelTestCase(InboxenTestCase):
         self.assertEqual(six.text_type(question), "{} from {}".format(question.subject, question.author))
 
         response = ResponseFactory(question=question, author=self.user)
-        self.assertEqual(six.text_type(response), "Response to {} from {} from {}".format(question.subject, question.author, response.author))
+        expected_response = "Response to {} from {} from {}".format(question.subject, question.author, response.author)
+        self.assertEqual(six.text_type(response), expected_response)
 
 
 class RenderBodyTestCase(InboxenTestCase):
@@ -313,7 +314,7 @@ class QuestionAdminIndexTestCase(InboxenTestCase):
 
     def test_url(self):
         assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
-                "Could not log in"
+            "Could not log in"
 
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
@@ -324,7 +325,8 @@ class QuestionAdminIndexTestCase(InboxenTestCase):
 
     def test_index(self):
         request = MockRequest(self.user, has_otp=True, has_sudo=True)
-        QuestionFactory.create_batch(len(models.Question.STATUS_CHOICES), status=factory.Iterator([i[0] for i in models.Question.STATUS_CHOICES]))
+        QuestionFactory.create_batch(len(models.Question.STATUS_CHOICES),
+                                     status=factory.Iterator([i[0] for i in models.Question.STATUS_CHOICES]))
 
         response = views.question_admin_index(request)
         self.assertEqual(response.status_code, 200)
@@ -362,7 +364,6 @@ class QuestionAdminResponseTestCase(InboxenTestCase):
         response = views.question_admin_response(request, question.pk)
         self.assertEqual(response.status_code, 200)
 
-        expected_questions = models.Question.objects.all()
         self.assertEqual(response.context_data["question"], question)
         self.assertEqual(response.context_data["form"].question, question)
 

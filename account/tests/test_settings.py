@@ -124,7 +124,6 @@ class UsernameChangeTestCase(InboxenTestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["username"], [u"A user with that username already exists."])
 
-
         params = {"username": self.user.username + "1", "username2": self.user.username}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
@@ -138,8 +137,8 @@ class UsernameChangeTestCase(InboxenTestCase):
         params = {"username": "usernameß", "username2": "usernameß"}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors["username"],
-            [u"Enter a valid username. This value may contain only English letters, numbers, and @/./+/-/_ characters."])
+        expected_errors = [u"Enter a valid username. This value may contain only English letters, numbers, and @/./+/-/_ characters."]  # noqa: E501
+        self.assertEqual(form.errors["username"], expected_errors)
 
     def test_form_good_data(self):
         username = self.user.username
@@ -194,6 +193,7 @@ class UsernameChangeTestCase(InboxenTestCase):
         self.assertEqual(self.user.username, new_username)
         self.assertEqual(other_user.username, other_username)
         self.assertEqual(get_user_model().objects.count(), user_count)
+
 
 class DeleteTestCase(InboxenTestCase):
     def setUp(self):

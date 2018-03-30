@@ -38,7 +38,8 @@ class BlogPost(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     draft = models.BooleanField(default=True)
 
-    slug = AutoSlugField(populate_from="subject", max_length=64, validators=[validators.ProhibitNullCharactersValidator()])
+    slug = AutoSlugField(populate_from="subject", max_length=64,
+                         validators=[validators.ProhibitNullCharactersValidator()])
 
     @property
     def rendered_body(self):

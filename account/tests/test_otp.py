@@ -17,12 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import itertools
-
-from django import test
 from django.core import urlresolvers
 
-from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
 from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories
 

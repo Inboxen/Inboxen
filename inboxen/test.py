@@ -76,13 +76,14 @@ def grant_sudo(client_or_request):
     token = get_random_string()
 
     response.set_signed_cookie(
-        elevate_settings.COOKIE_NAME, token,
-                salt=elevate_settings.COOKIE_SALT,
-                max_age=elevate_settings.COOKIE_AGE,
-                secure=False,
-                httponly=True,
-                path=elevate_settings.COOKIE_PATH,
-                domain=elevate_settings.COOKIE_DOMAIN,
+        elevate_settings.COOKIE_NAME,
+        token,
+        salt=elevate_settings.COOKIE_SALT,
+        max_age=elevate_settings.COOKIE_AGE,
+        secure=False,
+        httponly=True,
+        path=elevate_settings.COOKIE_PATH,
+        domain=elevate_settings.COOKIE_DOMAIN,
     )
 
     if hasattr(client_or_request, "cookies"):

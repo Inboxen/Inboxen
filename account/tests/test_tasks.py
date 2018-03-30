@@ -20,7 +20,6 @@ from datetime import datetime
 
 from pytz import utc
 
-from django import test
 from django.contrib.auth import get_user_model
 
 from account import tasks

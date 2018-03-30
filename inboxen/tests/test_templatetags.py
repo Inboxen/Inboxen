@@ -19,7 +19,6 @@
 ##
 
 from bitfield import BitHandler
-from django import test
 from django.template import Template
 from django.template.backends.django import Template as DjangoTemplate
 from django.utils import translation
@@ -150,7 +149,8 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
         template = Template("{% for obj in flags %}Hello: {{ obj.str }}\n{% endfor %}")
         mock_loader.get_template.return_value = DjangoTemplate(template, mock_loader)
 
-        func = flag_utils.create_render_bitfield_template_tag({"p": {"str": "person"}, "a": {"str": "animal"}}, "test.html")
+        func = flag_utils.create_render_bitfield_template_tag(
+                {"p": {"str": "person"}, "a": {"str": "animal"}}, "test.html")
         flag_obj = BitHandler(1 | 2, ["a", "p"])
         self.assertEqual(func(flag_obj), "Hello: animal\nHello: person\n")
 
@@ -159,7 +159,8 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
         template = Template("{% for obj in flags %}Hello: {{ obj.str }}\n{% endfor %}")
         mock_loader.get_template.return_value = DjangoTemplate(template, mock_loader)
 
-        func = flag_utils.create_render_bitfield_template_tag({"p": {"str": "person", "inverse": True}, "a": {"str": "animal"}}, "test.html")
+        func = flag_utils.create_render_bitfield_template_tag(
+                {"p": {"str": "person", "inverse": True}, "a": {"str": "animal"}}, "test.html")
         flag_obj = BitHandler(1 | 2, ["a", "p"])
         self.assertEqual(func(flag_obj), "Hello: animal\n")
         flag_obj = BitHandler(1, ["a", "p"])
@@ -170,10 +171,10 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
         template = Template("{% for obj in flags %}Hello: {{ obj.str }}\n{% endfor %}")
         mock_loader.get_template.return_value = DjangoTemplate(template, mock_loader)
 
-        func = flag_utils.create_render_bitfield_template_tag({"p": {"str": "person", "singleton": True}, "a": {"str": "animal"}}, "test.html")
+        func = flag_utils.create_render_bitfield_template_tag(
+                {"p": {"str": "person", "singleton": True}, "a": {"str": "animal"}}, "test.html")
         flag_obj = BitHandler(1 | 2, ["a", "p"])
         self.assertEqual(func(flag_obj), "Hello: person\n")
-
 
     def test_unicode(self):
         flags = {"snowman": {

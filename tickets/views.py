@@ -21,7 +21,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.utils.translation import ugettext as _
 from django.views import generic
 
 from braces.views import LoginRequiredMixin

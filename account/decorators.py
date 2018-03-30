@@ -24,6 +24,7 @@ from django.http import HttpResponseRedirect
 def anonymous_required(function, redirect_url=None):
     if redirect_url is None:
         redirect_url = reverse_lazy("user-home")
+
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated():
             return function(request, *args, **kwargs)

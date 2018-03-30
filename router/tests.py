@@ -21,7 +21,6 @@ import mock
 import shutil
 import sys
 
-from django import test
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
 from salmon.mail import MailRequest
@@ -94,7 +93,7 @@ class RouterTestCase(InboxenTestCase):
     def test_config_import(self):
         """Very simple test to verify we can import settings module"""
         self.assertNotIn("app.server", Router.HANDLERS)
-        from config import boot
+        from config import boot  # noqa
         self.assertIn("app.server", Router.HANDLERS)
 
     def test_exceptions(self):
@@ -154,7 +153,8 @@ class RouterTestCase(InboxenTestCase):
         self.assertEqual(models.Email.objects.count(), 1)
         self.assertEqual(models.PartList.objects.count(), 6)
 
-        bodies = [six.binary_type(part.body.data) for part in models.PartList.objects.select_related("body").order_by("level", "lft")]
+        bodies = [six.binary_type(part.body.data) for part in
+                  models.PartList.objects.select_related("body").order_by("level", "lft")]
         self.assertEqual(bodies, BODIES)
 
     @override_settings(ADMINS=(("admin", "root@localhost"),))

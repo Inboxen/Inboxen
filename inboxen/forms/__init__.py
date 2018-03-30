@@ -17,4 +17,4 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .inbox import *
+from .inbox import *  # noqa
