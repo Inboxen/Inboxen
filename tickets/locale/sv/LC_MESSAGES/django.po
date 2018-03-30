@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-14 18:17+0000\n"
+"POT-Creation-Date: 2018-03-30 21:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,19 +26,19 @@ msgstr ""
 msgid "Reply"
 msgstr ""
 
-#: tickets/models.py:56
+#: tickets/models.py:58
 msgid "New"
 msgstr ""
 
-#: tickets/models.py:57
+#: tickets/models.py:59 tickets/templatetags/tickets_flags.py:41
 msgid "In progress"
 msgstr ""
 
-#: tickets/models.py:58
+#: tickets/models.py:60
 msgid "Need more info"
 msgstr ""
 
-#: tickets/models.py:59
+#: tickets/models.py:61
 msgid "Resolved"
 msgstr ""
 
@@ -59,16 +59,20 @@ msgid "Subject"
 msgstr ""
 
 #: tickets/templates/tickets/admin/index.html:18
-msgid "Date"
+msgid "Asker"
 msgstr ""
 
 #: tickets/templates/tickets/admin/index.html:19
+msgid "Date"
+msgstr ""
+
+#: tickets/templates/tickets/admin/index.html:20
 #: tickets/templates/tickets/admin/response.html:22
 #: tickets/templates/tickets/question_detail.html:25
 msgid "Status"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:29
+#: tickets/templates/tickets/admin/index.html:31
 msgid "View question"
 msgstr ""
 
@@ -161,4 +165,16 @@ msgstr ""
 
 #: tickets/templates/tickets/question_list.html:28
 msgid "Next"
+msgstr ""
+
+#: tickets/templatetags/tickets_flags.py:36
+msgid "New question"
+msgstr ""
+
+#: tickets/templatetags/tickets_flags.py:46
+msgid "Need more info from user"
+msgstr ""
+
+#: tickets/templatetags/tickets_flags.py:51
+msgid "Resolved question"
 msgstr ""

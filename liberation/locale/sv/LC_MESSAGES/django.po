@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-14 18:17+0000\n"
+"POT-Creation-Date: 2018-03-30 21:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: liberation/forms.py:37
+#: liberation/forms.py:34
 msgid "Maildir"
 msgstr ""
 
-#: liberation/forms.py:38
+#: liberation/forms.py:35
 msgid "Mailbox .mbox"
 msgstr ""
 
-#: liberation/forms.py:43
+#: liberation/forms.py:40
 msgid "Tarball (gzip compressed)"
 msgstr ""
 
-#: liberation/forms.py:44
+#: liberation/forms.py:41
 msgid "Tarball (bzip2 compression)"
 msgstr ""
 
-#: liberation/forms.py:45
+#: liberation/forms.py:42
 msgid "Tarball (no compression)"
 msgstr ""
 
-#: liberation/tasks.py:260
+#: liberation/tasks.py:261
 #, python-format
 msgid ""
 "Your request for your personal data has been completed. Click <a class="

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-14 18:17+0000\n"
+"POT-Creation-Date: 2018-03-30 21:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cms/models.py:264
+msgid "Markdown text, supports the TOC extension."
+msgstr ""
+
+#: cms/models.py:286
+msgid "Text at the top of the page. Supports standard markdown."
+msgstr ""
+
 #: cms/templates/cms/admin/base.html:8
 #: cms/templates/cms/admin/choose_page_type.html:9
 #: cms/templates/cms/admin/create_page.html:9
@@ -113,7 +122,11 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:46
+#: cms/templates/cms/admin/index.html:37 cms/templatetags/cms_tags.py:46
+msgid "In menu"
+msgstr ""
+
+#: cms/templates/cms/admin/index.html:48
 msgid "Go to child"
 msgstr ""
 
@@ -123,4 +136,24 @@ msgstr ""
 
 #: cms/templates/cms/people_page.html:20
 msgid "The Team"
+msgstr ""
+
+#: cms/templatetags/cms_tags.py:32
+msgid "Live post"
+msgstr ""
+
+#: cms/templatetags/cms_tags.py:33
+msgid "Live"
+msgstr ""
+
+#: cms/templatetags/cms_tags.py:37
+msgid "Draft post"
+msgstr ""
+
+#: cms/templatetags/cms_tags.py:38
+msgid "Draft"
+msgstr ""
+
+#: cms/templatetags/cms_tags.py:45
+msgid "Page will appear in menu"
 msgstr ""
