@@ -96,7 +96,7 @@ class StatsTestCase(InboxenTestCase):
 
         stats.delete()
 
-        inbox = factories.InboxFactory()
+        factories.InboxFactory()
         factories.EmailFactory.create_batch(2)
 
         # first count
@@ -231,13 +231,13 @@ class DeleteTestCase(InboxenTestCase):
         mock_qs = mock.Mock()
         mock_qs.filter.return_value.iterator.return_value = []
         with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
-            tasks.batch_delete_items("email", args=[12,14])
+            tasks.batch_delete_items("email", args=[12, 14])
             self.assertTrue(mock_qs.filter.called)
             self.assertEqual(mock_qs.filter.call_args, ((12, 14), {}))
 
         mock_qs = mock.Mock()
         mock_qs.filter.return_value.iterator.return_value = []
         with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
-            tasks.batch_delete_items("email", kwargs={"a":"b"})
+            tasks.batch_delete_items("email", kwargs={"a": "b"})
             self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((), {"a":"b"}))
+            self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))

@@ -28,6 +28,7 @@ You'll need the following tools:
 * PostgreSQL
 * NodeJS
 * Sass
+* jshint
 * [EditorConfig](http://editorconfig.org/) *(optional)*
 
 This project comes with a `.editorconfig` file - we recommend installing it to
@@ -45,9 +46,8 @@ npm install
 python manage.py collectstatic
 ```
 
-When you've made your changes, remember to run `flake8` against Python files
-you've changed (and `jshint` on JS files) and run unit tests. To run the tests,
-do the following:
+When you've made your changes, remember to run `tox -e js-lint,py-lint` to check your code
+style and run unit tests. To run the tests do the following:
 
 ```
 python manage.py test

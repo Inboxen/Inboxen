@@ -22,7 +22,6 @@ import itertools
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-from django.test.client import RequestFactory
 import mock
 
 from cms.decorators import is_secure_admin
@@ -125,6 +124,7 @@ class IsSecureAdminTestCase(InboxenTestCase):
                 # special case where everything went fine
                 self.assertEqual(response.status_code, 200, "Reponse code was not 200: %r" % chosen_funcs)
             elif response is None:
-                self.assertTrue(exception_raised, "Response was None, but no PermissionDenied was raised: %r" % chosen_funcs)
+                self.assertTrue(exception_raised,
+                                "Response was None, but no PermissionDenied was raised: %r" % chosen_funcs)
             else:
                 self.assertNotEqual(response.status_code, 200, "Response code was 200: %r" % chosen_funcs)

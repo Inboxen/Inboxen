@@ -37,7 +37,8 @@ class EditDomainForm(forms.ModelForm):
 
 
 class EditRequestForm(forms.ModelForm):
-    succeeded = forms.ChoiceField(widget=forms.Select(), label=_("Grant?"), required=True, choices=((True, _("Yes")), (False, _("No"))))
+    succeeded = forms.ChoiceField(widget=forms.Select(), label=_("Grant?"), required=True,
+                                  choices=((True, _("Yes")), (False, _("No"))))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")

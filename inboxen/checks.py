@@ -25,6 +25,10 @@ from django.core.checks import register, Tags, Error
 from django.core import exceptions
 
 
+PERMISSION_ERROR_MSG = "Other users could be able to interact with your settings file.\
+ Please check file permissions on {}".format(settings.CONFIG_PATH)
+
+
 @register(Tags.security, deploy=True)
 def config_permissions_check(app_configs, **kwargs):
     """Check that our chosen settings file cannot be interacted with by other
@@ -38,7 +42,7 @@ def config_permissions_check(app_configs, **kwargs):
 
     if mode & stat.S_IRWXO != 0:
         return [
-            Error("Other users could be able to interact with your settings file. Please check file permissions on {}".format(settings.CONFIG_PATH))
+            Error(PERMISSION_ERROR_MSG)
         ]
     else:
         return []

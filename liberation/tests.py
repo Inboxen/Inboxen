@@ -29,7 +29,6 @@ import shutil
 import tempfile
 import uu
 
-from django import test
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
@@ -75,7 +74,8 @@ class LiberateTestCase(InboxenTestCase):
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
         with override_settings(LIBERATION_PATH=self.tmp_dir):
-            for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES, LiberationForm.COMPRESSION_TYPES):
+            for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES,
+                                                          LiberationForm.COMPRESSION_TYPES):
                 form_data = {"storage_type": str(storage[0]), "compression_type": str(compression[0])}
                 form = LiberationForm(self.user, data=form_data)
                 self.assertTrue(form.is_valid())
@@ -106,7 +106,9 @@ class LiberateTestCase(InboxenTestCase):
         self.assertEqual(ret_val, hex(10000000)[2:])
 
     def test_liberate_collect_emails(self):
-        tasks.liberate_collect_emails(None, self.mail_dir, {"user": self.user.id, "path": self.mail_dir, "tarname": self.mail_dir + ".tar.gz", "storage_type": "0", "compression_type": "0"})
+        tasks.liberate_collect_emails(None, self.mail_dir, {"user": self.user.id, "path": self.mail_dir,
+                                                            "tarname": self.mail_dir + ".tar.gz",
+                                                            "storage_type": "0", "compression_type": "0"})
 
     def test_liberate_fetch_info(self):
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
@@ -114,7 +116,8 @@ class LiberateTestCase(InboxenTestCase):
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
-        tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
+        tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir,
+                                              "storage_type": "0", "compression_type": "0"})
 
 
 class LiberateNewUserTestCase(InboxenTestCase):
@@ -141,7 +144,8 @@ class LiberateNewUserTestCase(InboxenTestCase):
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
-        tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir, "storage_type": "0", "compression_type": "0"})
+        tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir,
+                                              "storage_type": "0", "compression_type": "0"})
 
 
 class LiberateViewTestCase(InboxenTestCase):
@@ -269,7 +273,8 @@ class MakeMessageUtilTestCase(InboxenTestCase):
         email = factories.EmailFactory(inbox=self.inbox)
         body = factories.BodyFactory(data=body_data)
         first_part = factories.PartListFactory(email=email, body=factories.BodyFactory(data=b""))
-        factories.HeaderFactory(part=first_part, name="Content-Type", data="multipart/mixed; boundary=\"=-3BRZDE/skgKPPh+RuFa/\"")
+        factories.HeaderFactory(part=first_part, name="Content-Type",
+                                data="multipart/mixed; boundary=\"=-3BRZDE/skgKPPh+RuFa/\"")
 
         encodings = {
                 "base64": check_base64,
@@ -330,11 +335,13 @@ def check_base64(msg, data):
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
 
+
 def check_quopri(msg, data):
     assert msg._payload.encode() != data, "Payload has not been transformed"
     assert quopri.decodestring(msg._payload) == data, "Payload was not encoded correctly"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
+
 
 def check_uu(msg, data):
     assert msg._payload.encode() != data, "Payload has not been transformed"

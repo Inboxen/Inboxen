@@ -17,17 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import test
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.db import IntegrityError, transaction
 from django.forms import ValidationError
 
 import mock
 
 from cms import models, forms
-from cms.tests import factories
-from inboxen.tests import factories
 from inboxen.test import InboxenTestCase
 
 

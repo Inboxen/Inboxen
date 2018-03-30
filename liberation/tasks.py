@@ -90,7 +90,8 @@ def liberate(user_id, options):
     # make maildir
     mailbox.Maildir(mail_path, factory=None)
 
-    inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id').iterator()]
+    inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in
+                   Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id').iterator()]
     if len(inbox_tasks) > 0:
         tasks = chord(
                     inbox_tasks,
@@ -120,7 +121,8 @@ def liberate_inbox(mail_path, inbox_id):
 
     return {
         'folder': str(inbox),
-        'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id').iterator()]
+        'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id')
+                .iterator()]
     }
 
 
@@ -256,7 +258,8 @@ def liberation_finish(result, options):
 
     lib_status.save()
 
-    message = _("Your request for your personal data has been completed. Click <a class=\"alert-link\" href=\"%s\">here</a> to download your archive.")
+    message = _("Your request for your personal data has been completed. Click "
+                "<a class=\"alert-link\" href=\"%s\">here</a> to download your archive.")
     message_user(user, safestring.mark_safe(message % urlresolvers.reverse("user-liberate-get")))
 
     log.info("Finished liberation for %s", options['user'])

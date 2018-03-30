@@ -55,6 +55,7 @@ class HelpQuerySet(TreeQuerySet):
     def live(self):
         return self.filter(live=True)
 
+
 class HelpManager(models.Manager.from_queryset(HelpQuerySet), TreeManager):
     pass
 

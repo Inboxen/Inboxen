@@ -19,7 +19,6 @@
 ##
 from __future__ import unicode_literals
 
-from django import test
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
@@ -120,7 +119,8 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertNotIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
@@ -143,7 +143,8 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
@@ -167,7 +168,8 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertIn(staticfiles_storage.url("imgs/placeholder.svg"), body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
         # csp
         self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
@@ -207,7 +209,8 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn(u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
+        expected_string = u'<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>'  # noqa: E501
+        self.assertIn(expected_string, body)
 
     def test_not_allowed_tag(self):
         response = self.client.get(self.get_url())
@@ -276,7 +279,8 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
     def test_body_encoding_without_imgDisplay(self):
         response = self.client.get(self.get_url())
@@ -289,7 +293,8 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
     def test_body_with_no_meta(self):
         response = self.client.get(self.get_url(self.email_metaless) + "?imgDisplay=1")
@@ -302,7 +307,8 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertIn(u"img width=\"10\" height=\"10\"", body)
 
         # premailer should have worked fine
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
     def test_attachments_get(self):
         part = self.email.parts.get()
@@ -319,7 +325,8 @@ class BadEmailTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         body = response.context["email"]["bodies"][0]
-        self.assertIn('<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>', body)
+        expected_string = '<a href="/click/?url=http%3A//example.com/%3Fq%3Dthing" target="_blank" rel="noreferrer">link</a>'  # noqa: E501
+        self.assertIn(expected_string, body)
 
 
 class RealExamplesTestCase(InboxenTestCase):
@@ -349,7 +356,8 @@ class RealExamplesTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
 
         # this email should display all leaves
-        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node() and i.content_type != "application/pgp-signature"])
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()
+                               and i.content_type != "application/pgp-signature"])
         self.assertEqual(len(response.context["email"]["bodies"]), leaf_part_count)
 
     def test_signed_forwarded_digest(self):
@@ -383,7 +391,8 @@ class RealExamplesTestCase(InboxenTestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
-        self.assertNotIn("Part of this message could not be parsed - it may not display correctly", response.content.decode("utf-8"))
+        self.assertNotIn("Part of this message could not be parsed - it may not display correctly",
+                         response.content.decode("utf-8"))
 
     def test_premime(self):
         self.msg = mail.MailRequest("", "", "", EXAMPLE_PREMIME_EMAIL)
@@ -398,7 +407,6 @@ class RealExamplesTestCase(InboxenTestCase):
         self.assertEqual(response.context["email"]["bodies"][0], "<pre>Hi,\n\nHow are you?\n\nThanks,\nTest\n</pre>")
 
 
-
 class AttachmentTestCase(InboxenTestCase):
     def setUp(self):
         super(AttachmentTestCase, self).setUp()
@@ -407,7 +415,8 @@ class AttachmentTestCase(InboxenTestCase):
         self.email = factories.EmailFactory(inbox__user=self.user)
         body = factories.BodyFactory(data=BODY)
         self.part = factories.PartListFactory(email=self.email, body=body)
-        self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type", data="text/html; charset=\"utf-8\"")
+        self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type",
+                                                              data="text/html; charset=\"utf-8\"")
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 

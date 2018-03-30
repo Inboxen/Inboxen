@@ -59,7 +59,8 @@ def styleguide(request):
             last_activity=now,
             form=False,
         ),
-        mock.Mock(inbox="qwerty",
+        mock.Mock(
+            inbox="qwerty",
             domain=domain,
             flags=BitHandler(1 | 2, ["new", "pinned"]),
             last_activity=now,
@@ -69,7 +70,7 @@ def styleguide(request):
 
     # emails
     emails = [
-         mock.Mock(
+        mock.Mock(
             inbox=inboxes[0],
             flags=BitHandler(1, ["important"]),
             received_date=now,
@@ -80,7 +81,6 @@ def styleguide(request):
             received_date=now,
         ),
     ]
-
 
     # attachments
     attachments = [

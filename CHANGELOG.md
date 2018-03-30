@@ -4,6 +4,7 @@
 
 * Proper Python 3 support (#261)
 * Upgrade to Celery 4 (#222)
+* Do lint checks as part of normal testing
 
 ## Releases
 

@@ -4,7 +4,7 @@ import os
 
 # tell settings module to ignore normal config file
 os.environ['INBOXEN_TESTING'] = '1'
-from inboxen.settings import *
+from inboxen.settings import *  # noqa
 
 # build asserts if need be
 ASSETS_AUTO_BUILD = True

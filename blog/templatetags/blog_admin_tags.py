@@ -19,7 +19,6 @@
 from __future__ import unicode_literals
 
 from django import template
-from django.utils import safestring
 from django.utils.translation import ugettext_lazy
 
 from inboxen.utils.flags import create_render_bool_template_tag

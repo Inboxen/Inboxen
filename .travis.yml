@@ -25,8 +25,10 @@ matrix:
         install: pip install tox
         script: tox -e $TOX_ENV
       - python: "2.7"
-        env: TOX_ENV=lint
-        install: pip install tox
+        env: TOX_ENV=js-lint,py-lint
+        install:
+            - pip install tox
+            - npm install -g jshint
         script: tox -e $TOX_ENV
       - python: "3.6"
         env:
@@ -40,8 +42,6 @@ matrix:
             - export PATH=$PATH:$PWD/geckodriver
             - pip install tox
         script: tox -e $TOX_ENV
-    allow_failures:
-        - env: TOX_ENV=lint
 
 script:
     - coverage run --branch  manage.py test --settings=inboxen.tests.settings

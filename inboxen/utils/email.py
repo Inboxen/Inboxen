@@ -44,8 +44,8 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 HTML_SAFE_ATTRS = ["style", "title", "href", "src", "height", "width"]
 
 HTML_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre",
-    "code", "img", "div", "span", "table", "tr", "th", "td", "thead", "tbody",
-    "tfooter", "br"]
+                   "code", "img", "div", "span", "table", "tr", "th", "td",
+                   "thead", "tbody", "tfooter", "br"]
 
 
 _log = logging.getLogger(__name__)
@@ -105,7 +105,7 @@ def _clean_html_body(request, email, body, charset):
     # Mail Pile uses this, give back if you come up with something better
     cleaner = Cleaner(
         allow_tags=HTML_ALLOW_TAGS,
-        kill_tags = ["style"],  # remove style tags, not attrs
+        kill_tags=["style"],  # remove style tags, not attrs
         remove_unknown_tags=False,
         safe_attrs=HTML_SAFE_ATTRS,
         safe_attrs_only=True,
@@ -252,11 +252,6 @@ def find_bodies(part):
     except AttributeError:
         yield []
         return
-
-    if part.parent:
-        parent_main, parent_sub = part.parent.content_type.split("/", 1)
-    else:
-        parent_main, parent_sub = ("", "")
 
     if main == "multipart":
         if sub == "alternative":

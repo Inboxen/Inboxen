@@ -18,7 +18,6 @@
 ##
 
 from django import forms
-from django.contrib.contenttypes.models import ContentType
 
 from cms import models
 
@@ -27,7 +26,7 @@ PAGE_TYPES = (
     models.HelpIndex,
     models.AppPage,
     models.HelpPage,
-#    models.PeoplePage,
+    # models.PeoplePage,
 )
 
 
@@ -57,7 +56,7 @@ class HelpBasePageForm(forms.ModelForm):
 def get_page_form(model_ct, form=HelpBasePageForm):
     model = model_ct.model_class()
     assert issubclass(model, models.HelpBasePage) and model != models.HelpBasePage, \
-            "Model must be a subclass of HelpBasePage, but not HelpBasePage itself."
+        "Model must be a subclass of HelpBasePage, but not HelpBasePage itself."
     assert model in PAGE_TYPES, "Not a supported model"
 
     form = forms.modelform_factory(model, form=form, fields=model.admin_fields)

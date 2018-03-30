@@ -20,7 +20,6 @@
 from django.conf import settings as dj_settings, urls
 from django.contrib.auth import views as auth_views
 from django.core.urlresolvers import reverse_lazy
-from django.utils.translation import ugettext as _
 from django.views.generic import TemplateView
 import elevate.views
 
@@ -32,13 +31,12 @@ from account.views import delete, otp, register, settings
 urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^security/password$', auth_views.password_change,
-        {
-            'template_name': 'account/password.html',
-            'post_change_redirect': reverse_lazy('user-security'),
-            'password_change_form': PlaceHolderPasswordChangeForm,
-        },
-        name='user-password',
-    ),
+             {
+                 'template_name': 'account/password.html',
+                 'post_change_redirect': reverse_lazy('user-security'),
+                 'password_change_form': PlaceHolderPasswordChangeForm,
+             },
+             name='user-password'),
     urls.url(r'^security/sudo/$', elevate.views.elevate, {'form_class': PlaceHolderSudoForm}, name='user-sudo'),
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
@@ -57,7 +55,13 @@ urlpatterns = [
 
 if dj_settings.ENABLE_REGISTRATION:
     urlpatterns += [
-        urls.url(r'^register/status/$', anonymous_required(TemplateView.as_view(template_name='account/register/software-status.html')), name='user-status'),
-        urls.url(r'^register/success/$', anonymous_required(TemplateView.as_view(template_name='account/register/success.html')), name='user-success'),
-        urls.url(r'^register/$', anonymous_required(register.UserRegistrationView.as_view()), name='user-registration'),
+        urls.url(r'^register/status/$',
+                 anonymous_required(TemplateView.as_view(template_name='account/register/software-status.html')),
+                 name='user-status'),
+        urls.url(r'^register/success/$',
+                 anonymous_required(TemplateView.as_view(template_name='account/register/success.html')),
+                 name='user-success'),
+        urls.url(r'^register/$',
+                 anonymous_required(register.UserRegistrationView.as_view()),
+                 name='user-registration'),
     ]

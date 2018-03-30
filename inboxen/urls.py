@@ -17,11 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import os
-
 from django.conf import settings, urls
 from django.conf.urls.static import static
-from django.utils.translation import ugettext as _
 
 from inboxen import views
 
@@ -42,19 +39,25 @@ urlpatterns = [
 
     # inbox views
     urls.url(r'^inbox/add/$', views.InboxAddView.as_view(), name='inbox-add'),
-    urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.InboxEditView.as_view(), name='inbox-edit'),
+    urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
+             views.InboxEditView.as_view(), name='inbox-edit'),
 
-    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/download/$', views.AttachmentDownloadView.as_view(), name='email-attachment'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)/$', views.EmailView.as_view(), name='email-view'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)/$', views.SingleInboxView.as_view(), name='single-inbox'),
-    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/download/$',
+             views.AttachmentDownloadView.as_view(), name='email-attachment'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)/$',
+             views.EmailView.as_view(), name='email-view'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)/$',
+             views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
+             views.SingleInboxView.as_view(), name='single-inbox'),
     urls.url(r'^inbox/(?P<page>\d+)/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
     urls.url(r'^inbox/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
 
     # form inlines
     urls.url(r'^forms/inbox/add/$', views.FormInboxAddView.as_view(), name='form-inbox-add'),
     urls.url(r'^forms/home/$', views.FormHomeView.as_view(), name='form-home'),
-    urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$', views.FormInboxEditView.as_view(), name='form-inbox-edit'),
+    urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
+             views.FormInboxEditView.as_view(), name='form-inbox-edit'),
     urls.url(r'^forms/inbox/email/$', views.FormInboxView.as_view(), name='form-inbox-email'),
 
     # user views

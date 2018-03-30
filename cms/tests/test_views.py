@@ -17,14 +17,10 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.db import IntegrityError, transaction
 from django.http import Http404
-from django.urls.exceptions import NoReverseMatch
 
 from cms import models, views
-from cms.tests import factories
 from inboxen.tests import factories
 from inboxen.test import InboxenTestCase, MockRequest, grant_sudo, grant_otp
 
@@ -63,7 +59,7 @@ class AdminIndexTestCase(InboxenTestCase):
     def test_url(self):
         """Check URLs are attached to the correct view"""
         assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
-                "Could not log in"
+            "Could not log in"
 
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
@@ -99,7 +95,6 @@ class AdminIndexTestCase(InboxenTestCase):
         breadcrumbs = [p for p in response.context_data["breadcrumbs"]]
         self.assertEqual(breadcrumbs, [expected_page])
 
-
     def test_child_page(self):
         request = MockRequest(self.user, has_otp=True, has_sudo=True)
         page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
@@ -107,7 +102,6 @@ class AdminIndexTestCase(InboxenTestCase):
         response = views.index(request, page_pk=page.pk)
         self.assertEqual(response.status_code, 200)
 
-        expected_page = models.HelpBasePage.objects.filter(parent__isnull=True).get()
         self.assertEqual(response.context_data["page"], page)
 
         breadcrumbs = [p for p in response.context_data["breadcrumbs"]]
@@ -130,7 +124,7 @@ class ChoosePageTypeTestCase(InboxenTestCase):
     def test_url(self):
         """Check URLs are attached to the correct view"""
         assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
-                "Could not log in"
+            "Could not log in"
 
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
@@ -148,7 +142,7 @@ class ChoosePageTypeTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data["parent_pk"], page.pk)
         self.assertEqual(response.context_data["models"],
-                [models.HelpIndex._meta, models.AppPage._meta, models.HelpPage._meta])
+                         [models.HelpIndex._meta, models.AppPage._meta, models.HelpPage._meta])
 
         breadcrumbs = [p for p in response.context_data["breadcrumbs"]]
         self.assertEqual(breadcrumbs, [page])
@@ -170,7 +164,7 @@ class CreatePageTestCase(InboxenTestCase):
     def test_url(self):
         """Check URLs are attached to the correct view"""
         assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
-                "Could not log in"
+            "Could not log in"
 
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
@@ -229,7 +223,7 @@ class EditPageTestCase(InboxenTestCase):
     def test_url(self):
         """Check URLs are attached to the correct view"""
         assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
-                "Could not log in"
+            "Could not log in"
 
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
@@ -281,7 +275,7 @@ class DeletePageTestCase(InboxenTestCase):
     def test_url(self):
         """Check URLs are attached to the correct view"""
         assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
-                "Could not log in"
+            "Could not log in"
 
         grant_otp(self.client, self.user)
         grant_sudo(self.client)

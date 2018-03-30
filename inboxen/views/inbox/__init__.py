@@ -15,8 +15,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from .add import *
-from .attachment import *
-from .edit import *
-from .email import *
-from .inbox import *
+from .add import *  # noqa
+from .attachment import *  # noqa
+from .edit import *  # noqa
+from .email import *  # noqa
+from .inbox import *  # noqa

@@ -103,4 +103,4 @@ class Response(models.Model, RenderBodyMixin):
         ordering = ["date"]
 
     def __str__(self):
-        return u"Response to %s from %s" %(self.question, self.author)
+        return u"Response to %s from %s" % (self.question, self.author)

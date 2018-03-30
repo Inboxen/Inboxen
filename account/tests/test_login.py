@@ -26,7 +26,7 @@ class LoginTestCase(InboxenTestCase):
     def test_missing_mgmt_data(self):
         good_data = {
             "auth-username": "user1",
-            "auth-username": "pass1",
+            "auth-password": "pass1",
             "login_view-current_step": "auth",
         }
 
@@ -36,7 +36,7 @@ class LoginTestCase(InboxenTestCase):
 
         bad_data = {
             "auth-username": "user1",
-            "auth-username": "pass1",
+            "auth-password": "pass1",
         }
         response = self.client.post(urlresolvers.reverse("user-login"), bad_data)
         # Bad request, but no exception generated

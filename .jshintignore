@@ -1,0 +1,5 @@
+.git
+htmlcov
+media_content
+node_modules
+static_content

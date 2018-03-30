@@ -78,7 +78,8 @@ class TextDescriptor(object):
             text = getattr(instance, self.field.name)
 
         if type(text) != HTML:
-            text = HTML(text, allow_tags=self.field.allow_tags, safe_attrs=self.field.safe_attrs, extensions=self.field.extensions)
+            text = HTML(text, allow_tags=self.field.allow_tags, safe_attrs=self.field.safe_attrs,
+                        extensions=self.field.extensions)
             instance.__dict__[self.field.name] = text
             return text
         else:

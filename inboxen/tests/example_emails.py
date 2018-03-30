@@ -35,7 +35,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p onClick="alert('Idiot!')">Click me!</p>
 </body>
 </html>
-""".encode("utf-8")
+""".encode("utf-8")  # noqa
 
 METALESS_BODY = u"""<html>
 <head>
@@ -50,7 +50,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p><a>Ha!</a><img width=10 height=10></p>
 </body>
 </html>
-""".encode()
+""".encode()  # noqa
 
 CHARSETLESS_BODY = u"""<html>
 <head>
@@ -66,7 +66,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p><a>Ha!</a><img width=10 height=10></p>
 </body>
 </html>
-""".encode()
+""".encode()  # noqa
 
 BADLY_ENCODED_BODY = u"""<html>
 <head>
@@ -82,7 +82,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p><a>Ha!</a><img width=10 height=10></p>
 </body>
 </html>
-""".encode("latin-1")
+""".encode("latin-1")  # noqa
 
 BAD_HTTP_EQUIV_BODY = u"""<html>
 <head>
@@ -100,9 +100,9 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p onClick="alert('Idiot!')">Click me!</p>
 </body>
 </html>
-""".encode("utf-8")
+""".encode("utf-8")  # noqa
 
-BODILESS_BODY = u"""<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>""".encode()
+BODILESS_BODY = u"""<p>Click the link below to confirm your subscription to Updates of Loathing:</p><br><a href="http://tinyletter.com/asym/confirm?id=uuid">Subscribe me to Updates of Loathing</a>""".encode()  # noqa
 
 EXAMPLE_PREMIME_EMAIL = """From: test@example.com
 To: test@example.com
@@ -114,7 +114,7 @@ How are you?
 
 Thanks,
 Test
-"""
+""" # noqa
 
 UNSUPPORTED_CSS_BODY = """<html>
 <head>
@@ -131,7 +131,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p><a>Ha!</a><img width=10 height=10></p>
 </body>
 </html>
-"""
+""" # noqa
 
 # example email that was causing issue #47
 EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>
@@ -1280,7 +1280,7 @@ i3E4=3D&ea.client.id=3D1422"/>
 ------=_Part_29748709_1445524343.1448020924829--
 
 ------=_Part_29748710_445134290.1448020924829--
-"""
+""" # noqa
 
 EXAMPLE_ALT = """Return-Path: <newsletter@gog.com>
 Delivered-To: <moggers87@thewarof1812.moggers.co.uk>
@@ -1558,7 +1558,7 @@ v id=3D"_t"></div>
 
 --_=_swift_v4_144744021656462f582810e_=_--
 
-"""
+""" # noqa
 
 EXAMPLE_DIGEST = """Delivered-To: example@example.com
 Received: by 10.227.0.129 with SMTP id 1csp102594wbb;
@@ -1959,7 +1959,7 @@ http://lists.centos.org/mailman/listinfo/centos-announce
 
 --===============0954800312==--
 
-"""
+""" # noqa
 
 # same as EXAMPLE_DIGEST, except its been forwarded as a message/rfc822
 EXAMPLE_SIGNED_FORWARDED_DIGEST = """Message-ID: <1448059000.4758.0.camel@example.com>
@@ -2439,10 +2439,10 @@ s+PN63nlOtiyy8KEqWnI
 
 --=-8OGUbXGGezXx/m8jI4KD--
 
-"""
+""" # noqa
 
 
-LONELY_ANCHOR_TAG = """<a href="https://example.com">"""
+LONELY_ANCHOR_TAG = """<a href="https://example.com">""" # noqa
 
 
-EMPTY_ANCHOR_TAG = """<a href="https://example.com"></a>"""
+EMPTY_ANCHOR_TAG = """<a href="https://example.com"></a>""" # noqa

@@ -19,7 +19,6 @@
 
 from unittest import expectedFailure
 
-from django import test
 from django.conf import settings
 from django.db import IntegrityError, transaction
 from django.http import Http404
@@ -34,14 +33,14 @@ from tickets import views as ticket_views
 class HelpQuerySetTestCase(InboxenTestCase):
     def test_in_menu(self):
         is_menu = factories.HelpBasePageFactory(tree_id=2, in_menu=True)
-        not_menu = factories.HelpBasePageFactory(tree_id=2, in_menu=False)
+        factories.HelpBasePageFactory(tree_id=2, in_menu=False)
 
         qs = models.HelpBasePage.objects.filter(tree_id=2).in_menu()
         self.assertEqual(list(qs), [is_menu])
 
     def test_live(self):
         is_live = factories.HelpBasePageFactory(tree_id=2, live=True)
-        not_live = factories.HelpBasePageFactory(tree_id=2, live=False)
+        factories.HelpBasePageFactory(tree_id=2, live=False)
 
         qs = models.HelpBasePage.objects.filter(tree_id=2).live()
         self.assertEqual(list(qs), [is_live])
@@ -176,7 +175,7 @@ class HelpIndexTestCase(InboxenTestCase):
         page = models.HelpIndex.objects.get()
         request = MockRequest()
 
-        response =  page.serve(request)
+        response = page.serve(request)
 
         self.assertEqual(response.status_code, 200)
 
@@ -237,7 +236,7 @@ class HelpPageTestCase(InboxenTestCase):
         page = models.HelpIndex.objects.get()
         request = MockRequest()
 
-        response =  page.serve(request)
+        response = page.serve(request)
 
         self.assertEqual(response.status_code, 200)
 
@@ -249,6 +248,7 @@ class HelpPageTestCase(InboxenTestCase):
 @expectedFailure
 class PeoplePageTestCase(InboxenTestCase):
     pass
+
 
 @expectedFailure
 class PersonInfoTestCase(InboxenTestCase):

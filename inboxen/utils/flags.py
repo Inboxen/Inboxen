@@ -20,8 +20,6 @@
 from django.template import loader
 from django.utils import safestring
 
-from inboxen.context_processors import reduced_settings_context
-
 
 def create_render_bool_template_tag(flags, template_path="inboxen/flags/bool.html"):
     template = loader.get_template(template_path)
