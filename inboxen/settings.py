@@ -106,6 +106,10 @@ LANGUAGES = (
     ("sv", "Svenska"),
 )
 
+# required for makemessages --all to work correctly, otherwise Django looks in
+# conf/locale and locale (which don't exist) for languages to process
+LOCALE_PATHS = ["inboxen/locale"]
+
 USE_I18N = True
 
 USE_L10N = True
