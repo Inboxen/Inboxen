@@ -42,6 +42,7 @@ from inboxen.celery import app
 from inboxen.models import Email, Inbox
 from liberation import utils
 from inboxen import tasks
+from inboxen.utils.tasks import task_group_skew
 
 log = logging.getLogger(__name__)
 
@@ -136,7 +137,7 @@ def liberate_collect_emails(results, mail_path, options):
 
     if task_len > 0:
         msg_tasks = liberate_message.chunks(msg_tasks, 100).group()
-        msg_tasks.skew(step=10)
+        task_group_skew(msg_tasks, step=10)
         msg_tasks = chain(
                         msg_tasks,
                         liberate_convert_box.s(mail_path, options),

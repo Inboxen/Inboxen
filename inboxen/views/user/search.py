@@ -60,7 +60,7 @@ class SearchView(LoginRequiredMixin, generic.ListView):
 
         Raises TimeoutError if results aren't ready by self.timeout"""
         result = cache.get(self.get_cache_key())
-        if result is None or settings.CELERY_ALWAYS_EAGER:
+        if result is None or settings.CELERY_TASK_ALWAYS_EAGER:
             search_task = tasks.search.apply_async(args=[self.request.user.id, self.query])
             result = {"task": search_task.id}
             cache.set(self.get_cache_key(), result, tasks.SEARCH_TIMEOUT)

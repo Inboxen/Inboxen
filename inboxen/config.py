@@ -129,13 +129,13 @@ MIN_INBOX_FOR_REQUEST = config["inbox"]["min_inbox_for_request"]
 REQUEST_NUMBER = config["inbox"]["request_number"]
 
 # Where Celery looks for new tasks and stores results
-BROKER_URL = config["tasks"]["broker_url"]
+CELERY_BROKER_URL = config["tasks"]["broker_url"]
 
 # Number of Celery processes to start
-CELERYD_CONCURRENCY = config["tasks"]["concurrency"]
+CELERY_WORKER_CONCURRENCY = config["tasks"]["concurrency"]
 
 # Runs tasks synchronously
-CELERY_ALWAYS_EAGER = config["tasks"]["always_eager"]
+CELERY_TASK_ALWAYS_EAGER = config["tasks"]["always_eager"]
 
 # Path where liberation data is stored
 LIBERATION_PATH = os.path.join(BASE_DIR, config["tasks"]["liberation"]["path"])

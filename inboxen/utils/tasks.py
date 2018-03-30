@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014, 2015, 2016, 2017 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -16,8 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-from __future__ import absolute_import
 
-from .celery import app as celery_app
 
-default_app_config = 'inboxen.apps.InboxenConfig'
+def task_group_skew(group, step=1):
+    """Work around for https://github.com/celery/celery/issues/4298"""
+    group.tasks = list(group.tasks)
+    group.skew(step=step)
