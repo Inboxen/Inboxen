@@ -30,7 +30,8 @@ __all__ = ["InboxAddForm", "InboxEditForm"]
 
 
 class InboxAddForm(forms.ModelForm):
-    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
+    exclude_from_unified = forms.BooleanField(required=False, label=_("Hide from All Inbox"),
+                                              help_text=_("Emails sent to this address won't appear in \"All\""))
 
     def __init__(self, request, initial=None, *args, **kwargs):
         self.request = request  # needed to create the inbox
@@ -91,7 +92,8 @@ class InboxSecondaryEditForm(forms.Form):
 
 
 class InboxEditForm(forms.ModelForm):
-    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
+    exclude_from_unified = forms.BooleanField(required=False, label=_("Hide from All Inbox"),
+                                              help_text=_("Emails sent to this address won't appear in \"All\""))
     pinned = forms.BooleanField(required=False, label=_("Pin Inbox to top"))
 
     class Meta:

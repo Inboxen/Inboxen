@@ -158,7 +158,7 @@ class SingleInboxTestCase(InboxTestAbstract, InboxenTestCase):
 
 
 class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
-    """Test Unified Inbox specific views"""
+    """Test All Inbox specific views"""
     def setUp(self):
         self.user = factories.UserFactory()
 

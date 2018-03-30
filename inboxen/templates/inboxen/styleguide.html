@@ -163,7 +163,7 @@
                     {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
                 {% endfor %}
             </div>
-            <h4>Unified inbox view</h4>
+            <h4>All Inbox view</h4>
             <div class="honeydew">
                 {% for email in emails %}
                     {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender unified=True %}
@@ -183,7 +183,7 @@
                     <span class="clickable">
                         <div class="{{ col0 }}">
                             <div class="row">
-                                <div class="inbox-name col-xs-12 col-sm-8"><a href="#">Unified Inbox</a></div>
+                                <div class="inbox-name col-xs-12 col-sm-8"><a href="#">All Inbox</a></div>
                                 <div class="inbox-flags col-xs-12 col-sm-4">
                                     <div class="inline-block__wrapper"><span class="label label-primary" title="New messages">New</span></div>
                                 </div>
