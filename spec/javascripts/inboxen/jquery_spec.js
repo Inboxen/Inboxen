@@ -4,7 +4,7 @@
  */
 
 describe("jQuery", function() {
-      it("should be available in the global scope", function() {
-              expect(jQuery).toBeDefined();
-            });
+    it("should be available in the global scope", function() {
+        expect(jQuery).toBeDefined();
+    });
 });

@@ -44,6 +44,7 @@ register("inboxen_css", css)
 js = Bundle(
     "thirdparty/jquery/dist/jquery.js",
     "js/utils.js",
+    "js/copy.js",
     "js/alert.js",
     "js/home.js",
     "js/search.js",

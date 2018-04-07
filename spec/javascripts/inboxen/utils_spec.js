@@ -4,12 +4,13 @@
  */
 
 describe("The Spinner Toggle plugin", function() {
-      it("should be available as a jQuery plugin", function() {
-              expect(jQuery.fn.inboxenSpinnerToggle).toBeDefined();
-            });
-      it("should be available on selector objects", function() {
-              expect($("html").inboxenSpinnerToggle).toBe(jQuery.fn.inboxenSpinnerToggle);
-            });
+    it("should be available as a jQuery plugin", function() {
+        expect(jQuery.fn.inboxenSpinnerToggle).toBeDefined();
+    });
+
+    it("should be available on selector objects", function() {
+        expect($("html").inboxenSpinnerToggle).toBe(jQuery.fn.inboxenSpinnerToggle);
+    });
 
     describe("when called on buttons", function() {
         beforeEach(function() {
