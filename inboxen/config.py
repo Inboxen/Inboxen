@@ -98,6 +98,12 @@ LOGIN_ATTEMPT_COOLOFF = config["general"]["login_attempt_cooloff"]
 # Maximum number of unsuccessful login attempts
 LOGIN_ATTEMPT_LIMIT = config["general"]["login_attempt_limit"]
 
+# Cooloff time, in minutes, for registrations
+REGISTER_LIMIT_WINDOW = config["general"]["register_limit_window"]
+
+# Maximum number of registrations
+REGISTER_LIMIT_COUNT = config["general"]["register_limit_count"]
+
 # Language code, e.g. en-gb
 LANGUAGE_CODE = config["general"]["language_code"]
 

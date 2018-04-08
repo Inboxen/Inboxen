@@ -18,11 +18,13 @@
 ##
 
 from django.conf import settings
+from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.utils.translation import ugettext as _
 from django.views import generic
 
-from account import forms
+from account import forms, utils
 
 
 class UserRegistrationView(generic.CreateView):
@@ -31,11 +33,19 @@ class UserRegistrationView(generic.CreateView):
     template_name = "account/register/register.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return HttpResponseRedirect(reverse_lazy('user-home'))
-
         if not settings.ENABLE_REGISTRATION:
             # I think this should be a 403
             return HttpResponseRedirect(reverse_lazy("index"))
 
         return super(UserRegistrationView, self).dispatch(request=request, *args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        if utils.register_counter_full(self.request):
+            messages.warning(self.request, _("Too many signups, further attempts will be ignored."))
+            return HttpResponseRedirect(reverse_lazy("user-registration"))
+
+        return super(UserRegistrationView, self).post(*args, **kwargs)
+
+    def form_valid(self, form):
+        utils.register_counter_increase(self.request)
+        return super(UserRegistrationView, self).form_valid(form)
