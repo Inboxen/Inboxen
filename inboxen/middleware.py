@@ -54,7 +54,7 @@ class ExtendSessionMiddleware(object):
 
 class MakeXSSFilterChromeSafeMiddleware(object):
     def process_response(self, request, response):
-        # we have CSP and filter user input to protect against CSP, adding
+        # we have CSP and filter user input to protect against XSS, adding
         # X-XSS-Protection would be great as a defence in depth. However, there
         # are a few bugs in Chrome that can cause information to be leaked to
         # an attacker. Some of these rely on iframes which we might use in
