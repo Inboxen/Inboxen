@@ -24,6 +24,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
 
+from inboxen.utils.ip import strip_ip
+
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +33,7 @@ logger = logging.getLogger(__name__)
 def make_key(request, dt):
     return "{}{}-{}".format(
         settings.REGISTER_LIMIT_CACHE_PREFIX,
-        request.META["REMOTE_ADDR"],
+        strip_ip(request.META["REMOTE_ADDR"]),
         dt.strftime("%Y%m%d%H%M"),
     )
 

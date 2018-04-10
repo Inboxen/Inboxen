@@ -40,7 +40,7 @@ faker==0.8.5
 first==2.0.1              # via pip-tools
 funcsigs==1.0.2           # via mock
 idna==2.6                 # via requests
-ipaddress==1.0.19         # via faker
+ipaddress==1.0.19
 jsmin==2.2.2
 kombu==4.1.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
