@@ -5,9 +5,8 @@
 #    pip-compile --output-file requirements-dev.txt requirements-dev.in
 #
 -e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
-alabaster==0.7.10         # via sphinx
 amqp==2.2.2               # via kombu
-babel==2.5.3              # via django-phonenumber-field, sphinx
+babel==2.5.3              # via django-phonenumber-field
 backports.shutil-get-terminal-size==1.0.0  # via ipython
 billiard==3.5.0.3         # via celery
 celery==4.1.0
@@ -17,7 +16,6 @@ cheroot==6.0.0            # via cherrypy
 cherrypy==14.0.0          # via jasmine
 click==6.7                # via pip-tools
 configobj==5.0.6
-configparser==3.5.0       # via flake8
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
 decorator==4.2.1          # via ipython, traitlets
@@ -41,22 +39,20 @@ django-two-factor-auth==1.7.0
 django-watson==1.5.2
 django==1.11.11
 dnspython==1.15.0         # via salmon-mail
-docutils==0.14            # via python-daemon, sphinx
-enum34==1.1.6             # via flake8, traitlets
+docutils==0.14            # via python-daemon
+enum34==1.1.6             # via traitlets
 factory-boy==2.10.0
 faker==0.8.5
 first==2.0.1              # via pip-tools
-flake8==3.5.0
 funcsigs==1.0.2           # via mock
 glob2==0.6                # via jasmine-core
 idna==2.6                 # via requests
-imagesize==1.0.0          # via sphinx
 ipaddress==1.0.19         # via faker
 ipython-genutils==0.2.0   # via traitlets
 ipython==5.5.0
 jasmine-core==3.1.0       # via jasmine
 jasmine==3.1.0
-jinja2==2.10              # via jasmine, sphinx
+jinja2==2.10              # via jasmine
 jsmin==2.2.2
 kombu==4.1.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
@@ -64,11 +60,9 @@ lockfile==0.12.2          # via python-daemon
 lxml==4.2.0
 markdown==2.6.11
 markupsafe==1.0           # via jinja2
-mccabe==0.6.1             # via flake8
 mock==2.0.0
 more-itertools==4.1.0     # via cheroot
 ordereddict==1.1          # via jasmine-core
-packaging==17.1           # via sphinx
 pathlib2==2.3.0           # via ipython, pickleshare
 pbr==3.1.1                # via mock
 pexpect==4.4.0            # via ipython
@@ -82,25 +76,19 @@ progress==1.3
 prompt-toolkit==1.0.15    # via ipython
 psycopg2==2.7.4
 ptyprocess==0.5.2         # via pexpect
-pycodestyle==2.3.1        # via flake8
-pyflakes==1.6.0           # via flake8
-pygments==2.2.0           # via ipython, sphinx
-pyparsing==2.2.0          # via packaging
+pygments==2.2.0           # via ipython
 python-daemon==2.1.2      # via salmon-mail
 python-dateutil==2.7.0    # via faker
 pytz==2018.3
 pyyaml==3.10              # via jasmine
 qrcode==4.0.4             # via django-two-factor-auth
-requests==2.18.4          # via premailer, sphinx
+requests==2.18.4          # via premailer
 salmon-mail==3.0.0
 scandir==1.7              # via pathlib2
 selenium==3.11.0          # via jasmine
 simplegeneric==0.8.1      # via ipython
 simplejson==3.13.2
-six==1.11.0               # via cheroot, cherrypy, configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, more-itertools, packaging, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, sphinx, tempora, traitlets
-snowballstemmer==1.2.1    # via sphinx
-sphinx==1.7.1
-sphinxcontrib-websupport==1.0.1  # via sphinx
+six==1.11.0               # via cheroot, cherrypy, configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, more-itertools, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
 sqlparse==0.2.4           # via django-debug-toolbar
 tempora==1.11             # via portend
 traitlets==4.3.2          # via ipython
