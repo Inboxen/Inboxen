@@ -605,7 +605,16 @@ class ManifestTestCase(InboxenTestCase):
 class IpUtilsTestCase(InboxenTestCase):
     def test_not_ip(self):
         with self.assertRaises(ValueError):
-            ip.strip_ip("inboxen")
+            # ipaddress should raise a ValueError exception
+            ip.strip_ip(u"inboxen")
+
+        with self.assertRaises(ValueError), \
+                mock.patch("inboxen.utils.ip.ipaddress.ip_address") as ip_mock:
+            # Mock is not an instance of IPv4Address or IPv6Address, so our
+            # code should raise its own ValueError
+            ip.strip_ip("")
+
+        self.assertEqual(ip_mock.call_count, 1)
 
     def test_ipv4(self):
         filled_ip_addr = "255.255.255.255"
