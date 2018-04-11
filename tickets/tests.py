@@ -81,9 +81,9 @@ class QuestionViewTestCase(InboxenTestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        self.assertIn("More Questions", str(response.content))
+        self.assertIn("More Questions", response.content.decode("utf-8"))
         list_url = app_reverse(self.page, "tickets-list", kwargs={"status": "open"})
-        self.assertIn(list_url, str(response.content))
+        self.assertIn(list_url, response.content.decode("utf-8"))
 
     def test_switch_open_closed(self):
         models.Question.objects.filter(status=models.Question.NEW).update(author=self.other_user)
@@ -92,9 +92,9 @@ class QuestionViewTestCase(InboxenTestCase):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        self.assertIn("More Questions", str(response.content))
+        self.assertIn("More Questions", response.content.decode("utf-8"))
         list_url = app_reverse(self.page, "tickets-list", kwargs={"status": "closed"})
-        self.assertIn(list_url, str(response.content))
+        self.assertIn(list_url, response.content.decode("utf-8"))
 
     def test_post_form_valid(self):
         params = {"subject": "Hello!", "body": "This is the body of my question"}
@@ -168,7 +168,7 @@ class QuestionDetailTestCase(InboxenTestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
-        self.assertIn(self.question.render_body(), str(response.content))
+        self.assertIn(self.question.render_body(), response.content.decode("utf-8"))
 
     def test_post_form_valid(self):
         response = self.client.post(self.get_url(), {"body": "hello"}, follow=True)
@@ -180,7 +180,7 @@ class QuestionDetailTestCase(InboxenTestCase):
         self.assertEqual(responses[0].body, "hello")
 
         response = self.client.get(self.get_url())
-        self.assertIn(responses[0].render_body(), str(response.content))
+        self.assertIn(responses[0].render_body(), response.content.decode("utf-8"))
 
     def test_post_form_invalid(self):
         response_count = models.Response.objects.all().count()

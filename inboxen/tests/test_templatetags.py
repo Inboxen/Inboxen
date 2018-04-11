@@ -18,13 +18,15 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime, timedelta
+
 from bitfield import BitHandler
 from django.template import Template
 from django.template.backends.django import Template as DjangoTemplate
 from django.utils import translation
 import mock
 
-from inboxen.templatetags import inboxen_admin_tags, inboxen_flags, inboxen_selector
+from inboxen.templatetags import inboxen_admin_tags, inboxen_flags, inboxen_selector, inboxen_time
 from inboxen.test import InboxenTestCase
 from inboxen.utils import flags as flag_utils
 
@@ -204,3 +206,35 @@ class SelectorEscapeTestCase(InboxenTestCase):
         result = inboxen_selector.escape_selector(input_string, as_data=True)
 
         self.assertEqual(expected_string, result)
+
+
+class InboxenTimeTestCase(InboxenTestCase):
+    @mock.patch("inboxen.templatetags.inboxen_time.timezone.now")
+    def test_non_breaking_space(self, now_mock):
+        now = datetime.utcnow()
+        now_mock.return_value = now
+
+        time = inboxen_time.inboxentime(now)
+        self.assertNotIn(u" ", time)
+        self.assertIn(u"\xa0", time)
+
+        for seconds, name in inboxen_time.TIMESINCE_CHUNKS:
+            time = inboxen_time.inboxentime(now - timedelta(seconds=seconds))
+            self.assertNotIn(u" ", time)
+            self.assertIn(u"\xa0", time)
+
+    @mock.patch("inboxen.templatetags.inboxen_time.timezone.now")
+    def test_plurals_work(self, now_mock):
+        now = datetime.utcnow()
+        now_mock.return_value = now
+
+        time = inboxen_time.inboxentime(now)
+        self.assertEqual(time, u"just\xa0now")
+
+        for seconds, name in inboxen_time.TIMESINCE_CHUNKS:
+            time1 = inboxen_time.inboxentime(now - timedelta(seconds=seconds * 1.5))
+            time2 = inboxen_time.inboxentime(now - timedelta(seconds=seconds * 3.5))
+
+            self.assertNotEqual(time1, time2)
+            self.assertTrue(time1.startswith("a"), time1)
+            self.assertTrue(time2.startswith("3"), time2)
