@@ -6,6 +6,7 @@
 * Upgrade to Celery 4 (#222)
 * Do lint checks as part of normal testing
 * Add a copy button to each inbox (#100)
+* Fix button column width on home view (#338)
 
 ## Releases
 
