@@ -7,6 +7,7 @@
 * Do lint checks as part of normal testing
 * Add a copy button to each inbox (#100)
 * Change "X big units, Y small units" times to just "X big units" (#337)
+* Fix button column width on home view (#338)
 
 ## Releases
 
