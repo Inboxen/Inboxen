@@ -1,5 +1,5 @@
 {# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% load i18n inboxen_flags inboxen_selector humanize %}
+{% load i18n inboxen_flags inboxen_selector inboxen_time %}
 <div id="{{ inbox }}@{{ domain }}" class="row{% if flags.disabled %} inbox-disabled{% endif %}">
     <span class="clickable">
         <div class="{{ col0 }}">
@@ -9,7 +9,7 @@
             </div>
         </div>
         {% if last_activity %}<div class="inbox-activity {{ col2 }}">
-            <span title="{{ last_activity|date:"r" }}">{{ last_activity|naturaltime }}</span>
+            <span title="{{ last_activity|date:"r" }}">{{ last_activity|inboxentime }}</span>
         </div>{% endif %}
         <div class="inbox-options {{ col3 }}">
             <form action="{{ request.path }}" method="POST" data-url="{% url 'form-home' %}"
