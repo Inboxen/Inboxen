@@ -32,6 +32,7 @@ from django.core.management.base import CommandError
 from django.test.client import RequestFactory
 from six import StringIO
 from six.moves import reload_module
+import ipaddress
 
 import mock
 
@@ -39,7 +40,7 @@ from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
 from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
 from inboxen.tests import factories
-from inboxen.utils import is_reserved
+from inboxen.utils import is_reserved, ip
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -599,3 +600,25 @@ class ManifestTestCase(InboxenTestCase):
         url = urlresolvers.reverse('inboxen-manifest')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+
+class IpUtilsTestCase(InboxenTestCase):
+    def test_not_ip(self):
+        with self.assertRaises(ValueError):
+            ip.strip_ip("inboxen")
+
+    def test_ipv4(self):
+        filled_ip_addr = "255.255.255.255"
+        for i in range(33):
+            netmask = (2**32 - 2**i)
+
+            expected_address = ipaddress.ip_address(netmask)
+            self.assertEqual(ip.strip_ip(filled_ip_addr, ipv4_host_class=32 - i), str(expected_address))
+
+    def test_ipv6(self):
+        filled_ip_addr = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+        for i in range(129):
+            netmask = 2**128 - 2**i
+
+            expected_address = ipaddress.ip_address(netmask)
+            self.assertEqual(ip.strip_ip(filled_ip_addr, ipv6_host_class=128 - i), str(expected_address))

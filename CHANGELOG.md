@@ -6,6 +6,7 @@
 * Upgrade to Celery 4 (#222)
 * Do lint checks as part of normal testing
 * Add a copy button to each inbox (#100)
+* Rate limit user registration (#342)
 * Change "X big units, Y small units" times to just "X big units" (#337)
 * Fix button column width on home view (#338)
 

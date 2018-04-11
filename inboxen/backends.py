@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2014, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -20,8 +20,9 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
-
 from ratelimitbackend.backends import RateLimitMixin
+
+from inboxen.utils.ip import strip_ip
 
 
 class CaseInsensitiveMixin(object):
@@ -43,3 +44,6 @@ class CaseInsensitiveMixin(object):
 class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
     minutes = settings.LOGIN_ATTEMPT_COOLOFF
     requests = settings.LOGIN_ATTEMPT_LIMIT
+
+    def get_ip(self, request):
+        return strip_ip(request.META["REMOTE_ADDR"])
