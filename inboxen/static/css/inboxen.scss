@@ -21,6 +21,9 @@ $font-family-monospace:   monospace;
 
 $profile-margin: 10px;
 $honeydew-button-size: 1em;
+// width is relative to viewport size, so add in some slack to account for
+// gutters, etc.
+$chart-width: 90vw;
 
 html {
     position: relative;
@@ -276,8 +279,14 @@ a.soon {
     @include button-size(20px, 32px, 28px, 1.0, 6px);
 }
 
-.chart canvas {
+.chart {
+    position: relative;
+    width: $chart-width;
     height: 250px !important;
+
+    @media (min-width: $screen-md-min) {
+        width: $chart-width / 3;
+    }
 }
 
 .line-legend {
