@@ -9,6 +9,7 @@
 * Rate limit user registration (#342)
 * Change "X big units, Y small units" times to just "X big units" (#337)
 * Fix button column width on home view (#338)
+* Fix responsiveness of stats charts (#341)
 
 ## Releases
 
