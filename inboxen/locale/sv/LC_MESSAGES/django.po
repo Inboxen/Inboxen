@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-30 21:53+0000\n"
+"POT-Creation-Date: 2018-04-13 15:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,7 +100,7 @@ msgstr ""
 msgid "who accepted (or rejected) this request?"
 msgstr ""
 
-#: inboxen/settings.py:221
+#: inboxen/settings.py:223
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
@@ -387,6 +387,10 @@ msgstr ""
 msgid "Unified Inbox"
 msgstr ""
 
+#: inboxen/templates/inboxen/inbox/inbox.html:19
+msgid "Copy inbox address"
+msgstr ""
+
 #: inboxen/templates/inboxen/inbox/inbox.html:22
 #: inboxen/templatetags/inboxen_flags.py:50
 msgid "Important"
@@ -645,6 +649,10 @@ msgstr ""
 msgid "%(user)s's Home"
 msgstr ""
 
+#: inboxen/templates/inboxen/user/home.html:15
+msgid "Copy inbox address to clipboard"
+msgstr ""
+
 #: inboxen/templates/inboxen/user/home.html:18
 msgid "Last activity"
 msgstr ""
@@ -756,6 +764,52 @@ msgstr ""
 
 #: inboxen/templatetags/inboxen_flags.py:59
 msgid "Inbox has been disabled"
+msgstr ""
+
+#: inboxen/templatetags/inboxen_time.py:33
+#, python-format
+msgid "a year ago"
+msgid_plural "%d years ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inboxen/templatetags/inboxen_time.py:34
+#, python-format
+msgid "a month ago"
+msgid_plural "%d months ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inboxen/templatetags/inboxen_time.py:35
+#, python-format
+msgid "a week ago"
+msgid_plural "%d weeks ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inboxen/templatetags/inboxen_time.py:36
+#, python-format
+msgid "a day ago"
+msgid_plural "%d days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inboxen/templatetags/inboxen_time.py:37
+#, python-format
+msgid "a hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inboxen/templatetags/inboxen_time.py:38
+#, python-format
+msgid "a minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inboxen/templatetags/inboxen_time.py:96
+msgid "just now"
 msgstr ""
 
 #: inboxen/utils/email.py:102
