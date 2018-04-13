@@ -83,3 +83,12 @@ class StatsViewTestCase(InboxenTestCase):
                 ("active_inboxes", [None, None]),
             )
         )
+
+    def test_csp(self):
+        # test a normal view
+        response = self.client.get(reverse("index"))
+        self.assertIn("style-src 'self';", response["content-security-policy"])
+
+        # stats view
+        response = self.client.get(reverse("stats"))
+        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])

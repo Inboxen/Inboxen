@@ -15,13 +15,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.template.response import TemplateResponse
+from csp.decorators import csp_replace
 from django.http import JsonResponse
+from django.template.response import TemplateResponse
 from django.utils import timezone
 
 from inboxen import models
 
 
+@csp_replace(STYLE_SRC=["'self'", "'unsafe-inline'"])
 def stats(request):
     try:
         stat = models.Statistic.objects.latest("date")
