@@ -10,6 +10,7 @@
 * Change "X big units, Y small units" times to just "X big units" (#337)
 * Fix button column width on home view (#338)
 * Fix responsiveness of stats charts (#341)
+  * This will also mean that the stats page will have `'unsafe-inline'` on the stats page
 
 ## Releases
 
