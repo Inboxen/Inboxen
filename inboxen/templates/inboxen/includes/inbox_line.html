@@ -8,7 +8,7 @@
                 <div class="inbox-flags col-xs-12 col-sm-4">{{ flags|render_flags }}</div>
             </div>
         </div>
-        {% if last_activity %}<div class="inbox-activity {{ col2 }}">
+        {% if last_activity %}<div class="inbox-activity overflow-text {{ col2 }}">
             <span title="{{ last_activity|date:"r" }}">{{ last_activity|inboxentime }}</span>
         </div>{% endif %}
         <div class="inbox-options {{ col3 }}">

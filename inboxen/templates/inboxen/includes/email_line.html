@@ -10,7 +10,7 @@
                 <div class="email-flags col-sm-10 col-xs-12">{{ flags|render_flags }}</div>
             </div>
         </div>
-        <div title="{{ received_date|date:"r" }}" class="email-reveived col-xs-5 col-md-1 col-md-push-8">{{ received_date|inboxentime }}</div>
+        <div title="{{ received_date|date:"r" }}" class="email-reveived overflow-text col-xs-5 col-md-1 col-md-push-8">{{ received_date|inboxentime }}</div>
         <div class="email-buttons col-xs-2 col-md-1 col-md-push-8">
             {% if unified %}
             <a class="close" title="{% trans "Inbox" %}" href="{% url 'single-inbox' inbox=inbox domain=domain %}">

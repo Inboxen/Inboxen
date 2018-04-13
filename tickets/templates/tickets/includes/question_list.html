@@ -17,7 +17,7 @@
             </a>
             <span class="clickable">
                 <div class="col-sm-3 col-xs-3">{{ question.status|render_status }}</div>
-                <div class="col-sm-3 col-xs-9" title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|inboxentime }}</div>
+                <div class="overflow-text col-sm-3 col-xs-9" title="{{ question.last_activity|date:"r" }}">{{ question.last_activity|inboxentime }}</div>
             </span>
         </div>
         {% if forloop.last and more_url %}
