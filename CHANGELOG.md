@@ -2,6 +2,10 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2018-04-14
+
 * Proper Python 3 support (#261)
 * Upgrade to Celery 4 (#222)
 * Do lint checks as part of normal testing
@@ -11,8 +15,6 @@
 * Fix button column width on home view (#338)
 * Fix responsiveness of stats charts (#341)
   * This will also mean that the stats page will have `'unsafe-inline'` on the stats page
-
-## Releases
 
 ### Deploy for 2018-03-23
 
