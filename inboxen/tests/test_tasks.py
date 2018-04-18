@@ -179,7 +179,11 @@ class DeleteTestCase(InboxenTestCase):
 
     def test_delete_inboxen_item(self):
         email = factories.EmailFactory(inbox__user=self.user)
+        self.assertEqual(SearchEntry.objects.filter(content_type__model="email").count(), 1)
+
         tasks.delete_inboxen_item.delay("email", email.id)
+
+        self.assertEqual(SearchEntry.objects.filter(content_type__model="email").count(), 0)
 
         with self.assertRaises(models.Email.DoesNotExist):
             models.Email.objects.get(id=email.id)

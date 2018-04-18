@@ -21,6 +21,7 @@ import itertools
 
 from django.conf import settings
 from django.core import urlresolvers
+from watson.models import SearchEntry
 
 from inboxen import models
 from inboxen.tests import factories
@@ -77,7 +78,9 @@ class InboxTestAbstract(object):
         self.assertEqual(count, 2)
 
     def test_post_delete(self):
-        count_1st = len(self.emails) + 1
+        count_1st = len(self.emails) + 1  # my emails, plus one that's not mine
+        self.assertEqual(SearchEntry.objects.filter(content_type__model="email").count(), count_1st)
+
         params = dict([(email.eid, "email") for email in self.emails[:10]])
         params[self.not_mine.eid] = "email"  # this email should get ignored
         params["delete"] = ""
@@ -86,15 +89,19 @@ class InboxTestAbstract(object):
 
         count_2nd = models.Email.objects.count()
         self.assertEqual(count_1st - 10, count_2nd)
+        self.assertEqual(SearchEntry.objects.filter(content_type__model="email").count(), count_2nd)
 
     def test_post_single_delete(self):
+        search_count = SearchEntry.objects.filter(content_type__model="email").count()
         email = self.emails[0]
         response = self.client.post(self.get_url(), {"delete-single": email.eid})
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(SearchEntry.objects.filter(content_type__model="email").count(), search_count - 1)
 
         # second time around, it's already deleted but we don't want an error
         response = self.client.post(self.get_url(), {"delete-single": email.eid})
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(SearchEntry.objects.filter(content_type__model="email").count(), search_count - 1)
 
         with self.assertRaises(models.Email.DoesNotExist):
             models.Email.objects.get(id=email.id)
