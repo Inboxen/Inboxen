@@ -20,25 +20,33 @@
 {% endblock %}
 
 {% block content %}
-{% if search_results.inboxes %}
-<h3>{% trans "Inboxes" %}</h3>
-{% with col0="col-md-6 col-xs-10" col3="col-md-1 col-md-push-5 col-xs-2" col4="col-md-5 col-md-pull-1 col-xs-12" %}
-    <div id="inbox-list" class="honeydew">
-        {% for result in search_results.inboxes %}
-            {% include "inboxen/includes/inbox_line.html" with inbox=result.object.inbox domain=result.meta.domain flags=result.object.flags last_activity=False desc=result.title %}
+{% if search_results.results %}
+    <div id="search-list" class="honeydew">
+    {% with col0="col-md-6 col-xs-10" col3="col-md-1 col-md-push-5 col-xs-2" col4="col-md-5 col-md-pull-1 col-xs-12" %}
+        {% for result in search_results.results %}
+            {% if result.content_type == content_types.inbox %}
+                {% include "inboxen/includes/inbox_line.html" with inbox=result.object.inbox domain=result.meta.domain flags=result.object.flags last_activity=False desc=result.title %}
+            {% elif result.content_type == content_types.email %}
+                {% include "inboxen/includes/email_line.html" with unified=True eid=result.object.eid flags=result.object.flags inbox=result.meta.inbox domain=result.meta.domain received_date=result.object.received_date subject=result.title sender=result.description %}
+            {% endif %}
         {% endfor %}
+    {% endwith %}
     </div>
-{% endwith %}
+    <ul class="pager">
+        {% if search_results.has_previous %}
+            <li class="previous"><a href="{% url 'user-search' q=query %}?before={{ search_results.first }}">
+                <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+            </a></li>
+        {% endif %}
+
+        {% if search_results.has_next %}
+            <li class="next"><a href="{% url 'user-search' q=query %}?after={{ search_results.last }}">
+                <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+            </a></li>
+        {% endif %}
+    </ul>
 {% endif %}
-{% if search_results.emails %}
-<h3>{% trans "Emails" %}</h3>
-    <div id="email-list" class="honeydew">
-        {% for result in search_results.emails %}
-            {% include "inboxen/includes/email_line.html" with unified=True eid=result.object.eid flags=result.object.flags inbox=result.meta.inbox domain=result.meta.domain received_date=result.object.received_date subject=result.title sender=result.meta.from %}
-        {% endfor %}
-    </div>
-{% endif %}
-{% if not search_results.inboxes and not search_results.emails %}
+{% if not search_results.results %}
     {% if query and not waiting %}
         <p class="alert alert-info">{% blocktrans %}There are no Inboxes or emails containing <em>{{query}}</em>.{% endblocktrans %}</p>
     {% elif waiting %}

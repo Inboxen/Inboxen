@@ -9,6 +9,7 @@ django-bitfield>=1.9.2
 django-bootstrap-form
 django-braces
 django-csp>3.0
+-e git+https://github.com/moggers87/django-cursor-pagination@f742fdc9b91065deb44b4de41128b2e46394ac54#egg=django-cursor-pagination
 django-extensions
 django-formtools
 django-mptt
