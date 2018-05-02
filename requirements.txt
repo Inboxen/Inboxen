@@ -9,7 +9,7 @@ amqp==2.2.2               # via kombu
 babel==2.5.3              # via django-phonenumber-field
 billiard==3.5.0.3         # via celery
 celery==4.1.0
-certifi==2018.1.18        # via requests
+certifi==2018.4.16        # via requests
 chardet==3.0.4            # via requests, salmon-mail
 click==6.7                # via pip-tools
 configobj==5.0.6
@@ -20,11 +20,11 @@ django-assets==0.12
 django-async-messages==0.3.1
 django-bitfield==1.9.3
 django-bootstrap-form==3.4
-django-braces==1.12.0
+django-braces==1.13.0
 django-csp==3.4
-django-extensions==2.0.6
+django-extensions==2.0.7
 django-formtools==2.1
-django-js-asset==1.0.0    # via django-mptt
+django-js-asset==1.1.0    # via django-mptt
 django-mptt==0.9.0
 django-otp==0.4.3
 django-phonenumber-field==1.3.0  # via django-two-factor-auth
@@ -32,7 +32,7 @@ django-ratelimit-backend==1.2
 django-sendfile2==0.4.1
 django-two-factor-auth==1.7.0
 django-watson==1.5.2
-django==1.11.12
+django==1.11.13
 dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 factory-boy==2.10.0
@@ -40,7 +40,7 @@ faker==0.8.5
 first==2.0.1              # via pip-tools
 funcsigs==1.0.2           # via mock
 idna==2.6                 # via requests
-ipaddress==1.0.19
+ipaddress==1.0.22
 jsmin==2.2.2
 kombu==4.1.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
@@ -49,10 +49,10 @@ lxml==4.2.1
 markdown==2.6.11
 mock==2.0.0
 pbr==4.0.2                # via mock
-phonenumberslite==8.9.3
+phonenumberslite==8.9.4
 pillow==5.1.0
-pip-tools==1.11.0
-premailer==3.1.1
+pip-tools==2.0.2
+premailer==3.2.0
 progress==1.3
 psycopg2==2.7.4
 python-daemon==2.1.2      # via salmon-mail
@@ -61,7 +61,7 @@ pytz==2018.4
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
 salmon-mail==3.0.0
-simplejson==3.13.2
+simplejson==3.14.0
 six==1.11.0               # via configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, pip-tools, python-dateutil, qrcode, salmon-mail
 typing==3.6.4
 unidecode==1.0.22         # via faker
