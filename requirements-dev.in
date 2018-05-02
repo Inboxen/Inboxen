@@ -1,4 +1,5 @@
 -r requirements.in
+coverage
 django-debug-toolbar
 ipython
 jasmine

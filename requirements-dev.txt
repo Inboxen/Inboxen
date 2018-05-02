@@ -17,6 +17,7 @@ cheroot==6.2.1            # via cherrypy
 cherrypy==14.0.1          # via jasmine
 click==6.7                # via pip-tools
 configobj==5.0.6
+coverage==4.5.1
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
 decorator==4.2.1          # via ipython, traitlets
