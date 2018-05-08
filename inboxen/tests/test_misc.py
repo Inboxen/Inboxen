@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import datetime
 from email.message import Message
 from subprocess import CalledProcessError
 import sys
@@ -40,7 +41,7 @@ from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
 from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
 from inboxen.tests import factories
-from inboxen.utils import is_reserved, ip
+from inboxen.utils import is_reserved, ip, ratelimit
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -631,3 +632,49 @@ class IpUtilsTestCase(InboxenTestCase):
 
             expected_address = ipaddress.ip_address(netmask)
             self.assertEqual(ip.strip_ip(filled_ip_addr, ipv6_host_class=128 - i), str(expected_address))
+
+
+class RateLimitTestCase(InboxenTestCase):
+    def setUp(self):
+        self.window = 30
+        self.limit_count = 10
+        self.make_key = lambda x, y: "test-cachekey-%s" % y.date()
+
+        self.limiter = ratelimit.RateLimit(
+            self.make_key,
+            lambda x: None,
+            self.window,
+            self.limit_count,
+        )
+
+        cache.clear()
+
+    def test_cache_expires_is_set(self):
+        self.assertEqual(self.limiter.cache_expires, (self.window + 1) * 60)
+
+    @mock.patch("inboxen.utils.ratelimit.timezone.now")
+    def test_check_doesnt_increase_count_if_not_full(self, now_mock):
+        now_mock.return_value = datetime.utcnow()
+        request = MockRequest()
+        request.META["REMOTE_ADDR"] = "127.0.0.1"
+
+        self.limiter.counter_full(request)
+
+        self.assertEqual(len(cache._cache), 0)
+
+    @mock.patch("inboxen.utils.ratelimit.timezone.now")
+    def test_check_does_increase_count_if_full(self, now_mock):
+        now_mock.return_value = datetime.utcnow()
+        request = MockRequest()
+        request.META["REMOTE_ADDR"] = "127.0.0.1"
+
+        for i in range(self.limit_count):
+            self.limiter.counter_increase(request)
+
+        self.assertEqual(len(cache._cache), 1)
+        self.assertEqual(cache.get(self.make_key(request, now_mock())), self.limit_count)
+
+        self.limiter.counter_full(request)
+
+        self.assertEqual(len(cache._cache), 1)
+        self.assertEqual(cache.get(self.make_key(request, now_mock())), self.limit_count + 1)

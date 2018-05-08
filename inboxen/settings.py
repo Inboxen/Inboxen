@@ -223,7 +223,6 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
 REGISTER_LIMIT_CACHE_PREFIX = "inboxen-register-"
-REGISTER_LIMIT_CACHE_EXPIRES = (REGISTER_LIMIT_WINDOW + 1) * 60  # noqa: F405
 
 X_FRAME_OPTIONS = "DENY"
 SECURE_BROWSER_XSS_FILTER = True
