@@ -33,5 +33,4 @@ urlpatterns = [
     urls.url(r'^blog/', urls.include("blog.admin_urls", namespace="blog")),
     urls.url(r'^questions/', urls.include("tickets.admin_urls", namespace="tickets")),
     urls.url(r'^domains/', urls.include("inboxen.admin_urls.domains", namespace="domains")),
-    urls.url(r'^requests/', urls.include("inboxen.admin_urls.requests", namespace="requests")),
 ]

@@ -18,11 +18,10 @@
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
-from django.db.models import Case, When, Value, IntegerField
 
 from cms.decorators import is_secure_admin
-from inboxen.models import Domain, Request
-from inboxen.forms.admin import CreateDomainForm, EditDomainForm, EditRequestForm
+from inboxen.models import Domain
+from inboxen.forms.admin import CreateDomainForm, EditDomainForm
 
 
 @is_secure_admin
@@ -72,56 +71,4 @@ def domain_admin_edit(request, domain_pk):
         request,
         "inboxen/admin/domain_edit.html",
         {"form": form},
-    )
-
-
-@is_secure_admin
-def request_admin_index(request):
-    requests = Request.objects.all().annotate(decided=Case(
-            When(succeeded__isnull=True, then=Value(1)),
-            default_value=Value(0),
-            output_field=IntegerField()
-        )).\
-        order_by("decided", "date").\
-        select_related("requester")
-
-    return TemplateResponse(
-        request,
-        "inboxen/admin/request_index.html",
-        {"requests": requests},
-    )
-
-
-@is_secure_admin
-def request_admin_edit(request, request_pk):
-    try:
-        request_obj = Request.objects.get(pk=request_pk)
-    except Request.DoesNotExist:
-        raise Http404
-
-    previous = Request.objects.\
-        filter(requester_id=request_obj.requester_id, succeeded__isnull=False).\
-        order_by("date").first()
-
-    # form will edit Request.succedded, so copy what the database has first
-    succeeded = request_obj.succeeded
-    if request.method == "POST" and succeeded is None:
-        form = EditRequestForm(data=request.POST, instance=request_obj, user=request.user)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("admin:requests:index"))
-    else:
-        form = EditRequestForm(instance=request_obj, user=request.user)
-
-    context = {
-        "form": form,
-        "previous": previous,
-        "req": request_obj,
-        "succeeded": succeeded,
-    }
-
-    return TemplateResponse(
-        request,
-        "inboxen/admin/request_edit.html",
-        context,
     )

@@ -18,10 +18,8 @@
 ##
 
 from django import forms
-from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
 
-from inboxen.models import Domain, Request
+from inboxen.models import Domain
 
 
 class CreateDomainForm(forms.ModelForm):
@@ -34,27 +32,3 @@ class EditDomainForm(forms.ModelForm):
     class Meta:
         model = Domain
         fields = ["enabled", "owner"]
-
-
-class EditRequestForm(forms.ModelForm):
-    succeeded = forms.ChoiceField(widget=forms.Select(), label=_("Grant?"), required=True,
-                                  choices=((True, _("Yes")), (False, _("No"))))
-
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop("user")
-        super(EditRequestForm, self).__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        instance = super(EditRequestForm, self).save(commit=False)
-
-        instance.date_decided = timezone.now()
-        instance.authorizer = self.user
-
-        if commit:
-            instance.save()
-
-        return instance
-
-    class Meta:
-        model = Request
-        fields = ["result", "succeeded"]

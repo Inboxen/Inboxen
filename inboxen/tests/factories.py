@@ -116,12 +116,3 @@ class FullEmailFactory(EmailFactory):
             HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")
 
         return email
-
-
-class RequestFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = models.Request
-
-    amount = 100
-    succeeded = None
-    requester = factory.SubFactory(UserFactory)

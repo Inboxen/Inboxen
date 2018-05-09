@@ -23,10 +23,9 @@ import re
 from annoying.fields import AutoOneToOneField, JSONField
 from bitfield import BitField
 from django.conf import settings
-from django.db import models, transaction
+from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, TreeForeignKey
 import six
 
@@ -48,26 +47,8 @@ class UserProfile(models.Model):
     display_images - should we display images in HTML emails by default? Implies we should never ask
     """
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
-    pool_amount = models.IntegerField(default=500)
     flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True)
-
-    def available_inboxes(self):
-        used = self.user.inbox_set.count()
-        left = self.pool_amount - used
-
-        if left < settings.MIN_INBOX_FOR_REQUEST:
-            with transaction.atomic():
-                try:
-                    last_request = self.user.requester.order_by('-date').only('succeeded')[0].succeeded
-                except IndexError:
-                    last_request = True
-
-                if last_request:
-                    amount = self.pool_amount + settings.REQUEST_NUMBER
-                    Request.objects.create(amount=amount, requester=self.user)
-
-        return left
 
     def __str__(self):
         return u"Profile for %s" % self.user
@@ -174,29 +155,6 @@ class Inbox(models.Model):
     class Meta:
         verbose_name_plural = "Inboxes"
         unique_together = (('inbox', 'domain'),)
-
-
-@six.python_2_unicode_compatible
-class Request(models.Model):
-    """Inbox allocation request model"""
-    amount = models.IntegerField(help_text=_("Pool increase requested"))
-    succeeded = models.NullBooleanField("accepted", default=None, help_text=_("has the request been accepted?"))
-    date = models.DateTimeField("requested", auto_now_add=True, db_index=True, help_text=_("date requested"))
-    date_decided = models.DateTimeField(null=True, help_text=_("date staff accepted/rejected request"))
-    authorizer = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="request_authorizer", blank=True, null=True,
-                                   on_delete=models.SET_NULL, help_text=_("who accepted (or rejected) this request?"))
-    requester = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="requester")
-    result = models.CharField("comment", max_length=1024, blank=True, null=True,
-                              validators=[validators.ProhibitNullCharactersValidator()])
-
-    def save(self, *args, **kwargs):
-        if self.succeeded:
-            self.requester.inboxenprofile.pool_amount = models.F("pool_amount") + self.amount
-            self.requester.inboxenprofile.save(update_fields=["pool_amount"])
-        super(Request, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return u"Request for %s (%s)" % (self.requester, self.succeeded)
 
 ##
 # Email models

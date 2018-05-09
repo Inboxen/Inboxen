@@ -77,10 +77,6 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'inboxen.tasks.clean_orphan_models',
         'schedule': datetime.timedelta(days=1),
     },
-    'requests': {
-        'task': 'inboxen.tasks.requests',
-        'schedule': datetime.timedelta(days=1),
-    },
     'sessions': {
         'task': 'inboxen.tasks.clean_expired_session',
         'schedule': datetime.timedelta(days=1),

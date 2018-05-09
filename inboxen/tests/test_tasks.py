@@ -19,14 +19,13 @@
 
 from datetime import timedelta
 
-from django.core import mail
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 import mock
 
 from inboxen import models, tasks
 from inboxen.tests import factories
-from inboxen.test import override_settings, InboxenTestCase
+from inboxen.test import InboxenTestCase
 
 
 class StatsTestCase(InboxenTestCase):
@@ -162,39 +161,6 @@ class SearchTestCase(InboxenTestCase):
         user = factories.UserFactory()
         result = tasks.search.delay(user.id, "bizz").get()
         self.assertCountEqual(result.keys(), ["emails", "inboxes"])
-
-
-@override_settings(
-    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
-    ADMINS=(("Travis", "ci@example.com"),),
-)
-class RequestReportTestCase(InboxenTestCase):
-    def setUp(self):
-        self.user = factories.UserFactory()
-        self.user.inboxenprofile  # autocreate a profile
-
-        now = timezone.now()
-
-        models.Request.objects.create(amount=200, date=now, succeeded=True, requester=self.user, authorizer=self.user)
-        self.waiting = models.Request.objects.create(amount=200, date=now, requester=self.user)
-
-    def test_report(self):
-        tasks.requests.delay().get()
-
-        # fetch a fresh copy of the profile
-        profile = models.UserProfile.objects.get(pk=self.user.inboxenprofile.pk)
-
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn("Amount: 200", mail.outbox[0].body)
-        self.assertIn("User: %s" % (self.user.username), mail.outbox[0].body)
-        self.assertIn("Date:", mail.outbox[0].body)
-        self.assertIn("Current: %s" % (profile.pool_amount,), mail.outbox[0].body)
-
-    def test_no_reports(self):
-        models.Request.objects.all().delete()
-
-        tasks.requests.delay().get()
-        self.assertEqual(len(mail.outbox), 0)
 
 
 class DeleteTestCase(InboxenTestCase):

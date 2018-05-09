@@ -25,7 +25,6 @@ import logging
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import mail
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When
@@ -178,34 +177,6 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     else:
         # we only need to update
         inbox_new_flag.delay(user_id)
-
-
-@app.task(ignore_result=True)
-def requests():
-    """Check for unresolved Inbox allocation requests"""
-    requests = models.Request.objects.filter(succeeded__isnull=True)
-    requests = requests.select_related("requester").order_by("-date")
-    requests = requests.values("id", "amount", "date", "requester__username", "requester__inboxenprofile__pool_amount")
-
-    if len(requests) == 0:
-        return
-
-    output = []
-
-    item_format = "User: {username}\n      Date: {date}\n    Amount: {amount}\n   Current: {current}\n"
-
-    for request in requests:
-        item = item_format.format(
-            username=request["requester__username"],
-            date=request["date"],
-            amount=request["amount"],
-            current=request["requester__inboxenprofile__pool_amount"]
-        )
-        output.append(item)
-
-    output = "\n\n".join(output)
-
-    mail.mail_admins("Inbox Allocation Requests", output)
 
 
 @app.task(rate_limit="100/s")
