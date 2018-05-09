@@ -18,9 +18,14 @@
 ##
 
 from datetime import timedelta
+import logging
 
+from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
+
+
+logger = logging.getLogger(__name__)
 
 
 class RateLimit(object):
@@ -49,3 +54,23 @@ class RateLimit(object):
         key = self.make_key(request, now)
         # key probably won't exist, so it's ok if this isn't atomic
         cache.set(key, cache.get(key, 0) + 1, self.cache_expires)
+
+
+def make_key(request, dt):
+    return "{}{}-{}".format(
+        settings.INBOX_LIMIT_CACHE_PREFIX,
+        request.user,
+        dt.strftime("%Y%m%d%H%M"),
+    )
+
+
+def full_callback(request):
+    logger.warning("Inbox rate-limit reached: USER %s", request.user)
+
+
+inbox_ratelimit = RateLimit(
+    make_key,
+    full_callback,
+    settings.INBOX_LIMIT_WINDOW,
+    settings.INBOX_LIMIT_COUNT,
+)

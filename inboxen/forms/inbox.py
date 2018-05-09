@@ -25,6 +25,7 @@ from django.db.models import F
 from django.utils.translation import ugettext as _
 
 from inboxen import models, tasks
+from inboxen.utils.ratelimit import inbox_ratelimit
 
 __all__ = ["InboxAddForm", "InboxEditForm"]
 
@@ -56,8 +57,8 @@ class InboxAddForm(forms.ModelForm):
         fields = ["domain", "description"]
 
     def clean(self):
-        if self.request.user.inboxenprofile.available_inboxes() <= 0:
-            raise forms.ValidationError(_("You have too many Inboxes."))
+        if inbox_ratelimit.counter_full(self.request):
+            raise forms.ValidationError(_("Slow down! You're creating inboxes too quickly."))
 
     def save(self):
         # We want this instance created by .create() so we will ignore self.instance
@@ -70,6 +71,7 @@ class InboxAddForm(forms.ModelForm):
         self.instance.description = description
         self.instance.flags.exclude_from_unified = excludes
         self.instance.save()
+        inbox_ratelimit.counter_increase(self.request)
 
         msg = _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain)
         messages.success(self.request, msg)
