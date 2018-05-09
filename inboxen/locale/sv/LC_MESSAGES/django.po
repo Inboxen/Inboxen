@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-13 15:42+0000\n"
+"POT-Creation-Date: 2018-05-09 20:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,56 +18,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: inboxen/forms/admin.py:40
-msgid "Grant?"
-msgstr ""
-
-#: inboxen/forms/admin.py:41
-msgid "Yes"
-msgstr ""
-
-#: inboxen/forms/admin.py:41
-msgid "No"
-msgstr ""
-
-#: inboxen/forms/inbox.py:33 inboxen/forms/inbox.py:94
+#: inboxen/forms/inbox.py:34 inboxen/forms/inbox.py:96
 msgid "Exclude from Unified Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:60
-msgid "You have too many Inboxes."
+#: inboxen/forms/inbox.py:61
+msgid "Slow down! You're creating inboxes too quickly."
 msgstr ""
 
-#: inboxen/forms/inbox.py:74
+#: inboxen/forms/inbox.py:76
 #, python-brace-format
 msgid "{0}@{1} has been created."
 msgstr ""
 
-#: inboxen/forms/inbox.py:83
+#: inboxen/forms/inbox.py:85
 msgid "Empty Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:84
+#: inboxen/forms/inbox.py:86
 msgid "Delete all emails in this Inbox. Cannot be undone."
 msgstr ""
 
-#: inboxen/forms/inbox.py:85
+#: inboxen/forms/inbox.py:87
 msgid "Disable Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:86
+#: inboxen/forms/inbox.py:88
 msgid "This Inbox will no longer receive emails."
 msgstr ""
 
-#: inboxen/forms/inbox.py:95
+#: inboxen/forms/inbox.py:97
 msgid "Pin Inbox to top"
 msgstr ""
 
-#: inboxen/forms/inbox.py:116
+#: inboxen/forms/inbox.py:118
 msgid "Inbox cannot be disabled and pinned at the same time"
 msgstr ""
 
-#: inboxen/forms/inbox.py:129
+#: inboxen/forms/inbox.py:131
 #, python-brace-format
 msgid "All emails in {0}@{1} are being deleted."
 msgstr ""
@@ -80,27 +68,7 @@ msgstr ""
 msgid "Too many login attempts, further login attempts will be ignored."
 msgstr ""
 
-#: inboxen/models.py:182
-msgid "Pool increase requested"
-msgstr ""
-
-#: inboxen/models.py:183
-msgid "has the request been accepted?"
-msgstr ""
-
-#: inboxen/models.py:184
-msgid "date requested"
-msgstr ""
-
-#: inboxen/models.py:185
-msgid "date staff accepted/rejected request"
-msgstr ""
-
-#: inboxen/models.py:187
-msgid "who accepted (or rejected) this request?"
-msgstr ""
-
-#: inboxen/settings.py:223
+#: inboxen/settings.py:219
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
@@ -124,14 +92,12 @@ msgid "Create"
 msgstr ""
 
 #: inboxen/templates/inboxen/admin/domain_edit.html:18
-#: inboxen/templates/inboxen/admin/request_edit.html:34
 #: inboxen/templates/inboxen/forms/inbox/edit.html:16
 #: inboxen/templates/inboxen/inbox/edit.html:31
 msgid "Save"
 msgstr ""
 
 #: inboxen/templates/inboxen/admin/domain_index.html:10
-#: inboxen/templates/inboxen/admin/request_index.html:10
 msgid "List"
 msgstr ""
 
@@ -154,81 +120,6 @@ msgstr ""
 
 #: inboxen/templates/inboxen/admin/domain_index.html:30
 msgid "Edit Domain"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:5
-#: inboxen/templates/inboxen/admin/request_edit.html:10
-#, python-format
-msgid "Editing request from %(user)s"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:9
-#: inboxen/templates/inboxen/admin/request_index.html:5
-#: inboxen/templates/inboxen/admin/request_index.html:9
-msgid "Requests"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:17
-#, python-format
-msgid ""
-"\n"
-"            A previous request for more inboxes was created on %(date)s.\n"
-"            "
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:21
-#, python-format
-msgid ""
-"\n"
-"                The following comment was left by an admin: \"%(comment)s"
-"\".\n"
-"            "
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:26
-msgid "This is the first time this user has requested more inboxes"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:28
-msgid "Current pool amount"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:29
-#: inboxen/templates/inboxen/admin/request_edit.html:37
-msgid "Requested pool amount"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:30
-#: inboxen/templates/inboxen/admin/request_edit.html:38
-msgid "Date requested"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:39
-msgid "Granted?"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:40
-msgid "Date decided"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_edit.html:41
-msgid "Comment"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_index.html:17
-msgid "User"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_index.html:18
-msgid "Date"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_index.html:19
-msgid "Succeeded"
-msgstr ""
-
-#: inboxen/templates/inboxen/admin/request_index.html:29
-msgid "Edit request"
 msgstr ""
 
 #: inboxen/templates/inboxen/base.html:18
@@ -703,30 +594,6 @@ msgstr ""
 #: inboxen/templatetags/inboxen_admin_tags.py:38
 #: inboxen/templatetags/inboxen_flags.py:60
 msgid "Disabled"
-msgstr ""
-
-#: inboxen/templatetags/inboxen_admin_tags.py:46
-msgid "Granted request"
-msgstr ""
-
-#: inboxen/templatetags/inboxen_admin_tags.py:47
-msgid "Granted"
-msgstr ""
-
-#: inboxen/templatetags/inboxen_admin_tags.py:51
-msgid "Rejected request"
-msgstr ""
-
-#: inboxen/templatetags/inboxen_admin_tags.py:52
-msgid "Rejected"
-msgstr ""
-
-#: inboxen/templatetags/inboxen_admin_tags.py:56
-msgid "Request pending"
-msgstr ""
-
-#: inboxen/templatetags/inboxen_admin_tags.py:57
-msgid "Pending"
 msgstr ""
 
 #: inboxen/templatetags/inboxen_flags.py:32
