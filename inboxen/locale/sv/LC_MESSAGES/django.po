@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-09 20:55+0000\n"
+"POT-Creation-Date: 2018-05-11 19:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -302,11 +302,13 @@ msgstr ""
 
 #: inboxen/templates/inboxen/inbox/inbox.html:54
 #: inboxen/templates/inboxen/user/home.html:51
+#: inboxen/templates/inboxen/user/search.html:38
 msgid "Previous"
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/inbox.html:60
 #: inboxen/templates/inboxen/user/home.html:57
+#: inboxen/templates/inboxen/user/search.html:44
 msgid "Next"
 msgstr ""
 
@@ -475,7 +477,6 @@ msgid "Oldest user account"
 msgstr ""
 
 #: inboxen/templates/inboxen/stats.html:52
-#: inboxen/templates/inboxen/user/search.html:24
 msgid "Inboxes"
 msgstr ""
 
@@ -501,7 +502,6 @@ msgid "Highest number of inboxes for one user"
 msgstr ""
 
 #: inboxen/templates/inboxen/stats.html:83
-#: inboxen/templates/inboxen/user/search.html:34
 msgid "Emails"
 msgstr ""
 
@@ -561,16 +561,16 @@ msgstr ""
 msgid "Search: %(query)s"
 msgstr ""
 
-#: inboxen/templates/inboxen/user/search.html:43
+#: inboxen/templates/inboxen/user/search.html:51
 #, python-format
 msgid "There are no Inboxes or emails containing <em>%(query)s</em>."
 msgstr ""
 
-#: inboxen/templates/inboxen/user/search.html:46
+#: inboxen/templates/inboxen/user/search.html:54
 msgid "Searching…"
 msgstr ""
 
-#: inboxen/templates/inboxen/user/search.html:47
+#: inboxen/templates/inboxen/user/search.html:55
 #, python-format
 msgid ""
 "\n"
@@ -579,7 +579,7 @@ msgid ""
 "        "
 msgstr ""
 
-#: inboxen/templates/inboxen/user/search.html:53
+#: inboxen/templates/inboxen/user/search.html:61
 msgid "If you search for nothing, you won't get anything."
 msgstr ""
 
