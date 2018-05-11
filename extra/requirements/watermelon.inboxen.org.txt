@@ -39,14 +39,14 @@ django==1.11.13
 dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 enum34==1.1.6             # via traitlets
-factory-boy==2.10.0
+factory-boy==2.11.1
 faker==0.8.5
 first==2.0.1              # via pip-tools
 funcsigs==1.0.2           # via mock
 idna==2.6                 # via requests
 ipaddress==1.0.22
 ipython-genutils==0.2.0   # via traitlets
-ipython==5.6.0
+ipython==5.7.0
 jsmin==2.2.2
 kombu==4.1.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
@@ -57,7 +57,7 @@ mock==2.0.0
 pathlib2==2.3.2           # via ipython, pickleshare
 pbr==4.0.2                # via mock
 pexpect==4.5.0            # via ipython
-phonenumberslite==8.9.4
+phonenumberslite==8.9.5
 pickleshare==0.7.4        # via ipython
 pillow==5.1.0
 pip-tools==2.0.2
@@ -69,7 +69,7 @@ ptyprocess==0.5.2         # via pexpect
 pygments==2.2.0           # via ipython
 pylibmc==1.5.2
 python-daemon==2.1.2      # via salmon-mail
-python-dateutil==2.7.2    # via faker
+python-dateutil==2.7.3    # via faker
 pytz==2018.4
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
