@@ -24,7 +24,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 import mock
-import six
 
 from inboxen import models
 from inboxen.tests import factories
@@ -231,26 +230,6 @@ class ModelTestCase(InboxenTestCase):
         self.assertTrue(body1[1])
         self.assertFalse(body2[1])
 
-    def test_requests_are_requested(self):
-        user = factories.UserFactory()
-        profile = user.inboxenprofile
-        profile.pool_amount = settings.MIN_INBOX_FOR_REQUEST
-        profile.save()
-
-        profile.available_inboxes()
-        self.assertEqual(models.Request.objects.count(), 0)
-        factories.InboxFactory(user=user)
-
-        profile.available_inboxes()
-        self.assertEqual(models.Request.objects.count(), 1)
-        factories.InboxFactory(user=user)
-
-        profile.available_inboxes()
-        self.assertEqual(models.Request.objects.count(), 1)
-
-        request = models.Request.objects.get()
-        self.assertEqual(six.text_type(request), "Request for {} ({})".format(request.requester, request.succeeded))
-
 
 class ModelFlagsTestCase(InboxenTestCase):
     def test_email_flags_order(self):
@@ -346,13 +325,6 @@ class ModelReprTestCase(InboxenTestCase):
     def test_partlist(self):
         part = models.PartList(id="1234")
         self.assertEqual(repr(part), "<PartList: 1234>")
-
-    def test_request(self):
-        request = models.Request(requester=User(username="example"))
-        self.assertEqual(repr(request), "<Request: Request for example (None)>")
-
-        request.succeeded = False
-        self.assertEqual(repr(request), "<Request: Request for example (False)>")
 
     def test_statistic(self):
         now = timezone.now()

@@ -80,7 +80,7 @@ class RegisterRateLimitTestCase(InboxenTestCase):
 
 
 class RegisterRateLimitUtilsTestCase(InboxenTestCase):
-    @mock.patch("account.utils.timezone.now")
+    @mock.patch("account.utils.ratelimit.timezone.now")
     def test_check_doesnt_increase_count_if_not_full(self, now_mock):
         now_mock.return_value = datetime.utcnow()
         cache.cache.clear()
@@ -91,7 +91,7 @@ class RegisterRateLimitUtilsTestCase(InboxenTestCase):
 
         self.assertEqual(len(cache.cache._cache), 0)
 
-    @mock.patch("account.utils.timezone.now")
+    @mock.patch("account.utils.ratelimit.timezone.now")
     def test_check_does_increase_count_if_full(self, now_mock):
         now_mock.return_value = datetime.utcnow()
         cache.cache.clear()

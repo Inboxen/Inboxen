@@ -98,25 +98,6 @@ class InboxenAdminTestCase(InboxenTestCase):
         self.assertIn("Disabled", output)
         self.assertNotIn("Enabled", output)
 
-    def test_request(self):
-        output = inboxen_admin_tags.render_request(True)
-        self.assertIn('<span class="label label-primary"', output)
-        self.assertIn("Grant", output)
-        self.assertNotIn("Rejected", output)
-        self.assertNotIn("Pending", output)
-
-        output = inboxen_admin_tags.render_request(False)
-        self.assertIn('<span class="label label-default"', output)
-        self.assertNotIn("Grant", output)
-        self.assertIn("Rejected", output)
-        self.assertNotIn("Pending", output)
-
-        output = inboxen_admin_tags.render_request(None)
-        self.assertIn('<span class="label label-danger"', output)
-        self.assertNotIn("Grant", output)
-        self.assertNotIn("Rejected", output)
-        self.assertIn("Pending", output)
-
 
 class TemplateTagFactoryTestCase(InboxenTestCase):
     def test_create_render_bool_template_tag_invalid_value(self):

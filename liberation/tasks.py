@@ -277,7 +277,6 @@ def liberate_user_profile(user_id, email_results):
 
     # user's preferences
     profile = user.inboxenprofile
-    data['preferences']['pool_amount'] = profile.pool_amount
     data['preferences']['flags'] = dict(profile.flags.items())
 
     # user data

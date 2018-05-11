@@ -77,10 +77,6 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'inboxen.tasks.clean_orphan_models',
         'schedule': datetime.timedelta(days=1),
     },
-    'requests': {
-        'task': 'inboxen.tasks.requests',
-        'schedule': datetime.timedelta(days=1),
-    },
     'sessions': {
         'task': 'inboxen.tasks.clean_expired_session',
         'schedule': datetime.timedelta(days=1),
@@ -223,7 +219,7 @@ LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
 REGISTER_LIMIT_CACHE_PREFIX = "inboxen-register-"
-REGISTER_LIMIT_CACHE_EXPIRES = (REGISTER_LIMIT_WINDOW + 1) * 60  # noqa: F405
+INBOX_LIMIT_CACHE_PREFIX = "inboxen-inbox-"
 
 X_FRAME_OPTIONS = "DENY"
 SECURE_BROWSER_XSS_FILTER = True

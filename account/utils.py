@@ -17,14 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import timedelta
 import logging
 
 from django.conf import settings
-from django.core.cache import cache
-from django.utils import timezone
 
-from inboxen.utils.ip import strip_ip
+from inboxen.utils import ratelimit, ip
 
 
 logger = logging.getLogger(__name__)
@@ -33,27 +30,22 @@ logger = logging.getLogger(__name__)
 def make_key(request, dt):
     return "{}{}-{}".format(
         settings.REGISTER_LIMIT_CACHE_PREFIX,
-        strip_ip(request.META["REMOTE_ADDR"]),
+        ip.strip_ip(request.META["REMOTE_ADDR"]),
         dt.strftime("%Y%m%d%H%M"),
     )
 
 
-def register_counter_full(request):
-    now = timezone.now()
-
-    keys = [make_key(request, now - timedelta(minutes=i)) for i in range(settings.REGISTER_LIMIT_WINDOW)]
-    counters = cache.get_many(keys)
-    if sum(counters.values()) >= settings.REGISTER_LIMIT_COUNT:
-        logger.warning("Registration rate-limit reached: IP %s", request.META["REMOTE_ADDR"])
-        register_counter_increase(request)
-        return True
-
-    return False
+def full_callback(request):
+    logger.warning("Registration rate-limit reached: IP %s", request.META["REMOTE_ADDR"])
 
 
-def register_counter_increase(request):
-    now = timezone.now()
+register_ratelimit = ratelimit.RateLimit(
+    make_key,
+    full_callback,
+    settings.REGISTER_LIMIT_WINDOW,
+    settings.REGISTER_LIMIT_COUNT,
+)
 
-    key = make_key(request, now)
-    # key probably won't exist, so it's ok if this isn't atomic
-    cache.set(key, cache.get(key, 0) + 1, settings.REGISTER_LIMIT_CACHE_EXPIRES)
+
+register_counter_full = register_ratelimit.counter_full
+register_counter_increase = register_ratelimit.counter_increase

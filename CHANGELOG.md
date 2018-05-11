@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Rate limit inbox creation and remove inbox requests feature (#350)
+
 ## Releases
 
 ### Deploy for 2018-04-14

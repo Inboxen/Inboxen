@@ -19,6 +19,7 @@
 
 import itertools
 
+from django.conf import settings
 from django.core import urlresolvers
 
 from inboxen import models
@@ -184,9 +185,9 @@ class InboxAddTestCase(InboxenTestCase):
     def setUp(self):
         """Create the client and grab the user"""
         self.user = factories.UserFactory()
-        other_user = factories.UserFactory(username="lalna")
+        self.other_user = factories.UserFactory(username="lalna")
 
-        for args in itertools.product([True, False], [self.user, other_user, None]):
+        for args in itertools.product([True, False], [self.user, self.other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
@@ -237,6 +238,25 @@ class InboxAddTestCase(InboxenTestCase):
 
         inbox_count_2nd = models.Inbox.objects.count()
         self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
+
+    def test_inbox_ratelimit(self):
+        domain = models.Domain.objects.filter(enabled=True, owner=None)[0]
+        counter = 0
+
+        for i in range(200):
+            response = self.client.post(self.get_url(), {"domain": domain.id})
+            counter += 1
+            if response.status_code == 200:
+                break
+
+        self.assertEqual(counter, settings.INBOX_LIMIT_COUNT + 1)
+        self.assertEqual(models.Inbox.objects.count(), settings.INBOX_LIMIT_COUNT)
+
+        # login the other user and check that they can still create inboxes
+        assert self.client.login(username=self.other_user.username, password="123456", request=MockRequest(self.user))
+
+        response = self.client.post(self.get_url(), {"domain": domain.id})
+        self.assertEqual(response.status_code, 302)
 
 
 class InboxAddInlineTestCase(InboxenTestCase):

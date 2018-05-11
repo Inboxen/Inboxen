@@ -41,28 +41,5 @@ DOMAIN_TO_TAGS = {
 }
 
 
-REQUEST_TO_TAGS = {
-    True: {
-        "title": ugettext_lazy("Granted request"),
-        "str": ugettext_lazy("Granted"),
-        "class": "label-primary",
-    },
-    False: {
-        "title": ugettext_lazy("Rejected request"),
-        "str": ugettext_lazy("Rejected"),
-        "class": "label-default",
-    },
-    None: {
-        "title": ugettext_lazy("Request pending"),
-        "str": ugettext_lazy("Pending"),
-        "class": "label-danger",
-    },
-}
-
-
 render_domain = create_render_bool_template_tag(DOMAIN_TO_TAGS)
 register.filter("render_domain", render_domain)
-
-
-render_request = create_render_bool_template_tag(REQUEST_TO_TAGS)
-register.filter("render_request", render_request)
