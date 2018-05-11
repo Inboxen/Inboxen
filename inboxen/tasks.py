@@ -22,6 +22,7 @@ from importlib import import_module
 import gc
 import logging
 
+from cursor_pagination import CursorPaginator
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -30,17 +31,18 @@ from django.db import IntegrityError, transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-from six.moves import urllib
-
 from watson import search as watson_search
 
 from inboxen import models
 from inboxen.celery import app
+from inboxen.search import create_search_cache_key
 from inboxen.utils.tasks import task_group_skew
+
 
 log = logging.getLogger(__name__)
 
 SEARCH_TIMEOUT = 60 * 30
+SEARCH_PAGE_SIZE = 25
 
 
 @app.task(ignore_result=True)
@@ -180,19 +182,44 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
 
 
 @app.task(rate_limit="100/s")
-def search(user_id, search_term):
+def search(user_id, search_term, before=None, after=None):
     """Offload the expensive part of search to avoid blocking the web interface"""
+    if not search_term:
+        return {
+            "results": [],
+            "has_next": False
+        }
+
+    if before and after:
+        raise ValueError("You can't do this.")
+
     email_subquery = models.Email.objects.viewable(user_id)
     inbox_subquery = models.Inbox.objects.viewable(user_id)
+    search_qs = watson_search.search(search_term, models=(email_subquery, inbox_subquery))
 
+    page_kwargs = {
+        "after": after,
+        "before": before,
+    }
+    if before:
+        page_kwargs["last"] = SEARCH_PAGE_SIZE
+    else:
+        page_kwargs["first"] = SEARCH_PAGE_SIZE
+
+    paginator = CursorPaginator(search_qs, ordering=('-watson_rank', '-id'))
+
+    page = paginator.page(**page_kwargs)
     results = {
-        "emails": list(watson_search.search(search_term, models=(email_subquery,)).values_list("id", flat=True)),
-        "inboxes": list(watson_search.search(search_term, models=(inbox_subquery,)).values_list("id", flat=True)),
+        "results": [p.id for p in page],
+        "has_next": page.has_next,
+        "has_previous": page.has_previous,
     }
 
-    key = u"{0}-{1}".format(user_id, search_term)
-    key = urllib.parse.quote(key.encode("utf-8"))
+    if len(results["results"]) > 0:
+        results["last"] = paginator.cursor(page[-1])
+        results["first"] = paginator.cursor(page[0])
 
+    key = create_search_cache_key(user_id, search_term, before, after)
     cache.set(key, results, SEARCH_TIMEOUT)
 
     return results

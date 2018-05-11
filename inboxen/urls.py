@@ -63,7 +63,6 @@ urlpatterns = [
     # user views
     urls.url(r'^user/home/(?P<page>\d+)/$', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/home/$', views.UserHomeView.as_view(), name='user-home'),
-    urls.url(r'^user/search/(?P<q>.*)/(?P<page>\d+)/$', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/(?P<q>.*)/$', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/search/$', views.SearchView.as_view(), name='user-search'),
     urls.url(r'^user/searchapi/(?P<q>.*)/$', views.SearchApiView.as_view(), name='user-searchapi'),

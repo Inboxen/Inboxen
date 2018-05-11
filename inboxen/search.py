@@ -17,31 +17,21 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from six.moves import urllib
 from watson import search
 import six
 
-from inboxen.utils.email import unicode_damnit, find_bodies
+from inboxen.utils.email import unicode_damnit
 
 
-def choose_body(parts):
-    """Given a list of sibling MIME parts, choose the one with a content_type
-    of "text/plain", if it exists"""
-    if len(parts) == 1:
-        return unicode_damnit(parts[0].body.data, parts[0].charset)
-    elif len(parts) > 1:
-        data = u""
-        for p in parts:
-            if p.content_type == "text/plain":
-                data = unicode_damnit(p.body.data, p.charset)
-                break
-        return data
-    else:
-        return u""
+def create_search_cache_key(user_id, search_term, before, after):
+    key = u"{}-{}-{}-{}".format(user_id, before, after, search_term)
+    key = urllib.parse.quote(key.encode("utf-8"))
+
+    return key
 
 
 class EmailSearchAdapter(search.SearchAdapter):
-    trunc_to_size = 2 ** 20  # 1MB. Or two copies of 1984
-
     def get_title(self, obj):
         """Fetch subject for obj"""
         from inboxen.models import HeaderData
@@ -58,36 +48,7 @@ class EmailSearchAdapter(search.SearchAdapter):
             return u""
 
     def get_description(self, obj):
-        """Fetch first text/plain body for obj, reading up to `trunc_to_size`
-        bytes
-        """
-        bodies = six.next(find_bodies(obj.get_parts()))
-
-        if bodies is not None:
-            return choose_body(bodies)[:self.trunc_to_size]
-        else:
-            return u""
-
-    def get_content(self, obj):
-        """Fetch all text/plain bodies for obj, reading up to `trunc_to_size`
-        bytes and excluding those that would not be displayed
-        """
-        data = []
-        size = 0
-        for parts in find_bodies(obj.get_parts()):
-            remains = self.trunc_to_size - size
-
-            if remains <= 0:
-                break
-
-            body = choose_body(parts)[:remains]
-            size += len(body)
-            data.append(body)
-
-        return u"\n".join(data)
-
-    def get_meta(self, obj):
-        """Extra meta data to save DB queries later"""
+        """"""
         from inboxen.models import HeaderData
 
         try:
@@ -95,13 +56,18 @@ class EmailSearchAdapter(search.SearchAdapter):
                 header__part__parent__isnull=True,
                 header__name__name="From",
                 header__part__email__id=obj.id,
-            )[0]
-            from_header = unicode_damnit(from_header.data)
-        except IndexError:
-            from_header = u""
+            ).first()
 
+            return unicode_damnit(from_header.data)
+        except AttributeError:
+            return u""
+
+    def get_content(self, obj):
+        return u""  # nothing else is needed for search
+
+    def get_meta(self, obj):
+        """Extra meta data to save DB queries later"""
         return {
-            "from": from_header,
             "inbox": obj.inbox.inbox,
             "domain": obj.inbox.domain.domain,
         }
@@ -109,15 +75,16 @@ class EmailSearchAdapter(search.SearchAdapter):
 
 class InboxSearchAdapter(search.SearchAdapter):
     def get_title(self, obj):
-        return obj.description or ""
+        return obj.description or u""
 
     def get_description(self, obj):
-        return u""  # no point in repeating what's in get_title
+        return six.text_type(obj)
 
     def get_content(self, obj):
-        return u""  # ditto
+        return u""  # nothing else is needed for search
 
     def get_meta(self, obj):
+        """Extra meta data to save DB queries later"""
         return {
             "domain": obj.domain.domain,
         }
