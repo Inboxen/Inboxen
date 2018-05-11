@@ -2,12 +2,14 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2018-05-11
+
 * Rate limit inbox creation and remove inbox requests feature (#350)
 * Proper search (#45)
   * Pagination for search results
   * Slimmer indexing, which should also make for faster searching
-
-## Releases
 
 ### Deploy for 2018-04-14
 
