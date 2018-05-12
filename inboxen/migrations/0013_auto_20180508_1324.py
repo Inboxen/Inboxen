@@ -3,11 +3,13 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.core.management import call_command
 
 
 def rebuild_watson(apps, schema_editor):
-    call_command("buildwatson", verbosity=0)
+    # migration made into a no-op because the buildwatson command won't be able
+    # to see new fields. buildwatson can be called manually after migrating if
+    # needed
+    pass
 
 
 class Migration(migrations.Migration):
