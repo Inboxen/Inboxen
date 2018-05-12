@@ -126,9 +126,11 @@ class InboxTestAbstract(object):
 
         response = self.client.get(self.get_url())
         objs = response.context["page_obj"].object_list[:5]
-        objs = [obj.important for obj in objs]
 
-        self.assertEqual(objs, [1, 1, 1, 0, 0])
+        self.assertEqual(
+            [bool(obj.flags.important) for obj in objs],
+            [True, True, True, False, False]
+        )
 
     def test_pagin(self):
         # there should be 150 emails in the test fixtures

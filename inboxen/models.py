@@ -26,6 +26,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
+from django.utils.translation import ugettext as _
 from mptt.models import MPTTModel, TreeForeignKey
 import six
 
@@ -37,18 +38,26 @@ HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 @six.python_2_unicode_compatible
 class UserProfile(models.Model):
-    """This is auto-created when accessed via a RelatedManager
+    """User profile
 
-    Flag definitions are as follows, order !!important!!:
-    prefer_html_email - if we have both HTML and plaintext available, prefer
-                        HTML if set, prefer plain if not
-    unified_has_new_messages - controls the display of the `new` badge on the Unified inbox
-    ask_images - should we offer to enable image display for HTML emails?
-    display_images - should we display images in HTML emails by default? Implies we should never ask
+    Auto-created when accessed via a RelatedManager
     """
+    ASK = 0
+    DISPLAY = 1
+    NO_DISPLAY = 2
+    IMAGE_OPTIONS = (
+        (ASK, _("Always ask to display images")),
+        (DISPLAY, _("Always display images")),
+        (NO_DISPLAY, _("Never display images")),
+    )
+
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
     flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True)
+
+    prefer_html_email = models.BooleanField(default=True)
+    unified_has_new_messages = models.BooleanField(default=False)
+    display_images = models.PositiveSmallIntegerField(choices=IMAGE_OPTIONS, default=ASK)
 
     def __str__(self):
         return u"Profile for %s" % self.user
@@ -82,6 +91,9 @@ class Liberation(models.Model):
     last_finished = models.DateTimeField(null=True)
     _path = models.CharField(max_length=255, null=True, unique=True,
                              validators=[validators.ProhibitNullCharactersValidator()])
+
+    running = models.BooleanField(default=False)
+    errored = models.BooleanField(default=False)
 
     def get_path(self):
         if self._path is None:
@@ -141,6 +153,12 @@ class Inbox(models.Model):
     description = models.CharField(max_length=256, null=True, blank=True,
                                    validators=[validators.ProhibitNullCharactersValidator()])
 
+    deleted = models.BooleanField(default=False)
+    new = models.BooleanField(default=False)
+    exclude_from_unified = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+    pinned = models.BooleanField(default=False)
+
     objects = InboxQuerySet.as_manager()
 
     def __str__(self):
@@ -173,6 +191,12 @@ class Email(models.Model):
     inbox = models.ForeignKey(Inbox)
     flags = BitField(flags=("deleted", "read", "seen", "important", "view_all_headers"), default=0)
     received_date = models.DateTimeField(db_index=True)
+
+    deleted = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+    seen = models.BooleanField(default=False)
+    important = models.BooleanField(default=False)
+    view_all_headers = models.BooleanField(default=False)
 
     objects = EmailQuerySet.as_manager()
 

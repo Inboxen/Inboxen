@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Add boolean fields to replace bitfields in various models (#325)
+
 ## Releases
 
 ### Deploy for 2018-05-11
