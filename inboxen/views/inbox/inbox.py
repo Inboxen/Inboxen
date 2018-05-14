@@ -52,9 +52,9 @@ class InboxView(LoginRequiredMixin, generic.ListView):
         # but it doesn't strip out annotations
         # q?: does this still apply?
         if self.request.method != "POST":
-            qs = qs.annotate(important=Count(Case(When(flags=models.Email.flags.important, then=1),
-                                                  output_field=IntegerField())))
-            qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
+            qs = qs.annotate(is_important=Count(Case(When(flags=models.Email.flags.important, then=1),
+                                                     output_field=IntegerField())))
+            qs = qs.order_by("-is_important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 
     @search.skip_index_update()

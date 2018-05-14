@@ -48,11 +48,11 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
         # q?: does this still apply?
         if self.request.method != "POST":
             qs = qs.add_last_activity()
-            qs = qs.annotate(pinned=Count(Case(When(flags=models.Inbox.flags.pinned, then=1),
-                                               output_field=IntegerField())))
-            qs = qs.annotate(disabled=Count(Case(When(flags=models.Inbox.flags.disabled, then=1),
-                                                 output_field=IntegerField())))
-            qs = qs.order_by("-pinned", "disabled", "-last_activity").select_related("domain")
+            qs = qs.annotate(is_pinned=Count(Case(When(flags=models.Inbox.flags.pinned, then=1),
+                                                  output_field=IntegerField())))
+            qs = qs.annotate(is_disabled=Count(Case(When(flags=models.Inbox.flags.disabled, then=1),
+                                                    output_field=IntegerField())))
+            qs = qs.order_by("-is_pinned", "is_disabled", "-last_activity").select_related("domain")
         return qs
 
     @search.skip_index_update()

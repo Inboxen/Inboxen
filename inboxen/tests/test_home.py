@@ -88,7 +88,10 @@ class HomeViewTestCase(InboxenTestCase):
         objs = response.context["page_obj"].object_list[:5]
 
         # Check the top inboxes three inboxes are pinned.
-        self.assertEqual([obj.pinned for obj in objs], [1, 1, 1, 0, 0])
+        self.assertEqual(
+            [bool(obj.flags.pinned) for obj in objs],
+            [True, True, True, False, False]
+        )
 
         # Check the pinned inboxes are ordered amongst themselves.
         self.assertEqual(
