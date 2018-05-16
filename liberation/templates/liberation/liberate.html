@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block form %}
-{% if object.flags.running %}
+{% if object.running %}
     <h4>{% trans "Data liberation is currently running" %}</h4>
     <p>{% blocktrans with started=object.started|inboxentime %}
         Liberation was requested {{ started }} and is still pending.

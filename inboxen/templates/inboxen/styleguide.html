@@ -160,13 +160,13 @@
             <h4>Normal inbox view</h4>
             <div class="honeydew">
                 {% for email in emails %}
-                    {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
+                    {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.get_bools_for_labels inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
                 {% endfor %}
             </div>
             <h4>Unified inbox view</h4>
             <div class="honeydew">
                 {% for email in emails %}
-                    {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.flags inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender unified=True %}
+                    {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.get_bools_for_labels inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender unified=True %}
                 {% endfor %}
             </div>
 
@@ -197,7 +197,7 @@
                     </a>
                 </div>
                 {% for inbox in inboxes %}
-                    {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
+                    {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.get_bools_labels last_activity=inbox.last_activity desc=inbox.description %}
                     {% if inbox.form %}
                     <div class="inbox-edit-form-row row">
                         <div class="col-xs-12">

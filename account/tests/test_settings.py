@@ -58,7 +58,7 @@ class SettingsTestCase(InboxenTestCase):
             self.assertTrue(domain.owner is None or domain.owner.id == self.user.id)
 
     def test_form_bad_data(self):
-        params = {"images": "12213"}
+        params = {"display_images": "12213"}
         request = MockRequest(self.user)
         form = SettingsForm(request, data=params)
 
@@ -67,34 +67,36 @@ class SettingsTestCase(InboxenTestCase):
     def test_form_good_data(self):
         request = MockRequest(self.user)
 
-        params = {"images": "1"}
-        form = SettingsForm(request, data=params)
-        self.assertTrue(form.is_valid())
-        form.save()
-        self.assertFalse(form.profile.flags.ask_images)
-        self.assertTrue(form.profile.flags.display_images)
-        self.assertFalse(form.profile.flags.prefer_html_email)
-
-        params = {"images": "2"}
-        form = SettingsForm(request, data=params)
-        self.assertTrue(form.is_valid())
-        form.save()
-        self.assertFalse(form.profile.flags.ask_images)
-        self.assertFalse(form.profile.flags.display_images)
-        self.assertFalse(form.profile.flags.prefer_html_email)
-
-        params = {"images": "0"}
-        form = SettingsForm(request, data=params)
-        self.assertTrue(form.is_valid())
-        form.save()
-        self.assertTrue(form.profile.flags.ask_images)
-        self.assertFalse(form.profile.flags.prefer_html_email)
-
-        params = {"prefer_html": "on", "images": "0"}
+        params = {"display_images": "1"}
         form = SettingsForm(request, data=params)
         self.assertTrue(form.is_valid(), form.errors)
         form.save()
-        self.assertTrue(form.profile.flags.prefer_html_email)
+        self.user.inboxenprofile.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.display_images, 1)
+        self.assertFalse(self.user.inboxenprofile.prefer_html_email)
+
+        params = {"display_images": "2"}
+        form = SettingsForm(request, data=params)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.user.inboxenprofile.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.display_images, 2)
+        self.assertFalse(self.user.inboxenprofile.prefer_html_email)
+
+        params = {"display_images": "0"}
+        form = SettingsForm(request, data=params)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.user.inboxenprofile.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.display_images, 0)
+        self.assertFalse(self.user.inboxenprofile.prefer_html_email)
+
+        params = {"prefer_html_email": "on", "display_images": "0"}
+        form = SettingsForm(request, data=params)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        self.assertEqual(self.user.inboxenprofile.display_images, 0)
+        self.assertTrue(self.user.inboxenprofile.prefer_html_email)
 
     def test_form_domains_valid(self):
         request = MockRequest(self.user)

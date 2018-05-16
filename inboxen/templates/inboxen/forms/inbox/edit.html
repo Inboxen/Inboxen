@@ -4,13 +4,16 @@
     data-inbox-selector="{{ inbox.inbox|escape_selector:True }}\@{{ inbox.domain.domain|escape_selector:True }}" class="form"
     action="{% url 'form-inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
     {% csrf_token %}
-    {{ form|bootstrap }}
+    {{ form.description|bootstrap }}
+    {{ form.exclude_from_unified|bootstrap }}
+    {{ form.pinned|bootstrap }}
     <div class="panel panel-danger">
         <div class="panel-heading">
             {% trans "Danger Area" %}&trade;
         </div>
         <div class="panel-body">
-            {{ form.subform|bootstrap }}
+            {{ form.clear_inbox|bootstrap }}
+            {{ form.disabled|bootstrap }}
         </div>
     </div>
     <button class="btn btn-primary">{% trans "Save" %}</button>

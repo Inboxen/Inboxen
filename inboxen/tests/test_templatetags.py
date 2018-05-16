@@ -36,19 +36,19 @@ class InboxFlagTestCase(InboxenTestCase):
         translation.deactivate_all()
 
     def test_no_error(self):
-        flag_obj = BitHandler(6, ["new", "read", "somefakeflag", "someother"])
+        flag_obj = (("new", False), ("read", True), ("somefakeflag", True), ("someother", False))
 
         inboxen_flags.render_flags(flag_obj)
 
     def test_invert(self):
-        flag_obj = BitHandler(3, ["new", "read"])
+        flag_obj = (("new", True), ("read", True))
         output = inboxen_flags.render_flags(flag_obj)
 
         self.assertNotIn("Unread message", output)
         self.assertNotIn("label-info", output)
 
     def test_multiple(self):
-        flag_obj = BitHandler(1, ["new", "read"])
+        flag_obj = (("new", True), ("read", False))
         output = inboxen_flags.render_flags(flag_obj)
 
         self.assertIn("Unread message", output)
@@ -58,13 +58,13 @@ class InboxFlagTestCase(InboxenTestCase):
         self.assertEqual(output.count("span"), 4)
 
     def test_empty(self):
-        flag_obj = BitHandler(2, ["new", "read"])
+        flag_obj = (("new", False), ("read", True))
         output = inboxen_flags.render_flags(flag_obj)
 
         self.assertEqual(output.strip(), "&nbsp;")
 
     def test_disabled(self):
-        flag_obj = BitHandler(5, ["new", "read", "disabled"])
+        flag_obj = (("new", True), ("read", False), ("disabled", True))
         output = inboxen_flags.render_flags(flag_obj)
 
         self.assertIn("Inbox has been disabled", output)
@@ -72,7 +72,7 @@ class InboxFlagTestCase(InboxenTestCase):
         self.assertEqual(output.count("span"), 2)
 
     def test_lazy_gettext(self):
-        flag_obj = BitHandler(1, ["new"])
+        flag_obj = (("new", True),)
         output = inboxen_flags.render_flags(flag_obj)
         self.assertIn(">New<", output)
 

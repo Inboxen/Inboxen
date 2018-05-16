@@ -63,8 +63,6 @@ FLAGS_TO_TAGS = {
     },
 }
 
-# alias certain flags
-FLAGS_TO_TAGS["unified_has_new_messages"] = FLAGS_TO_TAGS["new"]
 
 render_flags = create_render_bitfield_template_tag(FLAGS_TO_TAGS)
 register.filter("render_flags", render_flags)

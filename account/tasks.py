@@ -44,7 +44,7 @@ def disown_inbox(inbox_id):
     batch_delete_items.delay("email", kwargs={'inbox__id': inbox.pk})
 
     # remove identifying data from inbox
-    inbox.flags.deleted = True
+    inbox.deleted = True
     inbox.description = ""
     inbox.user = None
     inbox.created = datetime.utcfromtimestamp(0).replace(tzinfo=utc)

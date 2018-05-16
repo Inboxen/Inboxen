@@ -132,18 +132,13 @@ class ModelTestCase(InboxenTestCase):
 
         # all the permutations of Inboxes that can receive
         params = (
-            [True, False],
-            [
-                0,
-                models.Inbox.flags.deleted,
-                models.Inbox.flags.disabled,
-                models.Inbox.flags.deleted | models.Inbox.flags.disabled,
-                ~models.Inbox.flags.deleted & ~models.Inbox.flags.disabled,
-            ],
-            [user, None],
+            [True, False],  # domain enabled
+            [True, False],  # deleted
+            [True, False],  # disabled
+            [user, None],   # user
         )
         for args in itertools.product(*params):
-            factories.InboxFactory(domain__enabled=args[0], flags=args[1], user=args[2])
+            factories.InboxFactory(domain__enabled=args[0], deleted=args[1], disabled=args[1], user=args[3])
 
         count = models.Inbox.objects.receiving().count()
         self.assertEqual(count, 2)
@@ -154,11 +149,12 @@ class ModelTestCase(InboxenTestCase):
 
         # all the permutations of Inboxes that can be viewed
         params = (
-            [0, models.Inbox.flags.deleted, ~models.Inbox.flags.deleted],
-            [user, other_user, None],
+            [True, False],             # deleted
+            [True, False],             # disabled
+            [user, other_user, None],  # user
         )
         for args in itertools.product(*params):
-            factories.InboxFactory(flags=args[0], user=args[1])
+            factories.InboxFactory(deleted=args[0], disabled=args[1], user=args[2])
 
         count = models.Inbox.objects.viewable(user).count()
         self.assertEqual(count, 2)
@@ -169,12 +165,20 @@ class ModelTestCase(InboxenTestCase):
 
         # all the permutations of Emailss that can be viewed
         params = (
-            [0, models.Inbox.flags.deleted, ~models.Inbox.flags.deleted],
-            [user, other_user, None],
-            [0, models.Email.flags.deleted, ~models.Email.flags.deleted],
+            [True, False],             # inbox deleted
+            [True, False],             # inbox disabled
+            [user, other_user, None],  # user
+            [True, False],             # email deleted
+            [True, False],             # email read (i.e. any other bool has been set)
         )
         for args in itertools.product(*params):
-            factories.EmailFactory(inbox__flags=args[0], inbox__user=args[1], flags=args[2])
+            factories.EmailFactory(
+                inbox__deleted=args[0],
+                inbox__disabled=args[1],
+                inbox__user=args[2],
+                deleted=args[3],
+                read=args[4],
+            )
 
         count = models.Email.objects.viewable(user).count()
         self.assertEqual(count, 4)
@@ -315,7 +319,7 @@ class ModelReprTestCase(InboxenTestCase):
     def test_inbox(self):
         inbox = models.Inbox(inbox="inbox", domain=models.Domain(domain="example.com"))
         self.assertEqual(repr(inbox), "<Inbox: inbox@example.com>")
-        inbox.flags.deleted = True
+        inbox.deleted = True
         self.assertEqual(repr(inbox), "<Inbox: inbox@example.com (deleted)>")
 
     def test_liberation(self):

@@ -109,68 +109,27 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
         return username
 
 
-class SettingsForm(forms.Form):
+class SettingsForm(forms.ModelForm):
     """A form for general settings"""
-    IMAGE_OPTIONS = (
-        (0, _("Always ask to display images")),
-        (1, _("Always display images")),
-        (2, _("Never display images")),
-    )
-
-    prefered_domain = forms.ModelChoiceField(
-        required=False,
-        queryset=models.Domain.objects.none(),
-        empty_label=_("(No preference)"),
-        help_text=_("Prefer a particular domain when adding a new Inbox")
-    )
-    images = forms.ChoiceField(
-        choices=IMAGE_OPTIONS,
-        widget=forms.RadioSelect,
-        label=_("Display options for HTML emails"),
-        help_text=_("Warning: Images in HTML emails can be used to track if you read an email!"),
-    )
-    prefer_html = forms.BooleanField(required=False, label=_("Prefer HTML emails"))
-
     def __init__(self, request, *args, **kwargs):
-        self.profile = request.user.inboxenprofile
-
-        initial = kwargs.get("initial", {})
-
-        initial["prefer_html"] = bool(self.profile.flags.prefer_html_email)
-        initial["prefered_domain"] = self.profile.prefered_domain
-
-        if self.profile.flags.ask_images:
-            initial["images"] = "0"
-        elif self.profile.flags.display_images:
-            initial["images"] = "1"
-        else:
-            initial["images"] = "2"
-
-        kwargs.setdefault("initial", initial)
+        kwargs.setdefault("instance", request.user.inboxenprofile)
 
         super(SettingsForm, self).__init__(*args, **kwargs)
 
         self.fields["prefered_domain"].queryset = models.Domain.objects.available(request.user)
+        self.fields["prefered_domain"].empty_label = _("(No preference)")
 
-    def save(self):
-        if "prefer_html" in self.cleaned_data and self.cleaned_data["prefer_html"]:
-            self.profile.flags.prefer_html_email = True
-        else:
-            self.profile.flags.prefer_html_email = False
-
-        if "images" in self.cleaned_data:
-            if self.cleaned_data["images"] == "0":
-                self.profile.flags.ask_images = True
-            elif self.cleaned_data["images"] == "1":
-                self.profile.flags.display_images = True
-                self.profile.flags.ask_images = False
-            elif self.cleaned_data["images"] == "2":
-                self.profile.flags.display_images = False
-                self.profile.flags.ask_images = False
-
-        self.profile.prefered_domain = self.cleaned_data["prefered_domain"]
-
-        self.profile.save(update_fields=["flags", "prefered_domain"])
+    class Meta:
+        model = models.UserProfile
+        fields = ["prefered_domain", "display_images", "prefer_html_email"]
+        labels = {
+            "display_images": _("Display options for HTML emails"),
+            "prefer_html_email": _("Prefer HTML emails"),
+        }
+        help_texts = {
+            "display_images": _("Warning: Images in HTML emails can be used to track if you read an email!"),
+            "prefered_domain": _("Prefer a particular domain when adding a new Inbox")
+        }
 
 
 class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):

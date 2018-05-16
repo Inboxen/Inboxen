@@ -36,7 +36,7 @@ class InboxTestAbstract(object):
         self.assertEqual(response.status_code, 200)
 
     def test_post_important(self):
-        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(important=True).count()
         self.assertEqual(count, 0)
 
         params = {"important": ""}
@@ -47,7 +47,7 @@ class InboxTestAbstract(object):
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
 
-        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(important=True).count()
         self.assertEqual(count, 2)
 
         # and then mark them as unimportant again
@@ -59,11 +59,11 @@ class InboxTestAbstract(object):
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
 
-        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(important=True).count()
         self.assertEqual(count, 0)
 
     def test_get_read(self):
-        count = models.Email.objects.filter(flags=models.Email.flags.read).count()
+        count = models.Email.objects.filter(read=True).count()
         self.assertEqual(count, 0)
 
         for email in self.emails[:2]:
@@ -74,7 +74,7 @@ class InboxTestAbstract(object):
             }
             self.client.get(urlresolvers.reverse("email-view", kwargs=kwargs))
 
-        count = models.Email.objects.filter(flags=models.Email.flags.read).count()
+        count = models.Email.objects.filter(read=True).count()
         self.assertEqual(count, 2)
 
     def test_post_delete(self):
@@ -111,24 +111,24 @@ class InboxTestAbstract(object):
         response = self.client.post(self.get_url(), {"important-single": email.eid})
         self.assertEqual(response.status_code, 302)
         email.refresh_from_db()
-        self.assertTrue(bool(email.flags.important))
+        self.assertTrue(email.important)
 
         response = self.client.post(self.get_url(), {"important-single": email.eid})
         self.assertEqual(response.status_code, 302)
         email.refresh_from_db()
-        self.assertFalse(bool(email.flags.important))
+        self.assertFalse(email.important)
 
     def test_important_first(self):
         # mark some emails as important
         for email in self.emails[:3]:
-            email.flags.important = True
+            email.important = True
             email.save()
 
         response = self.client.get(self.get_url())
         objs = response.context["page_obj"].object_list[:5]
 
         self.assertEqual(
-            [bool(obj.flags.important) for obj in objs],
+            [obj.important for obj in objs],
             [True, True, True, False, False]
         )
 
@@ -409,7 +409,7 @@ class InboxEmailEditTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 405)
 
     def test_post_important(self):
-        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(important=True).count()
         self.assertEqual(count, 0)
 
         params = {"important": ""}
@@ -420,7 +420,7 @@ class InboxEmailEditTestCase(InboxenTestCase):
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 204)
 
-        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(important=True).count()
         self.assertEqual(count, 2)
 
         # and then mark them as unimportant again
@@ -432,7 +432,7 @@ class InboxEmailEditTestCase(InboxenTestCase):
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 204)
 
-        count = models.Email.objects.filter(flags=models.Email.flags.important).count()
+        count = models.Email.objects.filter(important=True).count()
         self.assertEqual(count, 0)
 
     def test_post_delete(self):
@@ -463,9 +463,9 @@ class InboxEmailEditTestCase(InboxenTestCase):
         response = self.client.post(self.get_url(), {"important-single": email.eid})
         self.assertEqual(response.status_code, 204)
         email.refresh_from_db()
-        self.assertTrue(bool(email.flags.important))
+        self.assertTrue(email.important)
 
         response = self.client.post(self.get_url(), {"important-single": email.eid})
         self.assertEqual(response.status_code, 204)
         email.refresh_from_db()
-        self.assertFalse(bool(email.flags.important))
+        self.assertFalse(email.important)

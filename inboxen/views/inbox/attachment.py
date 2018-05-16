@@ -34,7 +34,7 @@ __all__ = ["AttachmentDownloadView"]
 class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):
         qs = models.PartList.objects.select_related('body')
-        qs = qs.filter(email__flags=~models.Email.flags.deleted, email__inbox__user=self.request.user)
+        qs = qs.filter(email__deleted=False, email__inbox__user=self.request.user)
 
         try:
             return qs.get(id=self.kwargs["attachmentid"])

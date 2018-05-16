@@ -57,8 +57,8 @@ class LiberationForm(forms.ModelForm):
 
     def save(self):
         lib_status = self.user.liberation
-        if not lib_status.flags.running:
-            lib_status.flags = models.Liberation.flags.running
+        if not lib_status.running:
+            lib_status.running = True
             lib_status.started = timezone.now()
 
             result = data_liberate.apply_async(

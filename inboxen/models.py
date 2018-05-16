@@ -59,6 +59,9 @@ class UserProfile(models.Model):
     unified_has_new_messages = models.BooleanField(default=False)
     display_images = models.PositiveSmallIntegerField(choices=IMAGE_OPTIONS, default=ASK)
 
+    def get_bools_for_labels(self):
+        yield ("new", self.unified_has_new_messages)
+
     def __str__(self):
         return u"Profile for %s" % self.user
 
@@ -155,18 +158,25 @@ class Inbox(models.Model):
 
     deleted = models.BooleanField(default=False)
     new = models.BooleanField(default=False)
-    exclude_from_unified = models.BooleanField(default=False)
-    disabled = models.BooleanField(default=False)
-    pinned = models.BooleanField(default=False)
+    exclude_from_unified = models.BooleanField(default=False, verbose_name=_("Exclude from Unified Inbox"))
+    disabled = models.BooleanField(default=False, verbose_name=_("Disable Inbox"))
+    pinned = models.BooleanField(default=False, verbose_name=_("Pin Inbox to top"),
+                                 help_text=_("This Inbox will no longer receive emails."))
 
     objects = InboxQuerySet.as_manager()
+
+    _bool_label_order = ["new", "disabled", "pinned"]
+
+    def get_bools_for_labels(self):
+        for key in self._bool_label_order:
+            yield (key, getattr(self, key))
 
     def __str__(self):
         return u"%s@%s" % (self.inbox, self.domain.domain)
 
     def __repr__(self):
         u_rep = six.text_type(self)
-        if self.flags.deleted:
+        if self.deleted:
             u_rep = "%s (deleted)" % u_rep
         return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep), errors="replace")
 
@@ -204,6 +214,12 @@ class Email(models.Model):
     def eid(self):
         """Return a hexidecimal version of ID"""
         return hex(self.id)[2:].rstrip("L")
+
+    _bool_label_order = ["read", "seen", "important"]
+
+    def get_bools_for_labels(self):
+        for key in self._bool_label_order:
+            yield (key, getattr(self, key))
 
     def __str__(self):
         return u"{0}".format(self.eid)

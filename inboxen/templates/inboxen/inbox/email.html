@@ -34,7 +34,7 @@
     <form class="inline-buttons" action="{{ request.path }}" method="POST">
         {% csrf_token %}
         <button class="btn btn-default" type="submit" name="important-toggle">
-        {% if object.flags.important %}{# email isn't actually the email object #}
+        {% if object.important %}{# email isn't actually the email object #}
             <span class="fa fa-star-o" aria-hidden="true"></span>{% trans "Unmark as important" %}
         {% else %}
             <span class="fa fa-star" aria-hidden="true"></span>{% trans "Mark as important" %}
