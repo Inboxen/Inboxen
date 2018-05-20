@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -20,11 +21,11 @@
 import datetime
 
 from django.contrib.auth import get_user_model
-
 from pytz import utc
+from watson import search
 import factory
 import factory.fuzzy
-from watson import search
+import six
 
 from inboxen import models
 
@@ -40,7 +41,13 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = get_user_model()
 
-    username = factory.Sequence(lambda n: "isdabizda%d" % n)
+    # Django 1,11 on Python 2 disallows non-ASCII chars in usernames, which is
+    # annoying because previous versions did not validate this on the model
+    # itself (Inboxen.org has users with non-ascii usernames)
+    if six.PY3:
+        username = factory.Sequence(lambda n: u"isdabizdå%d" % n)
+    else:
+        username = factory.Sequence(lambda n: u"isdabizda%d" % n)
     password = "123456"
 
     @classmethod
