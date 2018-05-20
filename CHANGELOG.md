@@ -3,6 +3,7 @@
 ## Pending
 
 * Add boolean fields to replace bitfields in various models (#325)
+* Make sure cache keys generated for ratelimiting are URL-safe (#354)
 
 ## Releases
 

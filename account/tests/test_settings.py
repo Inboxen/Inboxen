@@ -24,6 +24,7 @@ import itertools
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core import urlresolvers
+import six
 
 from account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
 from inboxen.tests import factories
@@ -134,10 +135,13 @@ class UsernameChangeTestCase(InboxenTestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["username"], [u"Null characters are not allowed."])
 
-        params = {"username": "usernameß", "username2": "usernameß"}
+        params = {"username": "username€", "username2": "username€"}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
-        expected_errors = [u"Enter a valid username. This value may contain only English letters, numbers, and @/./+/-/_ characters."]  # noqa: E501
+        if six.PY3:
+            expected_errors = [u"Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."]  # noqa: E501
+        else:
+            expected_errors = [u"Enter a valid username. This value may contain only English letters, numbers, and @/./+/-/_ characters."]  # noqa: E501
         self.assertEqual(form.errors["username"], expected_errors)
 
     def test_form_good_data(self):
@@ -146,7 +150,7 @@ class UsernameChangeTestCase(InboxenTestCase):
         params = {"username": self.user.username + "1", "username2": self.user.username + "1"}
         form = UsernameChangeForm(data=params)
 
-        self.assertTrue(form.is_valid())
+        self.assertTrue(form.is_valid(), form.errors)
         form.save()
 
         new_user = get_user_model().objects.get(pk=form.instance.pk)

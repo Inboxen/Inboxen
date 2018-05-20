@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from __future__ import unicode_literals
 
 from datetime import timedelta
 import logging
@@ -23,6 +24,7 @@ import logging
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
+from six.moves import urllib
 
 
 logger = logging.getLogger(__name__)
@@ -57,11 +59,14 @@ class RateLimit(object):
 
 
 def make_key(request, dt):
-    return "{}{}-{}".format(
+    key = "{}{}-{}".format(
         settings.INBOX_LIMIT_CACHE_PREFIX,
-        request.user,
+        request.user.username,
         dt.strftime("%Y%m%d%H%M"),
     )
+
+    key = urllib.parse.quote(key.encode("utf-8"))
+    return key
 
 
 def full_callback(request):
