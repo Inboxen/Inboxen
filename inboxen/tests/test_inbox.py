@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ##
 #    Copyright (C) 2014 Jessica Tallon & Matt Molyneaux
 #
@@ -18,15 +19,17 @@
 ##
 
 import itertools
+import warnings
 
 from django.conf import settings
 from django.core import urlresolvers
 from watson.models import SearchEntry
 
-from inboxen import models
-from inboxen.tests import factories
 from inboxen import forms as inboxen_forms
+from inboxen import models
 from inboxen.test import MockRequest, InboxenTestCase
+from inboxen.tests import factories
+from inboxen.utils.ratelimit import inbox_ratelimit
 
 
 class InboxTestAbstract(object):
@@ -266,6 +269,23 @@ class InboxAddTestCase(InboxenTestCase):
 
         response = self.client.post(self.get_url(), {"domain": domain.id})
         self.assertEqual(response.status_code, 302)
+
+    def test_inbox_ratelimit_valid_keys(self):
+        request = MockRequest(self.user)
+
+        # UsernameChangeForm had a bug where it did no validation, so usernames
+        # could be anything right now
+        request.user.username = u"hello€@.+-_ <>"
+
+        with warnings.catch_warnings(record=True) as w:
+            self.assertEqual(inbox_ratelimit.counter_full(request), False)
+
+            for i in range(settings.INBOX_LIMIT_COUNT + 1):
+                inbox_ratelimit.counter_increase(request)
+
+            self.assertEqual(inbox_ratelimit.counter_full(request), True)
+
+        self.assertEqual(len(w), 0)
 
 
 class InboxAddInlineTestCase(InboxenTestCase):

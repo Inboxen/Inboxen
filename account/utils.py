@@ -16,10 +16,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from __future__ import unicode_literals
 
 import logging
 
 from django.conf import settings
+from six.moves import urllib
 
 from inboxen.utils import ratelimit, ip
 
@@ -28,11 +30,14 @@ logger = logging.getLogger(__name__)
 
 
 def make_key(request, dt):
-    return "{}{}-{}".format(
+    key = "{}{}-{}".format(
         settings.REGISTER_LIMIT_CACHE_PREFIX,
         ip.strip_ip(request.META["REMOTE_ADDR"]),
         dt.strftime("%Y%m%d%H%M"),
     )
+
+    key = urllib.parse.quote(key.encode("utf-8"))
+    return key
 
 
 def full_callback(request):
