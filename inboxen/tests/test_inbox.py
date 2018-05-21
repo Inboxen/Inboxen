@@ -27,7 +27,7 @@ from watson.models import SearchEntry
 
 from inboxen import forms as inboxen_forms
 from inboxen import models
-from inboxen.test import MockRequest, InboxenTestCase
+from inboxen.test import MockRequest, InboxenTestCase, override_settings
 from inboxen.tests import factories
 from inboxen.utils.ratelimit import inbox_ratelimit
 
@@ -264,20 +264,28 @@ class InboxAddTestCase(InboxenTestCase):
         self.assertEqual(counter, settings.INBOX_LIMIT_COUNT + 1)
         self.assertEqual(models.Inbox.objects.count(), settings.INBOX_LIMIT_COUNT)
 
+        # check that changing username does not affect this counter
+        self.user.username = self.user.username + "1"
+        self.user.save()
+
+        response = self.client.post(self.get_url(), {"domain": domain.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(models.Inbox.objects.count(), settings.INBOX_LIMIT_COUNT)
+
         # login the other user and check that they can still create inboxes
         assert self.client.login(username=self.other_user.username, password="123456", request=MockRequest(self.user))
 
         response = self.client.post(self.get_url(), {"domain": domain.id})
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(models.Inbox.objects.count(), settings.INBOX_LIMIT_COUNT + 1)
 
     def test_inbox_ratelimit_valid_keys(self):
         request = MockRequest(self.user)
 
-        # UsernameChangeForm had a bug where it did no validation, so usernames
-        # could be anything right now
-        request.user.username = u"hello€@.+-_ <>"
+        cache_prefix = u"hello€@.+-_ <>"
 
-        with warnings.catch_warnings(record=True) as w:
+        with override_settings(INBOX_LIMIT_CACHE_PREFIX=cache_prefix), \
+                warnings.catch_warnings(record=True) as w:
             self.assertEqual(inbox_ratelimit.counter_full(request), False)
 
             for i in range(settings.INBOX_LIMIT_COUNT + 1):
