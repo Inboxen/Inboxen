@@ -61,7 +61,7 @@ class RateLimit(object):
 def make_key(request, dt):
     key = "{}{}-{}".format(
         settings.INBOX_LIMIT_CACHE_PREFIX,
-        request.user.username,
+        request.user.id,
         dt.strftime("%Y%m%d%H%M"),
     )
 
