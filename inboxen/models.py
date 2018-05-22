@@ -165,7 +165,7 @@ class Inbox(models.Model):
     new = models.BooleanField(default=False)
     exclude_from_unified = models.BooleanField(default=False, verbose_name=_("Exclude from Unified Inbox"))
     disabled = models.BooleanField(default=False, verbose_name=_("Disable Inbox"),
-                                 help_text=_("This Inbox will no longer receive emails."))
+                                   help_text=_("This Inbox will no longer receive emails."))
     pinned = models.BooleanField(default=False, verbose_name=_("Pin Inbox to top"))
 
     objects = InboxQuerySet.as_manager()
