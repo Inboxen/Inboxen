@@ -100,12 +100,12 @@ def statistics():
     inboxes["total_possible"] = inboxes_possible * domain_count
 
     # collect email state
-    inbox_qs = models.Inbox.objects.exclude(flags=models.Inbox.flags.deleted).annotate(email_count=Count("email__id"))
+    inbox_qs = models.Inbox.objects.exclude(deleted=True).annotate(email_count=Count("email__id"))
     emails = inbox_qs.aggregate(**email_aggregate)
 
     inboxes["with_emails"] = inbox_qs.exclude(email_count=0).count()
     inboxes["disowned"] = models.Inbox.objects.filter(user__isnull=True).count()
-    emails["emails_read"] = models.Email.objects.filter(flags=models.Email.flags.read).count()
+    emails["emails_read"] = models.Email.objects.filter(read=True).count()
 
     if last_stat:
         email_diff = (emails["email_count__sum"] or 0) - (last_stat.emails["email_count__sum"] or 0)
@@ -139,24 +139,24 @@ def clean_expired_session():
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
     emails = models.Email.objects.order_by("-received_date")
-    emails = emails.filter(inbox__user__id=user_id, inbox__flags=~models.Inbox.flags.exclude_from_unified)
+    emails = emails.filter(inbox__user__id=user_id, inbox__exclude_from_unified=False)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
     emails = list(emails.values_list("id", flat=True)[:100])  # number of emails on page
-    emails = models.Email.objects.filter(id__in=emails, flags=~models.Email.flags.seen)
+    emails = models.Email.objects.filter(id__in=emails, seen=False)
 
     if emails.count() > 0:
         # if some emails haven't been seen yet, we have nothing else to do
         return
     elif inbox_id is None:
         profile = models.UserProfile.objects.get_or_create(user_id=user_id)[0]
-        profile.flags.unified_has_new_messages = False
-        profile.save(update_fields=["flags"])
+        profile.unified_has_new_messages = False
+        profile.save(update_fields=["unified_has_new_messages"])
     else:
         with watson_search.skip_index_update():
             inbox = models.Inbox.objects.get(user__id=user_id, id=inbox_id)
-            inbox.flags.new = False
-            inbox.save(update_fields=["flags"])
+            inbox.new = False
+            inbox.save(update_fields=["new"])
 
 
 @app.task(ignore_result=True)
@@ -167,7 +167,7 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     with transaction.atomic():
         with watson_search.skip_index_update():
             # update seen flags
-            models.Email.objects.filter(id__in=email_id_list).update(flags=F('flags').bitor(models.Email.flags.seen))
+            models.Email.objects.filter(id__in=email_id_list).update(seen=True)
 
     if inbox_id is None:
         # grab affected inboxes

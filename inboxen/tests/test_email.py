@@ -103,7 +103,7 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertFalse(headersfetchall)
 
     def test_body_encoding_with_imgDisplay(self):
-        self.user.inboxenprofile.flags.ask_images = True
+        self.user.inboxenprofile.display_images = models.UserProfile.ASK
         self.user.inboxenprofile.save()
 
         response = self.client.get(self.get_url() + "?imgDisplay=1")
@@ -127,7 +127,7 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertIn("img-src 'self' https:;", response["content-security-policy"])
 
     def test_body_encoding_without_imgDisplay(self):
-        self.user.inboxenprofile.flags.ask_images = True
+        self.user.inboxenprofile.display_images = models.UserProfile.ASK
         self.user.inboxenprofile.save()
 
         response = self.client.get(self.get_url())
@@ -152,7 +152,7 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertNotIn("img-src 'self' https:;", response["content-security-policy"])
 
     def test_body_no_ask_images(self):
-        self.user.inboxenprofile.flags.ask_images = False
+        self.user.inboxenprofile.display_images = models.UserProfile.NO_DISPLAY
         self.user.inboxenprofile.save()
 
         response = self.client.get(self.get_url())
@@ -188,21 +188,21 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_post(self):
-        important = self.email.flags.important
+        important = self.email.important
 
         params = {"important-toggle": ""}
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], self.get_url())
         email = models.Email.objects.get(pk=self.email.pk)
-        self.assertNotEqual(email.flags.important, important)
+        self.assertNotEqual(email.important, important)
 
         important = not important
         response = self.client.post(self.get_url(), params)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], self.get_url())
         email = models.Email.objects.get(pk=self.email.pk)
-        self.assertNotEqual(email.flags.important, important)
+        self.assertNotEqual(email.important, important)
 
     def test_html_a(self):
         response = self.client.get(self.get_url())

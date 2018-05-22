@@ -18,7 +18,6 @@
 ##
 
 from django.core.cache import cache
-from django.db.models import Case, Count, F, IntegerField, When
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
@@ -52,9 +51,7 @@ class InboxView(LoginRequiredMixin, generic.ListView):
         # but it doesn't strip out annotations
         # q?: does this still apply?
         if self.request.method != "POST":
-            qs = qs.annotate(is_important=Count(Case(When(flags=models.Email.flags.important, then=1),
-                                                     output_field=IntegerField())))
-            qs = qs.order_by("-is_important", "-received_date").select_related("inbox", "inbox__domain")
+            qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 
     @search.skip_index_update()
@@ -79,8 +76,8 @@ class InboxView(LoginRequiredMixin, generic.ListView):
             except (self.model.DoesNotExist, ValueError):
                 raise Http404
 
-            email.flags.important = not email.flags.important
-            email.save(update_fields=["flags"])
+            email.important = not email.important
+            email.save(update_fields=["important"])
 
             return HttpResponseRedirect(self.get_success_url())
 
@@ -99,12 +96,12 @@ class InboxView(LoginRequiredMixin, generic.ListView):
 
         qs = qs.filter(id__in=emails).order_by("id")
         if "unimportant" in self.request.POST:
-            qs.update(flags=F('flags').bitand(~self.model.flags.important))
+            qs.update(important=False)
         elif "important" in self.request.POST:
-            qs.update(flags=F('flags').bitor(self.model.flags.important))
+            qs.update(important=True)
         elif "delete" in self.request.POST:
             email_ids = [("email", email.id) for email in qs]
-            qs.update(flags=F('flags').bitor(self.model.flags.deleted))
+            qs.update(deleted=True)
             delete_task = delete_inboxen_item.chunks(email_ids, 500).group()
             task_group_skew(delete_task, step=50)
             delete_task.apply_async()
@@ -165,15 +162,15 @@ class UnifiedInboxView(InboxView):
     """View all inboxes together"""
     def get_queryset(self, *args, **kwargs):
         qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.filter(inbox__flags=~models.Inbox.flags.exclude_from_unified)
+        qs = qs.filter(inbox__exclude_from_unified=False)
         return qs
 
     def get_context_data(self, *args, **kwargs):
         kwargs["headline"] = _("Inbox")
         profile = self.request.user.inboxenprofile
-        if profile.flags.unified_has_new_messages:
-            profile.flags.unified_has_new_messages = False
-            profile.save(update_fields=["flags"])
+        if profile.unified_has_new_messages:
+            profile.unified_has_new_messages = False
+            profile.save(update_fields=["unified_has_new_messages"])
 
         kwargs["unified"] = True
 
@@ -203,10 +200,10 @@ class SingleInboxView(InboxView):
         context = super(SingleInboxView, self).get_context_data(*args, **kwargs)
         context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
-        if self.inbox_obj.flags.new:
+        if self.inbox_obj.new:
             with search.skip_index_update():
-                self.inbox_obj.flags.new = False
-                self.inbox_obj.save(update_fields=["flags"])
+                self.inbox_obj.new = False
+                self.inbox_obj.save(update_fields=["new"])
 
         return context
 

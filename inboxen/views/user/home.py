@@ -18,7 +18,6 @@
 ##
 
 
-from django.db.models import Case, Count, IntegerField, When
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.views import generic
 
@@ -48,23 +47,19 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
         # q?: does this still apply?
         if self.request.method != "POST":
             qs = qs.add_last_activity()
-            qs = qs.annotate(is_pinned=Count(Case(When(flags=models.Inbox.flags.pinned, then=1),
-                                                  output_field=IntegerField())))
-            qs = qs.annotate(is_disabled=Count(Case(When(flags=models.Inbox.flags.disabled, then=1),
-                                                    output_field=IntegerField())))
-            qs = qs.order_by("-is_pinned", "is_disabled", "-last_activity").select_related("domain")
+            qs = qs.order_by("-pinned", "disabled", "-last_activity").select_related("domain")
         return qs
 
     @search.skip_index_update()
     def post(self, *args, **kwargs):
-        qs = self.get_queryset().exclude(flags=models.Inbox.flags.disabled)
+        qs = self.get_queryset().filter(disabled=False)
         try:
             inbox = qs.from_string(email=self.request.POST["pin-inbox"], user=self.request.user)
         except (self.model.DoesNotExist, ValueError, KeyError):
             raise Http404
 
-        inbox.flags.pinned = not inbox.flags.pinned
-        inbox.save(update_fields=["flags"])
+        inbox.pinned = not inbox.pinned
+        inbox.save(update_fields=["pinned"])
 
         return HttpResponseRedirect(self.request.path)
 

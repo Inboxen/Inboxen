@@ -68,13 +68,13 @@ def process_message(message, inbox=None, domain=None):
         make_email(message, inbox)
 
         with search.skip_index_update():
-            inbox.flags.new = True
-            inbox.save(update_fields=["flags"])
+            inbox.new = True
+            inbox.save(update_fields=["new"])
 
-        if not inbox.flags.exclude_from_unified:
+        if not inbox.exclude_from_unified:
             profile = inbox.user.inboxenprofile
-            profile.flags.unified_has_new_messages = True
-            profile.save(update_fields=["flags"])
+            profile.unified_has_new_messages = True
+            profile.save(update_fields=["unified_has_new_messages"])
 
     except DatabaseError as e:
         log.exception("DB error: %s", e)

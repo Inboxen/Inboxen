@@ -91,7 +91,7 @@ def liberate(user_id, options):
     mailbox.Maildir(mail_path, factory=None)
 
     inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in
-                   Inbox.objects.filter(user=user, flags=~Inbox.flags.deleted).only('id').iterator()]
+                   Inbox.objects.filter(user=user, deleted=False).only('id').iterator()]
     if len(inbox_tasks) > 0:
         tasks = chord(
                     inbox_tasks,
@@ -115,13 +115,13 @@ def liberate(user_id, options):
 @app.task(rate_limit='100/m')
 def liberate_inbox(mail_path, inbox_id):
     """ Gather email IDs """
-    inbox = Inbox.objects.get(id=inbox_id, flags=~Inbox.flags.deleted)
+    inbox = Inbox.objects.get(id=inbox_id, deleted=False)
     maildir = mailbox.Maildir(mail_path, factory=None)
     maildir.add_folder(str(inbox))
 
     return {
         'folder': str(inbox),
-        'ids': [email.id for email in Email.objects.filter(inbox=inbox, flags=~Email.flags.deleted).only('id')
+        'ids': [email.id for email in Email.objects.filter(inbox=inbox, deleted=False).only('id')
                 .iterator()]
     }
 
@@ -171,7 +171,7 @@ def liberate_message(mail_path, inbox, email_id):
     maildir = mailbox.Maildir(mail_path, factory=None).get_folder(inbox)
 
     try:
-        msg = Email.objects.get(id=email_id, flags=~Email.flags.deleted)
+        msg = Email.objects.get(id=email_id, deleted=False)
         msg = utils.make_message(msg)
         maildir.add(msg.as_string())
     except Exception as exc:
@@ -252,7 +252,7 @@ def liberation_finish(result, options):
     """ Create email to send to user """
     user = get_user_model().objects.get(id=options['user'])
     lib_status = user.liberation
-    lib_status.flags.running = False
+    lib_status.running = False
     lib_status.last_finished = timezone.now()
     lib_status.content_type = int(options.get('compression_type', '0'))
 
@@ -271,26 +271,28 @@ def liberation_finish(result, options):
 def liberate_user_profile(user_id, email_results):
     """User profile data"""
     data = {
-        'preferences': {}
+        "preferences": {}
     }
     user = get_user_model().objects.get(id=user_id)
 
     # user's preferences
     profile = user.inboxenprofile
-    data['preferences']['flags'] = dict(profile.flags.items())
+    data["preferences"]["prefer_html_email"] = profile.prefer_html_email
+    data["preferences"]["prefered_domain"] = profile.prefered_domain
+    data["preferences"]["display_images"] = profile.display_images
 
     # user data
     data["id"] = user.id
-    data['username'] = user.username
+    data["username"] = user.username
     data["is_active"] = user.is_active
-    data['join_date'] = user.date_joined.isoformat()
-    data['groups'] = [str(groups) for groups in user.groups.all()]
+    data["join_date"] = user.date_joined.isoformat()
+    data["groups"] = [str(groups) for groups in user.groups.all()]
 
-    data['errors'] = []
+    data["errors"] = []
     email_results = email_results or []
     for result in email_results:
         if result:
-            data['errors'].append(str(result))
+            data["errors"].append(str(result))
 
     return json.dumps(data)
 
@@ -304,7 +306,13 @@ def liberate_inbox_metadata(user_id):
         address = "%s@%s" % (inbox.inbox, inbox.domain)
         data[address] = {
             "created": inbox.created.isoformat(),
-            "flags": dict(inbox.flags.items()),
+            "flags": {
+                "deleted": inbox.deleted,
+                "new": inbox.new,
+                "exclude_from_unified": inbox.exclude_from_unified,
+                "disabled": inbox.disabled,
+                "pinned": inbox.pinned,
+            },
             "description": inbox.description,
         }
 

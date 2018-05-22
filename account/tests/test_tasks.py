@@ -39,7 +39,7 @@ class DeleteTestCase(InboxenTestCase):
 
         self.assertEqual(get_user_model().objects.count(), 0)
         self.assertEqual(models.Email.objects.count(), 0)
-        self.assertEqual(models.Inbox.objects.filter(flags=~models.Inbox.flags.deleted).count(), 0)
+        self.assertEqual(models.Inbox.objects.filter(deleted=False).count(), 0)
         self.assertEqual(models.Inbox.objects.filter(user__isnull=False).count(), 0)
 
     def test_disown_inbox(self):
@@ -50,7 +50,7 @@ class DeleteTestCase(InboxenTestCase):
         new_inbox = models.Inbox.objects.get(id=inbox.id)
         self.assertEqual(new_inbox.created, datetime.utcfromtimestamp(0).replace(tzinfo=utc))
         self.assertNotEqual(new_inbox.description, inbox.description)
-        self.assertTrue(new_inbox.flags.deleted)
+        self.assertTrue(new_inbox.deleted)
         self.assertEqual(new_inbox.user, None)
 
         result = tasks.disown_inbox(inbox.id + 12)

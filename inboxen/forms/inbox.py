@@ -21,7 +21,6 @@ import random
 
 from django import forms
 from django.contrib import messages
-from django.db.models import F
 from django.utils.translation import ugettext as _
 
 from inboxen import models, tasks
@@ -31,8 +30,6 @@ __all__ = ["InboxAddForm", "InboxEditForm"]
 
 
 class InboxAddForm(forms.ModelForm):
-    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
-
     def __init__(self, request, initial=None, *args, **kwargs):
         self.request = request  # needed to create the inbox
 
@@ -54,7 +51,7 @@ class InboxAddForm(forms.ModelForm):
 
     class Meta:
         model = models.Inbox
-        fields = ["domain", "description"]
+        fields = ["domain", "description", "exclude_from_unified"]
 
     def clean(self):
         if inbox_ratelimit.counter_full(self.request):
@@ -64,13 +61,8 @@ class InboxAddForm(forms.ModelForm):
         # We want this instance created by .create() so we will ignore self.instance
         # which is created just by model(**data)
         data = self.cleaned_data.copy()
-        description = data.pop("description")
-        excludes = data.pop("exclude_from_unified", False)
 
         self.instance = self.request.user.inbox_set.create(**data)
-        self.instance.description = description
-        self.instance.flags.exclude_from_unified = excludes
-        self.instance.save()
         inbox_ratelimit.counter_increase(self.request)
 
         msg = _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain)
@@ -78,39 +70,19 @@ class InboxAddForm(forms.ModelForm):
         return self.instance
 
 
-class InboxSecondaryEditForm(forms.Form):
-    """A subform to hold dangerous operations that will result in loss
-    of data.
-    """
+class InboxEditForm(forms.ModelForm):
     clear_inbox = forms.BooleanField(required=False, label=_("Empty Inbox"),
                                      help_text=_("Delete all emails in this Inbox. Cannot be undone."))
-    disable_inbox = forms.BooleanField(required=False, label=_("Disable Inbox"),
-                                       help_text=_("This Inbox will no longer receive emails."))
-
-    def __init__(self, instance, *args, **kwargs):
-        super(InboxSecondaryEditForm, self).__init__(*args, **kwargs)
-        self.fields["disable_inbox"].initial = bool(instance.flags.disabled)
-
-
-class InboxEditForm(forms.ModelForm):
-    exclude_from_unified = forms.BooleanField(required=False, label=_("Exclude from Unified Inbox"))
-    pinned = forms.BooleanField(required=False, label=_("Pin Inbox to top"))
 
     class Meta:
         model = models.Inbox
-        fields = ["description"]
+        fields = ["description", "exclude_from_unified", "pinned", "disabled"]
 
     def __init__(self, request, initial=None, instance=None, *args, **kwargs):
         self.request = request
         super(InboxEditForm, self).__init__(instance=instance, initial=initial, *args, **kwargs)
-        self.fields["exclude_from_unified"].initial = bool(self.instance.flags.exclude_from_unified)
-        self.fields["pinned"].initial = bool(self.instance.flags.pinned)
-        self.subform = InboxSecondaryEditForm(instance=self.instance, **kwargs)
 
     def clean(self):
-        if self.subform.is_valid():
-            self.cleaned_data.update(self.subform.cleaned_data)
-
         disabled = self.cleaned_data.get("disable_inbox", False)
         pinned = self.cleaned_data.get("pinned", False)
 
@@ -118,20 +90,17 @@ class InboxEditForm(forms.ModelForm):
             raise forms.ValidationError(_("Inbox cannot be disabled and pinned at the same time"))
 
     def save(self):
-        data = self.cleaned_data.copy()
-        self.instance.flags.exclude_from_unified = data.pop("exclude_from_unified", False)
-        self.instance.flags.pinned = data.pop("pinned", False)
-        self.instance.flags.disabled = data.pop("disable_inbox", False)
+        data = self.cleaned_data
         clear_inbox = data.pop("clear_inbox", False)
 
         if clear_inbox:
             emails = self.instance.email_set.all()
-            emails.update(flags=F('flags').bitor(models.Email.flags.deleted))
+            emails.update(deleted=True)
             tasks.batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
             warn_msg = _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox,
                                                                             self.instance.domain.domain)
             messages.warning(self.request, warn_msg)
 
-        self.instance.save()
+        super(InboxEditForm, self).save()
 
         return self.instance

@@ -19,7 +19,6 @@
 
 from datetime import timedelta
 
-from bitfield import BitHandler
 from django import forms
 from django.contrib.messages.constants import DEFAULT_LEVELS
 from django.contrib.messages.utils import get_level_tags
@@ -48,21 +47,21 @@ def styleguide(request):
         mock.Mock(
             inbox="qwerty",
             domain=domain,
-            flags=BitHandler(0, ["new"]),
+            get_bools_for_labels={"new": False},
             last_activity=now,
             form=InboxEditForm(request),
         ),
         mock.Mock(
             inbox="qwerty",
             domain=domain,
-            flags=BitHandler(1, ["disabled"]),
+            get_bools_for_labels={"disabled": True},
             last_activity=now,
             form=False,
         ),
         mock.Mock(
             inbox="qwerty",
             domain=domain,
-            flags=BitHandler(1 | 2, ["new", "pinned"]),
+            get_bools_for_labels={"new": True, "pinned": True},
             last_activity=now,
             form=False,
         ),
@@ -72,12 +71,12 @@ def styleguide(request):
     emails = [
         mock.Mock(
             inbox=inboxes[0],
-            flags=BitHandler(1, ["important"]),
+            get_bools_for_labels={"important": True},
             received_date=now,
         ),
         mock.Mock(
             inbox=inboxes[0],
-            flags=BitHandler(0, ["important"]),
+            get_bools_for_labels={"important": False},
             received_date=now,
         ),
     ]

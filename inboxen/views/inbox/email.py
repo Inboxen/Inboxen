@@ -46,11 +46,11 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
         with search.skip_index_update():
             out = super(EmailView, self).get(*args, **kwargs)
             if "all-headers" in self.request.GET:
-                self.object.flags.view_all_headers = bool(int(self.request.GET["all-headers"]))
+                self.object.view_all_headers = bool(int(self.request.GET["all-headers"]))
 
-            self.object.flags.read = True
-            self.object.flags.seen = True
-            self.object.save(update_fields=["flags"])
+            self.object.read = True
+            self.object.seen = True
+            self.object.save(update_fields=["view_all_headers", "read", "seen"])
 
         # pretend to be @csp_replace
         out._csp_replace = {"style-src": ["'self'", "'unsafe-inline'"]}
@@ -81,8 +81,8 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
 
         if "important-toggle" in self.request.POST:
             with search.skip_index_update():
-                obj.flags.important = not bool(obj.flags.important)
-                obj.save(update_fields=["flags"])
+                obj.important = not bool(obj.important)
+                obj.save(update_fields=["important"])
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -92,7 +92,7 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
             headers_fetch_all = bool(int(self.request.GET["all-headers"]))
         else:
             headers = cache.get(self.object.id, version="email-header")
-            headers_fetch_all = bool(self.object.flags.view_all_headers)
+            headers_fetch_all = self.object.view_all_headers
 
         if headers is None:
             headers = models.Header.objects.filter(part__email=self.object, part__parent=None)
@@ -111,11 +111,11 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
         if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
             email_dict["display_images"] = True
             email_dict["ask_images"] = False
-        elif self.request.user.inboxenprofile.flags.ask_images:
+        elif self.request.user.inboxenprofile.display_images == models.UserProfile.ASK:
             email_dict["display_images"] = False
             email_dict["ask_images"] = True
         else:
-            email_dict["display_images"] = self.request.user.inboxenprofile.flags.display_images
+            email_dict["display_images"] = self.request.user.inboxenprofile.display_images == models.UserProfile.DISPLAY
             email_dict["ask_images"] = False
 
         # iterate over MIME parts

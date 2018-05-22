@@ -71,17 +71,17 @@ class HomeViewTestCase(InboxenTestCase):
 
         # Most recent activity
         latest = ordered_inboxes[0]
-        latest.flags.pinned = True
+        latest.pinned = True
         latest.save()
 
         # Around (or exactly) the middle in activity.
         middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
-        middle.flags.pinned = True
+        middle.pinned = True
         middle.save()
 
         # Finally the least active (NB: negative indexing isn't supported).
         least = ordered_inboxes[len(ordered_inboxes)-1]
-        least.flags.pinned = True
+        least.pinned = True
         least.save()
 
         response = self.client.get(self.get_url())
@@ -89,7 +89,7 @@ class HomeViewTestCase(InboxenTestCase):
 
         # Check the top inboxes three inboxes are pinned.
         self.assertEqual(
-            [bool(obj.flags.pinned) for obj in objs],
+            [obj.pinned for obj in objs],
             [True, True, True, False, False]
         )
 
@@ -109,17 +109,17 @@ class HomeViewTestCase(InboxenTestCase):
 
         # The inbox with the latest activity.
         latest = ordered_inboxes[0]
-        latest.flags.disabled = True
+        latest.disabled = True
         latest.save()
 
         # One from the middle
         middle = ordered_inboxes[int(len(ordered_inboxes) / 2)]
-        middle.flags.disabled = True
+        middle.disabled = True
         middle.save()
 
         # Finally the least active (NB: negative indexing isn't supported).
         least = ordered_inboxes[len(ordered_inboxes)-1]
-        least.flags.disabled = True
+        least.disabled = True
         least.save()
 
         # Get the page, they should have been pushed to the second page.
@@ -128,7 +128,7 @@ class HomeViewTestCase(InboxenTestCase):
 
         # Check the last three are disabled
         self.assertEqual(
-            [bool(obj.flags.disabled) for obj in objs],
+            [obj.disabled for obj in objs],
             [False, False, True, True, True]
         )
 
@@ -149,28 +149,28 @@ class HomeViewTestCase(InboxenTestCase):
 
     def test_post(self):
         inbox = self.inboxes[0]
-        was_pinned = bool(inbox.flags.pinned)
+        was_pinned = inbox.pinned
 
         # pin
         response = self.client.post(self.get_url(), {"pin-inbox": str(inbox)})
         self.assertEqual(response.status_code, 302)
 
         inbox.refresh_from_db()
-        self.assertNotEqual(bool(inbox.flags.pinned), was_pinned)
+        self.assertNotEqual(inbox.pinned, was_pinned)
 
         # toggle
         response = self.client.post(self.get_url(), {"pin-inbox": str(inbox)})
         self.assertEqual(response.status_code, 302)
 
         inbox.refresh_from_db()
-        self.assertEqual(bool(inbox.flags.pinned), was_pinned)
+        self.assertEqual(inbox.pinned, was_pinned)
 
         # invalid
         response = self.client.post(self.get_url(), {"pin-inbox": "aagfdsgsfdg"})
         self.assertEqual(response.status_code, 404)
 
         # disabled
-        inbox.flags.disabled = True
+        inbox.disabled = True
         inbox.save()
         response = self.client.post(self.get_url(), {"pin-inbox": str(inbox)})
         self.assertEqual(response.status_code, 404)
@@ -179,28 +179,28 @@ class HomeViewTestCase(InboxenTestCase):
         url = urlresolvers.reverse("form-home")
 
         inbox = self.inboxes[0]
-        was_pinned = bool(inbox.flags.pinned)
+        was_pinned = inbox.pinned
 
         # pin
         response = self.client.post(url, {"pin-inbox": str(inbox)})
         self.assertEqual(response.status_code, 204)
 
         inbox.refresh_from_db()
-        self.assertNotEqual(bool(inbox.flags.pinned), was_pinned)
+        self.assertNotEqual(inbox.pinned, was_pinned)
 
         # toggle
         response = self.client.post(url, {"pin-inbox": str(inbox)})
         self.assertEqual(response.status_code, 204)
 
         inbox.refresh_from_db()
-        self.assertEqual(bool(inbox.flags.pinned), was_pinned)
+        self.assertEqual(inbox.pinned, was_pinned)
 
         # invalid
         response = self.client.post(url, {"pin-inbox": "aagfdsgsfdg"})
         self.assertEqual(response.status_code, 404)
 
         # disabled
-        inbox.flags.disabled = True
+        inbox.disabled = True
         inbox.save()
         response = self.client.post(url, {"pin-inbox": str(inbox)})
         self.assertEqual(response.status_code, 404)

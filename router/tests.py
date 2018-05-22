@@ -124,15 +124,15 @@ class RouterTestCase(InboxenTestCase):
         profile = user.inboxenprofile
         inbox = models.Inbox.objects.get(id=inbox.id)
 
-        self.assertTrue(inbox.flags.new)
-        self.assertTrue(profile.flags.unified_has_new_messages)
+        self.assertTrue(inbox.new)
+        self.assertTrue(profile.unified_has_new_messages)
 
-        # reset some flags
-        inbox.flags.new = False
-        inbox.flags.exclude_from_unified = True
-        inbox.save(update_fields=["flags"])
-        profile.flags.unified_has_new_messages = False
-        profile.save(update_fields=["flags"])
+        # reset some bools
+        inbox.new = False
+        inbox.exclude_from_unified = True
+        inbox.save(update_fields=["new", "exclude_from_unified"])
+        profile.unified_has_new_messages = False
+        profile.save(update_fields=["unified_has_new_messages"])
 
         with mock.patch("router.app.server.make_email") as mock_make_email:
             process_message(None, inbox.inbox, inbox.domain.domain)
@@ -142,8 +142,8 @@ class RouterTestCase(InboxenTestCase):
         profile = user.inboxenprofile
         inbox = models.Inbox.objects.get(id=inbox.id)
 
-        self.assertTrue(inbox.flags.new)
-        self.assertFalse(profile.flags.unified_has_new_messages)
+        self.assertTrue(inbox.new)
+        self.assertFalse(profile.unified_has_new_messages)
 
     def test_make_email(self):
         inbox = factories.InboxFactory()

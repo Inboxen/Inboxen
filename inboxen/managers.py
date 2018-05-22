@@ -99,20 +99,16 @@ class InboxQuerySet(QuerySet):
 
     def receiving(self):
         """Returns a QuerySet of Inboxes that can receive emails"""
-        from inboxen.models import Inbox
-
         qs = self.filter(domain__enabled=True, user__isnull=False)
         return qs.exclude(
-            models.Q(flags=Inbox.flags.deleted) |
-            models.Q(flags=Inbox.flags.disabled),
+            models.Q(deleted=True) |
+            models.Q(disabled=True),
         )
 
     def viewable(self, user):
         """Returns a QuerySet of Inboxes the user can view"""
-        from inboxen.models import Inbox
-
         qs = self.filter(user=user)
-        return qs.exclude(flags=Inbox.flags.deleted)
+        return qs.exclude(deleted=True)
 
     def add_last_activity(self):
         """Annotates `last_activity` onto each Inbox and then orders by that column"""
@@ -127,12 +123,10 @@ class InboxQuerySet(QuerySet):
 
 class EmailQuerySet(QuerySet):
     def viewable(self, user):
-        from inboxen.models import Email, Inbox
-
         qs = self.filter(inbox__user=user)
         return qs.exclude(
-            Q(flags=Email.flags.deleted) |
-            Q(inbox__flags=Inbox.flags.deleted),
+            Q(deleted=True) |
+            Q(inbox__deleted=True),
         )
 
 

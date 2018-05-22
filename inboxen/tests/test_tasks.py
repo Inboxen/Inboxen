@@ -140,8 +140,8 @@ class FlagTestCase(InboxenTestCase):
         super(FlagTestCase, self).setUp()
         self.user = factories.UserFactory()
         self.inboxes = [
-            factories.InboxFactory(user=self.user, flags=0),
-            factories.InboxFactory(user=self.user, flags=models.Inbox.flags.new),
+            factories.InboxFactory(user=self.user),
+            factories.InboxFactory(user=self.user, new=True),
         ]
         self.emails = factories.EmailFactory.create_batch(10, inbox=self.inboxes[0])
         self.emails.extend(factories.EmailFactory.create_batch(10, inbox=self.inboxes[1]))

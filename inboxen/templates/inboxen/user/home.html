@@ -24,7 +24,7 @@
             <div class="{{ col0 }}">
                 <div class="row">
                     <div class="inbox-name col-xs-12 col-sm-8"><a href="{% url 'unified-inbox' %}">{% trans "Unified Inbox" %}</a></div>
-                    <div class="inbox-flags col-xs-12 col-sm-4">{{ user.inboxenprofile.flags|render_flags }}</div>
+                    <div class="inbox-flags col-xs-12 col-sm-4">{{ user.inboxenprofile.get_bools_for_labels|render_flags }}</div>
                 </div>
             </div>
             <div class="{{ col2 }}">&nbsp;</div>
@@ -35,7 +35,7 @@
         </a>
     </div>
     {% for inbox in page_obj.object_list %}
-        {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.flags last_activity=inbox.last_activity desc=inbox.description %}
+        {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.get_bools_for_labels last_activity=inbox.last_activity desc=inbox.description %}
     {% empty %}
         <div class="row empty-message">
             <a href="{% url 'inbox-add' %}" class="clickable">
