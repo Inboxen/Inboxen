@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Change code to use new boolfields - requires downtime (#325)
+
 ## Releases
 
 ### Deploy for 2018-05-22
