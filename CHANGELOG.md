@@ -2,10 +2,12 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2018-05-22
+
 * Add boolean fields to replace bitfields in various models (#325)
 * Make sure cache keys generated for ratelimiting are URL-safe (#354)
-
-## Releases
 
 ### Deploy for 2018-05-11
 
