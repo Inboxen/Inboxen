@@ -53,11 +53,16 @@ class UserProfile(models.Model):
 
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
     flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
-    prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True)
 
-    prefer_html_email = models.BooleanField(default=True)
+    prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True,
+                                        help_text=_("Prefer a particular domain when adding a new Inbox"))
+    prefer_html_email = models.BooleanField(default=True, verbose_name=_("Prefer HTML emails"))
     unified_has_new_messages = models.BooleanField(default=False)
-    display_images = models.PositiveSmallIntegerField(choices=IMAGE_OPTIONS, default=ASK)
+    display_images = models.PositiveSmallIntegerField(
+        choices=IMAGE_OPTIONS, default=ASK,
+        verbose_name=_("Display options for HTML emails"),
+        help_text=_("Warning: Images in HTML emails can be used to track if you read an email!"),
+    )
 
     def get_bools_for_labels(self):
         yield ("new", self.unified_has_new_messages)
@@ -159,9 +164,9 @@ class Inbox(models.Model):
     deleted = models.BooleanField(default=False)
     new = models.BooleanField(default=False)
     exclude_from_unified = models.BooleanField(default=False, verbose_name=_("Exclude from Unified Inbox"))
-    disabled = models.BooleanField(default=False, verbose_name=_("Disable Inbox"))
-    pinned = models.BooleanField(default=False, verbose_name=_("Pin Inbox to top"),
+    disabled = models.BooleanField(default=False, verbose_name=_("Disable Inbox"),
                                  help_text=_("This Inbox will no longer receive emails."))
+    pinned = models.BooleanField(default=False, verbose_name=_("Pin Inbox to top"))
 
     objects = InboxQuerySet.as_manager()
 

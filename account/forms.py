@@ -122,14 +122,6 @@ class SettingsForm(forms.ModelForm):
     class Meta:
         model = models.UserProfile
         fields = ["prefered_domain", "display_images", "prefer_html_email"]
-        labels = {
-            "display_images": _("Display options for HTML emails"),
-            "prefer_html_email": _("Prefer HTML emails"),
-        }
-        help_texts = {
-            "display_images": _("Warning: Images in HTML emails can be used to track if you read an email!"),
-            "prefered_domain": _("Prefer a particular domain when adding a new Inbox")
-        }
 
 
 class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
