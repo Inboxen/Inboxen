@@ -21,7 +21,6 @@ import os.path
 import re
 
 from annoying.fields import AutoOneToOneField, JSONField
-from bitfield import BitField
 from django.conf import settings
 from django.db import models
 from django.utils.encoding import smart_str
@@ -61,9 +60,6 @@ class UserProfile(models.Model):
     )
 
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
-    flags = BitField(flags=(b"prefer_html_email", b"unified_has_new_messages", b"ask_images", b"display_images"),
-                     default=5)
-
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True,
                                         help_text=_("Prefer a particular domain when adding a new Inbox"))
     prefer_html_email = models.BooleanField(default=True, verbose_name=_("Prefer HTML emails"))
@@ -114,7 +110,6 @@ class Liberation(models.Model):
     `_path` is relative to settings.LIBERATION_PATH
     """
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
-    flags = BitField(flags=(b"running", b"errored"), default=0)
     content_type = models.PositiveSmallIntegerField(default=0)
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
@@ -168,18 +163,11 @@ class Inbox(models.Model):
     Object manager has a custom create() method to generate a random local part
     and a from_string() method to grab an Inbox object from the database given
     a string "inbox@domain"
-
-    `flags` are "deleted" and "new".
-    * "deleted" is obvious (and should be used instead of deleting the model)
-    * "new" should be set when an email is added to the inbox and unset when
-      the inbox is viewed
-    * "disabled" is a bit like "deleted", but incoming mail will be deffered, not rejected
     """
     inbox = models.CharField(max_length=64, validators=[validators.ProhibitNullCharactersValidator()])
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    flags = BitField(flags=(b"deleted", b"new", b"exclude_from_unified", b"disabled", b"pinned"), default=0)
     description = models.CharField(max_length=256, null=True, blank=True,
                                    validators=[validators.ProhibitNullCharactersValidator()])
 
@@ -221,12 +209,10 @@ class Email(models.Model):
     """Email model
 
     eid is a convience property that outputs a hexidec ID
-    flags is a BitField for flags such as deleted, read, etc.
 
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
     inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=(b"deleted", b"read", b"seen", b"important", b"view_all_headers"), default=0)
     received_date = models.DateTimeField(db_index=True)
 
     deleted = models.BooleanField(default=False)

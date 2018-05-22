@@ -124,7 +124,7 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
     def test_create_render_bitfield_template_tag_no_values(self):
         # empty flag definition, so all values will be "invalid"
         func = flag_utils.create_render_bitfield_template_tag({})
-        flag_obj = BitHandler(1 | 2, ["new", "read"])
+        flag_obj = (("new", True), ("read", True))
         self.assertEqual(func(flag_obj).strip(), "&nbsp;")
 
     @mock.patch("inboxen.utils.flags.loader")
@@ -134,7 +134,7 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
 
         func = flag_utils.create_render_bitfield_template_tag(
                 {"p": {"str": "person"}, "a": {"str": "animal"}}, "test.html")
-        flag_obj = BitHandler(1 | 2, ["a", "p"])
+        flag_obj = (("a", True), ("p", True))
         self.assertEqual(func(flag_obj), "Hello: animal\nHello: person\n")
 
     @mock.patch("inboxen.utils.flags.loader")
@@ -144,9 +144,9 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
 
         func = flag_utils.create_render_bitfield_template_tag(
                 {"p": {"str": "person", "inverse": True}, "a": {"str": "animal"}}, "test.html")
-        flag_obj = BitHandler(1 | 2, ["a", "p"])
+        flag_obj = (("a", True), ("p", True))
         self.assertEqual(func(flag_obj), "Hello: animal\n")
-        flag_obj = BitHandler(1, ["a", "p"])
+        flag_obj = (("a", True), ("p", False))
         self.assertEqual(func(flag_obj), "Hello: animal\nHello: person\n")
 
     @mock.patch("inboxen.utils.flags.loader")
@@ -156,7 +156,7 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
 
         func = flag_utils.create_render_bitfield_template_tag(
                 {"p": {"str": "person", "singleton": True}, "a": {"str": "animal"}}, "test.html")
-        flag_obj = BitHandler(1 | 2, ["a", "p"])
+        flag_obj = (("a", True), ("p", True))
         self.assertEqual(func(flag_obj), "Hello: person\n")
 
     def test_unicode(self):
@@ -166,7 +166,7 @@ class TemplateTagFactoryTestCase(InboxenTestCase):
             "class": "awesome-snowman",
         }}
         func = flag_utils.create_render_bitfield_template_tag(flags)
-        flag_obj = BitHandler(1, ["snowman"])
+        flag_obj = (("snowman", True),)
         output = func(flag_obj)
 
         self.assertIn(u'<span class="label awesome-snowman"', output)
