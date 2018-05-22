@@ -23,8 +23,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.core import exceptions
+from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext as _
-
 from elevate.forms import ElevateForm
 from ratelimitbackend.forms import AuthenticationForm
 
@@ -122,6 +122,9 @@ class SettingsForm(forms.ModelForm):
     class Meta:
         model = models.UserProfile
         fields = ["prefered_domain", "display_images", "prefer_html_email"]
+        widgets = {
+            "display_images": RadioSelect()
+        }
 
 
 class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
