@@ -58,6 +58,12 @@ class UserProfile(models.Model):
                                         help_text=_("Prefer a particular domain when adding a new Inbox"))
     prefer_html_email = models.BooleanField(default=True, verbose_name=_("Prefer HTML emails"))
     unified_has_new_messages = models.BooleanField(default=False)
+    auto_delete = models.BooleanField(
+        default=False,
+        verbose_name=_("Auto-delete emails"),
+        help_text=_("Delete emails after %(days)s days. Emails that have been marked as important will not be deleted."
+                    ) % {"days": settings.INBOX_AUTO_DELETE_TIME},
+    )
     display_images = models.PositiveSmallIntegerField(
         choices=IMAGE_OPTIONS, default=ASK,
         verbose_name=_("Display options for HTML emails"),

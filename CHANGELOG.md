@@ -3,6 +3,7 @@
 ## Pending
 
 * Change code to use new boolfields - requires downtime (#325)
+* Allow users to auto-delete emails after 30 days (#83)
 
 ## Releases
 

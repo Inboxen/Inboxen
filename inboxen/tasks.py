@@ -290,3 +290,12 @@ def clean_orphan_models():
 
     # HeaderData
     batch_delete_items.delay("headerdata", kwargs={"header__isnull": True})
+
+
+@app.task(rate_limit="1/h")
+def auto_delete_emails():
+    batch_delete_items.delay("email", kwargs={
+        "inbox__user__inboxenprofile__auto_delete": True,
+        "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
+        "important": False,
+    })

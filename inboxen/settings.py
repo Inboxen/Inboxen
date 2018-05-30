@@ -38,6 +38,10 @@ COLUMN_HASHER = "sha1"
 # passed directly to get_random_string when creating an Inbox
 INBOX_CHOICES = string.ascii_lowercase
 
+# if auto-delete has been enabled for a user, this is how many days old an
+# email has to be before it will be considered for delition
+INBOX_AUTO_DELETE_TIME = 30
+
 ##
 # To override the following settings, create a separate settings module.
 # Import this module, override what you need to and set the environment
@@ -79,6 +83,10 @@ CELERY_BEAT_SCHEDULE = {
     },
     'sessions': {
         'task': 'inboxen.tasks.clean_expired_session',
+        'schedule': datetime.timedelta(days=1),
+    },
+    'auto-delete': {
+        'task': 'inboxen.tasks.auto_delete_emails',
         'schedule': datetime.timedelta(days=1),
     },
 }

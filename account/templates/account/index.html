@@ -17,7 +17,17 @@
                 {% block form %}
                     <form action="{% url 'user-settings' %}" class="form" method="POST">
                         {% csrf_token %}
-                        {{ form|bootstrap }}
+                        {{ form.prefered_domain|bootstrap }}
+                        {{ form.display_images|bootstrap }}
+                        {{ form.prefer_html_email|bootstrap }}
+                        <div class="panel panel-danger">
+                            <div class="panel-heading">
+                                {% trans "Danger Area" %}
+                            </div>
+                            <div class="panel-body">
+                                {{ form.auto_delete|bootstrap }}
+                            </div>
+                        </div>
                         <button class="btn btn-primary">{% trans "Save" %}</button>
                     </form>
                     <hr>
