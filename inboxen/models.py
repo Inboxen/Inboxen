@@ -42,6 +42,7 @@ class UserProfile(models.Model):
 
     Auto-created when accessed via a RelatedManager
     """
+    # display image options
     ASK = 0
     DISPLAY = 1
     NO_DISPLAY = 2
@@ -51,8 +52,17 @@ class UserProfile(models.Model):
         (NO_DISPLAY, _("Never display images")),
     )
 
+    # what to do when the user hits their quota (if a quota exists)
+    REJECT_MAIL = 0
+    DELETE_MAIL = 1
+    QUOTA_OPTIONS = (
+        (REJECT_MAIL, _("Reject new emails")),
+        (DELETE_MAIL, _("Delete old emails")),
+    )
+
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
-    flags = BitField(flags=(b"prefer_html_email", b"unified_has_new_messages", b"ask_images", b"display_images"), default=5)
+    flags = BitField(flags=(b"prefer_html_email", b"unified_has_new_messages", b"ask_images", b"display_images"),
+                     default=5)
 
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True,
                                         help_text=_("Prefer a particular domain when adding a new Inbox"))
@@ -69,6 +79,12 @@ class UserProfile(models.Model):
         verbose_name=_("Display options for HTML emails"),
         help_text=_("Warning: Images in HTML emails can be used to track if you read an email!"),
     )
+
+    quota_options = models.PositiveSmallIntegerField(
+        choices=QUOTA_OPTIONS, default=REJECT_MAIL,
+        verbose_name=_("What happens once your email quota is reached?"),
+    )
+    quota_percent_usage = models.PositiveSmallIntegerField(default=0)
 
     def get_bools_for_labels(self):
         yield ("new", self.unified_has_new_messages)

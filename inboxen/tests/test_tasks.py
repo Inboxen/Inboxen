@@ -28,7 +28,7 @@ import mock
 
 from inboxen import models, tasks
 from inboxen.tests import factories
-from inboxen.test import InboxenTestCase
+from inboxen.test import InboxenTestCase, override_settings
 
 
 class StatsTestCase(InboxenTestCase):
@@ -286,6 +286,16 @@ class DeleteTestCase(InboxenTestCase):
             self.assertTrue(mock_qs.filter.called)
             self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
 
+        mock_qs = mock.Mock()
+        mock_qs.filter.return_value.iterator.return_value = [mock.Mock(pk=i) for i in range(12)]
+        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs), \
+                mock.patch("inboxen.tasks.delete_inboxen_item.chunks") as chunk_mock:
+            tasks.batch_delete_items("email", kwargs={"a": "b"}, skip_items=2, limit_items=6)
+            self.assertTrue(mock_qs.filter.called)
+            self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
+
+            self.assertEqual([i[1] for i in chunk_mock.call_args[0][0]], list(range(2, 8)))
+
 
 class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
     def test_task_empty(self):
@@ -339,3 +349,60 @@ class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
         # 1/2 users have auto-deleted enabled
         # therefore 1/6 emails can be deleted
         self.assertEqual(models.Email.objects.count(), 20)
+
+
+class CalculateQuotaTaskTestCase(InboxenTestCase):
+    def test_task_empty(self):
+        tasks.calculate_quota.delay()
+
+    @mock.patch("inboxen.tasks.calculate_user_quota")
+    @mock.patch("inboxen.tasks.task_group_skew")
+    def test_skip_subtask_generation(self, skew_mock, task_mock):
+        # check default value
+        self.assertEqual(settings.PER_USER_EMAIL_QUOTA, 0)
+        tasks.calculate_quota.delay()
+        # tasks should be skipped
+        self.assertEqual(task_mock.chunks.call_count, 0)
+
+        with override_settings(PER_USER_EMAIL_QUOTA=10):
+            # if there are no suers, skip skewing the group
+            task_mock.chunks.return_value.group.return_value = []
+            tasks.calculate_quota.delay()
+            self.assertEqual(task_mock.chunks.call_count, 1)
+            self.assertEqual(task_mock.chunks.return_value.group.call_count, 1)
+            self.assertEqual(skew_mock.call_count, 0)
+
+    @override_settings(PER_USER_EMAIL_QUOTA=10)
+    def test_full_run(self):
+        # create users and emails, check user profiles
+        user1 = factories.UserFactory()
+        user2 = factories.UserFactory()
+
+        user1_email_count = 11
+        user2_email_count = 4
+        other_users_email_count = 9
+
+        factories.EmailFactory.create_batch(user1_email_count, inbox__user=user1)
+        factories.EmailFactory.create_batch(user2_email_count, inbox__user=user2)
+        factories.EmailFactory.create_batch(other_users_email_count)
+
+        tasks.calculate_quota.delay()
+
+        self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
+        self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count)
+        self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
+
+        # now enable deleting
+        models.UserProfile.objects.update(quota_options=models.UserProfile.DELETE_MAIL)
+        tasks.calculate_quota.delay()
+
+        self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
+        self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count - 1)
+        self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
+
+    def test_user_deleted(self):
+        # check that calculate_user_quota can cope with a deleted user
+        user_id = "this can never be a user id, (hopefully)"
+        tasks.calculate_user_quota(user_id)

@@ -102,7 +102,8 @@ class InboxQuerySet(QuerySet):
         qs = self.filter(domain__enabled=True, user__isnull=False)
         return qs.exclude(
             models.Q(deleted=True) |
-            models.Q(disabled=True),
+            models.Q(disabled=True) |
+            models.Q(user__inboxenprofile__quota_percent_usage__gte=100)
         )
 
     def viewable(self, user):

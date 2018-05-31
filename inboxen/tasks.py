@@ -250,7 +250,7 @@ def delete_inboxen_item(model, item_pk):
 
 @app.task(rate_limit="1/m")
 @transaction.atomic()
-def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
+def batch_delete_items(model, args=None, kwargs=None, skip_items=None, limit_items=None, batch_number=500):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
@@ -272,6 +272,10 @@ def batch_delete_items(model, args=None, kwargs=None, batch_number=500):
 
     items = _model.objects.only('pk').filter(*args, **kwargs)
     items = [(model, item.pk) for item in items.iterator()]
+    if skip_items is not None:
+        items = items[skip_items:]
+    if limit_items is not None:
+        items = items[:limit_items]
     if len(items) == 0:
         return
 
@@ -299,3 +303,38 @@ def auto_delete_emails():
         "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
         "important": False,
     })
+
+
+@app.task(rate_limit="1/h")
+def calculate_quota(batch_number=500):
+    if not settings.PER_USER_EMAIL_QUOTA:
+        return
+
+    users = get_user_model().objects.only("pk")
+
+    user_tasks = calculate_user_quota.chunks([(i.pk,) for i in users.iterator()], batch_number).group()
+    if len(user_tasks) == 0:
+        return
+
+    task_group_skew(user_tasks, step=batch_number/10.0)
+    user_tasks.delay()
+
+
+@app.task
+def calculate_user_quota(user_id):
+    if not settings.PER_USER_EMAIL_QUOTA:
+        return
+
+    try:
+        profile = get_user_model().objects.get(id=user_id).inboxenprofile
+    except get_user_model().DoesNotExist:
+        return
+
+    email_count = models.Email.objects.filter(inbox__user_id=user_id).count()
+
+    profile.quota_percent_usage = min((email_count * 100) / settings.PER_USER_EMAIL_QUOTA, 100)
+    profile.save(update_fields=["quota_percent_usage"])
+
+    if profile.quota_options == profile.DELETE_MAIL and email_count > settings.PER_USER_EMAIL_QUOTA:
+        batch_delete_items.delay("email", kwargs={"important": False, "inbox__user_id": user_id},
+                                 skip_items=settings.PER_USER_EMAIL_QUOTA)

@@ -26,6 +26,18 @@
                             </div>
                             <div class="panel-body">
                                 {{ form.auto_delete|bootstrap }}
+                                {% if form.quota_options %}
+                                    <hr>
+                                    <div class="progress">
+                                        <div class="progress-bar width-{{ form.instance.quota_percent_usage }}"
+                                             role="progressbar"
+                                             aria-valuenow="{{ form.instance.quota_percent_usage }}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"
+                                        >{{ form.instance.quota_percent_usage }}%</div>
+                                    </div>
+                                    {{ form.quota_options|bootstrap }}
+                                {% endif %}
                             </div>
                         </div>
                         <button class="btn btn-primary">{% trans "Save" %}</button>
