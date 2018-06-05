@@ -122,7 +122,7 @@ class SettingsForm(forms.ModelForm):
 
     class Meta:
         model = models.UserProfile
-        fields = ["prefered_domain", "display_images", "prefer_html_email"]
+        fields = ["prefered_domain", "display_images", "prefer_html_email", "auto_delete"]
         widgets = {
             "display_images": RadioSelect()
         }

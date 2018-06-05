@@ -17,8 +17,10 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import timedelta
+from datetime import datetime, timedelta
+import itertools
 
+from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from watson.models import SearchEntry
@@ -283,3 +285,57 @@ class DeleteTestCase(InboxenTestCase):
             tasks.batch_delete_items("email", kwargs={"a": "b"})
             self.assertTrue(mock_qs.filter.called)
             self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
+
+
+class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
+    def test_task_empty(self):
+        tasks.auto_delete_emails.delay()
+
+    def test_task_no_valid_users(self):
+        factories.EmailFactory.create_batch(5)
+        tasks.auto_delete_emails.delay()
+        self.assertEqual(models.Email.objects.count(), 5)
+
+    @mock.patch("inboxen.tasks.batch_delete_items")
+    @mock.patch("inboxen.tasks.timezone.now")
+    def test_batch_delete_call(self, now_mock, task_mock):
+        now_mock.return_value = datetime.utcnow()
+        tasks.auto_delete_emails()
+
+        self.assertEqual(task_mock.delay.call_count, 1)
+        self.assertEqual(task_mock.delay.call_args, (
+            ("email",),
+            {"kwargs": {"inbox__user__inboxenprofile__auto_delete": True, "important": False,
+                        "received_date__lt": now_mock.return_value - timedelta(days=30)}},
+        ))
+
+    def test_task(self):
+        params = [
+            [True, False],  # important
+            [True, False],  # read
+            [True, False],  # auto-delete
+            [
+                # received_date
+                timedelta(days=settings.INBOX_AUTO_DELETE_TIME - 1),
+                timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
+                timedelta(days=settings.INBOX_AUTO_DELETE_TIME + 1),
+            ],
+        ]
+
+        now = timezone.now()
+
+        for args in itertools.product(*params):
+            email = factories.EmailFactory(important=args[0], read=args[1], received_date=now - args[3],
+                                           inbox__user=factories.UserFactory())
+            email.inbox.user.inboxenprofile.auto_delete = args[2]
+            email.inbox.user.inboxenprofile.save()
+
+        self.assertEqual(models.Email.objects.count(), 24)
+
+        tasks.auto_delete_emails.delay()
+
+        # 2/3 of emails will be old enough
+        # 1/2 not marked import
+        # 1/2 users have auto-deleted enabled
+        # therefore 1/6 emails can be deleted
+        self.assertEqual(models.Email.objects.count(), 20)
