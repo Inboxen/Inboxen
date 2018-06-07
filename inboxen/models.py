@@ -52,7 +52,7 @@ class UserProfile(models.Model):
     )
 
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
-    flags = BitField(flags=("prefer_html_email", "unified_has_new_messages", "ask_images", "display_images"), default=5)
+    flags = BitField(flags=(b"prefer_html_email", b"unified_has_new_messages", b"ask_images", b"display_images"), default=5)
 
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True,
                                         help_text=_("Prefer a particular domain when adding a new Inbox"))
@@ -98,7 +98,7 @@ class Liberation(models.Model):
     `_path` is relative to settings.LIBERATION_PATH
     """
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
-    flags = BitField(flags=("running", "errored"), default=0)
+    flags = BitField(flags=(b"running", b"errored"), default=0)
     content_type = models.PositiveSmallIntegerField(default=0)
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
@@ -163,7 +163,7 @@ class Inbox(models.Model):
     domain = models.ForeignKey(Domain, on_delete=models.PROTECT)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
     created = models.DateTimeField('Created')
-    flags = BitField(flags=("deleted", "new", "exclude_from_unified", "disabled", "pinned"), default=0)
+    flags = BitField(flags=(b"deleted", b"new", b"exclude_from_unified", b"disabled", b"pinned"), default=0)
     description = models.CharField(max_length=256, null=True, blank=True,
                                    validators=[validators.ProhibitNullCharactersValidator()])
 
@@ -210,7 +210,7 @@ class Email(models.Model):
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
     inbox = models.ForeignKey(Inbox)
-    flags = BitField(flags=("deleted", "read", "seen", "important", "view_all_headers"), default=0)
+    flags = BitField(flags=(b"deleted", b"read", b"seen", b"important", b"view_all_headers"), default=0)
     received_date = models.DateTimeField(db_index=True)
 
     deleted = models.BooleanField(default=False)
@@ -262,7 +262,7 @@ class Body(models.Model):
     """
     hashed = models.CharField(max_length=80, unique=True,
                               validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
-    data = models.BinaryField(default="")
+    data = models.BinaryField(default=b"")
     size = models.PositiveIntegerField(null=True)
 
     objects = BodyQuerySet.as_manager()
