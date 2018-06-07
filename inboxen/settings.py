@@ -89,6 +89,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'inboxen.tasks.auto_delete_emails',
         'schedule': datetime.timedelta(days=1),
     },
+    'quota': {
+        'task': 'inboxen.tasks.calculate_quota',
+        'schedule': datetime.timedelta(hours=1),
+    },
 }
 
 ##

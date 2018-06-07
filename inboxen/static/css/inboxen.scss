@@ -350,3 +350,11 @@ a.soon {
         @extend %hover-button-in-table;
     }
 }
+
+// this is ugly, when browsers support attr properly, replace it
+// https://caniuse.com/#feat=css3-attr
+@for $i from 0 through 100 {
+    .width-#{$i} {
+        width: $i * 1%;
+    }
+}

@@ -129,20 +129,41 @@ class ModelTestCase(InboxenTestCase):
             other_user.inbox_set.from_string(email=email)
 
     def test_inbox_receiving(self):
-        user = factories.UserFactory()
 
         # all the permutations of Inboxes that can receive
         params = (
             [True, False],  # domain enabled
             [True, False],  # deleted
             [True, False],  # disabled
-            [user, None],   # user
+            [factories.UserFactory, None],   # user
+            [models.UserProfile.REJECT_MAIL,
+             models.UserProfile.DELETE_MAIL],  # quota options
+            [99, 100, 101],  # quota percent
         )
         for args in itertools.product(*params):
-            factories.InboxFactory(domain__enabled=args[0], deleted=args[1], disabled=args[1], user=args[3])
+            if args[3] is not None:
+                user = args[3]()
+                user.inboxenprofile.quota_options = args[4]
+                user.inboxenprofile.quota_percent_usage = args[5]
+                user.inboxenprofile.save()
+            else:
+                user = None
 
-        count = models.Inbox.objects.receiving().count()
-        self.assertEqual(count, 2)
+            factories.InboxFactory(domain__enabled=args[0], deleted=args[1], disabled=args[1], user=user)
+
+        for inbox in models.Inbox.objects.receiving():
+            truth_values = [inbox.deleted, inbox.disabled, not inbox.domain.enabled,
+                            inbox.user is None or inbox.user.inboxenprofile.quota_percent_usage > 99]
+
+            self.assertFalse(any(truth_values), truth_values)
+
+        for inbox in models.Inbox.objects.exclude(id__in=models.Inbox.objects.receiving()):
+            truth_values = [inbox.deleted, inbox.disabled, not inbox.domain.enabled,
+                            inbox.user is None or inbox.user.inboxenprofile.quota_percent_usage > 99]
+
+            self.assertTrue(any(truth_values), truth_values)
+
+        self.assertEqual(models.Inbox.objects.receiving().count(), 4)
 
     def test_inbox_viewable(self):
         user = factories.UserFactory()

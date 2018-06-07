@@ -18,6 +18,7 @@
 ##
 
 from django import forms
+from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
@@ -120,9 +121,12 @@ class SettingsForm(forms.ModelForm):
         self.fields["prefered_domain"].queryset = models.Domain.objects.available(request.user)
         self.fields["prefered_domain"].empty_label = _("(No preference)")
 
+        if not settings.PER_USER_EMAIL_QUOTA:
+            del self.fields["quota_options"]
+
     class Meta:
         model = models.UserProfile
-        fields = ["prefered_domain", "display_images", "prefer_html_email", "auto_delete"]
+        fields = ["prefered_domain", "display_images", "prefer_html_email", "auto_delete", "quota_options"]
         widgets = {
             "display_images": RadioSelect()
         }
