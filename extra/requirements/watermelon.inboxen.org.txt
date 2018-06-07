@@ -7,11 +7,11 @@
 -e git+https://github.com/moggers87/django-cursor-pagination@d066d004a8bedfef5aa4c9ffa1fd65e9e760f270#egg=django-cursor-pagination
 -e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
-amqp==2.2.2               # via kombu
-babel==2.5.3              # via django-phonenumber-field
-backports.shutil-get-terminal-size==1.0.0  # via ipython
+amqp==2.3.2               # via kombu
+babel==2.6.0              # via django-phonenumber-field
+backcall==0.1.0           # via ipython
 billiard==3.5.0.3         # via celery
-celery==4.1.0
+celery==4.1.1
 certifi==2018.4.16        # via requests
 chardet==3.0.4            # via requests, salmon-mail
 click==6.7                # via pip-tools
@@ -38,26 +38,25 @@ django-two-factor-auth==1.7.0
 django==1.11.13
 dnspython==1.15.0         # via salmon-mail
 docutils==0.14            # via python-daemon
-enum34==1.1.6             # via traitlets
 factory-boy==2.11.1
 faker==0.8.5
 first==2.0.1              # via pip-tools
-funcsigs==1.0.2           # via mock
 idna==2.6                 # via requests
 ipaddress==1.0.22
 ipython-genutils==0.2.0   # via traitlets
-ipython==5.7.0
+ipython==6.4.0
+jedi==0.12.0              # via ipython
 jsmin==2.2.2
-kombu==4.1.0              # via celery
+kombu==4.2.1              # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.2.1
 markdown==2.6.11
 mock==2.0.0
-pathlib2==2.3.2           # via ipython, pickleshare
-pbr==4.0.2                # via mock
-pexpect==4.5.0            # via ipython
-phonenumberslite==8.9.5
+parso==0.2.1              # via jedi
+pbr==4.0.4                # via mock
+pexpect==4.6.0            # via ipython
+phonenumberslite==8.9.7
 pickleshare==0.7.4        # via ipython
 pillow==5.1.0
 pip-tools==2.0.2
@@ -74,10 +73,9 @@ pytz==2018.4
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
 salmon-mail==3.0.0
-scandir==1.7              # via pathlib2
 simplegeneric==0.8.1      # via ipython
-simplejson==3.14.0
-six==1.11.0               # via configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, pathlib2, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, traitlets
+simplejson==3.15.0
+six==1.11.0               # via configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, traitlets
 traitlets==4.3.2          # via ipython
 typing==3.6.4
 unidecode==1.0.22         # via faker
