@@ -19,6 +19,7 @@
 
 import datetime
 import itertools
+import unittest
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -235,6 +236,7 @@ class ModelTestCase(InboxenTestCase):
         self.assertFalse(body2[1])
 
 
+@unittest.skip("No longer needed")
 class ModelFlagsTestCase(InboxenTestCase):
     def test_email_flags_order(self):
         # DON'T CHANGE ORDER OF THIS LIST
