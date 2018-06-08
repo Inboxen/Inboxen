@@ -23,6 +23,7 @@ def migrate_from_bitfield(apps, schema_editor):
     for liberation in Liberation.objects.all():
         liberation.running = liberation.flags.running
         liberation.errored = liberation.flags.errored
+        liberation.save()
 
     Inbox = apps.get_model("inboxen.Inbox")
     for inbox in Inbox.objects.all():
@@ -31,6 +32,7 @@ def migrate_from_bitfield(apps, schema_editor):
         inbox.exclude_from_unified = inbox.flags.exclude_from_unified
         inbox.disabled = inbox.flags.disabled
         inbox.pinned = inbox.flags.pinned
+        inbox.save()
 
     Email = apps.get_model("inboxen.Email")
     for email in Email.objects.all():
@@ -39,6 +41,7 @@ def migrate_from_bitfield(apps, schema_editor):
         email.seen = email.flags.seen
         email.important = email.flags.important
         email.view_all_headers = email.flags.view_all_headers
+        email.save()
 
 
 class Migration(migrations.Migration):
