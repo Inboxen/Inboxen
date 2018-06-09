@@ -7,6 +7,7 @@
 -e git+https://github.com/moggers87/django-cursor-pagination@d066d004a8bedfef5aa4c9ffa1fd65e9e760f270#egg=django-cursor-pagination
 -e git+https://github.com/justinmayer/django-elevate@2a85095e17279d7e8489720a57ea67d04f380c0d#egg=django-elevate
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
+-e git+https://github.com/moggers87/salmon@30c5ede327344f7aea6269a70e146b2596cab671#egg=salmon-mail
 amqp==2.3.2               # via kombu
 babel==2.6.0              # via django-phonenumber-field
 backcall==0.1.0           # via ipython
@@ -14,7 +15,7 @@ backports.functools-lru-cache==1.5  # via cheroot
 billiard==3.5.0.3         # via celery
 celery==4.1.1
 certifi==2018.4.16        # via requests
-chardet==3.0.4            # via requests, salmon-mail
+chardet==3.0.4            # via requests
 cheroot==6.3.1            # via cherrypy
 cherrypy==15.0.0          # via jasmine
 click==6.7                # via pip-tools
@@ -41,7 +42,7 @@ django-ratelimit-backend==1.2
 django-sendfile2==0.4.1
 django-two-factor-auth==1.7.0
 django==1.11.13
-dnspython==1.15.0         # via salmon-mail
+dnspython==1.15.0
 docutils==0.14            # via python-daemon
 factory-boy==2.11.1
 faker==0.8.5
@@ -57,7 +58,7 @@ jedi==0.12.0              # via ipython
 jinja2==2.10              # via jasmine
 jsmin==2.2.2
 kombu==4.2.1              # via celery
-lmtpd==6.0.0              # via salmon-mail
+lmtpd==6.0.0
 lockfile==0.12.2          # via python-daemon
 lxml==4.2.1
 markdown==2.6.11
@@ -79,17 +80,16 @@ prompt-toolkit==1.0.15    # via ipython
 psycopg2==2.7.4
 ptyprocess==0.5.2         # via pexpect
 pygments==2.2.0           # via ipython
-python-daemon==2.1.2      # via salmon-mail
+python-daemon==2.1.2
 python-dateutil==2.7.3    # via faker
 pytz==2018.4
 pyyaml==3.10              # via jasmine
 qrcode==4.0.4             # via django-two-factor-auth
 requests==2.18.4          # via premailer
-salmon-mail==3.0.0
 selenium==3.12.0          # via jasmine
 simplegeneric==0.8.1      # via ipython
 simplejson==3.15.0
-six==1.11.0               # via cheroot, cherrypy, configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, more-itertools, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
+six==1.11.0               # via cheroot, cherrypy, configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, more-itertools, pip-tools, prompt-toolkit, python-dateutil, qrcode, tempora, traitlets
 sqlparse==0.2.4           # via django-debug-toolbar
 tempora==1.11             # via portend
 traitlets==4.3.2          # via ipython
