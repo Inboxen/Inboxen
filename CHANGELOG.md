@@ -2,12 +2,14 @@
 
 ## Pending
 
+## Releases
+
+### Deploy for 2018-06-12
+
 * Change code to use new boolfields - requires downtime (#325)
 * Allow users to auto-delete emails after 30 days (#83)
 * Implement a quota system to avoid users eating all of our disk space (#359)
   * This system is entirely optional and not enabled by default
-
-## Releases
 
 ### Deploy for 2018-05-22
 
