@@ -33,6 +33,6 @@ premailer
 progress
 psycopg2
 pytz
--e git+https://github.com/moggers87/salmon@30c5ede327344f7aea6269a70e146b2596cab671#egg=salmon-mail
+salmon-mail
 simplejson
 typing
