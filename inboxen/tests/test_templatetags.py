@@ -20,7 +20,6 @@
 
 from datetime import datetime, timedelta
 
-from bitfield import BitHandler
 from django.template import Template
 from django.template.backends.django import Template as DjangoTemplate
 from django.utils import translation

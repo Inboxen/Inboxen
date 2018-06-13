@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import bitfield.models
 import mptt.fields
 import inboxen.fields
 from django.conf import settings
@@ -39,7 +38,7 @@ class Migration(migrations.Migration):
             name='Email',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('flags', bitfield.models.BitField((b'deleted', b'read', b'seen', b'important', b'view_all_headers'), default=0)),
+                ('flags', models.BigIntegerField(default=0)),
                 ('received_date', models.DateTimeField()),
             ],
         ),
@@ -71,7 +70,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('inbox', models.CharField(max_length=64)),
                 ('created', models.DateTimeField(verbose_name=b'Created')),
-                ('flags', bitfield.models.BitField((b'deleted', b'new', b'exclude_from_unified', b'disabled'), default=0)),
+                ('flags', models.BigIntegerField(default=0)),
                 ('description', models.CharField(max_length=256, null=True, blank=True)),
                 ('domain', models.ForeignKey(to='inboxen.Domain', on_delete=django.db.models.deletion.PROTECT)),
             ],
@@ -83,7 +82,7 @@ class Migration(migrations.Migration):
             name='Liberation',
             fields=[
                 ('user', inboxen.fields.DeferAutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('flags', bitfield.models.BitField((b'running', b'errored'), default=0)),
+                ('flags', models.BigIntegerField(default=0)),
                 ('data', inboxen.fields.LargeObjectField(null=True)),
                 ('content_type', models.PositiveSmallIntegerField(default=0)),
                 ('async_result', models.UUIDField(null=True)),
@@ -134,7 +133,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('user', annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
                 ('pool_amount', models.IntegerField(default=500)),
-                ('flags', bitfield.models.BitField((b'prefer_html_email', b'unified_has_new_messages', b'ask_images', b'display_images'), default=5)),
+                ('flags', models.BigIntegerField(default=5)),
                 ('prefered_domain', models.ForeignKey(blank=True, to='inboxen.Domain', null=True)),
             ],
         ),

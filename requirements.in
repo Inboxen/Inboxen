@@ -5,7 +5,6 @@ configobj
 django-annoying
 django-assets
 django-async-messages
-django-bitfield>=1.9.2
 django-bootstrap-form
 django-braces
 django-csp>3.0

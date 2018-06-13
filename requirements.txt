@@ -20,7 +20,6 @@ cssutils==1.0.2           # via premailer
 django-annoying==0.10.4
 django-assets==0.12
 django-async-messages==0.3.1
-django-bitfield==1.9.3
 django-bootstrap-form==3.4
 django-braces==1.13.0
 django-csp==3.4
@@ -39,7 +38,7 @@ docutils==0.14            # via python-daemon
 factory-boy==2.11.1
 faker==0.8.5
 first==2.0.1              # via pip-tools
-idna==2.6                 # via requests
+idna==2.7                 # via requests
 ipaddress==1.0.22
 jsmin==2.2.2
 kombu==4.2.1              # via celery
@@ -59,12 +58,12 @@ python-daemon==2.1.2      # via salmon-mail
 python-dateutil==2.7.3    # via faker
 pytz==2018.4
 qrcode==4.0.4             # via django-two-factor-auth
-requests==2.18.4          # via premailer
+requests==2.19.0          # via premailer
 salmon-mail==3.0.1
 simplejson==3.15.0
-six==1.11.0               # via configobj, django-bitfield, django-extensions, django-sendfile2, faker, mock, pip-tools, python-dateutil, qrcode, salmon-mail
+six==1.11.0               # via configobj, django-extensions, django-sendfile2, faker, mock, pip-tools, python-dateutil, qrcode, salmon-mail
 typing==3.6.4
 unidecode==1.0.22         # via faker
-urllib3==1.22             # via requests
+urllib3==1.23             # via requests
 vine==1.1.4               # via amqp
 webassets==0.12.1         # via django-assets
