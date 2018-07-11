@@ -107,8 +107,26 @@ login_attempt_limit
 ^^^^^^^^^^^^^^^^^^^
 *Default value: 5*
 
-This is the number of times people can attempt to login before receiving a cooldown (the
-amount of time for the cooldown is dictated by ``login_attempt_cooloff``).
+This is the number of times people can attempt to login before receiving a cool
+down (the amount of time for the cool down is dictated by
+``login_attempt_cooloff``).
+
+register_limit_window
+^^^^^^^^^^^^^^^^^^^^^
+*Default value: 1440*
+
+Window of time in minutes that the register rate-limit will use to calculate if
+have been too many registrations from one IP address. For example, if
+``register_limit_window`` is 60 and ``register_limit_count`` is 5, then there
+will be limited to 5 registrations every hour.
+
+
+register_limit_count
+^^^^^^^^^^^^^^^^^^^^
+*Default value: 100*
+
+Maximum number of registrations from a single IP address over
+``register_limit_window`` minutes.
 
 language_code
 ^^^^^^^^^^^^^
@@ -131,7 +149,7 @@ meida_root
 ^^^^^^^^^^^
 *Default value: media_content*
 
-This specifies where the directoy is for uploading media via the CMS. It should
+This specifies where the directory is for uploading media via the CMS. It should
 be writable by the Django app.
 
 server_email
@@ -161,6 +179,14 @@ time_zone
 The timezone used for the site, this is used for example when storing dates
 in the database.
 
+per_user_email_quota
+^^^^^^^^^^^^^^^^^^^^
+*Default value: 0*
+
+If not ``0``, this is the maximum number of emails a user can have before they
+need to delete some. This deletion can be done automatically if the user
+prefers.
+
 Inbox
 -----
 
@@ -172,19 +198,23 @@ The number of characters of the local portion of the email, For example, in the
 email "pineapple@inboxen.org" the local portion is "pineapple" and the length
 would be 9 characters.
 
-min_inbox_for_request
-^^^^^^^^^^^^^^^^^^^^^
-*Default value: 10*
+inbox_limit_window
+^^^^^^^^^^^^^^^^^^
+*Default value: 1440*
 
-This is the amount of free (unallocated) inboxes the user has before a
-request to raise the limit is issued.
+Window of time in minutes that the inbox rate-limit will use to calculate if a
+user is creating too many inboxes. For example, if ``inbox_limit_window`` is 60
+and ``inbox_limit_count`` is 5, then a user will be limited to creating 5
+inboxes every hour.
 
-request_number
-^^^^^^^^^^^^^^
-*Default value: 500*
 
-The number amount of inboxes that the limit is increased by if a request for
-more inboxes is granted.
+inbox_limit_count
+^^^^^^^^^^^^^^^^^
+*Default value: 100*
+
+Maximum number of inboxes can be created by a single user over
+``inbox_limit_window`` minutes.
+
 
 Tasks
 -----
