@@ -107,8 +107,9 @@ login_attempt_limit
 ^^^^^^^^^^^^^^^^^^^
 *Default value: 5*
 
-This is the number of times people can attempt to login before receiving a cooldown (the
-amount of time for the cooldown is dictated by ``login_attempt_cooloff``).
+This is the number of times people can attempt to login before receiving a cool
+down (the amount of time for the cool down is dictated by
+``login_attempt_cooloff``).
 
 register_limit_window
 ^^^^^^^^^^^^^^^^^^^^^
@@ -124,7 +125,7 @@ register_limit_count
 ^^^^^^^^^^^^^^^^^^^^
 *Default value: 100*
 
-Maximum number of registrations from a single IP addess over
+Maximum number of registrations from a single IP address over
 ``register_limit_window`` minutes.
 
 language_code
@@ -148,7 +149,7 @@ meida_root
 ^^^^^^^^^^^
 *Default value: media_content*
 
-This specifies where the directoy is for uploading media via the CMS. It should
+This specifies where the directory is for uploading media via the CMS. It should
 be writable by the Django app.
 
 server_email
