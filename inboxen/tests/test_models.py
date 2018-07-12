@@ -19,7 +19,6 @@
 
 import datetime
 import itertools
-import unittest
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -255,61 +254,6 @@ class ModelTestCase(InboxenTestCase):
         self.assertEqual(body1[0].id, body2[0].id)
         self.assertTrue(body1[1])
         self.assertFalse(body2[1])
-
-
-@unittest.skip("No longer needed")
-class ModelFlagsTestCase(InboxenTestCase):
-    def test_email_flags_order(self):
-        # DON'T CHANGE ORDER OF THIS LIST
-        flag_order = [
-            "deleted",
-            "read",
-            "seen",
-            "important",
-            "view_all_headers",
-        ]
-
-        email_flags = list(models.Email.flags)
-
-        self.assertEqual(flag_order, email_flags)
-
-    def test_inbox_flags_order(self):
-        # DON'T CHANGE ORDER OF THIS LIST
-        flag_order = [
-            "deleted",
-            "new",
-            "exclude_from_unified",
-            "disabled",
-            "pinned",
-        ]
-
-        inbox_flags = list(models.Inbox.flags)
-
-        self.assertEqual(flag_order, inbox_flags)
-
-    def test_profile_flags_order(self):
-        # DON'T CHANGE ORDER OF THIS LIST
-        flag_order = [
-            "prefer_html_email",
-            "unified_has_new_messages",
-            "ask_images",
-            "display_images",
-        ]
-
-        profile_flags = list(models.UserProfile.flags)
-
-        self.assertEqual(flag_order, profile_flags)
-
-    def test_liberation_flags_order(self):
-        # DON'T CHANGE ORDER OF THIS LIST
-        flag_order = [
-            "running",
-            "errored",
-        ]
-
-        liberation_flags = list(models.Liberation.flags)
-
-        self.assertEqual(flag_order, liberation_flags)
 
 
 class ModelReprTestCase(InboxenTestCase):
