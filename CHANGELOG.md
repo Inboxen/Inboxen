@@ -2,6 +2,8 @@
 
 ## Pending
 
+* Completely removed all traces of django-bitfield (#358)
+
 ## Releases
 
 ### Deploy for 2018-06-12
