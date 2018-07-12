@@ -201,14 +201,14 @@ INSTALLED_APPS = (
     'inboxen',
 
     # Other Inboxen apps
-    'account',
-    'blog',
-    'cms',
-    'liberation',
-    'redirect',
-    'router',
-    'source',
-    'tickets',
+    'inboxen.account',
+    'inboxen.blog',
+    'inboxen.cms',
+    'inboxen.liberation',
+    'inboxen.redirect',
+    'inboxen.router',
+    'inboxen.source',
+    'inboxen.tickets',
 
     # third party
     'bootstrapform',
@@ -327,38 +327,6 @@ LOGGING = {
             'level': log_level,
         },
         'inboxen': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'account': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'blog': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'cms': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'liberation': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'redirect': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'router': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'source': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'tickets': {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },

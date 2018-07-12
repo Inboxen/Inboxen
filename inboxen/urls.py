@@ -68,12 +68,12 @@ urlpatterns = [
     urls.url(r'^user/searchapi/(?P<q>.*)/$', views.SearchApiView.as_view(), name='user-searchapi'),
 
     # other apps
-    urls.url(r'^blog/', urls.include("blog.urls")),
-    urls.url(r'^click/', urls.include("redirect.urls")),
-    urls.url(r'^source/', urls.include("source.urls")),
-    urls.url(r'^user/account/', urls.include("account.urls")),
-    urls.url(r'^help/', urls.include("cms.urls")),
-    urls.url(r'^admin/', urls.include("cms.admin_urls", namespace="admin")),
+    urls.url(r'^blog/', urls.include("inboxen.blog.urls")),
+    urls.url(r'^click/', urls.include("inboxen.redirect.urls")),
+    urls.url(r'^source/', urls.include("inboxen.source.urls")),
+    urls.url(r'^user/account/', urls.include("inboxen.account.urls")),
+    urls.url(r'^help/', urls.include("inboxen.cms.urls")),
+    urls.url(r'^admin/', urls.include("inboxen.cms.admin_urls", namespace="admin")),
 ]
 
 if settings.DEBUG:

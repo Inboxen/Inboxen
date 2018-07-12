@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
 
-from cms.decorators import is_secure_admin
+from inboxen.cms.decorators import is_secure_admin
 from inboxen.models import Domain
 from inboxen.forms.admin import CreateDomainForm, EditDomainForm
 
