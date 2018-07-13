@@ -1,0 +1,71 @@
+##
+#    Copyright (C) 2018 Jessica Tallon & Matt Molyneaux
+#
+#    This file is part of Inboxen.
+#
+#    Inboxen is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    Inboxen is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+from setuptools import setup
+
+
+setup(
+    name="inboxen",
+    version="git",
+    author="Inboxen.org",
+    description="An email privacy tool",
+    url="https://inboxen.org",
+    download_url="https://github.com/Inboxen/Inboxen",
+    license="AGPLv3",
+    install_requires=[
+        "Django>=1.11,<1.12",
+        "Markdown",
+        "celery>=4.1,<4.2",
+        "configobj",
+        "django-annoying",
+        "django-assets",
+        "django-async-messages",
+        "django-bootstrap-form",
+        "django-braces",
+        "django-csp>3.0",
+        "django-cursor-pagination",
+        "django-extensions",
+        "django-formtools",
+        "django-mptt",
+        "django-otp",
+        "django-ratelimit-backend",
+        "django-sendfile2",
+        "django-elevate",
+        "django-watson",
+        "django-two-factor-auth>=1.5.0",
+        "django-watson>=1.2.0",
+        "faker==0.8.5",  # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
+        "factory-boy",
+        "ipaddress",
+        "jsmin",
+        "lxml",
+        "mock",
+        "phonenumberslite",  # make sure django-phonenumbers uses the smaller package
+        "premailer",
+        "progress",
+        "psycopg2",
+        "pytz",
+        "salmon-mail",
+    ],
+    extra_requires={
+        "docs": [
+            "sphinx",
+        ],
+    },
+)
