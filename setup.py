@@ -57,6 +57,7 @@ setup(
         "lxml",
         "mock",
         "phonenumberslite",  # make sure django-phonenumbers uses the smaller package
+        "pillow",
         "premailer",
         "progress",
         "psycopg2",
