@@ -406,7 +406,7 @@ class RouterCommandTest(InboxenTestCase):
         mgmt_command = router.Command()
 
         output = mgmt_command.salmon_start()
-        self.assertEqual(output, ["Starting Salmon handler: boot\n"])
+        self.assertEqual(output, ["Starting Salmon handler: inboxen.router.config.boot\n"])
 
 
 class ErrorViewTestCase(InboxenTestCase):
