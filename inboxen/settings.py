@@ -295,8 +295,10 @@ EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # noqa: F405
 ##
 if DEBUG:  # noqa: F405
     log_level = "INFO"
+    salmon_log_level = "DEBUG"
 else:
     log_level = "WARNING"
+    salmon_log_level = "WARNING"
 
 
 LOGGING = {
@@ -333,6 +335,36 @@ LOGGING = {
         'ratelimitbackend': {
             'handlers': ['console'],
             'level': 'INFO',
+        },
+    },
+}
+
+
+SALMON_LOGGING = {
+    'version': 1,
+    'formatters': {
+        'default': {
+            'format': "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            'datefmt': '',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': salmon_log_level,
+            'class': 'logging.FileHandler',
+            'filename': "logs/salmon.log",
+            'formatter': 'default',
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': salmon_log_level,
+        },
+        'routing': {
+            'handlers': ['file'],
+            'level': salmon_log_level,
+            'propagate': False
         },
     },
 }

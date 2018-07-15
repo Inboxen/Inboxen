@@ -19,7 +19,6 @@
 
 import mock
 import shutil
-import sys
 
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError

@@ -8,10 +8,8 @@ docs/_*
 /env3
 /inboxen_cache
 /liberation_store
-/router/config/logging.conf
-/router/config/test_logging.conf
-/router/logs
-/router/run
+/logs
+/run
 /settings.ini
 /static_content
 /media_content

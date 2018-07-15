@@ -1,5 +1,4 @@
 import os
-import sys
 
 from salmon.server import SMTPReceiver, LMTPReceiver
 

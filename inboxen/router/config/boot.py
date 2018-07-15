@@ -39,11 +39,7 @@ try:
 except OSError:
     pass
 
-logconfig_path = os.path.join(dj_settings.BASE_DIR, "inboxen", "router", "config", "logging.conf")
-if not os.path.exists(logconfig_path):
-    logconfig_path = os.path.join(dj_settings.BASE_DIR, "inboxen", "router", "config", "logging.conf.default")
-
-logging.config.fileConfig(logconfig_path)
+logging.config.dictConfig(dj_settings.SALMON_LOGGING)
 
 Router.load(['inboxen.router.app.server'])
 Router.RELOAD = False
