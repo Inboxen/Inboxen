@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -28,6 +28,7 @@ setup(
     url="https://inboxen.org",
     download_url="https://github.com/Inboxen/Inboxen",
     license="AGPLv3",
+    packages=find_packages(),
     install_requires=[
         "Django>=1.11,<1.12",
         "Markdown",
