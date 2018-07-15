@@ -50,13 +50,15 @@ setup(
         "django-watson",
         "django-two-factor-auth>=1.5.0",
         "django-watson>=1.2.0",
-        "faker==0.8.5",  # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
+        # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
+        "faker==0.8.5",
         "factory-boy",
         "ipaddress",
         "jsmin",
         "lxml",
         "mock",
-        "phonenumberslite",  # make sure django-phonenumbers uses the smaller package
+        # make sure django-phonenumbers uses the smaller package
+        "phonenumberslite",
         "pillow",
         "premailer",
         "progress",
