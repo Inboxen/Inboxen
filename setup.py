@@ -74,5 +74,8 @@ setup(
         "docs": [
             "sphinx",
         ],
+        "cache-memcache": [
+            "pylibmc",
+        ],
     },
 )
