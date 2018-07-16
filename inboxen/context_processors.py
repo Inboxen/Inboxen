@@ -21,6 +21,8 @@ import os
 
 from django.conf import settings
 
+import inboxen
+
 
 def reduced_settings_context(request):
     """Introduces a reduced set of settings into the context
@@ -33,7 +35,7 @@ def reduced_settings_context(request):
     reduced_settings = {
         "SITE_NAME": settings.SITE_NAME,
         "ENABLE_REGISTRATION": settings.ENABLE_REGISTRATION,
-        "INBOXEN_COMMIT_ID": os.environ["INBOXEN_COMMIT_ID"],
+        "INBOXEN_COMMIT_ID": inboxen.__version__,
         "SOURCE_LINK": settings.SOURCE_LINK,
     }
     return {"settings": reduced_settings}

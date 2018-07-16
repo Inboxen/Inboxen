@@ -1,0 +1,2 @@
+include versioneer.py
+include inboxen/_version.py

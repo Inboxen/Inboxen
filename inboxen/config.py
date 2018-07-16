@@ -55,6 +55,8 @@ elif os.path.exists(os.getenv('INBOX_CONFIG', '')):
     CONFIG_PATH = os.getenv('INBOX_CONFIG')
 elif os.path.exists(os.path.expanduser("~/.config/inboxen/settings.ini")):
     CONFIG_PATH = os.path.expanduser("~/.config/inboxen/settings.ini")
+elif os.path.exists(os.path.join(os.getcwd(), "settings.ini")):
+    CONFIG_PATH = os.path.join(os.getcwd(), "settings.ini")
 elif os.path.exists(os.path.join(BASE_DIR, "settings.ini")):
     CONFIG_PATH = os.path.join(BASE_DIR, "settings.ini")
 else:

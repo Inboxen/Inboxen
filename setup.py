@@ -19,10 +19,13 @@
 
 from setuptools import setup, find_packages
 
+import versioneer
+
 
 setup(
     name="inboxen",
-    version="git",
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     author="Inboxen.org",
     description="An email privacy tool",
     url="https://inboxen.org",
