@@ -17,7 +17,6 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from subprocess import Popen, PIPE
 import datetime
 import os
 import string

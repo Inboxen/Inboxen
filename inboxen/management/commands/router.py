@@ -17,12 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from subprocess import check_output, CalledProcessError
 import os
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.encoding import force_text
-
-from subprocess import check_output, CalledProcessError
 
 
 class Command(BaseCommand):
