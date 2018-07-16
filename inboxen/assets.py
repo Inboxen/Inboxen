@@ -19,8 +19,6 @@
 
 import os
 
-from django.conf import settings
-
 from django_assets import Bundle, register
 from webassets.filter import get_filter
 

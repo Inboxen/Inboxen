@@ -17,8 +17,6 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import os
-
 from django.conf import settings
 
 import inboxen
