@@ -116,7 +116,7 @@ LANGUAGES = (
 
 # required for makemessages --all to work correctly, otherwise Django looks in
 # conf/locale and locale (which don't exist) for languages to process
-LOCALE_PATHS = ["inboxen/locale"]
+LOCALE_PATHS = [os.path.join(BASE_DIR, "inboxen/locale")]  # noqa: F405
 
 USE_I18N = True
 
@@ -128,7 +128,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-        ("thirdparty", os.path.join(BASE_DIR, "node_modules")),  # noqa: F405
+        ("thirdparty", os.path.join(os.getcwd(), "node_modules")),
 ]
 
 STATICFILES_FINDERS = (

@@ -110,10 +110,10 @@ REGISTER_LIMIT_COUNT = config["general"]["register_limit_count"]
 LANGUAGE_CODE = config["general"]["language_code"]
 
 # Where `manage.py collectstatic` puts static files
-STATIC_ROOT = os.path.join(BASE_DIR, config["general"]["static_root"])
+STATIC_ROOT = os.path.join(os.getcwd(), config["general"]["static_root"])
 
 # Media files get uploaded to this dir
-MEDIA_ROOT = os.path.join(BASE_DIR, config["general"]["media_root"])
+MEDIA_ROOT = os.path.join(os.getcwd(), config["general"]["media_root"])
 
 # Email the server uses when sending emails
 SERVER_EMAIL = config["general"]["server_email"]
@@ -149,7 +149,7 @@ CELERY_WORKER_CONCURRENCY = config["tasks"]["concurrency"]
 CELERY_TASK_ALWAYS_EAGER = config["tasks"]["always_eager"]
 
 # Path where liberation data is stored
-LIBERATION_PATH = os.path.join(BASE_DIR, config["tasks"]["liberation"]["path"])
+LIBERATION_PATH = os.path.join(os.getcwd(), config["tasks"]["liberation"]["path"])
 LIBERATION_PATH = LIBERATION_PATH.rstrip("/")
 
 # Which method should be used to accelerate liberation data downloads
@@ -179,9 +179,9 @@ CACHES = {
 if config["cache"]["backend"] == "file":
     if config["cache"]["location"] == "":
         # sane default for minimum configuration
-        CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, "inboxen_cache")
+        CACHES["default"]["LOCATION"] = os.path.join(os.getcwd(), "inboxen_cache")
     else:
-        CACHES["default"]["LOCATION"] = os.path.join(BASE_DIR, config["cache"]["location"])
+        CACHES["default"]["LOCATION"] = os.path.join(os.getcwd(), config["cache"]["location"])
 else:
     CACHES["default"]["LOCATION"] = config["cache"]["location"]
 
