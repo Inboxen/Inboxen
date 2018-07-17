@@ -18,6 +18,8 @@ import shlex
 
 import inboxen
 
+os.environ.setdefault("INBOXEN_TESTING", "1")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inboxen.settings")
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -33,8 +35,9 @@ import inboxen
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
     'sphinx.ext.coverage',
+    'sphinx.ext.doctest',
+    'sphinx.ext.todo',
     'sphinx.ext.viewcode',
 ]
 
@@ -289,3 +292,5 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+autoclass_content = "both"
