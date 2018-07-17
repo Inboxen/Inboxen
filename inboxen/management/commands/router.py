@@ -17,11 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from subprocess import check_output, CalledProcessError
 import os
 
 from django.core.management.base import BaseCommand, CommandError
-
-from subprocess import check_output, CalledProcessError
+from django.utils.encoding import force_text
 
 
 class Command(BaseCommand):
@@ -35,8 +35,10 @@ class Command(BaseCommand):
 
         # these need to be ordered from smtp in to database out
         self.salmon_options = [
-            {'pid': 'run/router.pid', 'boot': 'config.boot'},
+            {'pid': 'run/router.pid', 'boot': 'inboxen.router.config.boot'},
         ]
+
+        self.salmon_env = dict(os.environ, SALMON_SETTINGS_MODULE="inboxen.router.config.settings")
 
     def add_arguments(self, parser):
         daemon_parser = parser.add_mutually_exclusive_group(required=True)
@@ -50,7 +52,7 @@ class Command(BaseCommand):
         except OSError:
             raise CommandError("OSError from subprocess, salmon is probably not in your path.")
 
-        self.stdout.write("".join(output))
+        self.stdout.write("".join([force_text(i) for i in output]))
 
     def salmon_start(self):
         name = "Starting Salmon handler: %s\n"
@@ -64,8 +66,8 @@ class Command(BaseCommand):
                     handler['pid'],
                     '--boot',
                     handler['boot'],
-                ], cwd='router')
-                output.append(name % handler['boot'][7:])
+                ], env=self.salmon_env)
+                output.append(name % handler['boot'])
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 
@@ -80,7 +82,7 @@ class Command(BaseCommand):
                     'stop',
                     '--pid',
                     handler['pid'],
-                ], cwd='router'))
+                ], env=self.salmon_env))
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 
@@ -90,7 +92,7 @@ class Command(BaseCommand):
         output = []
         for handler in self.salmon_options:
             try:
-                output.append(check_output([self.salmon_bin, 'status', '--pid', handler['pid']], cwd='router'))
+                output.append(check_output([self.salmon_bin, 'status', '--pid', handler['pid']], env=self.salmon_env))
             except CalledProcessError as error:
                 output.append("Exit code %d: %s" % (error.returncode, error.output))
 

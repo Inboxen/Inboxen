@@ -36,7 +36,7 @@ from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
 from premailer.premailer import Premailer
 
-from redirect import proxy_url
+from inboxen.redirect import proxy_url
 
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')

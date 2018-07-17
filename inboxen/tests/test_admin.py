@@ -21,7 +21,7 @@ from django.core import urlresolvers
 from django.http import Http404
 import factory
 
-from cms.decorators import is_secure_admin
+from inboxen.cms.decorators import is_secure_admin
 from inboxen import models
 from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories

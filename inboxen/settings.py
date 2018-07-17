@@ -17,7 +17,6 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from subprocess import Popen, PIPE
 import datetime
 import os
 import string
@@ -116,7 +115,7 @@ LANGUAGES = (
 
 # required for makemessages --all to work correctly, otherwise Django looks in
 # conf/locale and locale (which don't exist) for languages to process
-LOCALE_PATHS = ["inboxen/locale"]
+LOCALE_PATHS = [os.path.join(BASE_DIR, "inboxen/locale")]  # noqa: F405
 
 USE_I18N = True
 
@@ -128,7 +127,7 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-        ("thirdparty", os.path.join(BASE_DIR, "node_modules")),  # noqa: F405
+        ("thirdparty", os.path.join(os.getcwd(), "node_modules")),
 ]
 
 STATICFILES_FINDERS = (
@@ -201,14 +200,14 @@ INSTALLED_APPS = (
     'inboxen',
 
     # Other Inboxen apps
-    'account',
-    'blog',
-    'cms',
-    'liberation',
-    'redirect',
-    'router',
-    'source',
-    'tickets',
+    'inboxen.account',
+    'inboxen.blog',
+    'inboxen.cms',
+    'inboxen.liberation',
+    'inboxen.redirect',
+    'inboxen.router',
+    'inboxen.source',
+    'inboxen.tickets',
 
     # third party
     'bootstrapform',
@@ -276,17 +275,6 @@ SALMON_SERVER = {"host": "localhost", "port": 8823, "type": "smtp"}
 # Misc.
 ##
 
-try:
-    process = Popen("git rev-parse HEAD".split(), stdout=PIPE, close_fds=True, cwd=BASE_DIR)  # noqa: F405
-    output = process.communicate()[0].strip()
-    output = output.decode()
-    if not process.returncode:
-        os.environ["INBOXEN_COMMIT_ID"] = output
-    else:
-        os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
-except (OSError, TypeError):
-    os.environ["INBOXEN_COMMIT_ID"] = "UNKNOWN"
-
 # trailing space is important
 EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # noqa: F405
 
@@ -295,8 +283,10 @@ EMAIL_SUBJECT_PREFIX = "[{}] ".format(SITE_NAME)  # noqa: F405
 ##
 if DEBUG:  # noqa: F405
     log_level = "INFO"
+    salmon_log_level = "DEBUG"
 else:
     log_level = "WARNING"
+    salmon_log_level = "WARNING"
 
 
 LOGGING = {
@@ -330,41 +320,39 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
-        'account': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'blog': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'cms': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'liberation': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'redirect': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'router': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'source': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
-        'tickets': {
-            'handlers': ['console', 'mail_admins'],
-            'level': log_level,
-        },
         'ratelimitbackend': {
             'handlers': ['console'],
             'level': 'INFO',
+        },
+    },
+}
+
+
+SALMON_LOGGING = {
+    'version': 1,
+    'formatters': {
+        'default': {
+            'format': "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            'datefmt': '',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': salmon_log_level,
+            'class': 'logging.FileHandler',
+            'filename': "logs/salmon.log",
+            'formatter': 'default',
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': salmon_log_level,
+        },
+        'routing': {
+            'handlers': ['file'],
+            'level': salmon_log_level,
+            'propagate': False
         },
     },
 }

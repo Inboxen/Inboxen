@@ -46,7 +46,7 @@ from inboxen.tests.example_emails import (
 )
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.utils import email as email_utils
-from router.app.helpers import make_email
+from inboxen.router.app.helpers import make_email
 
 
 class EmailViewTestCase(InboxenTestCase):

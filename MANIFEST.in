@@ -1,0 +1,6 @@
+include LICENSE
+include versioneer.py
+
+graft inboxen
+
+recursive-exclude __pycache__ *.pyc *.pyo

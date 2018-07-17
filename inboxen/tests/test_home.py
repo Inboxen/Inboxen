@@ -23,6 +23,7 @@ from django.core import urlresolvers
 from inboxen import models
 from inboxen.tests import factories
 from inboxen.test import InboxenTestCase, MockRequest
+import inboxen
 
 
 class HomeViewTestCase(InboxenTestCase):
@@ -48,12 +49,7 @@ class HomeViewTestCase(InboxenTestCase):
         self.assertEqual(dj_settings.SITE_NAME, context_settings["SITE_NAME"])
 
         # test that INBOXEN_COMMIT_ID is actually working
-        self.assertNotEqual("UNKNOWN", context_settings["INBOXEN_COMMIT_ID"])
-
-        try:
-            int(context_settings["INBOXEN_COMMIT_ID"], 16)
-        except ValueError:
-            self.fail("context_settings[\"INBOXEN_COMMIT_ID\"] is not a valid commit ID")
+        self.assertEqual(context_settings["INBOXEN_COMMIT_ID"], inboxen.__version__)
 
         # Please add any settings that may contain passwords or secrets:
         self.assertNotIn("SECRET_KEY", context_settings)
