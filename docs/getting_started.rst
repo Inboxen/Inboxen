@@ -68,7 +68,7 @@ Setup
 Let's get started!
 
 
-.. codeblock:: shell
+.. code-block:: shell
 
    $ git clone https://github.com/Inboxen/Inboxen.git
    $ cd Inboxen
@@ -81,7 +81,7 @@ Let's get started!
 At this point we should add some basic configuration. Open ``settings.ini``
 with your favourite text editor and add the following:
 
-.. codeblock:: ini
+.. code-block:: ini
 
    [general]
    # some_random_string should be replaced by an actual random string, it is
@@ -90,7 +90,7 @@ with your favourite text editor and add the following:
 
 Now we've got some configuration, let's finish the setup:
 
-.. codeblock:: shell
+.. code-block:: shell
 
    (env) $ ./manage.py migrate
    (env) $ ./manage.py compilemessages
@@ -118,7 +118,7 @@ You can also install additional Python packages to enable certain features. For
 example, let's say that we want to use Memcache as our cahce backend. Create a
 file called ``local-reqs.in`` and add the following:
 
-.. codeblock::
+.. code-block:: text
 
    -r requirements.txt
    -e .[cache-memcache]
@@ -132,7 +132,7 @@ file called ``local-reqs.in`` and add the following:
 
 Always pin your dependencies!
 
-.. codeblock:: shell
+.. code-block:: shell
 
    (env) $ pip-compile -U --output-file local-reqs.txt local-reqs.in
    (env) $ pip-sync local-reqs.txt
@@ -141,7 +141,7 @@ Always pin your dependencies!
 Upgrading
 =========
 
-.. codeblock:: shell
+.. code-block:: shell
 
    (env) $ ./manage.py router --stop
    (env) $ pkill celery
@@ -149,7 +149,7 @@ Upgrading
 
 If you specified additional Python packages, then update your pinned dependencies:
 
-.. codeblock:: shell
+.. code-block:: shell
 
    (env) $ pip-compile -U --output-file local-reqs.txt local-reqs.in
 
@@ -157,7 +157,7 @@ Otherwise, skip this step.
 
 Install updated packages and compile various assets:
 
-.. codeblock:: shell
+.. code-block:: shell
 
    (env) $ pip-sync local-reqs.txt || pip-sync requirements.txt
    (env) $ npm install
@@ -167,7 +167,7 @@ Install updated packages and compile various assets:
 
 Finally, restart services:
 
-.. codeblock:: shell
+.. code-block:: shell
 
    (env) $ ./manage.py router --start
    (env) $ DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -B -E -D -l info --logfile logs/celery.log --pidfile run/tasks.pid

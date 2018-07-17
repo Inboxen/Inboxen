@@ -70,9 +70,10 @@ setup(
         "pytz",
         "salmon-mail",
     ],
-    extra_requires={
+    extras_require={
         "docs": [
             "sphinx",
+            "sphinx_rtd_theme",
         ],
         "cache-memcache": [
             "pylibmc",
