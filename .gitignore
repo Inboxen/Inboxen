@@ -10,6 +10,8 @@ docs/_build
 /liberation_store
 /logs
 /run
+/docs/logs
+/docs/run
 /settings.ini
 /static_content
 /media_content

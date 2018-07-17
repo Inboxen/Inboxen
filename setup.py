@@ -32,6 +32,7 @@ setup(
     download_url="https://github.com/Inboxen/Inboxen",
     license="AGPLv3",
     packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         "Django>=1.11,<1.12",
         "Markdown",

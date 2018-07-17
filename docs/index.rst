@@ -13,12 +13,3 @@ Welcome to Inboxen's documentation!
    getting_started
 
    settings
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-

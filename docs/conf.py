@@ -18,8 +18,9 @@ import shlex
 
 import inboxen
 
+# use test settings
 os.environ.setdefault("INBOXEN_TESTING", "1")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inboxen.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inboxen.tests.settings")
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -34,11 +35,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "inboxen.settings")
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.coverage',
+#    'sphinx.ext.autodoc',
+#    'sphinx.ext.coverage',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
-    'sphinx.ext.viewcode',
+#    'sphinx.ext.viewcode',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
