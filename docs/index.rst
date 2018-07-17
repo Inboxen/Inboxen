@@ -6,8 +6,6 @@
 Welcome to Inboxen's documentation!
 ===================================
 
-This is the documentation for Inboxen |version|
-
 Contents:
 
 .. toctree::
