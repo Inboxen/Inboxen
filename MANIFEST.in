@@ -1,2 +1,6 @@
+include LICENSE
 include versioneer.py
-include inboxen/_version.py
+
+graft inboxen
+
+recursive-exclude __pycache__ *.pyc *.pyo
