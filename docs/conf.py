@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Inboxen'
-copyright = u'2015, Jessica Tallon & Matt Molyneaux'
+copyright = u'2015, 2018 Jessica Tallon & Matt Molyneaux'
 author = u'Jessica Tallon & Matt Molyneaux'
 
 # The version info for the project you're documenting, acts as replacement for
