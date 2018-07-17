@@ -105,6 +105,39 @@ Finally, there are some external services that you will need to configure:
 * Your webserver should serve ``/static/`` from ``static_content``
 * Your mailserver should forward mail to ``localhost:8823`` via SMTP
 
+Additional configuration
+========================
+
+There are a number of other configuration options that you can use. See
+:doc:`settings` for all available settings.
+
+Additional Python packages
+--------------------------
+
+You can also install additional Python packages to enable certain features. For
+example, let's say that we want to use Memcache as our cahce backend. Create a
+file called ``local-reqs.in`` and add the following:
+
+.. codeblock::
+
+   -r requirements.txt
+   -e .[cache-memcache]
+
+.. note::
+
+   As well as the Memcache backend, if you're not using RabbitMQ for your task
+   queue you will need to install extra package for celery. Those packages
+   should be added to ``local-reqs.in`` as well. Refer to the celery
+   documentation for details.
+
+Always pin your dependencies!
+
+.. codeblock:: shell
+
+   (env) $ pip-compile -U --output-file local-reqs.txt local-reqs.in
+   (env) $ pip-sync local-reqs.txt
+
+
 Upgrading
 =========
 
@@ -113,11 +146,29 @@ Upgrading
    (env) $ ./manage.py router --stop
    (env) $ pkill celery
    (env) $ git pull
-   (env) $ pip-sync requirements.txt
+
+If you specified additional Python packages, then update your pinned dependencies:
+
+.. codeblock:: shell
+
+   (env) $ pip-compile -U --output-file local-reqs.txt local-reqs.in
+
+Otherwise, skip this step.
+
+Install updated packages and compile various assets:
+
+.. codeblock:: shell
+
+   (env) $ pip-sync local-reqs.txt || pip-sync requirements.txt
    (env) $ npm install
    (env) $ ./manage.py migrate
    (env) $ ./manage.py compilemessages
    (env) $ ./manage.py collectstatic
+
+Finally, restart services:
+
+.. codeblock:: shell
+
    (env) $ ./manage.py router --start
    (env) $ DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -B -E -D -l info --logfile logs/celery.log --pidfile run/tasks.pid
    (env) $ touch inboxen/wsgi.py
