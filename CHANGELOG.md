@@ -3,6 +3,7 @@
 ## Pending
 
 * Completely removed all traces of django-bitfield (#358)
+* Make Inboxen a proper Python package (#163)
 
 ## Releases
 
