@@ -1,5 +1,5 @@
 # Docs
-docs/_*
+docs/_build
 
 # inboxen specific
 /celerybeat-schedule
@@ -10,10 +10,16 @@ docs/_*
 /liberation_store
 /logs
 /run
+/docs/logs
+/docs/run
 /settings.ini
 /static_content
 /media_content
 /node_modules
+
+# local requirements
+/local-reqs.txt
+/local-reqs.in
 
 *.py[cod]
 *.sw?
