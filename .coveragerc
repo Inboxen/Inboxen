@@ -9,3 +9,7 @@ omit =
     lib/*
     lib64/*
     manage.py
+    setup.py
+    versioneer.py
+    inboxen/_version.py
+    docs/*
