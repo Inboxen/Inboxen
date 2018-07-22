@@ -19,8 +19,8 @@
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.urls import URLResolver, reverse
-from django.urls.resolvers import RegexPattern
+from django.urls import reverse
+from django.urls.resolvers import RegexPattern, URLResolver
 from django.db import models
 from django.http import Http404
 from django.template.response import TemplateResponse

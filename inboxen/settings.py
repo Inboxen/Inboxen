@@ -170,7 +170,7 @@ TEMPLATES = [{
     },
 }]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -361,8 +361,7 @@ if DEBUG:  # noqa: F405
     # local dev made easy
     INTERNAL_IPS = ["127.0.0.1"]
     INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+    MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
     CSRF_COOKIE_SECURE = False
