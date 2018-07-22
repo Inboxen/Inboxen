@@ -21,7 +21,8 @@ from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers, cache
+from django.core import cache
+from django.urls import reverse
 from django.utils import timezone
 import mock
 

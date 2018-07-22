@@ -23,7 +23,7 @@ import itertools
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.core import urlresolvers
+from django.urls import reverse
 import six
 
 from inboxen.account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
@@ -46,7 +46,7 @@ class SettingsTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-settings")
+        return reverse("user-settings")
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -119,7 +119,7 @@ class UsernameChangeTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-username")
+        return reverse("user-username")
 
     def test_form_bad_data(self):
         params = {"username": self.user.username, "username2": self.user.username}
@@ -161,7 +161,7 @@ class UsernameChangeTestCase(InboxenTestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), self.get_url()))
+        self.assertEqual(response["Location"], "{}?next={}".format(reverse("user-sudo"), self.get_url()))
 
         grant_sudo(self.client)
         response = self.client.get(self.get_url())
@@ -195,7 +195,7 @@ class UsernameChangeTestCase(InboxenTestCase):
 
         # username should changed
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("user-settings"))
+        self.assertEqual(response["Location"], reverse("user-settings"))
         self.assertEqual(self.user.username, new_username)
         self.assertEqual(other_user.username, other_username)
         self.assertEqual(get_user_model().objects.count(), user_count)
@@ -212,7 +212,7 @@ class DeleteTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-delete")
+        return reverse("user-delete")
 
     def test_form_good_data(self):
         params = {"username": self.user.username}
@@ -237,7 +237,7 @@ class DeleteTestCase(InboxenTestCase):
     def test_get(self):
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), self.get_url()))
+        self.assertEqual(response["Location"], "{}?next={}".format(reverse("user-sudo"), self.get_url()))
 
         grant_sudo(self.client)
         response = self.client.get(self.get_url())

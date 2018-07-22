@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 from django.conf import settings
+import django.db.models.deletion
 import annoying.fields
 
 
@@ -29,6 +30,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='liberation',
             name='user',
-            field=annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL),
+            field=annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
     ]

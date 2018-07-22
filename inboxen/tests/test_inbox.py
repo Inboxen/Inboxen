@@ -21,8 +21,8 @@
 import itertools
 import warnings
 
+from django import urls
 from django.conf import settings
-from django.core import urlresolvers
 from watson.models import SearchEntry
 
 from inboxen import forms as inboxen_forms
@@ -75,7 +75,7 @@ class InboxTestAbstract(object):
                 "domain": email.inbox.domain.domain,
                 "id": email.eid,
             }
-            self.client.get(urlresolvers.reverse("email-view", kwargs=kwargs))
+            self.client.get(urls.reverse("email-view", kwargs=kwargs))
 
         count = models.Email.objects.filter(read=True).count()
         self.assertEqual(count, 2)
@@ -166,8 +166,8 @@ class SingleInboxTestCase(InboxTestAbstract, InboxenTestCase):
             factories.HeaderFactory(part=part, name="Subject")
 
     def get_url(self):
-        return urlresolvers.reverse("single-inbox",
-                                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        return urls.reverse("single-inbox",
+                            kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
 
 class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
@@ -189,7 +189,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
             factories.HeaderFactory(part=part, name="Subject")
 
     def get_url(self):
-        return urlresolvers.reverse("unified-inbox")
+        return urls.reverse("unified-inbox")
 
 
 class InboxAddTestCase(InboxenTestCase):
@@ -208,7 +208,7 @@ class InboxAddTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("inbox-add")
+        return urls.reverse("inbox-add")
 
     def test_inbox_add_form(self):
         form = inboxen_forms.InboxAddForm(MockRequest(self.user))
@@ -312,7 +312,7 @@ class InboxAddInlineTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("form-inbox-add")
+        return urls.reverse("form-inbox-add")
 
     def test_inbox_add(self):
         response = self.client.get(self.get_url())
@@ -341,8 +341,8 @@ class InboxEditTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("inbox-edit",
-                                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        return urls.reverse("inbox-edit",
+                            kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
     def test_inbox_form(self):
         response = self.client.get(self.get_url())
@@ -363,7 +363,7 @@ class InboxEditTestCase(InboxenTestCase):
         self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
 
     def test_not_found(self):
-        url = urlresolvers.reverse("inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
+        url = urls.reverse("inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -382,8 +382,8 @@ class InboxInlineEditTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("form-inbox-edit",
-                                    kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+        return urls.reverse("form-inbox-edit",
+                            kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
 
     def test_inbox_form(self):
         response = self.client.get(self.get_url())
@@ -404,7 +404,7 @@ class InboxInlineEditTestCase(InboxenTestCase):
         self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
 
     def test_not_found(self):
-        url = urlresolvers.reverse("form-inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
+        url = urls.reverse("form-inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -430,7 +430,7 @@ class InboxEmailEditTestCase(InboxenTestCase):
             factories.HeaderFactory(part=part, name="Subject")
 
     def get_url(self):
-        return urlresolvers.reverse("form-inbox-email")
+        return urls.reverse("form-inbox-email")
 
     def test_no_get(self):
         response = self.client.get(self.get_url())

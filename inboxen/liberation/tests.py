@@ -29,10 +29,9 @@ import shutil
 import tempfile
 import uu
 
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers
-from django.core.urlresolvers import reverse
 from salmon import mail
 from six import BytesIO
 
@@ -158,7 +157,7 @@ class LiberateViewTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-liberate")
+        return reverse("user-liberate")
 
     def test_form_bad_data(self):
         params = {"storage_type": 180, "compression_type": 180}

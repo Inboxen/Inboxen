@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django.urls import reverse
 
 from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories
@@ -33,10 +33,10 @@ class OtpTestCase(InboxenTestCase):
 
     def test_sudo_required(self):
         urls = [
-            urlresolvers.reverse("user-twofactor-setup"),
-            urlresolvers.reverse("user-twofactor-backup"),
-            urlresolvers.reverse("user-twofactor-disable"),
-            urlresolvers.reverse("user-twofactor-qrcode"),
+            reverse("user-twofactor-setup"),
+            reverse("user-twofactor-backup"),
+            reverse("user-twofactor-disable"),
+            reverse("user-twofactor-qrcode"),
         ]
 
         grant_otp(self.client, self.user)
@@ -45,7 +45,7 @@ class OtpTestCase(InboxenTestCase):
             response = self.client.get(url)
             try:
                 self.assertEqual(response.status_code, 302)
-                self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-sudo"), url))
+                self.assertEqual(response["Location"], "{}?next={}".format(reverse("user-sudo"), url))
             except AssertionError as exp:
                 raise AssertionError("{} did not redirect correcrlty: {}".format(url, exp))
 
@@ -60,8 +60,8 @@ class OtpTestCase(InboxenTestCase):
 
     def test_otp_required(self):
         urls = [
-            urlresolvers.reverse("user-twofactor-backup"),
-            urlresolvers.reverse("user-twofactor-disable"),
+            reverse("user-twofactor-backup"),
+            reverse("user-twofactor-disable"),
         ]
 
         grant_sudo(self.client)
@@ -70,7 +70,7 @@ class OtpTestCase(InboxenTestCase):
             response = self.client.get(url)
             try:
                 self.assertEqual(response.status_code, 302)
-                self.assertEqual(response["Location"], "{}?next={}".format(urlresolvers.reverse("user-login"), url))
+                self.assertEqual(response["Location"], "{}?next={}".format(reverse("user-login"), url))
             except AssertionError as exp:
                 raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
 
@@ -91,13 +91,13 @@ class SetupTestCase(InboxenTestCase):
             "generator-token": "123456",
         }
 
-        response = self.client.post(urlresolvers.reverse("user-twofactor-setup"), good_data)
+        response = self.client.post(reverse("user-twofactor-setup"), good_data)
         # form was validated and *form* errors returned
         self.assertEqual(response.status_code, 200)
 
         bad_data = {
             "generator-token": "123456",
         }
-        response = self.client.post(urlresolvers.reverse("user-twofactor-setup"), bad_data)
+        response = self.client.post(reverse("user-twofactor-setup"), bad_data)
         # Bad request, but no exception generated
         self.assertEqual(response.status_code, 400)

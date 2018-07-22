@@ -21,8 +21,8 @@ import datetime
 import os
 import string
 
+from django import urls
 from django.contrib.messages import constants as message_constants
-from django.core import urlresolvers
 from django.utils.translation import ugettext_lazy as _
 
 from kombu.common import Broadcast, Exchange, Queue
@@ -223,9 +223,9 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'inboxen.urls'
 
-LOGIN_URL = urlresolvers.reverse_lazy("user-login")
-LOGOUT_URL = urlresolvers.reverse_lazy("user-logout")
-LOGIN_REDIRECT_URL = urlresolvers.reverse_lazy("user-home")
+LOGIN_URL = urls.reverse_lazy("user-login")
+LOGOUT_URL = urls.reverse_lazy("user-logout")
+LOGIN_REDIRECT_URL = urls.reverse_lazy("user-home")
 
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
@@ -244,7 +244,7 @@ SECURE_HSTS_PRELOAD = True
 
 # CSP settings
 CSP_REPORT_ONLY = False
-CSP_REPORT_URI = urlresolvers.reverse_lazy("csp_logger")
+CSP_REPORT_URI = urls.reverse_lazy("csp_logger")
 CSP_DEFAULT_SRC = ("'none'",)
 
 CSP_CONNECT_SRC = ("'self'",)
@@ -258,9 +258,9 @@ CSRF_COOKIE_SECURE = True
 CSRF_USE_SESSIONS = True
 CSRF_FAILURE_VIEW = "inboxen.views.error.csrf_failure"
 
-ELEVATE_URL = urlresolvers.reverse_lazy("user-sudo")
+ELEVATE_URL = urls.reverse_lazy("user-sudo")
 
-CMS_ROOT_URL = urlresolvers.reverse_lazy("cms-index", args=('',))
+CMS_ROOT_URL = urls.reverse_lazy("cms-index", args=('',))
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'inboxen.wsgi.application'
@@ -361,6 +361,7 @@ if DEBUG:  # noqa: F405
     # local dev made easy
     INTERNAL_IPS = ["127.0.0.1"]
     INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE = ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True

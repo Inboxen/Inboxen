@@ -19,7 +19,8 @@
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import RegexURLResolver, reverse
+from django.urls import URLResolver, reverse
+from django.urls.resolvers import RegexPattern
 from django.db import models
 from django.http import Http404
 from django.template.response import TemplateResponse
@@ -100,7 +101,7 @@ class HelpBasePage(HelpAbstractPage):
     # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
     title = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
     description = models.TextField(blank=True, validators=[validators.ProhibitNullCharactersValidator()])
 
@@ -241,7 +242,7 @@ class AppPage(HelpBasePage):
         if not self.live:
             raise Http404
 
-        resolver = RegexURLResolver(r"^", self.APP_PREFIX + self.app)
+        resolver = URLResolver(RegexPattern(r"^"), self.APP_PREFIX + self.app)
         path = request.path[len(self.url):]
         view, args, kwargs = resolver.resolve(path)
 
@@ -297,7 +298,7 @@ class PeoplePage(HelpBasePage):
 
 
 class PersonInfo(models.Model):
-    page = models.ForeignKey(PeoplePage, related_name="people", editable=False)
+    page = models.ForeignKey(PeoplePage, related_name="people", editable=False, on_delete=models.CASCADE)
     ordinal = models.IntegerField(null=True, blank=True, editable=False)
     name = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
     body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])

@@ -19,7 +19,7 @@
 
 from django.conf import settings as dj_settings, urls
 from django.contrib.auth import views as auth_views
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 import elevate.views
 

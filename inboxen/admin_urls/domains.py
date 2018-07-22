@@ -21,7 +21,7 @@ from django.conf import urls
 
 from inboxen.views import admin as views
 
-
+app_name = "admin_urls"
 urlpatterns = [
     urls.url(r'^$', views.domain_admin_index, name='index'),
     urls.url(r'^create/$', views.domain_admin_create, name='create'),

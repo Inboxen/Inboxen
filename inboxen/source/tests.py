@@ -17,13 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django import urls
 
 from inboxen.test import InboxenTestCase
 
 
 class SourceViewTestCase(InboxenTestCase):
     def test_get(self):
-        url = urlresolvers.reverse("source-index")
+        url = urls.reverse("source-index")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

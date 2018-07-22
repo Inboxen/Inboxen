@@ -21,6 +21,7 @@ from django.conf import urls
 
 from inboxen.blog import views
 
+app_name = "blog"
 
 urlpatterns = [
     urls.url(r'^$', views.blog_admin_index, name='index'),

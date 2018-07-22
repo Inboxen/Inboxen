@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.views import generic
 
 from braces.views import LoginRequiredMixin

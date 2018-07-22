@@ -19,7 +19,8 @@
 
 import six
 
-from django.core import mail, urlresolvers
+from django import urls
+from django.core import mail
 from django.db.models import Max
 from django.http import Http404
 
@@ -319,7 +320,7 @@ class QuestionAdminIndexTestCase(InboxenTestCase):
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
 
-        response = self.client.get(urlresolvers.reverse("admin:tickets:index"))
+        response = self.client.get(urls.reverse("admin:tickets:index"))
         self.assertEqual(response.resolver_match.func, views.question_admin_index)
         self.assertEqual(response.status_code, 200)
 
@@ -350,7 +351,7 @@ class QuestionAdminResponseTestCase(InboxenTestCase):
         grant_sudo(self.client)
         question = QuestionFactory()
 
-        response = self.client.get(urlresolvers.reverse("admin:tickets:response", kwargs={"question_pk": question.pk}))
+        response = self.client.get(urls.reverse("admin:tickets:response", kwargs={"question_pk": question.pk}))
         self.assertEqual(response.resolver_match.func, views.question_admin_response)
         self.assertEqual(response.status_code, 200)
 
@@ -385,7 +386,7 @@ class QuestionAdminResponseTestCase(InboxenTestCase):
         request.POST = {"body": "reply", "status": 0}
         response = views.question_admin_response(request, question.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:tickets:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:tickets:index"))
         self.assertEqual(question.response_set.count(), 1)
         self.assertEqual(question.response_set.get().body, "reply")
         question.refresh_from_db()
@@ -403,7 +404,7 @@ class QuestionAdminResponseTestCase(InboxenTestCase):
         request.POST = {"body": "reply2", "status": 1}
         response = views.question_admin_response(request, question.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:tickets:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:tickets:index"))
         self.assertEqual(question.response_set.count(), 2)
         question.refresh_from_db()
         self.assertEqual(question.status, 1)

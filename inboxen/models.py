@@ -59,9 +59,11 @@ class UserProfile(models.Model):
         (DELETE_MAIL, _("Delete old emails")),
     )
 
-    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, related_name="inboxenprofile")
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True,
+                             related_name="inboxenprofile", on_delete=models.CASCADE)
     prefered_domain = models.ForeignKey("inboxen.Domain", null=True, blank=True,
-                                        help_text=_("Prefer a particular domain when adding a new Inbox"))
+                                        help_text=_("Prefer a particular domain when adding a new Inbox"),
+                                        on_delete=models.CASCADE)
     prefer_html_email = models.BooleanField(default=True, verbose_name=_("Prefer HTML emails"))
     unified_has_new_messages = models.BooleanField(default=False)
     auto_delete = models.BooleanField(
@@ -109,7 +111,7 @@ class Liberation(models.Model):
     `async_result` is the UUID of Celery result object, which may or may not be valid
     `_path` is relative to settings.LIBERATION_PATH
     """
-    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True)
+    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE)
     content_type = models.PositiveSmallIntegerField(default=0)
     async_result = models.UUIDField(null=True)
     started = models.DateTimeField(null=True)
@@ -212,7 +214,7 @@ class Email(models.Model):
 
     The body and headers can be found in the root of the PartList tree on Email.parts
     """
-    inbox = models.ForeignKey(Inbox)
+    inbox = models.ForeignKey(Inbox, on_delete=models.CASCADE)
     received_date = models.DateTimeField(db_index=True)
 
     deleted = models.BooleanField(default=False)
@@ -288,9 +290,10 @@ class PartList(MPTTModel):
 
     email is passed to Email as a workaround for https://github.com/django-mptt/django-mptt/issues/189
     """
-    email = models.ForeignKey(Email, related_name='parts')
+    email = models.ForeignKey(Email, related_name='parts', on_delete=models.CASCADE)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children',
+                            on_delete=models.CASCADE)
 
     def __str__(self):
         return six.text_type(self.id)
@@ -377,7 +380,7 @@ class Header(models.Model):
     """
     name = models.ForeignKey(HeaderName, on_delete=models.PROTECT)
     data = models.ForeignKey(HeaderData, on_delete=models.PROTECT)
-    part = models.ForeignKey(PartList)
+    part = models.ForeignKey(PartList, on_delete=models.CASCADE)
     ordinal = models.IntegerField()
 
     objects = HeaderQuerySet.as_manager()

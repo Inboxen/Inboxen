@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django import urls
 from django.http import Http404
 
 import factory
@@ -58,11 +58,11 @@ class BlogTestCase(InboxenTestCase):
         user = factories.UserFactory()
         BlogPostFactory.create_batch(10, draft=False, author=user)
 
-        url = urlresolvers.reverse("blog")
+        url = urls.reverse("blog")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        url = urlresolvers.reverse("blog", kwargs={"page": "2"})
+        url = urls.reverse("blog", kwargs={"page": "2"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -78,7 +78,7 @@ class BlogTestCase(InboxenTestCase):
         self.assertEqual(post.date, None)
         self.assertEqual(six.text_type(post), "{} (draft)".format(post.subject))
 
-        url = urlresolvers.reverse('blog-post', kwargs={"slug": post.slug})
+        url = urls.reverse('blog-post', kwargs={"slug": post.slug})
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
@@ -98,8 +98,8 @@ class BlogTestCase(InboxenTestCase):
         user = factories.UserFactory()
         BlogPostFactory.create_batch(10, draft=False, author=user)
 
-        response_rss = self.client.get(urlresolvers.reverse("blog-feed-rss"))
-        response_atom = self.client.get(urlresolvers.reverse("blog-feed-atom"))
+        response_rss = self.client.get(urls.reverse("blog-feed-rss"))
+        response_atom = self.client.get(urls.reverse("blog-feed-atom"))
 
         self.assertEqual(response_rss.status_code, 200)
         self.assertEqual(response_atom.status_code, 200)
@@ -151,7 +151,7 @@ class BlogAdminIndexTestCase(InboxenTestCase):
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
 
-        response = self.client.get(urlresolvers.reverse("admin:blog:index"))
+        response = self.client.get(urls.reverse("admin:blog:index"))
         self.assertEqual(response.resolver_match.func, views.blog_admin_index)
         self.assertEqual(response.status_code, 200)
 
@@ -180,7 +180,7 @@ class BlogAdminCreateTestCase(InboxenTestCase):
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
 
-        response = self.client.get(urlresolvers.reverse("admin:blog:create"))
+        response = self.client.get(urls.reverse("admin:blog:create"))
         self.assertEqual(response.resolver_match.func, views.blog_admin_create)
         self.assertEqual(response.status_code, 200)
 
@@ -203,7 +203,7 @@ class BlogAdminCreateTestCase(InboxenTestCase):
 
         response = views.blog_admin_create(request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:blog:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:blog:index"))
 
         self.assertEqual(models.BlogPost.objects.count(), 1)
         post = models.BlogPost.objects.get()
@@ -228,7 +228,7 @@ class BlogAdminEditTestCase(InboxenTestCase):
 
         post = BlogPostFactory(author=self.user)
 
-        response = self.client.get(urlresolvers.reverse("admin:blog:edit", kwargs={"blog_pk": post.pk}))
+        response = self.client.get(urls.reverse("admin:blog:edit", kwargs={"blog_pk": post.pk}))
         self.assertEqual(response.resolver_match.func, views.blog_admin_edit)
         self.assertEqual(response.status_code, 200)
 
@@ -256,7 +256,7 @@ class BlogAdminEditTestCase(InboxenTestCase):
 
         response = views.blog_admin_edit(request, post.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:blog:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:blog:index"))
 
         self.assertEqual(models.BlogPost.objects.count(), 1)
         post = models.BlogPost.objects.get()
@@ -281,7 +281,7 @@ class BlogAdminDeleteTestCase(InboxenTestCase):
 
         post = BlogPostFactory(author=self.user)
 
-        response = self.client.get(urlresolvers.reverse("admin:blog:delete", kwargs={"blog_pk": post.pk}))
+        response = self.client.get(urls.reverse("admin:blog:delete", kwargs={"blog_pk": post.pk}))
         self.assertEqual(response.resolver_match.func, views.blog_admin_delete)
         self.assertEqual(response.status_code, 200)
 
@@ -310,7 +310,7 @@ class BlogAdminDeleteTestCase(InboxenTestCase):
 
         response = views.blog_admin_delete(request, post.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:blog:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:blog:index"))
 
         self.assertEqual(models.BlogPost.objects.count(), 1)
         self.assertEqual(models.BlogPost.objects.get(), other_post)

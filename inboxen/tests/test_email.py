@@ -19,8 +19,8 @@
 ##
 from __future__ import unicode_literals
 
+from django import urls
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core import urlresolvers
 from salmon import mail
 import six
 
@@ -72,7 +72,7 @@ class EmailViewTestCase(InboxenTestCase):
             "domain": self.email.inbox.domain.domain,
             "id": self.email.eid,
         }
-        return urlresolvers.reverse("email-view", kwargs=kwargs)
+        return urls.reverse("email-view", kwargs=kwargs)
 
     def test_get(self):
         response = self.client.get(self.get_url())
@@ -178,12 +178,12 @@ class EmailViewTestCase(InboxenTestCase):
 
     def test_attachments_get(self):
         part = self.email.parts.get()
-        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part.id})
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
         part_id = part.id + 1000
-        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part_id})
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": part_id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -266,7 +266,7 @@ class BadEmailTestCase(InboxenTestCase):
             "domain": email.inbox.domain.domain,
             "id": email.eid,
         }
-        return urlresolvers.reverse("email-view", kwargs=kwargs)
+        return urls.reverse("email-view", kwargs=kwargs)
 
     def test_body_encoding_with_imgDisplay(self):
         response = self.client.get(self.get_url() + "?imgDisplay=1")
@@ -312,7 +312,7 @@ class BadEmailTestCase(InboxenTestCase):
 
     def test_attachments_get(self):
         part = self.email.parts.get()
-        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part.id})
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         if six.PY3:
@@ -345,7 +345,7 @@ class RealExamplesTestCase(InboxenTestCase):
             "domain": self.email.inbox.domain.domain,
             "id": self.email.eid,
         }
-        return urlresolvers.reverse("email-view", kwargs=kwargs)
+        return urls.reverse("email-view", kwargs=kwargs)
 
     def test_digest(self):
         self.msg = mail.MailRequest("", "", "", EXAMPLE_DIGEST)
@@ -424,7 +424,7 @@ class AttachmentTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def test_no_name(self):
-        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment")
@@ -434,7 +434,7 @@ class AttachmentTestCase(InboxenTestCase):
         header_data.data = "text/html; charset=\"utf-8\"; name=\"Växjö.jpg\""
         header_data.save()
 
-        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         if six.PY3:
@@ -444,7 +444,7 @@ class AttachmentTestCase(InboxenTestCase):
 
     def test_name_in_cd(self):
         factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
-        url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         if six.PY3:
