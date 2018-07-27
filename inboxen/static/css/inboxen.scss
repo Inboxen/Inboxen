@@ -278,12 +278,10 @@ a.soon {
 .attachments {
     display: flex;
     flex-wrap: wrap;
-}
-.attachments > div {
-    width: 25%;
-}
-.attachments .panel-body {
-    word-wrap: break-word;
+
+    .panel-body {
+        word-wrap: break-word;
+    }
 }
 
 .btn-massive {
