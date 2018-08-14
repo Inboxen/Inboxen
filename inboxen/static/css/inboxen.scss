@@ -279,6 +279,15 @@ a.soon {
     display: flex;
     flex-wrap: wrap;
 
+    & > * {
+        margin-bottom: 20px;
+    }
+
+    .panel {
+        height: 100%;
+        margin-bottom: 0px;
+    }
+
     .panel-body {
         word-wrap: break-word;
     }
