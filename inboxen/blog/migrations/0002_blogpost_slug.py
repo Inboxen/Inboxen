@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogpost',
             name='slug',
-            field=django_extensions.db.fields.AutoSlugField(populate_from=b'subject', max_length=64, editable=False, blank=True),
+            field=django_extensions.db.fields.AutoSlugField(populate_from='subject', max_length=64, editable=False, blank=True),
         ),
     ]

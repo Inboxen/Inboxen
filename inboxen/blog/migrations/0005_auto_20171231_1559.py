@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='blogpost',
             name='slug',
-            field=django_extensions.db.fields.AutoSlugField(blank=True, editable=False, max_length=64, populate_from=b'subject', validators=[inboxen.validators.ProhibitNullCharactersValidator()]),
+            field=django_extensions.db.fields.AutoSlugField(blank=True, editable=False, max_length=64, populate_from='subject', validators=[inboxen.validators.ProhibitNullCharactersValidator()]),
         ),
         migrations.AlterField(
             model_name='blogpost',
