@@ -5,7 +5,7 @@
 {% block headline %}{{ headline }}{% endblock %}
 
 {% block breadcumbs %}
-    <ul class="breadcrumb">
+    <ul id="{{ inbox }}@{{ domain }}" class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
         {% if inbox %}
             <li class="active">{{ inbox }}@{{ domain }}</li>
