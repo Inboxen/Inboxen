@@ -2,6 +2,8 @@
 
 ## Pending
 
+* HOTFIX `ADMINS` should be a list, not a generator (#385)
+
 ## Releases
 
 ### Deploy for 2018-06-12
