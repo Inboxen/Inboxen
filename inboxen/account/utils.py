@@ -19,9 +19,9 @@
 from __future__ import unicode_literals
 
 import logging
+import urllib
 
 from django.conf import settings
-from six.moves import urllib
 
 from inboxen.utils import ratelimit, ip
 

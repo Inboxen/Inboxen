@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
-import six
 
 import mock
 
@@ -315,10 +314,7 @@ class BadEmailTestCase(InboxenTestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        if six.PY3:
-            self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
-        else:
-            self.assertIn("He l lo ß.jpg".encode("utf-8"), response["Content-Disposition"])
+        self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
 
     def test_html_a(self):
         response = self.client.get(self.get_url())
@@ -437,26 +433,20 @@ class AttachmentTestCase(InboxenTestCase):
         url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        if six.PY3:
-            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
-        else:
-            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"".encode("utf-8"))
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
     def test_name_in_cd(self):
         factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
         url = urlresolvers.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        if six.PY3:
-            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
-        else:
-            self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"".encode("utf-8"))
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
 
 class UtilityTestCase(InboxenTestCase):
     def test_is_unicode(self):
         string = "Hey there!"
-        self.assertTrue(isinstance(email_utils.unicode_damnit(string), six.text_type))
+        self.assertTrue(isinstance(email_utils.unicode_damnit(string), str))
 
     def test_unicode_passthrough(self):
         already_unicode = u"€"
@@ -474,14 +464,14 @@ class UtilityTestCase(InboxenTestCase):
     def test_clean_html_no_charset(self):
         email = {"display_images": True}
         returned_body = email_utils._clean_html_body(None, email, CHARSETLESS_BODY, "ascii")
-        self.assertIsInstance(returned_body, six.text_type)
+        self.assertIsInstance(returned_body, str)
 
     def test_clean_html_unsupported_css(self):
         email = {"display_images": True, "eid": "abc"}
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
             returned_body = email_utils._clean_html_body(None, email, UNSUPPORTED_CSS_BODY, "ascii")
             self.assertEqual(msg_mock.info.call_count, 1)
-        self.assertIsInstance(returned_body, six.text_type)
+        self.assertIsInstance(returned_body, str)
 
     def test_clean_html_balance_tags_when_closing_tag_missing(self):
         email = {"display_images": True, "eid": "abc"}
@@ -509,7 +499,7 @@ class UtilityTestCase(InboxenTestCase):
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
             returned_body = email_utils.render_body(None, email, [part])
             self.assertEqual(msg_mock.error.call_count, 1)
-        self.assertIsInstance(returned_body, six.text_type)
+        self.assertIsInstance(returned_body, str)
 
     def test_render_body_bad_http_equiv(self):
         email = {"display_images": True, "eid": "abc"}
@@ -519,12 +509,12 @@ class UtilityTestCase(InboxenTestCase):
         part.body.data = BAD_HTTP_EQUIV_BODY
 
         returned_body = email_utils.render_body(None, email, [part])
-        self.assertIsInstance(returned_body, six.text_type)
+        self.assertIsInstance(returned_body, str)
 
     def test_invalid_charset(self):
         text = "Växjö".encode("utf-8")
         self.assertEqual(email_utils.unicode_damnit(text, "utf-8"), u"Växjö")
-        self.assertEqual(email_utils.unicode_damnit(text, "six.text_type"), u"V\ufffd\ufffdxj\ufffd\ufffd")
+        self.assertEqual(email_utils.unicode_damnit(text, "str"), u"V\ufffd\ufffdxj\ufffd\ufffd")
 
     def test_find_bodies_with_bad_mime_tree(self):
         email = factories.EmailFactory()

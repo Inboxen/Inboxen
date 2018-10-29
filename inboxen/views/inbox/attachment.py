@@ -22,7 +22,6 @@ import re
 from braces.views import LoginRequiredMixin
 from django.http import Http404, HttpResponse
 from django.views import generic
-import six
 
 from inboxen import models
 
@@ -50,8 +49,6 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
 
         disposition = "; ".join(disposition)
         disposition = HEADER_CLEAN.sub(" ", disposition)
-        if six.PY2:
-            disposition = disposition.encode("utf-8")
 
         if self.object.content_type:
             content_type = "{0}; charset={1}".format(

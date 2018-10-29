@@ -35,7 +35,6 @@ from django_otp.plugins.otp_static.models import StaticDevice
 from django.test.runner import DiscoverRunner
 from elevate import settings as elevate_settings
 from elevate.middleware import ElevateMiddleware
-import six
 
 
 _log = logging.getLogger(__name__)
@@ -180,9 +179,3 @@ class SecureClient(test.Client):
 
 class InboxenTestCase(test.TestCase):
     client_class = SecureClient
-
-    def assertCountEqual(self, actual, expected, msg=None):
-        if six.PY3:
-            return super(InboxenTestCase, self).assertCountEqual(actual, expected, msg)
-        else:
-            return self.assertItemsEqual(actual, expected, msg)

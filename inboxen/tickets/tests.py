@@ -17,12 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import six
-
 from django.core import mail, urlresolvers
 from django.db.models import Max
 from django.http import Http404
-
 import factory
 import factory.fuzzy
 
@@ -263,11 +260,11 @@ class QuestionModelTestCase(InboxenTestCase):
 
     def test_unicode(self):
         question = QuestionFactory(author=self.user)
-        self.assertEqual(six.text_type(question), "{} from {}".format(question.subject, question.author))
+        self.assertEqual(str(question), "{} from {}".format(question.subject, question.author))
 
         response = ResponseFactory(question=question, author=self.user)
         expected_response = "Response to {} from {} from {}".format(question.subject, question.author, response.author)
-        self.assertEqual(six.text_type(response), expected_response)
+        self.assertEqual(str(response), expected_response)
 
 
 class RenderBodyTestCase(InboxenTestCase):
@@ -302,8 +299,8 @@ class RenderBodyTestCase(InboxenTestCase):
 class RenderStatus(InboxenTestCase):
     def test_render(self):
         result = tickets_flags.render_status(models.Question.NEW)
-        self.assertIn(six.text_type(tickets_flags.STATUS[models.Question.NEW]), result)
-        self.assertIn(six.text_type(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
+        self.assertIn(str(tickets_flags.STATUS[models.Question.NEW]), result)
+        self.assertIn(str(tickets_flags.STATUS_TO_TAGS[models.Question.NEW]["class"]), result)
 
         self.assertNotEqual(tickets_flags.render_status(models.Question.RESOLVED), result)
 

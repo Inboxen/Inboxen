@@ -36,7 +36,6 @@ from django.db import IntegrityError, transaction
 from django.utils import safestring, timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
-import six
 
 from inboxen.celery import app
 from inboxen.models import Email, Inbox
@@ -194,7 +193,7 @@ def liberate_convert_box(result, mail_path, options):
         for inbox in maildir.list_folders():
             folder = maildir.get_folder(inbox)
 
-            for key in six.iterkeys(folder):
+            for key in folder.keys():
                 msg = folder.pop(key)
                 mbox.add(msg)
             maildir.remove_folder(inbox)

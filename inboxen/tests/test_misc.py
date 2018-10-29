@@ -19,7 +19,10 @@
 
 from datetime import datetime
 from email.message import Message
+from importlib import reload
+from io import StringIO
 from subprocess import CalledProcessError
+import ipaddress
 import sys
 
 from django.conf import settings as dj_settings
@@ -31,9 +34,6 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
-from six import StringIO
-from six.moves import reload_module
-import ipaddress
 
 import mock
 
@@ -53,7 +53,7 @@ def reload_urlconf():
     Make sure to use clear_url_caches along with this
     """
     if dj_settings.ROOT_URLCONF in sys.modules:
-        conf = reload_module(sys.modules[dj_settings.ROOT_URLCONF])
+        conf = reload(sys.modules[dj_settings.ROOT_URLCONF])
     else:
         from inboxen import urls as conf
 

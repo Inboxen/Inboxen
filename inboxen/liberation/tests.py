@@ -19,6 +19,7 @@
 ##
 
 from importlib import import_module
+from io import BytesIO
 import base64
 import itertools
 import mailbox
@@ -34,7 +35,6 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse
 from salmon import mail
-from six import BytesIO
 
 from inboxen import models
 from inboxen.tests.example_emails import (
