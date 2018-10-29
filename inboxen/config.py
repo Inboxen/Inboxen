@@ -80,7 +80,7 @@ if len(config["general"]["admin_names"]) != len(config["general"]["admin_emails"
     raise exceptions.ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.ini")
 
 # Admins (and managers)
-ADMINS = zip(config["general"]["admin_names"], config["general"]["admin_emails"])
+ADMINS = list(zip(config["general"]["admin_names"], config["general"]["admin_emails"]))
 
 # List of hosts allowed
 ALLOWED_HOSTS = config["general"]["allowed_hosts"]
