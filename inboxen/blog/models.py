@@ -23,12 +23,10 @@ from django.db import models
 from django.utils import safestring
 from django_extensions.db.fields import AutoSlugField
 import markdown
-import six
 
 from inboxen import validators
 
 
-@six.python_2_unicode_compatible
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])

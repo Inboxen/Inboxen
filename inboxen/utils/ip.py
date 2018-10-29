@@ -18,7 +18,6 @@
 ##
 
 import ipaddress
-import six
 
 
 IPV4_HOST_CLASS = 32
@@ -30,7 +29,7 @@ def strip_ip(ip, ipv4_host_class=IPV4_HOST_CLASS, ipv6_host_class=IPV6_HOST_CLAS
 
     For IPv4, this is the full 32 bits. For IPv6 this is the first 64 bits.
     """
-    ip = ipaddress.ip_address(six.text_type(ip))
+    ip = ipaddress.ip_address(str(ip))
 
     if isinstance(ip, ipaddress.IPv4Address):
         netmask = ip.max_prefixlen - ipv4_host_class

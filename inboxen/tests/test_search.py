@@ -22,7 +22,7 @@ import mock
 
 from celery import exceptions
 from django.core import urlresolvers, cache
-from six.moves import urllib
+import urllib
 from watson.models import SearchEntry
 
 from inboxen.tests import factories

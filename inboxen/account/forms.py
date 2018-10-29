@@ -22,13 +22,11 @@ from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
-from django.contrib.auth.validators import ASCIIUsernameValidator, UnicodeUsernameValidator
 from django.core import exceptions
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext as _
 from elevate.forms import ElevateForm
 from ratelimitbackend.forms import AuthenticationForm
-import six
 
 from inboxen.account import fields
 from inboxen.account.tasks import delete_account
@@ -141,23 +139,6 @@ class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
         fields = ["username"]
         labels = {"username": _("New username")}
         help_texts = {"username": _("Letters, numbers, and the symbols @/./+/-/_ are allowed.")}
-
-    def clean_username(self):
-        username = self.cleaned_data["username"]
-
-        valids = [validators.ProhibitNullCharactersValidator()]
-        if six.PY3:
-            valids.append(UnicodeUsernameValidator())
-        else:
-            valids.append(ASCIIUsernameValidator())
-
-        for validator in valids:
-            validator(username)
-
-        if get_user_model().objects.filter(username__iexact=username).exists():
-            raise exceptions.ValidationError(_("A user with that username already exists."), code='duplicate_username')
-
-        return username
 
     def clean_username2(self):
         username1 = self.cleaned_data.get('username')

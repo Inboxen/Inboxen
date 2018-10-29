@@ -17,9 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from six.moves import urllib
 from watson import search
-import six
+import urllib
 
 from inboxen.utils.email import unicode_damnit
 
@@ -78,7 +77,7 @@ class InboxSearchAdapter(search.SearchAdapter):
         return obj.description or u""
 
     def get_description(self, obj):
-        return six.text_type(obj)
+        return str(obj)
 
     def get_content(self, obj):
         return u""  # nothing else is needed for search

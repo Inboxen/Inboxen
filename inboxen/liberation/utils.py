@@ -19,12 +19,10 @@
 
 from email.header import Header
 from email.message import Message
+from io import BytesIO
 import base64
 import quopri
 import uu
-
-from six import BytesIO
-import six
 
 from inboxen.models import HEADER_PARAMS
 
@@ -96,7 +94,7 @@ def make_message(message):
 
         if part.is_leaf_node():
             cte = msg.get("Content-Transfer-Encoding", "7-bit")
-            data = six.binary_type(part.body.data)
+            data = bytes(part.body.data)
 
             if cte == "base64":
                 set_base64_payload(msg, data)

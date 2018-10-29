@@ -30,7 +30,6 @@ from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils import html as html_utils, safestring
 from django.utils.translation import ugettext as _
-import six
 
 from lxml import etree, html as lxml_html
 from lxml.html.clean import Cleaner
@@ -59,17 +58,17 @@ class InboxenPremailer(Premailer):
 
 def unicode_damnit(data, charset="utf-8", errors="replace"):
     """Makes doubley sure that we can turn the database's binary typees into
-    six.text_type objects
+    str objects
     """
-    if isinstance(data, six.text_type):
+    if isinstance(data, str):
         return data
     elif data is None:
         return u""
 
     try:
-        return six.text_type(six.binary_type(data), charset, errors)
+        return str(bytes(data), charset, errors)
     except LookupError:
-        return six.text_type(six.binary_type(data), "ascii", errors)
+        return str(bytes(data), "ascii", errors)
 
 
 def _clean_html_body(request, email, body, charset):
@@ -189,7 +188,7 @@ def render_body(request, email, attachments):
             body = u""
     else:
         try:
-            body = _clean_html_body(request, email, six.binary_type(html.body.data), html.charset)
+            body = _clean_html_body(request, email, bytes(html.body.data), html.charset)
         except (etree.LxmlError, ValueError) as exc:
             if plain is not None and len(plain.body.data) > 0:
                 body = unicode_damnit(plain.body.data, plain.charset)

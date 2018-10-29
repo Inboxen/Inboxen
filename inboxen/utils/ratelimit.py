@@ -24,7 +24,7 @@ import logging
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
-from six.moves import urllib
+import urllib
 
 
 logger = logging.getLogger(__name__)

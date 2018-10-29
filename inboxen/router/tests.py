@@ -25,7 +25,6 @@ from django.db import DatabaseError
 from salmon.mail import MailRequest
 from salmon.routing import Router
 from salmon.server import SMTPError
-import six
 
 from inboxen.test import override_settings, InboxenTestCase
 from inboxen import models
@@ -144,7 +143,7 @@ class RouterTestCase(InboxenTestCase):
         self.assertEqual(models.Email.objects.count(), 1)
         self.assertEqual(models.PartList.objects.count(), 6)
 
-        bodies = [six.binary_type(part.body.data) for part in
+        bodies = [bytes(part.body.data) for part in
                   models.PartList.objects.select_related("body").order_by("level", "lft")]
         self.assertEqual(bodies, BODIES)
 

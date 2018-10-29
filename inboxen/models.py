@@ -27,7 +27,6 @@ from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from mptt.models import MPTTModel, TreeForeignKey
-import six
 
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import validators
@@ -35,7 +34,6 @@ from inboxen import validators
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
 
-@six.python_2_unicode_compatible
 class UserProfile(models.Model):
     """User profile
 
@@ -89,7 +87,6 @@ class UserProfile(models.Model):
         return u"Profile for %s" % self.user
 
 
-@six.python_2_unicode_compatible
 class Statistic(models.Model):
     """Statistics about users"""
     date = models.DateTimeField('date', auto_now_add=True, db_index=True)
@@ -99,10 +96,9 @@ class Statistic(models.Model):
     inboxes = JSONField()
 
     def __str__(self):
-        return six.text_type(self.date)
+        return str(self.date)
 
 
-@six.python_2_unicode_compatible
 class Liberation(models.Model):
     """Liberation data
 
@@ -140,7 +136,6 @@ class Liberation(models.Model):
 ##
 
 
-@six.python_2_unicode_compatible
 class Domain(models.Model):
     """Domain model
 
@@ -156,7 +151,6 @@ class Domain(models.Model):
         return self.domain
 
 
-@six.python_2_unicode_compatible
 class Inbox(models.Model):
     """Inbox model
 
@@ -190,7 +184,7 @@ class Inbox(models.Model):
         return u"%s@%s" % (self.inbox, self.domain.domain)
 
     def __repr__(self):
-        u_rep = six.text_type(self)
+        u_rep = str(self)
         if self.deleted:
             u_rep = "%s (deleted)" % u_rep
         return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep), errors="replace")
@@ -204,7 +198,6 @@ class Inbox(models.Model):
 ##
 
 
-@six.python_2_unicode_compatible
 class Email(models.Model):
     """Email model
 
@@ -253,14 +246,13 @@ class Email(models.Model):
             return None
 
 
-@six.python_2_unicode_compatible
 class Body(models.Model):
     """Body model
 
     Object manager has a get_or_create() method that deals with duplicated
     bodies.
 
-    This model expects and returns binary data, converting to and from six.text_type happens elsewhere
+    This model expects and returns binary data, converting to and from str happens elsewhere
     """
     hashed = models.CharField(max_length=80, unique=True,
                               validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
@@ -278,7 +270,6 @@ class Body(models.Model):
         return self.hashed
 
 
-@six.python_2_unicode_compatible
 class PartList(MPTTModel):
     """Part model
 
@@ -293,7 +284,7 @@ class PartList(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
 
     def __str__(self):
-        return six.text_type(self.id)
+        return str(self.id)
 
     @cached_property
     def _content_headers_cache(self):
@@ -340,7 +331,6 @@ class PartList(MPTTModel):
         return self._content_headers_cache.get("charset")
 
 
-@six.python_2_unicode_compatible
 class HeaderName(models.Model):
     """Header name model
 
@@ -352,7 +342,6 @@ class HeaderName(models.Model):
         return self.name
 
 
-@six.python_2_unicode_compatible
 class HeaderData(models.Model):
     """Header data model
 
@@ -366,7 +355,6 @@ class HeaderData(models.Model):
         return self.hashed
 
 
-@six.python_2_unicode_compatible
 class Header(models.Model):
     """Header model
 
