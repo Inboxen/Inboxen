@@ -1,6 +1,5 @@
 language: python
 python:
-    - "2.7"
     - "3.6"
 
 before_script:
@@ -20,11 +19,11 @@ install:
 
 matrix:
     include:
-      - python: "2.7"
+      - python: "3.6"
         env: TOX_ENV=docs
         install: pip install tox
         script: tox -e $TOX_ENV
-      - python: "2.7"
+      - python: "3.6"
         env: TOX_ENV=js-lint,py-lint
         install:
             - pip install tox
