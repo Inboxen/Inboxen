@@ -9,17 +9,5 @@ trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
 
-# Python and Markdown
-[*.py, *.md]
-
-# reStructuredText
-[*.rst]
-
-# Javascript
-[*.{js,json}]
-
-# HTML
-[*.html]
-
-# CSS, SCSS
-[*.{css,scss}]
+[Makefile]
+indent_style = tab
