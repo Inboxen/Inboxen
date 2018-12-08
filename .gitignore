@@ -4,6 +4,8 @@ docs/_build
 # inboxen specific
 /celerybeat-schedule
 /celerybeat.pid
+/celeryd.pid
+/celery.log
 /env
 /env3
 /inboxen_cache
