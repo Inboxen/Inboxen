@@ -4,6 +4,7 @@
 
 * Completely removed all traces of django-bitfield (#358)
 * Make Inboxen a proper Python package (#163)
+* Add a check for Domains and a console command to allow creating domains (#393)
 
 ## Releases
 
