@@ -24,9 +24,13 @@ from django.conf import settings
 from django.core.checks import register, Tags, Error
 from django.core import exceptions
 
+from inboxen.models import Domain
+
 
 PERMISSION_ERROR_MSG = "Other users could be able to interact with your settings file.\
  Please check file permissions on {}".format(settings.CONFIG_PATH)
+
+DOMAIN_ERROR_MSG = "No domains available. Add one via the createdomain command."
 
 
 @register(Tags.security, deploy=True)
@@ -46,3 +50,13 @@ def config_permissions_check(app_configs, **kwargs):
         ]
     else:
         return []
+
+
+@register(Tags.models, deploy=True)
+def domains_available_check(app_configs, **kwargs):
+        errors = []
+        available = Domain.objects.available(None).exists()
+        if not available:
+            errors.append(Error(DOMAIN_ERROR_MSG))
+
+        return errors
