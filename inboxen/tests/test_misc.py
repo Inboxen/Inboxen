@@ -39,6 +39,7 @@ import mock
 
 from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
+from inboxen.models import Domain
 from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
 from inboxen.tests import factories
 from inboxen.utils import is_reserved, ip, ratelimit
@@ -366,7 +367,7 @@ class UrlStatsCommandTest(InboxenTestCase):
         self.assertEqual(urls["unified-inbox"], 3)
 
 
-class RouterCommandTest(InboxenTestCase):
+class RouterCommandTestCase(InboxenTestCase):
     def test_command(self):
         with self.assertRaises(CommandError) as error:
             call_command("router")
@@ -407,6 +408,25 @@ class RouterCommandTest(InboxenTestCase):
 
         output = mgmt_command.salmon_start()
         self.assertEqual(output, ["Starting Salmon handler: inboxen.router.config.boot\n"])
+
+
+class CreateDomainCommandTestCase(InboxenTestCase):
+    def test_too_few_args(self):
+        with self.assertRaises(CommandError):
+            call_command("createdomain")
+
+    def test_new_domain(self):
+        self.assertEqual(Domain.objects.count(), 0)
+        call_command("createdomain", "localhost1")
+
+        domain = Domain.objects.first()
+        self.assertEqual(domain.domain, "localhost1")
+        self.assertEqual(domain.enabled, True)
+
+    def test_duplicate_domain(self):
+        Domain.objects.create(domain="localhost1")
+        with self.assertRaises(CommandError):
+            call_command("createdomain", "localhost1")
 
 
 class ErrorViewTestCase(InboxenTestCase):

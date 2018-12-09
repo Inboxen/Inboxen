@@ -17,21 +17,24 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.checks import Error
+from django.core.management.base import BaseCommand, CommandError
+from django.db import IntegrityError
 
-from inboxen.test import InboxenTestCase
-from inboxen.tests import factories
-from inboxen.checks import domains_available_check, DOMAIN_ERROR_MSG
+from inboxen.models import Domain
 
 
-class DomainCheckTestCase(InboxenTestCase):
-    def test_no_domain(self):
-        self.assertEqual(domains_available_check(None), [Error(DOMAIN_ERROR_MSG)])
+class Command(BaseCommand):
+    help = "Create a domain"
 
-    def test_domain_enabled(self):
-        factories.DomainFactory(enabled=True)
-        self.assertEqual(domains_available_check(None), [])
+    def add_arguments(self, parser):
+        parser.add_argument("domain", help="domain to be created")
 
-    def test_domain_disabled(self):
-        factories.DomainFactory(enabled=False)
-        self.assertEqual(domains_available_check(None), [Error(DOMAIN_ERROR_MSG)])
+    def handle(self, **options):
+        domain = options["domain"]
+        try:
+            Domain.objects.create(domain=domain)
+        except IntegrityError:
+            raise CommandError("Domain already exists.")
+        else:
+            self.stdout.write("%s created!\n" % domain)
+            self.stdout.flush()
