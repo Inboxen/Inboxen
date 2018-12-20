@@ -182,10 +182,7 @@ def liberate_message(mail_path, inbox, email_id):
 @app.task()
 def liberate_convert_box(result, mail_path, options):
     """ Convert maildir to mbox if needed """
-    if options['storage_type'] == '0':
-        pass
-
-    elif options['storage_type'] == '1':
+    if options['storage_type'] == '1':
         maildir = mailbox.Maildir(mail_path, factory=None)
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
