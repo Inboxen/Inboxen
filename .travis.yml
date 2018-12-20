@@ -41,6 +41,7 @@ matrix:
             - export PATH=$PATH:$PWD/geckodriver
             - pip install tox
         script: tox -e $TOX_ENV
+      - python: "3.6"
 
 script:
     - coverage run --branch  manage.py test --settings=inboxen.tests.settings
