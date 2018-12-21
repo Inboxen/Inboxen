@@ -134,7 +134,10 @@ class UsernameChangeTestCase(InboxenTestCase):
         params = {"username": "username\x00", "username2": "username\x00"}
         form = UsernameChangeForm(data=params)
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors["username"], [u"Null characters are not allowed."])
+        self.assertEqual(
+            form.errors["username"],
+            [u"Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."],
+        )
 
         params = {"username": "username€", "username2": "username€"}
         form = UsernameChangeForm(data=params)
