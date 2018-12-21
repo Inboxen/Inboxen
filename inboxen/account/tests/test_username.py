@@ -55,7 +55,7 @@ class LowerCaseUsernameTestCase(InboxenTestCase):
 
         self.assertTrue(form.is_valid())
 
-    def test_change_fail(self):
+    def test_change_fail_case_insensitive(self):
         params = {"username": "ISDABIZDA", "username2": "ISDABIZDA"}
         form = forms.UsernameChangeForm(data=params)
 

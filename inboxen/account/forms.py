@@ -140,6 +140,21 @@ class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
         labels = {"username": _("New username")}
         help_texts = {"username": _("Letters, numbers, and the symbols @/./+/-/_ are allowed.")}
 
+    def clean(self):
+        super().clean()
+
+        # we have to do this here rather than in clean_username because we want other validators to run too
+        username = self.cleaned_data["username"]
+
+        try:
+            if get_user_model().objects.filter(username__iexact=username).exists():
+                raise exceptions.ValidationError(_("A user with that username already exists."),
+                                                 code='duplicate_username')
+        except ValueError:
+            # there's a null in the username, model field validators will take
+            # care of that (they come later)
+            pass
+
     def clean_username2(self):
         username1 = self.cleaned_data.get('username')
         username2 = self.cleaned_data.get('username2')
