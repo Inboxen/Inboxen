@@ -40,6 +40,7 @@ from inboxen import models
 from inboxen.tests.example_emails import (
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
+    EXAMPLE_EMAIL_WITH_UNICODE,
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
 )
@@ -266,35 +267,58 @@ class MakeMessageUtilTestCase(InboxenTestCase):
         self.assertEqual(len(msg.keys()), len(new_msg.keys()))
         self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
 
+    def test_unicode(self):
+        """This test uses an example email that contains unicode chars"""
+        msg = mail.MailRequest("", "", "", EXAMPLE_EMAIL_WITH_UNICODE)
+        make_email(msg, self.inbox)
+        email = models.Email.objects.get()
+        message_object = make_message(email)
+        new_msg = mail.MailRequest("", "", "", str(message_object))
+
+        self.assertEqual(len(msg.keys()), len(new_msg.keys()))
+        self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
+
     def test_encoders_used(self):
         # make message with base64 part, uuencode part, 8bit part, 7bit part,
         # quopri part, and some invalid part
-        body_data = b"Hello\n\nHow are you?\n"
+        unicode_body_data = "Hello\n\nHow are you?\nPó på pə pë\n".encode()
+        ascii_body_data = "Hello\n\nHow are you?\n".encode()
         email = factories.EmailFactory(inbox=self.inbox)
-        body = factories.BodyFactory(data=body_data)
+        unicode_body = factories.BodyFactory(data=unicode_body_data)
+        ascii_body = factories.BodyFactory(data=ascii_body_data)
         first_part = factories.PartListFactory(email=email, body=factories.BodyFactory(data=b""))
         factories.HeaderFactory(part=first_part, name="Content-Type",
                                 data="multipart/mixed; boundary=\"=-3BRZDE/skgKPPh+RuFa/\"")
 
-        encodings = {
-                "base64": check_base64,
-                "quoted-printable": check_quopri,
-                "uuencode": check_uu,
-                "x-uuencode": check_uu,
-                "uue": check_uu,
-                "x-uue": check_uu,
-                "7-bit": check_noop,
-                "8-bit": check_noop,
-                "9-bit": check_unknown,  # unknown encoding
-            }
+        unicode_encodings = {
+            "base64": check_base64,
+            "quoted-printable": check_quopri,
+            "uuencode": check_uu,
+            "x-uuencode": check_uu,
+            "uue": check_uu,
+            "x-uue": check_uu,
+        }
+        ascii_encodings = {
+            "7-bit": check_noop,
+            "8-bit": check_noop,
+            "9-bit": check_unknown,  # unknown encoding
+        }
+        encodings = {}
+        encodings.update(unicode_encodings)
+        encodings.update(ascii_encodings)
 
-        for enc in encodings.keys():
-            part = factories.PartListFactory(email=email, parent=first_part, body=body)
+        for enc in unicode_encodings.keys():
+            part = factories.PartListFactory(email=email, parent=first_part, body=unicode_body)
+            factories.HeaderFactory(part=part, name="Content-Type", data="text/plain; name=\"my-file.txt\"")
+            factories.HeaderFactory(part=part, name="Content-Transfer-Encoding", data=enc)
+
+        for enc in ascii_encodings.keys():
+            part = factories.PartListFactory(email=email, parent=first_part, body=ascii_body)
             factories.HeaderFactory(part=part, name="Content-Type", data="text/plain; name=\"my-file.txt\"")
             factories.HeaderFactory(part=part, name="Content-Transfer-Encoding", data=enc)
 
         # finally, make a part without content headers
-        factories.PartListFactory(email=email, parent=first_part, body=body)
+        factories.PartListFactory(email=email, parent=first_part, body=ascii_body)
 
         # and now export
         message_object = make_message(email)
@@ -304,13 +328,23 @@ class MakeMessageUtilTestCase(InboxenTestCase):
             cte = message_part.get("Content-Transfer-Encoding", None)
             if ct is None:
                 # default is to assume 7-bit
-                check_noop(message_part, body_data)
-                self.assertEqual(message_part.get_payload(decode=True), body_data)
+                check_noop(message_part, ascii_body_data)
+                self.assertEqual(message_part.get_payload(decode=True), ascii_body_data)
             elif ct.startswith("multipart/mixed"):
                 pass
+            elif cte in ascii_encodings:
+                encodings[cte](message_part, ascii_body_data)
+                self.assertEqual(message_part.get_payload(decode=True), ascii_body_data)
+            elif cte in unicode_encodings:
+                encodings[cte](message_part, unicode_body_data)
+                self.assertEqual(message_part.get_payload(decode=True), unicode_body_data)
             else:
-                encodings[cte](message_part, body_data)
-                self.assertEqual(message_part.get_payload(decode=True), body_data)
+                raise AssertionError("Unknown Content-Type or Content-Type-Encoding")
+
+        # check that we can decode the whole lot in one go
+        output_bytes = message_object.as_string().encode("ascii")
+        self.assertNotEqual(len(output_bytes), 0)
+        self.assertEqual(output_bytes.count(b"text/plain; name=\"my-file.txt\""), len(encodings))
 
 
 def check_noop(msg, data):
