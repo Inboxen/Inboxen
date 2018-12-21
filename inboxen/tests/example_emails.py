@@ -114,7 +114,7 @@ How are you?
 
 Thanks,
 Test
-""" # noqa
+"""  # noqa
 
 UNSUPPORTED_CSS_BODY = """<html>
 <head>
@@ -131,7 +131,21 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 <p><a>Ha!</a><img width=10 height=10></p>
 </body>
 </html>
-""" # noqa
+"""  # noqa
+
+EXAMPLE_EMAIL_WITH_UNICODE = """Return-Path: <moggers87@localhost>
+Message-ID: <f5413c20d3b69cd4531505e87a2a3c006b6df6a7.camel@localhost>
+Subject: Hey
+From: Matt Molyneaux <moggers87@localhost>
+To: moggers87@moggers87.co.uk
+Date: Fri, 21 Dec 2018 17:07:43 +0000
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.3 (3.30.3-1.fc29)
+Mime-Version: 1.0
+Content-Transfer-Encoding: base64
+
+UMOzIHDDpSBwyZkgcMOrDQo=
+"""  # noqa
 
 # example email that was causing issue #47
 EXAMPLE_PREMAILER_BROKEN_CSS = """Return-Path: <bounces@server8839.e-activist.com>
