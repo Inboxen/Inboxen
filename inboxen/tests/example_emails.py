@@ -133,7 +133,7 @@ p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchim
 </html>
 """  # noqa
 
-EXAMPLE_EMAIL_WITH_UNICODE = """Return-Path: <moggers87@localhost>
+EXAMPLE_MISSING_CTE = """Return-Path: <moggers87@localhost>
 Message-ID: <f5413c20d3b69cd4531505e87a2a3c006b6df6a7.camel@localhost>
 Subject: Hey
 From: Matt Molyneaux <moggers87@localhost>
@@ -142,9 +142,8 @@ Date: Fri, 21 Dec 2018 17:07:43 +0000
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.3 (3.30.3-1.fc29)
 Mime-Version: 1.0
-Content-Transfer-Encoding: base64
 
-UMOzIHDDpSBwyZkgcMOrDQo=
+Pó på pə pë
 """  # noqa
 
 # example email that was causing issue #47

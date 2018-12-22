@@ -40,7 +40,7 @@ from inboxen import models
 from inboxen.tests.example_emails import (
     EXAMPLE_ALT,
     EXAMPLE_DIGEST,
-    EXAMPLE_EMAIL_WITH_UNICODE,
+    EXAMPLE_MISSING_CTE,
     EXAMPLE_PREMAILER_BROKEN_CSS,
     EXAMPLE_SIGNED_FORWARDED_DIGEST,
 )
@@ -269,11 +269,11 @@ class MakeMessageUtilTestCase(InboxenTestCase):
 
     def test_unicode(self):
         """This test uses an example email that contains unicode chars"""
-        msg = mail.MailRequest("", "", "", EXAMPLE_EMAIL_WITH_UNICODE)
+        msg = mail.MailRequest("", "", "", EXAMPLE_MISSING_CTE)
         make_email(msg, self.inbox)
         email = models.Email.objects.get()
         message_object = make_message(email)
-        new_msg = mail.MailRequest("", "", "", str(message_object))
+        new_msg = mail.MailRequest("", "", "", message_object.as_bytes().decode())
 
         self.assertEqual(len(msg.keys()), len(new_msg.keys()))
         self.assertEqual(len(list(msg.walk())), len(list(new_msg.walk())))
