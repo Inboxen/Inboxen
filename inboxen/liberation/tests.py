@@ -103,8 +103,25 @@ class LiberateTestCase(InboxenTestCase):
         ret_val = tasks.liberate_message(self.mail_dir, inbox, email.id)
         self.assertEqual(ret_val, None)
 
+    def test_liberate_message_invalid_id(self):
+        """liberate_message will return the ID of the email of there was an error."""
+        inbox = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)["folder"]
         ret_val = tasks.liberate_message(self.mail_dir, inbox, 10000000)
         self.assertEqual(ret_val, hex(10000000)[2:])
+
+    def test_liberate_message_bad_encoding(self):
+        """liberate_message should be able to export any email that has been
+        accepted into our data base - including seemingly broken ones"""
+        inbox = tasks.liberate_inbox(self.mail_dir, self.inboxes[0].id)["folder"]
+        email = self.inboxes[0].email_set.all()[0]
+
+        # replace body with something bad
+        body = email.parts.first().body
+        body.data = "Pó på pə pë".encode()
+        body.save()
+
+        ret_val = tasks.liberate_message(self.mail_dir, inbox, email.id)
+        self.assertEqual(ret_val, None)
 
     def test_liberate_collect_emails(self):
         tasks.liberate_collect_emails(None, self.mail_dir, {"user": self.user.id, "path": self.mail_dir,

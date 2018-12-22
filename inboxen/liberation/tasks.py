@@ -172,7 +172,7 @@ def liberate_message(mail_path, inbox, email_id):
     try:
         msg = Email.objects.get(id=email_id, deleted=False)
         msg = utils.make_message(msg)
-        maildir.add(msg.as_string())
+        maildir.add(msg.as_bytes())
     except Exception as exc:
         msg_id = hex(int(email_id))[2:]
         log.warning("Exception processing %s", msg_id, exc_info=exc)
