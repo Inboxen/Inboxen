@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013, 2018 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -24,9 +24,11 @@ from django.contrib import messages
 from django.utils.translation import ugettext as _
 
 from inboxen import models, tasks
+from inboxen.account.tasks import disown_inbox
 from inboxen.utils.ratelimit import inbox_ratelimit
 
-__all__ = ["InboxAddForm", "InboxEditForm"]
+
+__all__ = ["InboxAddForm", "InboxEditForm", "InboxDisownForm"]
 
 
 class InboxAddForm(forms.ModelForm):
@@ -102,5 +104,32 @@ class InboxEditForm(forms.ModelForm):
             messages.warning(self.request, warn_msg)
 
         super(InboxEditForm, self).save()
+
+        return self.instance
+
+
+class InboxDisownForm(forms.ModelForm):
+    disown = forms.BooleanField(
+        required=True, label=_("Yes, I'm sure!"),
+        help_text=_("Delete this Inbox. No one will be able to use it again and there is no undo button!"),
+    )
+
+    class Meta:
+        model = models.Inbox
+        fields = []
+
+    def __init__(self, request, initial=None, instance=None, *args, **kwargs):
+        self.request = request
+        super().__init__(instance=instance, initial=initial, *args, **kwargs)
+
+    def save(self):
+        self.instance.deleted = True
+        warn_msg = _("{0}@{1} has been deleted.").format(self.instance.inbox,
+                                                         self.instance.domain.domain)
+        messages.warning(self.request, warn_msg)
+
+        super().save()
+
+        disown_inbox.delay(self.instance.id)
 
         return self.instance

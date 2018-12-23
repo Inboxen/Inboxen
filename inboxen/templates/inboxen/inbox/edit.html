@@ -29,6 +29,8 @@
                     <div class="panel-body">
                         {{ form.clear_inbox|bootstrap }}
                         {{ form.disabled|bootstrap }}
+                        <a href="{% url "inbox-disown" inbox=inbox.inbox domain=inbox.domain.domain %}"
+                            class="btn btn-danger">{% trans "Disown Inbox" %}</a>
                     </div>
                 </div>
                 <button class="btn btn-primary">{% trans "Save" %}</button>

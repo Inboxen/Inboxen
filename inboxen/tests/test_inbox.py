@@ -18,6 +18,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from unittest import mock
 import itertools
 import warnings
 
@@ -497,3 +498,48 @@ class InboxEmailEditTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 204)
         email.refresh_from_db()
         self.assertFalse(email.important)
+
+
+class InboxDeleteTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+        assert login
+
+        self.inbox = factories.InboxFactory(user=self.user)
+        self.url = urlresolvers.reverse("inbox-disown",
+                                        kwargs={"inbox": self.inbox.inbox, "domain": self.inbox.domain.domain})
+
+    @mock.patch("inboxen.forms.inbox.disown_inbox")
+    def test_get(self, task_mock):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.delay.call_count, 0)
+
+    @mock.patch("inboxen.forms.inbox.disown_inbox")
+    def test_get_404(self, task_mock):
+        self.inbox.user = None
+        self.inbox.save()
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+        self.assertEqual(task_mock.delay.call_count, 0)
+
+    @mock.patch("inboxen.forms.inbox.disown_inbox")
+    def test_post_valid(self, task_mock):
+        response = self.client.post(self.url, {"disown": 1})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], urlresolvers.reverse("user-home"))
+
+        self.assertEqual(task_mock.delay.call_count, 1)
+        self.assertEqual(task_mock.delay.call_args, ((self.inbox.id,),))
+
+    @mock.patch("inboxen.forms.inbox.disown_inbox")
+    def test_post_invalid(self, task_mock):
+        response = self.client.post(self.url, {})
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.delay.call_count, 0)
