@@ -55,6 +55,10 @@ salmon-start:
 #	Inboxen.org specific tasks
 ##
 
+.PHONY: setup-node
+setup-node:
+	nodeenv -p -n 8.16.0 --with-npm
+
 .PHONY: install-watermelon-py-deps
 install-watermelon-py-deps:
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
