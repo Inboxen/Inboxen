@@ -75,3 +75,15 @@ deploy-%:
 	./manage.py collectstatic --no-input
 	touch inboxen/wsgi.py
 	$(MAKE) celery-start salmon-start
+
+.PHONY: dev-deploy
+deploy-%:
+	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
+	$(MAKE) celery-stop salmon-stop
+	git describe --dirty
+	$(MAKE) install-watermelon-deps
+	mkdir logs run
+	./manage.py check --deploy
+	./manage.py collectstatic --no-input
+	touch inboxen/wsgi.py
+	$(MAKE) celery-start salmon-start
