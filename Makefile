@@ -7,6 +7,7 @@ install-dev-py-deps:
 
 .PHONY: install-js-deps
 install-js-deps:
+	npm install
 
 ##
 # Update requirements
@@ -70,7 +71,7 @@ deploy-%:
 	$(MAKE) celery-stop salmon-stop
 	git checkout $@
 	$(MAKE) install-watermelon-deps
-	mkdir logs run
+	mkdir -p logs run
 	./manage.py check --deploy
 	./manage.py collectstatic --no-input
 	touch inboxen/wsgi.py
@@ -82,7 +83,7 @@ dev-deploy:
 	$(MAKE) celery-stop salmon-stop
 	git describe --dirty
 	$(MAKE) install-watermelon-deps
-	mkdir logs run
+	mkdir -p logs run
 	./manage.py check --deploy
 	./manage.py collectstatic --no-input
 	touch inboxen/wsgi.py
