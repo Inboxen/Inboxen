@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.urlresolvers import reverse, resolve, Resolver404
+from django.core.urlresolvers import reverse, resolve, Resolver404, reverse_lazy
 from django.http import Http404
 from django.views import generic
 
@@ -27,7 +27,7 @@ from inboxen import forms
 from inboxen.models import Inbox
 
 
-__all__ = ["InboxEditView", "FormInboxEditView"]
+__all__ = ["InboxEditView", "FormInboxEditView", "InboxDisownView"]
 
 
 class InboxEditView(LoginRequiredMixin, generic.UpdateView):
@@ -67,3 +67,23 @@ class FormInboxEditView(InboxEditView):
         response.status_code = 204
 
         return response
+
+
+class InboxDisownView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "inboxen/inbox/disown.html"
+    form_class = forms.InboxDisownForm
+    success_url = reverse_lazy("user-home")
+
+    def get_object(self, *args, **kwargs):
+        inbox = Inbox.objects.viewable(self.request.user).select_related("domain")
+        inbox = inbox.filter(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
+
+        try:
+            return inbox.get()
+        except Inbox.DoesNotExist:
+            raise Http404
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.setdefault("request", self.request)
+        return kwargs

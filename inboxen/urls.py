@@ -41,6 +41,8 @@ urlpatterns = [
     urls.url(r'^inbox/add/$', views.InboxAddView.as_view(), name='inbox-add'),
     urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
              views.InboxEditView.as_view(), name='inbox-edit'),
+    urls.url(r'^inbox/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
+             views.InboxDisownView.as_view(), name='inbox-disown'),
 
     urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/download/$',
              views.AttachmentDownloadView.as_view(), name='email-attachment'),

@@ -1,0 +1,36 @@
+{# Copyright (c) 2018 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends 'inboxen/base.html' %}
+{% load i18n bootstrap %}
+
+{% block headline %}{% blocktrans %}{{ inbox }} Disown{% endblocktrans %}{% endblock %}
+
+{% block breadcumbs %}
+    <ul class="breadcrumb">
+        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li class="active">{% blocktrans with inbox=inbox.inbox domain=inbox.domain.domain %}
+            Delete {{ inbox }}@{{ domain }}
+        {% endblocktrans %}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
+        <div class="panel panel-danger inboxen-panel">
+            <div class="panel-heading">{% trans "Are you sure?" %}</div>
+            <div class="panel-body">
+                <p>{% blocktrans %}Once you delete this Inbox, you'll never be able to get it back again. A record will be kept that is Inbox was assigned to someone at some point, but it won't say who or when.{% endblocktrans %}</p>
+                <p>{% blocktrans %}All emails associated with this inbox will also be deleted!{% endblocktrans %}</p>
+                {% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain as edit_url %}
+                <p>{% blocktrans %}Please consider using the <a href="{{ edit_url }}">"Disable Inbox" option</a> if you think you might want to use this Inbox again in future!{% endblocktrans %}</p>
+                <form class="form" action="{% url 'inbox-disown' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+                    {% csrf_token %}
+                    {{ form|bootstrap }}
+                    <button class="btn btn-danger">{% trans "Delete" %}</button>
+                    <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Cancel" %}</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
