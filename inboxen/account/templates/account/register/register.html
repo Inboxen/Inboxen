@@ -7,13 +7,15 @@
 {% block content %}
 
 <div class="row">
-    <div class="panel panel-default col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-2 col-lg-4 col-lg-offset-2">
-        <div class="panel-body">
-            <form action="{% url 'user-registration' %}" class="form" method="post">
-                {% csrf_token %}
-                {{ form|bootstrap_inline }}
-                <button class="btn btn-primary">Sign up!</button>
-            </form>
+    <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-2 col-lg-4 col-lg-offset-2">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form action="{% url 'user-registration' %}" class="form" method="post">
+                    {% csrf_token %}
+                    {{ form|bootstrap_inline }}
+                    <button class="btn btn-primary">Sign up!</button>
+                </form>
+            </div>
         </div>
     </div>
     <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-0 col-lg-4 col-lg-offset-0">
@@ -25,6 +27,5 @@
         <p>We have consciously chosen not to implement a password recovery procedure. Please don't
             forget your password, you won't be able to get into your account otherwise.</p>
     </div>
-
 </div>
 {% endblock %}

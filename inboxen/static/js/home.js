@@ -238,7 +238,7 @@
         $.get($this.data("form-url"), function(data) {
             var $addForm;
 
-            $addForm = $("<div id=\"inbox-add-form\" class=\"row\"><div class=\"panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4\"><div class=\"panel-body\">" + data + "</div></div></div>");
+            $addForm = $("<div id=\"inbox-add-form\" class=\"row\"><div class=\"col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4\"><div class=\"panel panel-default\"><div class=\"panel-body\">" + data + "</div></div></div></div>");
             $nav.after($addForm);
             initForm($addForm.find("form"), addInboxComplete);
             $addForm.find("a").click(function() {

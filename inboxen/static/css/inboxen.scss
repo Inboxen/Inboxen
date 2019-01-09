@@ -300,13 +300,6 @@ a.soon {
     }
 }
 
-.inboxen-panel {
-    .panel-body, .panel-heading {
-        padding-left: $panel-body-padding + ($grid-gutter-width/2);
-        padding-right: $panel-body-padding + ($grid-gutter-width/2);
-    }
-}
-
 .profile-image {
     float: left;
     margin-right: $profile-margin;
