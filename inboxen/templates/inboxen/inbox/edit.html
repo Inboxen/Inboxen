@@ -15,27 +15,29 @@
 
 {% block content %}
 <div class="row">
-    <div class="panel panel-default col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
-        <div class="panel-body">
-            <form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
-                {% csrf_token %}
-                {{ form.description|bootstrap }}
-                {{ form.exclude_from_unified|bootstrap }}
-                {{ form.pinned|bootstrap }}
-                <div class="panel panel-danger">
-                    <div class="panel-heading">
-                        {% trans "Danger Area" %}
+    <div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4 col-lg-4 col-lg-offset-4">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form class="form" action="{% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
+                    {% csrf_token %}
+                    {{ form.description|bootstrap }}
+                    {{ form.exclude_from_unified|bootstrap }}
+                    {{ form.pinned|bootstrap }}
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">
+                            {% trans "Danger Area" %}
+                        </div>
+                        <div class="panel-body">
+                            {{ form.clear_inbox|bootstrap }}
+                            {{ form.disabled|bootstrap }}
+                            <a href="{% url "inbox-disown" inbox=inbox.inbox domain=inbox.domain.domain %}"
+                                class="btn btn-danger">{% trans "Disown Inbox" %}</a>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        {{ form.clear_inbox|bootstrap }}
-                        {{ form.disabled|bootstrap }}
-                        <a href="{% url "inbox-disown" inbox=inbox.inbox domain=inbox.domain.domain %}"
-                            class="btn btn-danger">{% trans "Disown Inbox" %}</a>
-                    </div>
-                </div>
-                <button class="btn btn-primary">{% trans "Save" %}</button>
-                <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Cancel" %}</a>
-            </form>
+                    <button class="btn btn-primary">{% trans "Save" %}</button>
+                    <a class="btn btn-default" href="{% url 'user-home' %}">{% trans "Cancel" %}</a>
+                </form>
+            </div>
         </div>
     </div>
 </div>
