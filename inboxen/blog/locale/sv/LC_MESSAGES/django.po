@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-11 19:16+0000\n"
+"POT-Creation-Date: 2019-01-10 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,109 +18,112 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: blog/templates/blog/admin/create.html:5
+#: inboxen/blog/templates/blog/admin/create.html:5
 msgid "Create a new page"
 msgstr ""
 
-#: blog/templates/blog/admin/create.html:9
-#: blog/templates/blog/admin/delete.html:9
-#: blog/templates/blog/admin/edit.html:9 blog/templates/blog/admin/index.html:5
-#: blog/templates/blog/admin/index.html:9 blog/templates/blog/blog.html:5
+#: inboxen/blog/templates/blog/admin/create.html:9
+#: inboxen/blog/templates/blog/admin/delete.html:9
+#: inboxen/blog/templates/blog/admin/edit.html:9
+#: inboxen/blog/templates/blog/admin/index.html:5
+#: inboxen/blog/templates/blog/admin/index.html:9
+#: inboxen/blog/templates/blog/blog.html:5
 msgid "Blog"
 msgstr ""
 
-#: blog/templates/blog/admin/create.html:10
+#: inboxen/blog/templates/blog/admin/create.html:10
 msgid "Create new page"
 msgstr ""
 
-#: blog/templates/blog/admin/create.html:18
+#: inboxen/blog/templates/blog/admin/create.html:18
 msgid "Create"
 msgstr ""
 
-#: blog/templates/blog/admin/delete.html:5
-#: blog/templates/blog/admin/delete.html:11
+#: inboxen/blog/templates/blog/admin/delete.html:5
+#: inboxen/blog/templates/blog/admin/delete.html:11
 #, python-format
 msgid "Deleting %(subject)s"
 msgstr ""
 
-#: blog/templates/blog/admin/delete.html:10
-#: blog/templates/blog/admin/edit.html:5 blog/templates/blog/admin/edit.html:10
+#: inboxen/blog/templates/blog/admin/delete.html:10
+#: inboxen/blog/templates/blog/admin/edit.html:5
+#: inboxen/blog/templates/blog/admin/edit.html:10
 #, python-format
 msgid "Editing %(subject)s"
 msgstr ""
 
-#: blog/templates/blog/admin/delete.html:19
-#: blog/templates/blog/admin/edit.html:19
+#: inboxen/blog/templates/blog/admin/delete.html:19
+#: inboxen/blog/templates/blog/admin/edit.html:19
 msgid "Delete"
 msgstr ""
 
-#: blog/templates/blog/admin/delete.html:20
+#: inboxen/blog/templates/blog/admin/delete.html:20
 msgid "Cancel"
 msgstr ""
 
-#: blog/templates/blog/admin/edit.html:18
+#: inboxen/blog/templates/blog/admin/edit.html:18
 msgid "Save"
 msgstr ""
 
-#: blog/templates/blog/admin/index.html:10
+#: inboxen/blog/templates/blog/admin/index.html:10
 msgid "List"
 msgstr ""
 
-#: blog/templates/blog/admin/index.html:15
+#: inboxen/blog/templates/blog/admin/index.html:15
 msgid "New post"
 msgstr ""
 
-#: blog/templates/blog/admin/index.html:18
+#: inboxen/blog/templates/blog/admin/index.html:18
 msgid "Subject"
 msgstr ""
 
-#: blog/templates/blog/admin/index.html:19
+#: inboxen/blog/templates/blog/admin/index.html:19
 msgid "Date"
 msgstr ""
 
-#: blog/templates/blog/admin/index.html:20
+#: inboxen/blog/templates/blog/admin/index.html:20
 msgid "Status"
 msgstr ""
 
-#: blog/templates/blog/admin/index.html:30
+#: inboxen/blog/templates/blog/admin/index.html:30
 msgid "Edit page"
 msgstr ""
 
-#: blog/templates/blog/blog.html:8
+#: inboxen/blog/templates/blog/blog.html:8
 #, python-format
 msgid "%(name)s  Blog "
 msgstr ""
 
-#: blog/templates/blog/blog.html:9
+#: inboxen/blog/templates/blog/blog.html:9
 #, python-format
 msgid "%(name)s Blog "
 msgstr ""
 
-#: blog/templates/blog/blog.html:22
+#: inboxen/blog/templates/blog/blog.html:22
 msgid "Previous"
 msgstr ""
 
-#: blog/templates/blog/blog.html:27
+#: inboxen/blog/templates/blog/blog.html:27
 msgid "Next"
 msgstr ""
 
-#: blog/templatetags/blog_admin_tags.py:32
+#: inboxen/blog/templatetags/blog_admin_tags.py:32
 msgid "Draft post"
 msgstr ""
 
-#: blog/templatetags/blog_admin_tags.py:33
+#: inboxen/blog/templatetags/blog_admin_tags.py:33
 msgid "Draft"
 msgstr ""
 
-#: blog/templatetags/blog_admin_tags.py:37
+#: inboxen/blog/templatetags/blog_admin_tags.py:37
 msgid "Live post"
 msgstr ""
 
-#: blog/templatetags/blog_admin_tags.py:38
+#: inboxen/blog/templatetags/blog_admin_tags.py:38
 msgid "Live"
 msgstr ""
 
-#: blog/views.py:72
+#: inboxen/blog/views.py:72
 #, python-brace-format
 msgid "The latest news and updates for {0}"
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-11 19:16+0000\n"
+"POT-Creation-Date: 2019-01-10 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,46 +18,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: inboxen/forms/inbox.py:34 inboxen/forms/inbox.py:96
-msgid "Exclude from Unified Inbox"
-msgstr ""
-
-#: inboxen/forms/inbox.py:61
+#: inboxen/forms/inbox.py:60
 msgid "Slow down! You're creating inboxes too quickly."
 msgstr ""
 
-#: inboxen/forms/inbox.py:76
+#: inboxen/forms/inbox.py:70
 #, python-brace-format
 msgid "{0}@{1} has been created."
 msgstr ""
 
-#: inboxen/forms/inbox.py:85
+#: inboxen/forms/inbox.py:76
 msgid "Empty Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:86
+#: inboxen/forms/inbox.py:77
 msgid "Delete all emails in this Inbox. Cannot be undone."
 msgstr ""
 
-#: inboxen/forms/inbox.py:87
-msgid "Disable Inbox"
-msgstr ""
-
-#: inboxen/forms/inbox.py:88
-msgid "This Inbox will no longer receive emails."
-msgstr ""
-
-#: inboxen/forms/inbox.py:97
-msgid "Pin Inbox to top"
-msgstr ""
-
-#: inboxen/forms/inbox.py:118
+#: inboxen/forms/inbox.py:92
 msgid "Inbox cannot be disabled and pinned at the same time"
 msgstr ""
 
-#: inboxen/forms/inbox.py:131
+#: inboxen/forms/inbox.py:102
 #, python-brace-format
 msgid "All emails in {0}@{1} are being deleted."
+msgstr ""
+
+#: inboxen/forms/inbox.py:113
+msgid "Yes, I'm sure!"
+msgstr ""
+
+#: inboxen/forms/inbox.py:114
+msgid ""
+"Delete this Inbox. No one will be able to use it again and there is no undo "
+"button!"
+msgstr ""
+
+#: inboxen/forms/inbox.py:127
+#, python-brace-format
+msgid "{0}@{1} has been deleted."
 msgstr ""
 
 #: inboxen/managers.py:67
@@ -68,7 +67,75 @@ msgstr ""
 msgid "Too many login attempts, further login attempts will be ignored."
 msgstr ""
 
-#: inboxen/settings.py:219
+#: inboxen/models.py:47
+msgid "Always ask to display images"
+msgstr ""
+
+#: inboxen/models.py:48
+msgid "Always display images"
+msgstr ""
+
+#: inboxen/models.py:49
+msgid "Never display images"
+msgstr ""
+
+#: inboxen/models.py:56
+msgid "Reject new emails"
+msgstr ""
+
+#: inboxen/models.py:57
+msgid "Delete old emails"
+msgstr ""
+
+#: inboxen/models.py:62
+msgid "Prefer a particular domain when adding a new Inbox"
+msgstr ""
+
+#: inboxen/models.py:63
+msgid "Prefer HTML emails"
+msgstr ""
+
+#: inboxen/models.py:67
+msgid "Auto-delete emails"
+msgstr ""
+
+#: inboxen/models.py:68
+#, python-format
+msgid ""
+"Delete emails after %(days)s days. Emails that have been marked as important "
+"will not be deleted."
+msgstr ""
+
+#: inboxen/models.py:73
+msgid "Display options for HTML emails"
+msgstr ""
+
+#: inboxen/models.py:74
+msgid ""
+"Warning: Images in HTML emails can be used to track if you read an email!"
+msgstr ""
+
+#: inboxen/models.py:79
+msgid "What happens once your email quota is reached?"
+msgstr ""
+
+#: inboxen/models.py:170
+msgid "Exclude from Unified Inbox"
+msgstr ""
+
+#: inboxen/models.py:171
+msgid "Disable Inbox"
+msgstr ""
+
+#: inboxen/models.py:172
+msgid "This Inbox will no longer receive emails."
+msgstr ""
+
+#: inboxen/models.py:173
+msgid "Pin Inbox to top"
+msgstr ""
+
+#: inboxen/settings.py:232
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
@@ -92,8 +159,8 @@ msgid "Create"
 msgstr ""
 
 #: inboxen/templates/inboxen/admin/domain_edit.html:18
-#: inboxen/templates/inboxen/forms/inbox/edit.html:16
-#: inboxen/templates/inboxen/inbox/edit.html:31
+#: inboxen/templates/inboxen/forms/inbox/edit.html:21
+#: inboxen/templates/inboxen/inbox/edit.html:37
 msgid "Save"
 msgstr ""
 
@@ -185,28 +252,75 @@ msgid "Stats for nerds"
 msgstr ""
 
 #: inboxen/templates/inboxen/forms/inbox/add.html:6
-#: inboxen/templates/inboxen/inbox/add.html:21
+#: inboxen/templates/inboxen/inbox/add.html:22
 msgid "Add"
 msgstr ""
 
 #: inboxen/templates/inboxen/forms/inbox/add.html:7
-#: inboxen/templates/inboxen/forms/inbox/edit.html:17
-#: inboxen/templates/inboxen/inbox/edit.html:32
+#: inboxen/templates/inboxen/forms/inbox/edit.html:22
+#: inboxen/templates/inboxen/inbox/disown.html:30
+#: inboxen/templates/inboxen/inbox/edit.html:38
 msgid "Cancel"
 msgstr ""
 
-#: inboxen/templates/inboxen/forms/inbox/edit.html:10
-#: inboxen/templates/inboxen/inbox/edit.html:25
+#: inboxen/templates/inboxen/forms/inbox/edit.html:12
+#: inboxen/templates/inboxen/inbox/edit.html:28
 msgid "Danger Area"
 msgstr ""
 
+#: inboxen/templates/inboxen/forms/inbox/edit.html:18
+msgid "Delete Inbox"
+msgstr ""
+
 #: inboxen/templates/inboxen/inbox/add.html:9
+#: inboxen/templates/inboxen/inbox/disown.html:9
 #: inboxen/templates/inboxen/inbox/edit.html:9
 #: inboxen/templates/inboxen/inbox/email.html:16
 #: inboxen/templates/inboxen/inbox/inbox.html:9
 #: inboxen/templates/inboxen/user/search.html:17
 #, python-format
 msgid " %(user)s's Home "
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:5
+#, python-format
+msgid "%(inbox)s Disown"
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:10
+#, python-format
+msgid ""
+"\n"
+"            Delete %(inbox)s@%(domain)s\n"
+"        "
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:20
+msgid "Are you sure?"
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:22
+msgid ""
+"Once you delete this Inbox, you'll never be able to get it back again. A "
+"record will be kept that is Inbox was assigned to someone at some point, but "
+"it won't say who or when."
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:23
+msgid "All emails associated with this inbox will also be deleted!"
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:25
+#, python-format
+msgid ""
+"Please consider using the <a href=\"%(edit_url)s\">\"Disable Inbox\" option</"
+"a> if you think you might want to use this Inbox again in future!"
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/disown.html:29
+#: inboxen/templates/inboxen/inbox/email.html:32
+#: inboxen/templates/inboxen/inbox/inbox.html:24
+msgid "Delete"
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/edit.html:5
@@ -222,6 +336,10 @@ msgid ""
 "        "
 msgstr ""
 
+#: inboxen/templates/inboxen/inbox/edit.html:34
+msgid "Disown Inbox"
+msgstr ""
+
 #: inboxen/templates/inboxen/inbox/email.html:10
 #: inboxen/templates/inboxen/inbox/email.html:18
 #: inboxen/templates/inboxen/includes/email_line.html:31
@@ -230,11 +348,6 @@ msgstr ""
 
 #: inboxen/templates/inboxen/inbox/email.html:25
 msgid "Click here to view images"
-msgstr ""
-
-#: inboxen/templates/inboxen/inbox/email.html:32
-#: inboxen/templates/inboxen/inbox/inbox.html:24
-msgid "Delete"
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/email.html:38
@@ -318,7 +431,7 @@ msgstr ""
 
 #: inboxen/templates/inboxen/includes/email_line.html:16
 #: inboxen/templates/inboxen/includes/email_line.html:17
-#: inboxen/templates/inboxen/user/home.html:17 inboxen/views/inbox/inbox.py:172
+#: inboxen/templates/inboxen/user/home.html:17 inboxen/views/inbox/inbox.py:169
 msgid "Inbox"
 msgstr ""
 
@@ -679,11 +792,11 @@ msgstr[1] ""
 msgid "just now"
 msgstr ""
 
-#: inboxen/utils/email.py:102
+#: inboxen/utils/email.py:101
 msgid "Part of this message could not be parsed - it may not display correctly"
 msgstr ""
 
-#: inboxen/utils/email.py:200
+#: inboxen/utils/email.py:199
 msgid ""
 "Some parts of this email contained invalid HTML and could not be displayed"
 msgstr ""
@@ -742,6 +855,6 @@ msgstr ""
 msgid "Bad Request"
 msgstr ""
 
-#: inboxen/views/inbox/inbox.py:196
+#: inboxen/views/inbox/inbox.py:193
 msgid "No Inbox found matching the query."
 msgstr ""

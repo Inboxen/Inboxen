@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-11 19:16+0000\n"
+"POT-Creation-Date: 2019-01-10 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,42 +18,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: liberation/forms.py:34
+#: inboxen/liberation/forms.py:34
 msgid "Maildir"
 msgstr ""
 
-#: liberation/forms.py:35
+#: inboxen/liberation/forms.py:35
 msgid "Mailbox .mbox"
 msgstr ""
 
-#: liberation/forms.py:40
+#: inboxen/liberation/forms.py:40
 msgid "Tarball (gzip compressed)"
 msgstr ""
 
-#: liberation/forms.py:41
+#: inboxen/liberation/forms.py:41
 msgid "Tarball (bzip2 compression)"
 msgstr ""
 
-#: liberation/forms.py:42
+#: inboxen/liberation/forms.py:42
 msgid "Tarball (no compression)"
 msgstr ""
 
-#: liberation/tasks.py:261
+#: inboxen/liberation/tasks.py:257
 #, python-format
 msgid ""
 "Your request for your personal data has been completed. Click <a class="
 "\"alert-link\" href=\"%s\">here</a> to download your archive."
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:5
+#: inboxen/liberation/templates/liberation/liberate.html:5
 msgid "Liberate your data"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:13
+#: inboxen/liberation/templates/liberation/liberate.html:13
 msgid "Data liberation is currently running"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:14
+#: inboxen/liberation/templates/liberation/liberate.html:14
 #, python-format
 msgid ""
 "\n"
@@ -61,31 +61,31 @@ msgid ""
 "    "
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:17
+#: inboxen/liberation/templates/liberation/liberate.html:17
 msgid "What's happening right now:"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:19
+#: inboxen/liberation/templates/liberation/liberate.html:19
 msgid "Archiving your emails"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:20
+#: inboxen/liberation/templates/liberation/liberate.html:20
 msgid ""
 "Grabbing a list of your Inboxes and associated data (e.g. description, when "
 "they were created)"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:21
+#: inboxen/liberation/templates/liberation/liberate.html:21
 msgid "Collecting miscellaneous information we hold about you"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:23
+#: inboxen/liberation/templates/liberation/liberate.html:23
 msgid ""
 "If you have a lot of emails, this could take a while. We will notify you "
 "once your data is ready for downloading."
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:28
+#: inboxen/liberation/templates/liberation/liberate.html:28
 #, python-format
 msgid ""
 "\n"
@@ -94,14 +94,14 @@ msgid ""
 "            "
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:31
+#: inboxen/liberation/templates/liberation/liberate.html:31
 msgid "Download"
 msgstr ""
 
-#: liberation/templates/liberation/liberate.html:38
+#: inboxen/liberation/templates/liberation/liberate.html:38
 msgid "Liberate!"
 msgstr ""
 
-#: liberation/views.py:51
+#: inboxen/liberation/views.py:51
 msgid "Fetching all your data. This may take a while, so check back later!"
 msgstr ""

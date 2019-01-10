@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-11 19:16+0000\n"
+"POT-Creation-Date: 2019-01-10 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,163 +18,164 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: tickets/forms.py:30
+#: inboxen/tickets/forms.py:30
 msgid "Question"
 msgstr ""
 
-#: tickets/forms.py:51 tickets/forms.py:77
+#: inboxen/tickets/forms.py:51 inboxen/tickets/forms.py:77
 msgid "Reply"
 msgstr ""
 
-#: tickets/models.py:58
+#: inboxen/tickets/models.py:56
 msgid "New"
 msgstr ""
 
-#: tickets/models.py:59 tickets/templatetags/tickets_flags.py:41
+#: inboxen/tickets/models.py:57
+#: inboxen/tickets/templatetags/tickets_flags.py:41
 msgid "In progress"
 msgstr ""
 
-#: tickets/models.py:60
+#: inboxen/tickets/models.py:58
 msgid "Need more info"
 msgstr ""
 
-#: tickets/models.py:61
+#: inboxen/tickets/models.py:59
 msgid "Resolved"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:5
-#: tickets/templates/tickets/admin/index.html:9
-#: tickets/templates/tickets/admin/response.html:5
-#: tickets/templates/tickets/admin/response.html:9
+#: inboxen/tickets/templates/tickets/admin/index.html:5
+#: inboxen/tickets/templates/tickets/admin/index.html:9
+#: inboxen/tickets/templates/tickets/admin/response.html:5
+#: inboxen/tickets/templates/tickets/admin/response.html:9
 msgid "Questions"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:10
+#: inboxen/tickets/templates/tickets/admin/index.html:10
 msgid "List"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:17
-#: tickets/templates/tickets/includes/question_list.html:4
+#: inboxen/tickets/templates/tickets/admin/index.html:17
+#: inboxen/tickets/templates/tickets/includes/question_list.html:4
 msgid "Subject"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:18
+#: inboxen/tickets/templates/tickets/admin/index.html:18
 msgid "Asker"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:19
+#: inboxen/tickets/templates/tickets/admin/index.html:19
 msgid "Date"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:20
-#: tickets/templates/tickets/admin/response.html:22
-#: tickets/templates/tickets/question_detail.html:25
+#: inboxen/tickets/templates/tickets/admin/index.html:20
+#: inboxen/tickets/templates/tickets/admin/response.html:22
+#: inboxen/tickets/templates/tickets/question_detail.html:25
 msgid "Status"
 msgstr ""
 
-#: tickets/templates/tickets/admin/index.html:31
+#: inboxen/tickets/templates/tickets/admin/index.html:31
 msgid "View question"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:10
+#: inboxen/tickets/templates/tickets/admin/response.html:10
 #, python-format
 msgid "%(subject)s"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:16
-#: tickets/templates/tickets/question_detail.html:19
+#: inboxen/tickets/templates/tickets/admin/response.html:16
+#: inboxen/tickets/templates/tickets/question_detail.html:19
 msgid "Asked by"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:18
-#: tickets/templates/tickets/question_detail.html:21
+#: inboxen/tickets/templates/tickets/admin/response.html:18
+#: inboxen/tickets/templates/tickets/question_detail.html:21
 msgid "Asked"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:20
-#: tickets/templates/tickets/question_detail.html:23
+#: inboxen/tickets/templates/tickets/admin/response.html:20
+#: inboxen/tickets/templates/tickets/question_detail.html:23
 msgid "Last activity"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:26
-#: tickets/templates/tickets/question_detail.html:29
+#: inboxen/tickets/templates/tickets/admin/response.html:26
+#: inboxen/tickets/templates/tickets/question_detail.html:29
 msgid "Latest reply"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:27
-#: tickets/templates/tickets/question_detail.html:30
+#: inboxen/tickets/templates/tickets/admin/response.html:27
+#: inboxen/tickets/templates/tickets/question_detail.html:30
 msgid "Reply form"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:31
-#: tickets/templates/tickets/question_detail.html:34
+#: inboxen/tickets/templates/tickets/admin/response.html:31
+#: inboxen/tickets/templates/tickets/question_detail.html:34
 msgid "says"
 msgstr ""
 
-#: tickets/templates/tickets/admin/response.html:41
-#: tickets/templates/tickets/question_detail.html:44
-#: tickets/templates/tickets/question_home.html:33
+#: inboxen/tickets/templates/tickets/admin/response.html:42
+#: inboxen/tickets/templates/tickets/question_detail.html:45
+#: inboxen/tickets/templates/tickets/question_home.html:33
 msgid "Submit"
 msgstr ""
 
-#: tickets/templates/tickets/includes/question_list.html:6
+#: inboxen/tickets/templates/tickets/includes/question_list.html:6
 msgid "Last Activity"
 msgstr ""
 
-#: tickets/templates/tickets/includes/question_list.html:14
+#: inboxen/tickets/templates/tickets/includes/question_list.html:14
 msgid "Question responses"
 msgstr ""
 
-#: tickets/templates/tickets/includes/question_list.html:24
+#: inboxen/tickets/templates/tickets/includes/question_list.html:24
 msgid "More Questions"
 msgstr ""
 
-#: tickets/templates/tickets/includes/question_list.html:28
+#: inboxen/tickets/templates/tickets/includes/question_list.html:28
 msgid "There are no questions."
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:5
-#: tickets/templates/tickets/question_list.html:5
+#: inboxen/tickets/templates/tickets/question_home.html:5
+#: inboxen/tickets/templates/tickets/question_list.html:5
 msgid "Tickets"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:19
+#: inboxen/tickets/templates/tickets/question_home.html:19
 msgid "Go to Question form"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:20
+#: inboxen/tickets/templates/tickets/question_home.html:20
 msgid "Open Questions"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:22
+#: inboxen/tickets/templates/tickets/question_home.html:22
 msgid "Resolved Questions"
 msgstr ""
 
-#: tickets/templates/tickets/question_home.html:27
+#: inboxen/tickets/templates/tickets/question_home.html:27
 msgid "Submit New Question"
 msgstr ""
 
-#: tickets/templates/tickets/question_list.html:13
+#: inboxen/tickets/templates/tickets/question_list.html:13
 #, python-format
 msgid "Status: %(status)s"
 msgstr ""
 
-#: tickets/templates/tickets/question_list.html:22
+#: inboxen/tickets/templates/tickets/question_list.html:22
 msgid "Previous"
 msgstr ""
 
-#: tickets/templates/tickets/question_list.html:28
+#: inboxen/tickets/templates/tickets/question_list.html:28
 msgid "Next"
 msgstr ""
 
-#: tickets/templatetags/tickets_flags.py:36
+#: inboxen/tickets/templatetags/tickets_flags.py:36
 msgid "New question"
 msgstr ""
 
-#: tickets/templatetags/tickets_flags.py:46
+#: inboxen/tickets/templatetags/tickets_flags.py:46
 msgid "Need more info from user"
 msgstr ""
 
-#: tickets/templatetags/tickets_flags.py:51
+#: inboxen/tickets/templatetags/tickets_flags.py:51
 msgid "Resolved question"
 msgstr ""

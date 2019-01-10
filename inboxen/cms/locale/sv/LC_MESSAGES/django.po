@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-11 19:16+0000\n"
+"POT-Creation-Date: 2019-01-10 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,138 +18,140 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: cms/models.py:264
+#: inboxen/cms/models.py:265
 msgid "Markdown text, supports the TOC extension."
 msgstr ""
 
-#: cms/models.py:286
+#: inboxen/cms/models.py:287
 msgid "Text at the top of the page. Supports standard markdown."
 msgstr ""
 
-#: cms/templates/cms/admin/base.html:8
-#: cms/templates/cms/admin/choose_page_type.html:9
-#: cms/templates/cms/admin/create_page.html:9
-#: cms/templates/cms/admin/delete_page.html:9
-#: cms/templates/cms/admin/edit_page.html:9
-#: cms/templates/cms/admin/index.html:5 cms/templates/cms/admin/index.html:9
+#: inboxen/cms/templates/cms/admin/base.html:8
+#: inboxen/cms/templates/cms/admin/choose_page_type.html:9
+#: inboxen/cms/templates/cms/admin/create_page.html:9
+#: inboxen/cms/templates/cms/admin/delete_page.html:9
+#: inboxen/cms/templates/cms/admin/edit_page.html:9
+#: inboxen/cms/templates/cms/admin/index.html:5
+#: inboxen/cms/templates/cms/admin/index.html:9
 msgid "CMS"
 msgstr ""
 
-#: cms/templates/cms/admin/base.html:9
+#: inboxen/cms/templates/cms/admin/base.html:9
 msgid "Blog"
 msgstr ""
 
-#: cms/templates/cms/admin/base.html:10
+#: inboxen/cms/templates/cms/admin/base.html:10
 msgid "Domains"
 msgstr ""
 
-#: cms/templates/cms/admin/base.html:11
+#: inboxen/cms/templates/cms/admin/base.html:11
 msgid "Questions"
 msgstr ""
 
-#: cms/templates/cms/admin/choose_page_type.html:5
-#: cms/templates/cms/admin/create_page.html:5
+#: inboxen/cms/templates/cms/admin/choose_page_type.html:5
+#: inboxen/cms/templates/cms/admin/create_page.html:5
 msgid "Create a new page"
 msgstr ""
 
-#: cms/templates/cms/admin/choose_page_type.html:10
+#: inboxen/cms/templates/cms/admin/choose_page_type.html:10
 msgid "Choose new page type"
 msgstr ""
 
-#: cms/templates/cms/admin/create_page.html:10
+#: inboxen/cms/templates/cms/admin/create_page.html:10
 msgid "Create new page"
 msgstr ""
 
-#: cms/templates/cms/admin/create_page.html:18
+#: inboxen/cms/templates/cms/admin/create_page.html:18
 msgid "Create"
 msgstr ""
 
-#: cms/templates/cms/admin/delete_page.html:5
+#: inboxen/cms/templates/cms/admin/delete_page.html:5
 #, python-format
 msgid "Delete %(title)s?"
 msgstr ""
 
-#: cms/templates/cms/admin/delete_page.html:13
+#: inboxen/cms/templates/cms/admin/delete_page.html:13
 msgid "Delete page"
 msgstr ""
 
-#: cms/templates/cms/admin/delete_page.html:21
+#: inboxen/cms/templates/cms/admin/delete_page.html:21
 msgid "Delete"
 msgstr ""
 
-#: cms/templates/cms/admin/delete_page.html:22
+#: inboxen/cms/templates/cms/admin/delete_page.html:22
 msgid "Cancel"
 msgstr ""
 
-#: cms/templates/cms/admin/edit_page.html:5
+#: inboxen/cms/templates/cms/admin/edit_page.html:5
 #, python-format
 msgid "Editing %(title)s"
 msgstr ""
 
-#: cms/templates/cms/admin/edit_page.html:13
+#: inboxen/cms/templates/cms/admin/edit_page.html:13
 msgid "Edit page"
 msgstr ""
 
-#: cms/templates/cms/admin/edit_page.html:21
+#: inboxen/cms/templates/cms/admin/edit_page.html:21
 msgid "Save"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:24
+#: inboxen/cms/templates/cms/admin/index.html:24
 msgid "Create child page"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:26
+#: inboxen/cms/templates/cms/admin/index.html:26
 msgid "Edit this page"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:28
+#: inboxen/cms/templates/cms/admin/index.html:28
 msgid "Delete this page"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:34
+#: inboxen/cms/templates/cms/admin/index.html:34
 msgid "Title"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:35
+#: inboxen/cms/templates/cms/admin/index.html:35
 msgid "Type"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:36
+#: inboxen/cms/templates/cms/admin/index.html:36
 msgid "Status"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:37 cms/templatetags/cms_tags.py:46
+#: inboxen/cms/templates/cms/admin/index.html:37
+#: inboxen/cms/templatetags/cms_tags.py:46
 msgid "In menu"
 msgstr ""
 
-#: cms/templates/cms/admin/index.html:48
+#: inboxen/cms/templates/cms/admin/index.html:48
 msgid "Go to child"
 msgstr ""
 
-#: cms/templates/cms/forms/widgets/rich_text.html:5
+#: inboxen/cms/templates/cms/forms/widgets/rich_text.html:5
 msgid "Preview"
 msgstr ""
 
-#: cms/templates/cms/people_page.html:20
+#: inboxen/cms/templates/cms/people_page.html:20
 msgid "The Team"
 msgstr ""
 
-#: cms/templatetags/cms_tags.py:32
+#: inboxen/cms/templatetags/cms_tags.py:32
 msgid "Live post"
 msgstr ""
 
-#: cms/templatetags/cms_tags.py:33
+#: inboxen/cms/templatetags/cms_tags.py:33
 msgid "Live"
 msgstr ""
 
-#: cms/templatetags/cms_tags.py:37
+#: inboxen/cms/templatetags/cms_tags.py:37
 msgid "Draft post"
 msgstr ""
 
-#: cms/templatetags/cms_tags.py:38
+#: inboxen/cms/templatetags/cms_tags.py:38
 msgid "Draft"
 msgstr ""
 
-#: cms/templatetags/cms_tags.py:45
+#: inboxen/cms/templatetags/cms_tags.py:45
 msgid "Page will appear in menu"
 msgstr ""
