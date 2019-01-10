@@ -1,14 +1,14 @@
 # Changelog
 
-## Pending
+## Releases
+
+### Deploy for 2018-01-10
 
 * Completely removed all traces of django-bitfield (#358)
 * Make Inboxen a proper Python package (#163)
 * Add a check for Domains and a console command to allow creating domains (#393)
 * Fix issue with exporting broken emails (#370)
 * Allow users to delete their inboxes (#373)
-
-## Releases
 
 ### Deploy for 2018-10-29
 
