@@ -261,6 +261,39 @@ a.soon {
     line-height: 50px;
 }
 
+.attachments {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .attachment {
+        width: 100%;
+        padding: ceil(($grid-gutter-width / 2));
+        flex: 1 0 auto;
+
+        overflow-wrap: break-word;
+        hyphens: none;
+        white-space: normal;
+
+        @media (min-width: $screen-sm-min) {
+            width: calc(100% / 3);
+        }
+
+        @media (min-width: $screen-md-min) {
+            width: 25%;
+        }
+
+        @media (min-width: $screen-lg-min) {
+            width: calc(100% / 6);
+        }
+
+        .panel {
+            height: 100%;
+            margin: 0;
+        }
+    }
+}
+
 .clear-gap {
     padding-bottom: 50px;
 }
