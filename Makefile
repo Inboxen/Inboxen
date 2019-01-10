@@ -64,27 +64,28 @@ install-watermelon-py-deps:
 install-watermelon-deps: install-watermelon-py-deps install-js-deps
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
 
+# common deployment stuff
+.PHONY: common-deploy
+common-deploy:
+	$(MAKE) install-watermelon-deps
+	mkdir -p logs run
+	./manage.py compilemessages
+	./manage.py check --deploy
+	./manage.py collectstatic --no-input
+	touch inboxen/wsgi.py
+	$(MAKE) celery-start salmon-start
+
 .PHONY: deploy-%
 deploy-%:
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
 	git verify-tag $@
 	$(MAKE) celery-stop salmon-stop
 	git checkout $@
-	$(MAKE) install-watermelon-deps
-	mkdir -p logs run
-	./manage.py check --deploy
-	./manage.py collectstatic --no-input
-	touch inboxen/wsgi.py
-	$(MAKE) celery-start salmon-start
+	$(MAKE) common-deploy
 
 .PHONY: dev-deploy
 dev-deploy:
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
 	$(MAKE) celery-stop salmon-stop
 	git describe --dirty
-	$(MAKE) install-watermelon-deps
-	mkdir -p logs run
-	./manage.py check --deploy
-	./manage.py collectstatic --no-input
-	touch inboxen/wsgi.py
-	$(MAKE) celery-start salmon-start
+	$(MAKE) common-deploy
