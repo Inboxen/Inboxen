@@ -18,7 +18,6 @@ docs/_build
 /static_content
 /media_content
 /node_modules
-/.webassets-manifest
 
 # local requirements
 /local-reqs.txt
