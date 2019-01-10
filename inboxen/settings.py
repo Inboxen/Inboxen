@@ -50,6 +50,8 @@ INBOX_AUTO_DELETE_TIME = 30
 # assets building options
 ASSETS_DEBUG = DEBUG  # noqa: F405
 ASSETS_AUTO_BUILD = DEBUG  # noqa: F405
+ASSETS_MANIFEST = "file:{}".format(os.path.join(BASE_DIR, ".webassets-manifest"))  # noqa: F405
+
 ##
 # Celery options
 ##
