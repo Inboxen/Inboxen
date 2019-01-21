@@ -299,6 +299,9 @@ LOGGING = {
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
+        'is_not_salmon': {
+            '()': 'inboxen.utils.log.IsNotSalmon',
+        },
     },
     'handlers': {
         'console': {
@@ -307,7 +310,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
-            'filters': ['require_debug_false'],
+            'filters': ['require_debug_false', 'is_not_salmon'],
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
