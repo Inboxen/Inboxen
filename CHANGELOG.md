@@ -2,7 +2,11 @@
 
 ## Releases
 
-### Deploy for 2018-01-10
+### Deploy for 2019-01-22
+
+* Prevent Salmon from emailing errors to admins, spamming their inbox (#410)
+
+### Deploy for 2019-01-10
 
 * Completely removed all traces of django-bitfield (#358)
 * Make Inboxen a proper Python package (#163)
