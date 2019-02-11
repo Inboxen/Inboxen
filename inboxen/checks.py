@@ -54,9 +54,9 @@ def config_permissions_check(app_configs, **kwargs):
 
 @register(Tags.models, deploy=True)
 def domains_available_check(app_configs, **kwargs):
-        errors = []
-        available = Domain.objects.available(None).exists()
-        if not available:
-            errors.append(Error(DOMAIN_ERROR_MSG))
+    errors = []
+    available = Domain.objects.available(None).exists()
+    if not available:
+        errors.append(Error(DOMAIN_ERROR_MSG))
 
-        return errors
+    return errors
