@@ -252,6 +252,12 @@ class InboxAddTestCase(InboxenTestCase):
         inbox_count_2nd = models.Inbox.objects.count()
         self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
 
+        new_inbox = models.Inbox.objects.first()
+        self.assertEqual(new_inbox.description, "nothing at all")
+        self.assertEqual(new_inbox.user, self.user)
+        self.assertEqual(new_inbox.domain, domain)
+        self.assertNotEqual(new_inbox.search_tsv, None)
+
     def test_inbox_ratelimit(self):
         domain = models.Domain.objects.filter(enabled=True, owner=None)[0]
         counter = 0
@@ -327,6 +333,12 @@ class InboxAddInlineTestCase(InboxenTestCase):
         inbox_count_2nd = models.Inbox.objects.count()
         self.assertEqual(inbox_count_1st, inbox_count_2nd - 1)
 
+        new_inbox = models.Inbox.objects.first()
+        self.assertEqual(new_inbox.description, "nothing at all")
+        self.assertEqual(new_inbox.user, self.user)
+        self.assertEqual(new_inbox.domain, domain)
+        self.assertNotEqual(new_inbox.search_tsv, None)
+
 
 class InboxEditTestCase(InboxenTestCase):
     """Test the edit inbox page"""
@@ -361,7 +373,10 @@ class InboxEditTestCase(InboxenTestCase):
         response = self.client.post(self.get_url(), {"description": "nothing at all"})
         self.assertEqual(response.status_code, 302)
 
-        self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
+        inbox = models.Inbox.objects.filter(description="nothing at all").first()
+        self.assertEqual(inbox.id, self.inbox.id)
+        # search index updated
+        self.assertNotEqual(inbox.search_tsv, self.inbox.search_tsv)
 
     def test_not_found(self):
         url = urlresolvers.reverse("inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
@@ -402,7 +417,10 @@ class InboxInlineEditTestCase(InboxenTestCase):
         response = self.client.post(self.get_url(), {"description": "nothing at all"})
         self.assertEqual(response.status_code, 204)
 
-        self.assertTrue(models.Inbox.objects.filter(description="nothing at all").exists())
+        inbox = models.Inbox.objects.filter(description="nothing at all").first()
+        self.assertEqual(inbox.id, self.inbox.id)
+        # search index updated
+        self.assertNotEqual(inbox.search_tsv, self.inbox.search_tsv)
 
     def test_not_found(self):
         url = urlresolvers.reverse("form-inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})

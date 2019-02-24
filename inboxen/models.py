@@ -22,14 +22,17 @@ import re
 
 from annoying.fields import AutoOneToOneField, JSONField
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext as _
 from mptt.models import MPTTModel, TreeForeignKey
 
-from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen import validators
+from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
+from inboxen.search.models import SearchableAbstract
+from inboxen.utils.email import unicode_damnit
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
@@ -151,7 +154,7 @@ class Domain(models.Model):
         return self.domain
 
 
-class Inbox(models.Model):
+class Inbox(SearchableAbstract):
     """Inbox model
 
     Object manager has a custom create() method to generate a random local part
@@ -189,16 +192,23 @@ class Inbox(models.Model):
             u_rep = "%s (deleted)" % u_rep
         return smart_str(u'<%s: %s>' % (self.__class__.__name__, u_rep), errors="replace")
 
+    def index_search_a(self):
+        return self.description or ""
+
+    def index_search_b(self):
+        return str(self)
+
     class Meta:
         verbose_name_plural = "Inboxes"
         unique_together = (('inbox', 'domain'),)
+        indexes = [GinIndex(fields=["search_tsv"])]
 
 ##
 # Email models
 ##
 
 
-class Email(models.Model):
+class Email(SearchableAbstract):
     """Email model
 
     eid is a convience property that outputs a hexidec ID
@@ -244,6 +254,33 @@ class Email(models.Model):
             return root_parts[0]
         except IndexError:
             return None
+
+    def index_search_a(self):
+        try:
+            subject = HeaderData.objects.filter(
+                header__part__parent__isnull=True,
+                header__name__name="Subject",
+                header__part__email__id=self.id,
+            ).first()
+
+            return unicode_damnit(subject.data)
+        except AttributeError:
+            return ""
+
+    def index_search_b(self):
+        try:
+            from_header = HeaderData.objects.filter(
+                header__part__parent__isnull=True,
+                header__name__name="From",
+                header__part__email__id=self.id,
+            ).first()
+
+            return unicode_damnit(from_header.data)
+        except AttributeError:
+            return ""
+
+    class Meta:
+        indexes = [GinIndex(fields=["search_tsv"])]
 
 
 class Body(models.Model):

@@ -63,6 +63,9 @@ def make_email(message, inbox):
             ordinal = part.keys().index(header)
             Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
 
+    email.update_search()
+    email.save()
+
 
 def encode_body(part):
     """Make certain that the body of a part is bytes and not unicode"""

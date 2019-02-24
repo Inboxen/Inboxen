@@ -31,6 +31,7 @@ from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
 from inboxen.utils import is_reserved
+from inboxen.search.models import SearchQuerySet
 
 
 class HashedQuerySet(QuerySet):
@@ -55,7 +56,7 @@ class DomainQuerySet(QuerySet):
         return self.filter(enabled=True)
 
 
-class InboxQuerySet(QuerySet):
+class InboxQuerySet(SearchQuerySet):
     def create(self, length=None, domain=None, **kwargs):
         """Create a new Inbox, with a local part of `length`"""
         from inboxen.models import Domain
@@ -122,7 +123,7 @@ class InboxQuerySet(QuerySet):
 ##
 
 
-class EmailQuerySet(QuerySet):
+class EmailQuerySet(SearchQuerySet):
     def viewable(self, user):
         qs = self.filter(inbox__user=user)
         return qs.exclude(

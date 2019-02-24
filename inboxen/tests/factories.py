@@ -114,5 +114,7 @@ class FullEmailFactory(EmailFactory):
             HeaderFactory(part=part, name="From")
             HeaderFactory(part=part, name="Subject")
             HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")
+            email.update_search()
+            email.save()
 
         return email
