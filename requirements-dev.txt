@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file requirements-dev.txt requirements-dev.in
 #
--e git+https://github.com/moggers87/django-cursor-pagination@d066d004a8bedfef5aa4c9ffa1fd65e9e760f270#egg=django-cursor-pagination
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
 amqp==2.4.1
@@ -30,6 +29,7 @@ django-async-messages==0.3.1
 django-bootstrap-form==3.4
 django-braces==1.13.0
 django-csp==3.5
+django-cursor-pagination==0.1.4
 django-debug-toolbar==1.11
 django-elevate==1.0.0
 django-extensions==2.1.6
