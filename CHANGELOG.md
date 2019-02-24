@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Deploy for 2019-02-24
+
+* Django security release
+
 ### Deploy for 2019-01-22
 
 * Prevent Salmon from emailing errors to admins, spamming their inbox (#410)
