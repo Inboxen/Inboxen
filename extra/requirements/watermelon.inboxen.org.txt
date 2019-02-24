@@ -50,7 +50,7 @@ jsmin==2.2.2
 kombu==4.3.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
-lxml==4.3.1               # via premailer
+lxml==4.2.6
 markdown==3.0.1
 mock==2.0.0
 parso==0.3.4              # via jedi
