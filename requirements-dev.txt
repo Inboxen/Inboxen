@@ -7,11 +7,12 @@
 -e git+https://github.com/moggers87/django-cursor-pagination@d066d004a8bedfef5aa4c9ffa1fd65e9e760f270#egg=django-cursor-pagination
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
-amqp==2.4.0               # via kombu
+amqp==2.4.1
 babel==2.6.0              # via django-phonenumber-field
 backcall==0.1.0           # via ipython
 backports.functools-lru-cache==1.5  # via cheroot
 billiard==3.5.0.5         # via celery
+cachetools==3.1.0         # via premailer
 celery==4.1.1
 certifi==2018.11.29       # via requests
 chardet==3.0.4            # via requests, salmon-mail
@@ -22,7 +23,7 @@ configobj==5.0.6
 coverage==4.5.2
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
-decorator==4.3.0          # via ipython, traitlets
+decorator==4.3.2          # via ipython, traitlets
 django-annoying==0.10.4
 django-assets==0.12
 django-async-messages==0.3.1
@@ -31,16 +32,16 @@ django-braces==1.13.0
 django-csp==3.5
 django-debug-toolbar==1.11
 django-elevate==1.0.0
-django-extensions==2.1.4
+django-extensions==2.1.6
 django-formtools==2.1     # via django-two-factor-auth
-django-js-asset==1.1.0    # via django-mptt
+django-js-asset==1.2.2    # via django-mptt
 django-mptt==0.9.1
-django-otp==0.5.1         # via django-two-factor-auth
+django-otp==0.5.2         # via django-two-factor-auth
 django-phonenumber-field==1.3.0  # via django-two-factor-auth
 django-ratelimit-backend==2.0
 django-sendfile2==0.4.2
 django-two-factor-auth==1.8.0
-django==1.11.18           # via django-annoying, django-assets, django-async-messages, django-bootstrap-form, django-csp, django-debug-toolbar, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-ratelimit-backend, django-sendfile2, django-two-factor-auth
+django==1.11.20           # via django-annoying, django-assets, django-async-messages, django-bootstrap-form, django-csp, django-debug-toolbar, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-ratelimit-backend, django-sendfile2, django-two-factor-auth
 dnspython==1.16.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 factory-boy==2.11.1
@@ -49,45 +50,45 @@ glob2==0.6                # via jasmine-core
 idna==2.8                 # via requests
 ipaddress==1.0.22
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.2.0
+ipython==7.3.0
 jaraco.functools==2.0     # via tempora
 jasmine-core==3.3.0       # via jasmine
 jasmine==3.3.0
 jedi==0.13.2              # via ipython
 jinja2==2.10              # via jasmine
 jsmin==2.2.2
-kombu==4.2.2.post1        # via celery
+kombu==4.3.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
-lxml==4.3.0               # via premailer
+lxml==4.3.1               # via premailer
 markdown==3.0.1
 markupsafe==1.1.0         # via jinja2
 mock==2.0.0
-more-itertools==5.0.0     # via cheroot, cherrypy, jaraco.functools
+more-itertools==6.0.0     # via cheroot, cherrypy, jaraco.functools
 ordereddict==1.1          # via jasmine-core
-parso==0.3.1              # via jedi
-pbr==5.1.1                # via mock
+parso==0.3.4              # via jedi
+pbr==5.1.2                # via mock
 pexpect==4.6.0            # via ipython
-phonenumberslite==8.10.3  # via django-phonenumber-field
+phonenumberslite==8.10.6  # via django-phonenumber-field
 pickleshare==0.7.5        # via ipython
 pillow==5.4.1
-pip-tools==3.2.0
+pip-tools==3.4.0
 portend==2.3              # via cherrypy
-premailer==3.2.0
+premailer==3.3.0
 progress==1.4
-prompt-toolkit==2.0.7     # via ipython
-psycopg2==2.7.6.1
+prompt-toolkit==2.0.9     # via ipython
+psycopg2==2.7.7
 ptyprocess==0.6.0         # via pexpect
 pygments==2.3.1           # via ipython
 python-daemon==2.1.2      # via salmon-mail
-python-dateutil==2.7.5    # via faker
+python-dateutil==2.8.0    # via faker
 pytz==2018.9              # via babel, celery, django, tempora
 pyyaml==3.13              # via jasmine
 qrcode==6.1               # via django-two-factor-auth
 requests==2.21.0          # via premailer
 salmon-mail==3.1.0
 selenium==3.141.0         # via jasmine
-six==1.12.0               # via cheroot, configobj, django-extensions, django-sendfile2, faker, mock, more-itertools, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
+six==1.12.0               # via cheroot, configobj, django-extensions, django-sendfile2, faker, mock, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
 sqlparse==0.2.4           # via django-debug-toolbar
 tempora==1.14             # via portend
 traitlets==4.3.2          # via ipython
