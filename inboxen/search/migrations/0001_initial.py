@@ -46,13 +46,13 @@ def populate_search_index(apps, schema_editor):
     Email = apps.get_model("inboxen", "Email")
     HeaderData = apps.get_model("inboxen", "HeaderData")
 
-    for inbox in Inbox.objects.all().select_related("domain"):
+    for inbox in Inbox.objects.all().select_related("domain").iterator():
         inbox.search_tsv = combine_index(inbox.description, "{}@{}".format(inbox.inbox, inbox.domain.domain))
-        inbox.save()
+        inbox.save(update_fields=["search_tsv"])
 
-    for email in Email.objects.all():
+    for email in Email.objects.all().iterator():
         email.search_tsv = combine_index(get_header(email.id, "Subject", HeaderData), get_header(email.id, "From", HeaderData))
-        email.save()
+        email.save(update_fields=["search_tsv"])
 
 
 class Migration(migrations.Migration):
