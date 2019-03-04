@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Deploy for 2019-03-04
+
+* Remove mock dependency (#414)
+* Add new search index columns in preparation for removing django-watson (#412)
+
 ### Deploy for 2019-02-24
 
 * Django security release
