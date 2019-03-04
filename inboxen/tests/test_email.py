@@ -19,11 +19,11 @@
 ##
 from __future__ import unicode_literals
 
+from unittest import mock
+
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
-
-import mock
 
 from inboxen import models
 from inboxen.tests import factories

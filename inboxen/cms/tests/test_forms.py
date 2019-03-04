@@ -17,10 +17,10 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from unittest import mock
+
 from django.contrib.contenttypes.models import ContentType
 from django.forms import ValidationError
-
-import mock
 
 from inboxen.cms import models, forms
 from inboxen.test import InboxenTestCase

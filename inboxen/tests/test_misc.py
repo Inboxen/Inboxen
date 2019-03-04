@@ -22,6 +22,7 @@ from email.message import Message
 from importlib import reload
 from io import StringIO
 from subprocess import CalledProcessError
+from unittest import mock
 import ipaddress
 import sys
 
@@ -34,8 +35,6 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
-
-import mock
 
 from inboxen.management.commands import router, feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware

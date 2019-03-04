@@ -18,9 +18,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.template import Template, Context
+from unittest import mock
 
-import mock
+from django.template import Template, Context
 
 from inboxen.account.templatetags import inboxen_account
 from inboxen.test import InboxenTestCase

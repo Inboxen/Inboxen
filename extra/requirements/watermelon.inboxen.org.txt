@@ -52,9 +52,7 @@ lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.2.6
 markdown==3.0.1
-mock==2.0.0
 parso==0.3.4              # via jedi
-pbr==5.1.2                # via mock
 pexpect==4.6.0            # via ipython
 phonenumberslite==8.10.6  # via django-phonenumber-field
 pickleshare==0.7.5        # via ipython
@@ -73,7 +71,7 @@ pytz==2018.9              # via babel, celery, django
 qrcode==6.1               # via django-two-factor-auth
 requests==2.21.0          # via premailer
 salmon-mail==3.1.0
-six==1.12.0               # via configobj, django-extensions, django-sendfile2, faker, mock, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, traitlets
+six==1.12.0               # via configobj, django-extensions, django-sendfile2, faker, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, traitlets
 traitlets==4.3.2          # via ipython
 unidecode==1.0.23         # via faker
 urllib3==1.24.1           # via requests

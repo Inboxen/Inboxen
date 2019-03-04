@@ -60,7 +60,6 @@ setup(
         "ipaddress",
         "jsmin",
         "lxml",
-        "mock",
         # make sure django-phonenumbers uses the smaller package
         "phonenumberslite",
         "pillow",

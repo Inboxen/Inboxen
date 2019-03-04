@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import mock
+from unittest import mock
 import shutil
 
 from django.contrib.auth import get_user_model

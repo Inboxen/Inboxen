@@ -18,12 +18,12 @@
 ##
 
 from datetime import datetime, timedelta
+from unittest import mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers, cache
 from django.utils import timezone
-import mock
 
 from inboxen.account import utils
 from inboxen.test import InboxenTestCase, MockRequest

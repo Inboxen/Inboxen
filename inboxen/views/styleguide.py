@@ -18,6 +18,7 @@
 ##
 
 from datetime import timedelta
+from unittest import mock
 
 from django import forms
 from django.contrib.messages.constants import DEFAULT_LEVELS
@@ -25,7 +26,6 @@ from django.contrib.messages.utils import get_level_tags
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.views.decorators.http import require_GET
-import mock
 
 from inboxen.forms.inbox import InboxEditForm
 

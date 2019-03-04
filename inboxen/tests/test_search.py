@@ -18,12 +18,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import mock
+from unittest import mock
 
 from celery import exceptions
 from django.core import urlresolvers, cache
-import urllib
 from watson.models import SearchEntry
+import urllib
 
 from inboxen.tests import factories
 from inboxen.test import MockRequest, InboxenTestCase, override_settings

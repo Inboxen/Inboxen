@@ -17,9 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.urlresolvers import reverse
+from unittest import mock
 
-import mock
+from django.core.urlresolvers import reverse
 
 from inboxen.account import decorators
 from inboxen.tests import factories

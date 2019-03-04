@@ -63,11 +63,9 @@ lockfile==0.12.2          # via python-daemon
 lxml==4.3.1               # via premailer
 markdown==3.0.1
 markupsafe==1.1.0         # via jinja2
-mock==2.0.0
 more-itertools==6.0.0     # via cheroot, cherrypy, jaraco.functools
 ordereddict==1.1          # via jasmine-core
 parso==0.3.4              # via jedi
-pbr==5.1.2                # via mock
 pexpect==4.6.0            # via ipython
 phonenumberslite==8.10.6  # via django-phonenumber-field
 pickleshare==0.7.5        # via ipython
@@ -88,7 +86,7 @@ qrcode==6.1               # via django-two-factor-auth
 requests==2.21.0          # via premailer
 salmon-mail==3.1.0
 selenium==3.141.0         # via jasmine
-six==1.12.0               # via cheroot, configobj, django-extensions, django-sendfile2, faker, mock, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
+six==1.12.0               # via cheroot, configobj, django-extensions, django-sendfile2, faker, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
 sqlparse==0.2.4           # via django-debug-toolbar
 tempora==1.14             # via portend
 traitlets==4.3.2          # via ipython

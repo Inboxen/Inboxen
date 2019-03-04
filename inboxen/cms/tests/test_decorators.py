@@ -17,12 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from unittest import mock
 import itertools
 
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
-import mock
 
 from inboxen.cms.decorators import is_secure_admin
 from inboxen.tests.factories import UserFactory
