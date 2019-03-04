@@ -15,8 +15,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from __future__ import unicode_literals
-
 import re
 
 from braces.views import LoginRequiredMixin
@@ -24,6 +22,7 @@ from django.http import Http404, HttpResponse
 from django.views import generic
 
 from inboxen import models
+
 
 HEADER_CLEAN = re.compile(r'\s+')
 

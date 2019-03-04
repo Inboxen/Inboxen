@@ -17,13 +17,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-from __future__ import unicode_literals
+
+from unittest import mock
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import urlresolvers
 from salmon import mail
-
-import mock
 
 from inboxen import models
 from inboxen.tests import factories

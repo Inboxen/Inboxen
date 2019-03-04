@@ -18,13 +18,13 @@
 ##
 
 from datetime import datetime, timedelta
+from unittest import mock
 import itertools
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 from watson.models import SearchEntry
-import mock
 
 from inboxen import models, tasks
 from inboxen.tests import factories

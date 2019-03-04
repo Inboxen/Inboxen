@@ -17,13 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from unittest import mock
 import datetime
 import itertools
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-import mock
 
 from inboxen import models
 from inboxen.tests import factories

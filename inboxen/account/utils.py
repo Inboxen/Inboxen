@@ -16,7 +16,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-from __future__ import unicode_literals
 
 import logging
 import urllib

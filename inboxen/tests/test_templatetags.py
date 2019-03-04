@@ -19,11 +19,11 @@
 ##
 
 from datetime import datetime, timedelta
+from unittest import mock
 
 from django.template import Template
 from django.template.backends.django import Template as DjangoTemplate
 from django.utils import translation
-import mock
 
 from inboxen.templatetags import inboxen_admin_tags, inboxen_flags, inboxen_selector, inboxen_time
 from inboxen.test import InboxenTestCase

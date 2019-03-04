@@ -21,8 +21,6 @@ models.py) for emails
 
 It's in "utils" because "domain.py" would get confusing :P """
 
-from __future__ import print_function
-
 import re
 import logging
 
