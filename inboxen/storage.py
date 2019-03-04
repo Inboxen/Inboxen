@@ -17,8 +17,6 @@
 #    along with Inboxen  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from __future__ import unicode_literals
-
 from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
 
 from inboxen.utils import build_assets, generate_maintenance_page
