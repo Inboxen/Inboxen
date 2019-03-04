@@ -56,6 +56,7 @@ def populate_search_index(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+    atomic = False
 
     dependencies = [
         ("inboxen", "0024_auto_20190225_1606"),
