@@ -69,12 +69,10 @@ install-watermelon-deps: install-watermelon-py-deps install-js-deps
 common-deploy:
 	$(MAKE) install-watermelon-deps
 	mkdir -p logs run
-	./manage.py clean_pyc
 	./manage.py collectstatic --no-input
 	./manage.py compilemessages
 	./manage.py migrate
 	./manage.py check --deploy
-	./manage.py compile_pyc
 	touch inboxen/wsgi.py
 	$(MAKE) celery-start salmon-start
 
