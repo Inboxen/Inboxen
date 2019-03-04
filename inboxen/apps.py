@@ -30,7 +30,8 @@ class InboxenConfig(AppConfig):
         from watson import search as watson_search
 
         from inboxen import checks  # noqa
-        from inboxen import search, signals
+        from inboxen import signals
+        from inboxen.search import watson as search
 
         Inbox = self.get_model("Inbox")
         Email = self.get_model("Email")

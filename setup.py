@@ -52,7 +52,6 @@ setup(
         "django-ratelimit-backend",
         "django-sendfile2",
         "django-elevate",
-        "django-watson",
         "django-two-factor-auth>=1.5.0",
         "django-watson>=1.2.0",
         # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(

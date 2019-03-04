@@ -48,6 +48,7 @@ def disown_inbox(inbox_id):
     inbox.description = ""
     inbox.user = None
     inbox.created = datetime.utcfromtimestamp(0).replace(tzinfo=utc)
+    inbox.search_tsv = None
     inbox.save()
 
     return True

@@ -18,16 +18,8 @@
 ##
 
 from watson import search
-import urllib
 
 from inboxen.utils.email import unicode_damnit
-
-
-def create_search_cache_key(user_id, search_term, before, after):
-    key = u"{}-{}-{}-{}".format(user_id, before, after, search_term)
-    key = urllib.parse.quote(key.encode("utf-8"))
-
-    return key
 
 
 class EmailSearchAdapter(search.SearchAdapter):

@@ -35,7 +35,7 @@ from watson import search as watson_search
 
 from inboxen import models
 from inboxen.celery import app
-from inboxen.search import create_search_cache_key
+from inboxen.search.utils import create_search_cache_key
 from inboxen.utils.tasks import task_group_skew
 
 

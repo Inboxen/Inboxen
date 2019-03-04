@@ -65,6 +65,8 @@ class InboxAddForm(forms.ModelForm):
         data = self.cleaned_data.copy()
 
         self.instance = self.request.user.inbox_set.create(**data)
+        self.instance.update_search()
+        self.instance.save()
         inbox_ratelimit.counter_increase(self.request)
 
         msg = _("{0}@{1} has been created.").format(self.instance.inbox, self.instance.domain.domain)
@@ -103,7 +105,9 @@ class InboxEditForm(forms.ModelForm):
                                                                             self.instance.domain.domain)
             messages.warning(self.request, warn_msg)
 
-        super(InboxEditForm, self).save()
+        super(InboxEditForm, self).save(commit=False)
+        self.instance.update_search()
+        self.instance.save()
 
         return self.instance
 

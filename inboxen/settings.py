@@ -195,6 +195,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.postgres',
 
     # Main Inboxen app
     'inboxen',
@@ -208,6 +209,7 @@ INSTALLED_APPS = (
     'inboxen.router',
     'inboxen.source',
     'inboxen.tickets',
+    'inboxen.search',
 
     # third party
     'bootstrapform',
@@ -222,6 +224,8 @@ INSTALLED_APPS = (
 )
 
 ROOT_URLCONF = 'inboxen.urls'
+
+SEARCH_CONFIG = "english"
 
 LOGIN_URL = urlresolvers.reverse_lazy("user-login")
 LOGOUT_URL = urlresolvers.reverse_lazy("user-logout")

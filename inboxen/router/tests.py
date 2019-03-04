@@ -143,6 +143,10 @@ class RouterTestCase(InboxenTestCase):
         self.assertEqual(models.Email.objects.count(), 1)
         self.assertEqual(models.PartList.objects.count(), 6)
 
+        email = models.Email.objects.first()
+        self.assertEqual(email.inbox, inbox)
+        self.assertNotEqual(email.search_tsv, None)
+
         bodies = [bytes(part.body.data) for part in
                   models.PartList.objects.select_related("body").order_by("level", "lft")]
         self.assertEqual(bodies, BODIES)
