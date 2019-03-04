@@ -81,6 +81,7 @@ common-deploy:
 .PHONY: deploy-%
 deploy-%:
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
+	git fetch --prune
 	git verify-tag $@
 	$(MAKE) celery-stop salmon-stop
 	git checkout $@
