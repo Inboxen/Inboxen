@@ -25,13 +25,14 @@ from django.views import generic
 from watson import search
 
 from inboxen import models
+from inboxen.search.views import SearchMixin
 from inboxen.tasks import deal_with_flags, delete_inboxen_item
 from inboxen.utils.tasks import task_group_skew
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 
 
-class InboxView(LoginRequiredMixin, generic.ListView):
+class InboxView(LoginRequiredMixin, SearchMixin, generic.ListView):
     """Base class for Inbox views"""
     model = models.Email
     paginate_by = 25
@@ -41,16 +42,8 @@ class InboxView(LoginRequiredMixin, generic.ListView):
         return self.request.path
 
     def get_queryset(self, *args, **kwargs):
-        qs = super(InboxView, self).get_queryset(*args, **kwargs)
-        qs = qs.viewable(self.request.user)
-
-        # ugly!
-        # see https://code.djangoproject.com/ticket/19513
-        # tl;dr Django uses a subquery when doing an `update` on a queryset,
-        # but it doesn't strip out annotations
-        # q?: does this still apply?
-        if self.request.method != "POST":
-            qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
+        qs = super(InboxView, self).get_queryset(*args, **kwargs).viewable(self.request.user)
+        qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
         return qs
 
     @search.skip_index_update()

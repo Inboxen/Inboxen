@@ -13,6 +13,15 @@
 {% block content %}
 <a id="add-inbox" class="btn btn-primary" href="{% url 'inbox-add' %}" data-form-url="{% url 'form-inbox-add' %}"><span class="fa" aria-hidden="true"></span>{% trans "Add Inbox" %}</a>
 {% with col0="col-md-5 col-xs-7" col2="col-md-2 col-xs-3" col3="col-md-1 col-md-push-4 col-xs-2" col4="col-md-4 col-md-pull-1 col-xs-12" %}
+<form id="inboxen-search-box" class="form" action="{% url "user-home-search" %}">
+    <div class="input-group">
+        <label class="sr-only">Search Inboxes</label>
+        <input type="text" class="form-control" name="q">
+        <span class="input-group-btn">
+            <button class="btn btn-default">Search</button>
+        </span>
+    </div>
+</form>
 <div id="inbox-list" class="honeydew" data-inbox-name=".inbox-name a" data-button-container=".inbox-options > form" data-children=".row" data-button-classes="close" data-button-title="{% trans "Copy inbox address to clipboard" %}">
     <div class="row title">
         <div class="{{ col0 }}">{% trans "Inbox" %}</div>

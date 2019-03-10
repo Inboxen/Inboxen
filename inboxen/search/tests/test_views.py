@@ -18,7 +18,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from unittest import mock
+from unittest import mock, skip
 import urllib
 
 from celery import exceptions
@@ -31,6 +31,7 @@ from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 
 
+@skip("no longer in use")
 class SearchViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
@@ -217,9 +218,12 @@ class SearchApiViewTestCase(InboxenTestCase):
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
-        self.url = urls.reverse("user-searchapi", kwargs={"q": "cheddär"})
         key = "%s-None-None-cheddär" % self.user.id
         self.key = urllib.parse.quote(key)
+        self.url = "%s?key=%s" % (
+            urlresolvers.reverse("search:api"),
+            self.key,
+        )
 
         if not login:
             raise Exception("Could not log in")
@@ -239,7 +243,7 @@ class SearchApiViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 201)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.AsyncResult")
+    @mock.patch("inboxen.search.views.AsyncResult")
     def test_search_running_but_finishes_within_timeout(self, result_mock):
         cache.cache.set(self.key, {"task": "blahblahblah"})
 
@@ -250,7 +254,7 @@ class SearchApiViewTestCase(InboxenTestCase):
         self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.AsyncResult")
+    @mock.patch("inboxen.search.views.AsyncResult")
     def test_search_running_and_timeout(self, result_mock):
         result_mock.return_value.get.side_effect = exceptions.TimeoutError
         cache.cache.set(self.key, {"task": "blahblahblah"})

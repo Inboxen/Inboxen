@@ -24,11 +24,12 @@ from django.views import generic
 from watson import search
 
 from inboxen import models
+from inboxen.search.views import SearchMixin
 
 __all__ = ["UserHomeView", "FormHomeView"]
 
 
-class UserHomeView(LoginRequiredMixin, generic.ListView):
+class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
     """ The user's home which lists the inboxes """
     allow_empty = True
     model = models.Inbox
@@ -36,17 +37,8 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
     template_name = "inboxen/user/home.html"
 
     def get_queryset(self):
-        qs = self.model.objects.viewable(self.request.user)
-        qs = qs.select_related("domain")
-
-        # ugly!
-        # see https://code.djangoproject.com/ticket/19513
-        # tl;dr Django uses a subquery when doing an `update` on a queryset,
-        # but it doesn't strip out annotations
-        # q?: does this still apply?
-        if self.request.method != "POST":
-            qs = qs.add_last_activity()
-            qs = qs.order_by("-pinned", "disabled", "-last_activity").select_related("domain")
+        qs = self.model.objects.viewable(self.request.user).add_last_activity()
+        qs = qs.order_by("-pinned", "disabled", "-last_activity").select_related("domain")
         return qs
 
     @search.skip_index_update()

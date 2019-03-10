@@ -16,6 +16,20 @@
 {% endblock %}
 
 {% block content %}
+{% if inbox %}
+    {% url "single-inbox-search" inbox=inbox domain=domain as search_url %}
+{% else %}
+    {% url "unified-inbox-search" as search_url %}
+{% endif %}
+<form id="inboxen-search-box" class="form" action="{{ search_url }}">
+    <div class="input-group">
+        <label class="sr-only">Search Emails</label>
+        <input type="text" class="form-control" name="q">
+        <span class="input-group-btn">
+            <button class="btn btn-default">Search</button>
+        </span>
+    </div>
+</form>
 <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}" data-inbox-name=".breadcrumb .active" data-button-container=".inbox-btn-group" data-button-classes="btn btn-default" data-button-text="{% trans "Copy inbox address" %}">
     {% csrf_token %}
     <div class="inbox-btn-group">
