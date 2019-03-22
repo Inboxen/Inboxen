@@ -42,8 +42,11 @@ class InboxView(LoginRequiredMixin, SearchMixin, generic.ListView):
         return self.request.path
 
     def get_queryset(self, *args, **kwargs):
-        qs = super(InboxView, self).get_queryset(*args, **kwargs).viewable(self.request.user)
-        qs = qs.order_by("-important", "-received_date").select_related("inbox", "inbox__domain")
+        if self.query == "":
+            qs = super().get_queryset().order_by("-important", "-received_date")
+        else:
+            qs = self.get_search_queryset().select_related("inbox", "inbox__domain")
+        qs = qs.viewable(self.request.user)
         return qs
 
     @search.skip_index_update()
@@ -152,8 +155,8 @@ class FormInboxView(InboxView):
 
 class UnifiedInboxView(InboxView):
     """View all inboxes together"""
-    def get_queryset(self, *args, **kwargs):
-        qs = super(UnifiedInboxView, self).get_queryset(*args, **kwargs)
+    def get_queryset(self):
+        qs = super(UnifiedInboxView, self).get_queryset()
         qs = qs.filter(inbox__exclude_from_unified=False)
         return qs
 
@@ -177,13 +180,13 @@ class UnifiedInboxView(InboxView):
 
 class SingleInboxView(InboxView):
     """View a single inbox"""
-    def get_queryset(self, *args, **kwargs):
+    def get_queryset(self):
         try:
             self.inbox_obj = models.Inbox.objects.viewable(self.request.user)
             self.inbox_obj = self.inbox_obj.get(inbox=self.kwargs["inbox"], domain__domain=self.kwargs["domain"])
         except models.Inbox.DoesNotExist:
             raise Http404(_("No Inbox found matching the query."))
-        qs = super(SingleInboxView, self).get_queryset(*args, **kwargs)
+        qs = super(SingleInboxView, self).get_queryset()
         qs = qs.filter(inbox=self.inbox_obj)
         return qs
 

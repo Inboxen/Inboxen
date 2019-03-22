@@ -23,7 +23,6 @@
                 } else if (http.status == 400) {
                     clearInterval(timer);
                     $searchInfo.html("The search timed out. Please try again.");
-                    $searchInfo.addClass("alert alert-warning");
                     console.error("Server says there is no such search");
                 } else {
                     clearInterval(timer);
@@ -35,6 +34,7 @@
         };
         http.send(null);
     }
+
     var $refreshNote = $("#search-refreshnote");
     var $searchInfo = $("#search-info");
 
@@ -43,10 +43,9 @@
         return false;
     });
 
-    if ($refreshNote.length === 0) {
-        return;
+    if ($refreshNote.length !== 0) {
+        $refreshNote.html("");
+        // poll the server every 7000 ms
+        timer = setInterval(function(){areWeReadyYet($refreshNote, $searchInfo, timer);}, 7000);
     }
-    $refreshNote.html("");
-    // poll the server every 7000 ms
-    timer = setInterval(function(){areWeReadyYet($refreshNote, $searchInfo, timer);}, 7000);
 })(jQuery);

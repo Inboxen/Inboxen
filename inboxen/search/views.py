@@ -29,7 +29,6 @@ from django.views.decorators.http import require_http_methods
 from inboxen.search import tasks
 from inboxen.search.utils import create_search_cache_key
 
-
 TIMEOUT = 1
 
 
@@ -58,7 +57,8 @@ class SearchMixin:
                 task_kwargs = {"after": self.last_item}
             else:
                 task_kwargs = {"before": self.first_item}
-            search_task = tasks.search.apply_async(args=[self.request.user.id, self.model._meta.label, self.query], kwargs=task_kwargs)
+            task_args = [self.request.user.id, self.query, self.model._meta.label]
+            search_task = tasks.search.apply_async(args=task_args, kwargs=task_kwargs)
             result = {"task": search_task.id}
             cache.set(self.get_cache_key(), result, tasks.SEARCH_TIMEOUT)
         elif "task" in result:
@@ -69,29 +69,27 @@ class SearchMixin:
         try:
             return search_task.get(self.timeout)
         except exceptions.TimeoutError:
-            return {}
+            return result or {}
 
-    def get_queryset(self):
-        if self.query == "":
-            return super().get_queryset()
-
-        qs = self.model.objects.empty()
+    def get_search_queryset(self):
         if len(self.results.get("results", [])) > 0:
-            qs = super().get_queryset()
-            qs = qs.filter(id__in=self.results["results"])
+            qs = self.model.objects.filter(id__in=self.results["results"])
             qs = qs.order_by(Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(self.results["results"])]))
+        else:
+            qs = self.model.objects.none()
 
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["query"] = self.query
+        context["token"] = self.get_cache_key()
 
         # are we still waiting for results?
         if self.query == "":
             context["waiting"] = False
         else:
-            context["waiting"] = len(context[self.context_object_name or "object_list"]) == 0
+            context["waiting"] = "task" in self.results
 
         if len(self.results.get("results", [])) > 0:
             context.update({

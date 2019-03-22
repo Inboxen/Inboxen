@@ -24,7 +24,6 @@ from django.core.cache import cache
 from inboxen.celery import app
 from inboxen.search.utils import create_search_cache_key
 
-
 SEARCH_TIMEOUT = 60 * 30
 SEARCH_PAGE_SIZE = 25
 

@@ -37,8 +37,11 @@ class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
     template_name = "inboxen/user/home.html"
 
     def get_queryset(self):
-        qs = self.model.objects.viewable(self.request.user).add_last_activity()
-        qs = qs.order_by("-pinned", "disabled", "-last_activity").select_related("domain")
+        if self.query == "":
+            qs = self.model.objects.order_by("-pinned", "disabled", "-last_activity")
+        else:
+            qs = self.get_search_queryset()
+        qs = qs.viewable(self.request.user).add_last_activity().select_related("domain")
         return qs
 
     @search.skip_index_update()

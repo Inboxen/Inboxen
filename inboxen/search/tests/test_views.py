@@ -18,198 +18,16 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from unittest import mock, skip
-import urllib
+from unittest import mock
 
 from celery import exceptions
 from django import urls
 from django.core import cache
 from django.test import override_settings
-from watson.models import SearchEntry
 
+from inboxen.search.utils import create_search_cache_key
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
-
-
-@skip("no longer in use")
-class SearchViewTestCase(InboxenTestCase):
-    def setUp(self):
-        self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        self.url = urls.reverse("user-search", kwargs={"q": "cheddär"})
-        key = "%s-None-None-cheddär" % self.user.id
-        self.key = urllib.parse.quote(key)
-
-        if not login:
-            raise Exception("Could not log in")
-
-    def test_context(self):
-        cache.cache.set(self.key, {"results": []})
-        response = self.client.get(self.url)
-        self.assertIn("search_results", response.context)
-        self.assertCountEqual(response.context["search_results"].keys(),
-                              ["results", "has_next", "has_previous", "first", "last"])
-
-    def test_content(self):
-        cache.cache.set(self.key, {"results": []})
-        response = self.client.get(self.url)
-        self.assertIn(u"There are no Inboxes or emails containing <em>cheddär</em>", response.content.decode("utf-8"))
-
-        # this is bad, we shouldn't do this
-        # TODO test the template directly
-        with mock.patch("inboxen.views.user.search.SearchView.get_queryset", return_value={}):
-            response = self.client.get(self.url)
-            self.assertIn(u'data-url="%s"' % urls.reverse(
-                          "user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
-
-    def test_get(self):
-        cache.cache.set(self.key, {"results": []})
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.watson_models.SearchEntry.objects.filter")
-    @mock.patch("inboxen.views.user.search.tasks.search.apply_async")
-    def test_get_task_run(self, task_mock, qs_mock):
-        qs_mock.return_value = []
-        task_mock.return_value.id = "abc"
-        task_mock.return_value.get.side_effect = exceptions.TimeoutError
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(qs_mock.call_count, 0)
-        self.assertEqual(task_mock.call_count, 1)
-        self.assertEqual(task_mock.return_value.get.call_count, 1)
-
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär"], "kwargs": {"before": None}}))
-        self.assertCountEqual(response.context["search_results"], {})
-        self.assertEqual(response.context["waiting"], True)
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.tasks.search.apply_async")
-    def test_get_cached_result(self, task_mock):
-        factories.EmailFactory(inbox__user=self.user)
-
-        task_mock.return_value.id = "abc"
-        task_mock.return_value.get.side_effect = exceptions.TimeoutError
-
-        cache.cache.set(self.key, {
-            "results": list(SearchEntry.objects.values_list("id", flat=True)),
-            "has_next": True,
-            "has_previous": False,
-            "first": "some-randomstring",
-            "last": "somerandom-string",
-        })
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(task_mock.call_count, 0)
-        self.assertCountEqual(response.context["search_results"]["results"], SearchEntry.objects.all())
-        self.assertEqual(response.context["search_results"]["has_next"], True)
-        self.assertEqual(response.context["search_results"]["last"], "somerandom-string")
-        self.assertEqual(response.context["search_results"]["has_previous"], False)
-        self.assertEqual(response.context["search_results"]["first"], "some-randomstring")
-        self.assertEqual(response.context["waiting"], False)
-
-        cache.cache.set(self.key, {
-            "results": [],
-            "has_next": True,
-            "has_previous": False,
-            "first": "some-randomstring",
-            "last": "somerandom-string",
-        })
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(task_mock.call_count, 0)
-        self.assertCountEqual(response.context["search_results"]["results"], [])
-        self.assertEqual(response.context["search_results"]["has_next"], False)
-        self.assertEqual(response.context["search_results"]["last"], None)
-        self.assertEqual(response.context["search_results"]["has_previous"], False)
-        self.assertEqual(response.context["search_results"]["first"], None)
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.watson_models.SearchEntry.objects.filter")
-    @mock.patch("inboxen.views.user.search.tasks.search.apply_async")
-    def test_get_with_after_param(self, task_mock, qs_mock):
-        qs_mock.return_value = []
-        task_mock.return_value.id = "abc"
-        task_mock.return_value.get.side_effect = exceptions.TimeoutError
-
-        response = self.client.get(self.url + "?after=blahblah")
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(qs_mock.call_count, 0)
-        self.assertEqual(task_mock.call_count, 1)
-        self.assertEqual(task_mock.return_value.get.call_count, 1)
-
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär"],
-                                                    "kwargs": {"after": "blahblah"}}))
-        self.assertCountEqual(response.context["search_results"], {})
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.watson_models.SearchEntry.objects.filter")
-    @mock.patch("inboxen.views.user.search.tasks.search.apply_async")
-    def test_get_with_before_param(self, task_mock, qs_mock):
-        qs_mock.return_value = []
-        task_mock.return_value.id = "abc"
-        task_mock.return_value.get.side_effect = exceptions.TimeoutError
-
-        response = self.client.get(self.url + "?before=blahblah")
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(qs_mock.call_count, 0)
-        self.assertEqual(task_mock.call_count, 1)
-        self.assertEqual(task_mock.return_value.get.call_count, 1)
-
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär"],
-                                                    "kwargs": {"before": "blahblah"}}))
-        self.assertCountEqual(response.context["search_results"], {})
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.watson_models.SearchEntry.objects.filter")
-    @mock.patch("inboxen.views.user.search.tasks.search.apply_async")
-    def test_get_with_before_and_after_param(self, task_mock, qs_mock):
-        qs_mock.return_value = []
-        task_mock.return_value.id = "abc"
-        task_mock.return_value.get.side_effect = exceptions.TimeoutError
-
-        response = self.client.get(self.url + "?after=blahblah&before=bluhbluh")
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(qs_mock.call_count, 0)
-        self.assertEqual(task_mock.call_count, 1)
-        self.assertEqual(task_mock.return_value.get.call_count, 1)
-
-        # before param should be ignored, task will raise an error otherwise
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär"],
-                                                    "kwargs": {"after": "blahblah"}}))
-        self.assertCountEqual(response.context["search_results"], {})
-
-    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.views.user.search.AsyncResult")
-    def test_task_running(self, result_mock):
-        cache.cache.set(self.key, {"task": "blahblahblah"})
-        result_mock.return_value.get.side_effect = exceptions.TimeoutError
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["waiting"], True)
-
-        self.assertEqual(result_mock.call_count, 1)
-        self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
-
-    def test_no_query(self):
-        url = urls.reverse("user-search")
-
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["waiting"], False)
 
 
 class SearchApiViewTestCase(InboxenTestCase):
@@ -218,10 +36,9 @@ class SearchApiViewTestCase(InboxenTestCase):
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
-        key = "%s-None-None-cheddär" % self.user.id
-        self.key = urllib.parse.quote(key)
-        self.url = "%s?key=%s" % (
-            urlresolvers.reverse("search:api"),
+        self.key = create_search_cache_key(self.user.id, "cheddår", None, None)
+        self.url = "%s?token=%s" % (
+            urls.reverse("search:api"),
             self.key,
         )
 

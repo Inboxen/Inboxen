@@ -22,13 +22,16 @@ from unittest import mock
 import itertools
 import warnings
 
+from celery import exceptions
 from django import urls
 from django.conf import settings
+from django.core.cache import cache
 from django.test import override_settings
 from watson.models import SearchEntry
 
 from inboxen import forms as inboxen_forms
 from inboxen import models
+from inboxen.search.utils import create_search_cache_key
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 from inboxen.utils.ratelimit import inbox_ratelimit
@@ -562,3 +565,187 @@ class InboxDeleteTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(task_mock.delay.call_count, 0)
+
+
+class SearchViewTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+        self.inbox = factories.InboxFactory(user=self.user)
+
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        self.url = urls.reverse("single-inbox-search", kwargs={"q": "cheddär",
+                                                               "inbox": self.inbox.inbox,
+                                                               "domain": self.inbox.domain.domain})
+        self.key = create_search_cache_key(self.user.id, "cheddär", None, None)
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def test_context(self):
+        cache.set(self.key, {"results": []})
+        response = self.client.get(self.url)
+        self.assertIn("waiting", response.context)
+        self.assertNotIn("has_next", response.context)
+        self.assertNotIn("has_previous", response.context)
+        self.assertNotIn("last", response.context)
+        self.assertNotIn("first", response.context)
+
+    def test_content(self):
+        cache.set(self.key, {"results": []})
+        response = self.client.get(self.url)
+        self.assertIn(u"This Inbox is <span title=\"The opposite of full.\">empty</span>.",
+                      response.content.decode("utf-8"))
+
+    def test_get(self):
+        cache.set(self.key, {"results": []})
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    def test_get_task_run(self, task_mock):
+        task_mock.return_value.id = "abc"
+        task_mock.return_value.get.side_effect = exceptions.TimeoutError
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.call_count, 1)
+        self.assertEqual(task_mock.return_value.get.call_count, 1)
+
+        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Email"],
+                                                    "kwargs": {"before": None}}))
+        self.assertEqual(response.context["waiting"], True)
+        self.assertNotIn("has_next", response.context)
+        self.assertNotIn("has_previous", response.context)
+        self.assertNotIn("last", response.context)
+        self.assertNotIn("first", response.context)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    def test_get_cached_result(self, task_mock):
+        inbox = factories.InboxFactory(user=self.user)
+
+        task_mock.return_value.id = "abc"
+        task_mock.return_value.get.side_effect = exceptions.TimeoutError
+
+        cache.set(self.key, {
+            "results": [inbox.id],
+            "has_next": True,
+            "has_previous": False,
+            "first": "some-randomstring",
+            "last": "somerandom-string",
+        })
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.call_count, 0)
+        self.assertEqual(response.context["has_next"], True)
+        self.assertEqual(response.context["last"], "somerandom-string")
+        self.assertEqual(response.context["has_previous"], False)
+        self.assertEqual(response.context["first"], "some-randomstring")
+        self.assertEqual(response.context["waiting"], False)
+
+        cache.set(self.key, {
+            "results": [],
+            "has_next": True,
+            "has_previous": False,
+            "first": "some-randomstring",
+            "last": "somerandom-string",
+        })
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.call_count, 0)
+        self.assertEqual(response.context["waiting"], False)
+        self.assertNotIn("has_next", response.context)
+        self.assertNotIn("has_previous", response.context)
+        self.assertNotIn("first", response.context)
+        self.assertNotIn("last", response.context)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    def test_get_with_after_param(self, task_mock):
+        task_mock.return_value.id = "abc"
+        task_mock.return_value.get.side_effect = exceptions.TimeoutError
+
+        response = self.client.get(self.url + "?after=blahblah")
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.call_count, 1)
+        self.assertEqual(task_mock.return_value.get.call_count, 1)
+
+        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Email"],
+                                                    "kwargs": {"after": "blahblah"}}))
+        self.assertEqual(response.context["waiting"], True)
+        self.assertNotIn("has_next", response.context)
+        self.assertNotIn("has_previous", response.context)
+        self.assertNotIn("last", response.context)
+        self.assertNotIn("first", response.context)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    def test_get_with_before_param(self, task_mock):
+        task_mock.return_value.id = "abc"
+        task_mock.return_value.get.side_effect = exceptions.TimeoutError
+
+        response = self.client.get(self.url + "?before=blahblah")
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.call_count, 1)
+        self.assertEqual(task_mock.return_value.get.call_count, 1)
+
+        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Email"],
+                                                    "kwargs": {"before": "blahblah"}}))
+        self.assertEqual(response.context["waiting"], True)
+        self.assertNotIn("has_next", response.context)
+        self.assertNotIn("has_previous", response.context)
+        self.assertNotIn("last", response.context)
+        self.assertNotIn("first", response.context)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    def test_get_with_before_and_after_param(self, task_mock):
+        task_mock.return_value.id = "abc"
+        task_mock.return_value.get.side_effect = exceptions.TimeoutError
+
+        response = self.client.get(self.url + "?after=blahblah&before=bluhbluh")
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(task_mock.call_count, 1)
+        self.assertEqual(task_mock.return_value.get.call_count, 1)
+
+        # before param should be ignored, task will raise an error otherwise
+        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Email"],
+                                                    "kwargs": {"after": "blahblah"}}))
+        self.assertEqual(response.context["waiting"], True)
+        self.assertNotIn("has_next", response.context)
+        self.assertNotIn("has_previous", response.context)
+        self.assertNotIn("last", response.context)
+        self.assertNotIn("first", response.context)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.AsyncResult")
+    def test_task_running(self, result_mock):
+        cache.set(self.key, {"task": "blahblahblah"})
+        result_mock.return_value.get.side_effect = exceptions.TimeoutError
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["waiting"], True)
+
+        self.assertEqual(result_mock.call_count, 1)
+        self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
+
+    def test_no_query(self):
+        url = urls.reverse("single-inbox-search", kwargs={
+            "inbox": self.inbox.inbox,
+            "domain": self.inbox.domain.domain,
+        })
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["waiting"], False)

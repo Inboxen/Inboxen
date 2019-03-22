@@ -24,10 +24,15 @@ from django.db import models
 from django.db.models.expressions import Value
 
 
+class SearchRankCD(SearchRank):
+    function = "ts_rank_cd"
+
+
 class SearchQuerySet(models.QuerySet):
     def search(self, search_term):
         query = SearchQuery(search_term, config=settings.SEARCH_CONFIG)
-        return self.annotate(rank=SearchRank(models.F("search_tsv"), query)).filter(rank__gte=0.1).order_by("-rank")
+        qs = self.annotate(rank=SearchRankCD(models.F("search_tsv"), query))
+        return qs.filter(search_tsv=query).order_by("-rank", "-id")
 
 
 class SearchManager(models.Manager.from_queryset(SearchQuerySet)):

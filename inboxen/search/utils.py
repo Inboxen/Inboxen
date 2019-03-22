@@ -17,11 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import urllib
+import base64
+
+SEARCH_VERSION = 1  # bump this any time you change how the cache key workds
 
 
 def create_search_cache_key(user_id, search_term, before, after):
-    key = u"{}-{}-{}-{}".format(user_id, before, after, search_term)
-    key = urllib.parse.quote(key.encode("utf-8"))
+    key = "{}{}{}{}{}".format(SEARCH_VERSION, user_id, before, after, search_term)
+    key = base64.b64encode(key.encode()).decode()
 
     return key
