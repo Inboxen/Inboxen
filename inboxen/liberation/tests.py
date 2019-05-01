@@ -22,6 +22,7 @@ from importlib import import_module
 from io import BytesIO
 import base64
 import itertools
+import json
 import mailbox
 import os
 import os.path
@@ -32,6 +33,7 @@ import uu
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core import urlresolvers
 from django.core.urlresolvers import reverse
 from salmon import mail
@@ -128,14 +130,130 @@ class LiberateTestCase(InboxenTestCase):
                                                             "tarname": self.mail_dir + ".tar.gz",
                                                             "storage_type": "0", "compression_type": "0"})
 
-    def test_liberate_fetch_info(self):
-        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
-
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
         open(result_path, "w").write("a test")
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir,
                                               "storage_type": "0", "compression_type": "0"})
+
+
+class LiberateFetchInfoTestCase(InboxenTestCase):
+    maxDiff = None
+
+    def setUp(self):
+        self.user = get_user_model().objects.create(username="atester")
+
+        self.tmp_dir = tempfile.mkdtemp()
+        self.mail_dir = os.path.join(self.tmp_dir, "isdabizda")
+        mailbox.Maildir(self.mail_dir)
+
+    def tearDown(self):
+        shutil.rmtree(self.mail_dir, ignore_errors=True)
+
+    def test_liberate_fetch_info_no_result(self):
+        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
+        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
+        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+
+        self.assertEqual(inbox_data, {})
+        self.assertEqual(profile_data, {
+            "id": self.user.id,
+            "username": self.user.username,
+            "is_active": self.user.is_active,
+            "join_date": self.user.date_joined.isoformat(),
+            "groups": [],
+            "errors": [],
+            "preferences": {
+                "prefer_html_email": True,
+                "prefered_domain": None,
+                "display_images": 0,
+            }
+        })
+
+    def test_liberate_fetch_info_results_and_inboxes(self):
+        inboxes = factories.InboxFactory.create_batch(2, user=self.user)
+        results = [None for i in range(6)]
+
+        tasks.liberate_fetch_info(results, {"user": self.user.id, "path": self.mail_dir})
+        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
+        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+
+        self.assertEqual(inbox_data, {
+            str(box): {
+                "created": box.created.isoformat(),
+                "description": None,
+                "flags": {
+                    "deleted": box.deleted,
+                    "new": box.new,
+                    "exclude_from_unified": box.exclude_from_unified,
+                    "disabled": box.disabled,
+                    "pinned": box.pinned,
+                },
+            }
+            for box in inboxes
+        })
+
+        self.assertEqual(profile_data, {
+            "id": self.user.id,
+            "username": self.user.username,
+            "is_active": self.user.is_active,
+            "join_date": self.user.date_joined.isoformat(),
+            "groups": [],
+            "errors": [],
+            "preferences": {
+                "prefer_html_email": True,
+                "prefered_domain": None,
+                "display_images": 0,
+            }
+        })
+
+    def test_liberate_fetch_info_user_has_groups(self):
+        group = Group.objects.create(name="hello")
+        self.user.groups.add(group)
+
+        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
+        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
+        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+
+        self.assertEqual(inbox_data, {})
+        self.assertEqual(profile_data, {
+            "id": self.user.id,
+            "username": self.user.username,
+            "is_active": self.user.is_active,
+            "join_date": self.user.date_joined.isoformat(),
+            "groups": ["hello"],
+            "errors": [],
+            "preferences": {
+                "prefer_html_email": True,
+                "prefered_domain": None,
+                "display_images": 0,
+            }
+        })
+
+    def test_liberate_fetch_info_user_has_prefered_domain(self):
+        domain = factories.DomainFactory()
+        profile = self.user.inboxenprofile
+        profile.prefered_domain = domain
+        profile.save()
+
+        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
+        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
+        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+
+        self.assertEqual(inbox_data, {})
+        self.assertEqual(profile_data, {
+            "id": self.user.id,
+            "username": self.user.username,
+            "is_active": self.user.is_active,
+            "join_date": self.user.date_joined.isoformat(),
+            "groups": [],
+            "errors": [],
+            "preferences": {
+                "prefer_html_email": True,
+                "prefered_domain": str(domain),
+                "display_images": 0,
+            }
+        })
 
 
 class LiberateNewUserTestCase(InboxenTestCase):
@@ -155,9 +273,6 @@ class LiberateNewUserTestCase(InboxenTestCase):
             form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
             self.assertTrue(form.is_valid())
             form.save()
-
-    def test_liberate_fetch_info(self):
-        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
 
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
