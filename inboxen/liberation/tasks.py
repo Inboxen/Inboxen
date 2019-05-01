@@ -274,7 +274,7 @@ def liberate_user_profile(user_id, email_results):
     # user's preferences
     profile = user.inboxenprofile
     data["preferences"]["prefer_html_email"] = profile.prefer_html_email
-    data["preferences"]["prefered_domain"] = profile.prefered_domain
+    data["preferences"]["prefered_domain"] = str(profile.prefered_domain) if profile.prefered_domain else None
     data["preferences"]["display_images"] = profile.display_images
 
     # user data
@@ -299,8 +299,7 @@ def liberate_inbox_metadata(user_id):
 
     inboxes = Inbox.objects.filter(user__id=user_id)
     for inbox in inboxes:
-        address = "%s@%s" % (inbox.inbox, inbox.domain)
-        data[address] = {
+        data[str(inbox)] = {
             "created": inbox.created.isoformat(),
             "flags": {
                 "deleted": inbox.deleted,
