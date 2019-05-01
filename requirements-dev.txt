@@ -13,16 +13,16 @@ backports.functools-lru-cache==1.5  # via cheroot
 billiard==3.5.0.5         # via celery
 cachetools==3.1.0         # via premailer
 celery==4.1.1
-certifi==2018.11.29       # via requests
+certifi==2019.3.9         # via requests
 chardet==3.0.4            # via requests, salmon-mail
-cheroot==6.5.4            # via cherrypy
-cherrypy==18.1.0          # via jasmine
+cheroot==6.5.5            # via cherrypy
+cherrypy==18.1.1          # via jasmine
 click==7.0                # via pip-tools
 configobj==5.0.6
-coverage==4.5.2
+coverage==4.5.3
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
-decorator==4.3.2          # via ipython, traitlets
+decorator==4.4.0          # via ipython, traitlets
 django-annoying==0.10.4
 django-assets==0.12
 django-async-messages==0.3.1
@@ -35,8 +35,8 @@ django-elevate==1.0.0
 django-extensions==2.1.6
 django-formtools==2.1     # via django-two-factor-auth
 django-js-asset==1.2.2    # via django-mptt
-django-mptt==0.9.1
-django-otp==0.5.2         # via django-two-factor-auth
+django-mptt==0.10.0
+django-otp==0.6.0         # via django-two-factor-auth
 django-phonenumber-field==1.3.0  # via django-two-factor-auth
 django-ratelimit-backend==2.0
 django-sendfile2==0.4.2
@@ -50,49 +50,49 @@ glob2==0.6                # via jasmine-core
 idna==2.8                 # via requests
 ipaddress==1.0.22
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.3.0
+ipython==7.5.0
 jaraco.functools==2.0     # via tempora
-jasmine-core==3.3.0       # via jasmine
-jasmine==3.3.0
+jasmine-core==3.4.0       # via jasmine
+jasmine==3.4.0
 jedi==0.13.3              # via ipython
-jinja2==2.10              # via jasmine
+jinja2==2.10.1            # via jasmine
 jsmin==2.2.2
-kombu==4.4.0              # via celery
+kombu==4.5.0              # via celery
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
-lxml==4.3.2               # via premailer
-markdown==3.0.1
+lxml==4.3.3               # via premailer
+markdown==3.1
 markupsafe==1.1.1         # via jinja2
-more-itertools==6.0.0     # via cheroot, cherrypy, jaraco.functools
+more-itertools==7.0.0     # via cheroot, cherrypy, jaraco.functools
 ordereddict==1.1          # via jasmine-core
-parso==0.3.4              # via jedi
-pexpect==4.6.0            # via ipython
-phonenumberslite==8.10.6  # via django-phonenumber-field
+parso==0.4.0              # via jedi
+pexpect==4.7.0            # via ipython
+phonenumberslite==8.10.10
 pickleshare==0.7.5        # via ipython
-pillow==5.4.1
-pip-tools==3.4.0
-portend==2.3              # via cherrypy
-premailer==3.3.0
-progress==1.4
+pillow==6.0.0
+pip-tools==3.6.1
+portend==2.4              # via cherrypy
+premailer==3.4.1
+progress==1.5
 prompt-toolkit==2.0.9     # via ipython
-psycopg2==2.7.7
+psycopg2==2.8.2
 ptyprocess==0.6.0         # via pexpect
 pygments==2.3.1           # via ipython
 python-daemon==2.1.2      # via salmon-mail
 python-dateutil==2.8.0    # via faker
-pytz==2018.9              # via babel, celery, django, tempora
+pytz==2019.1              # via babel, celery, django, tempora
 pyyaml==3.13              # via jasmine
 qrcode==6.1               # via django-two-factor-auth
 requests==2.21.0          # via premailer
 salmon-mail==3.1.0
 selenium==3.141.0         # via jasmine
 six==1.12.0               # via cheroot, configobj, django-extensions, django-sendfile2, faker, pip-tools, prompt-toolkit, python-dateutil, qrcode, salmon-mail, tempora, traitlets
-sqlparse==0.2.4           # via django-debug-toolbar
-tempora==1.14             # via portend
+sqlparse==0.3.0           # via django-debug-toolbar
+tempora==1.14.1           # via portend
 traitlets==4.3.2          # via ipython
 unidecode==1.0.23         # via faker
-urllib3==1.24.1           # via requests, selenium
-vine==1.2.0               # via amqp
+urllib3==1.24.2           # via requests, selenium
+vine==1.3.0               # via amqp
 wcwidth==0.1.7            # via prompt-toolkit
 webassets==0.12.1         # via django-assets
 zc.lockfile==1.4          # via cherrypy
