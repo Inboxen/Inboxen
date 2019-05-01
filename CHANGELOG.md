@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Deploy for 2019-05-01
+
+* Fix liberation bug due to user having a prefered domain (#418)
+* Add migrations required by latest release of django-mptt
+* Update versioneer config to display git tags correctly
+
 ### Deploy for 2019-03-04
 
 * Remove mock dependency (#414)
