@@ -20,9 +20,10 @@
 from datetime import datetime, timedelta
 from unittest import mock
 
+from django import urls
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers, cache
+from django.core import cache
 from django.utils import timezone
 
 from inboxen.account import utils
@@ -31,7 +32,7 @@ from inboxen.test import InboxenTestCase, MockRequest
 
 class RegisterRateLimitTestCase(InboxenTestCase):
     def get_url(self):
-        return urlresolvers.reverse("user-registration")
+        return urls.reverse("user-registration")
 
     def test_sum_counters(self):
         login_data = {"password1": "qwerty123456", "password2": "qwerty123456"}

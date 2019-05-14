@@ -29,7 +29,7 @@ import sys
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django.core import urlresolvers
+from django import urls
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
@@ -86,7 +86,7 @@ class LoginTestCase(InboxenTestCase):
         self.assertEqual(user.last_login, None)
 
     def test_normal_login(self):
-        response = self.client.get(urlresolvers.reverse("user-home"))
+        response = self.client.get(urls.reverse("user-home"))
         self.assertEqual(response.status_code, 302)
 
         params = {
@@ -97,9 +97,9 @@ class LoginTestCase(InboxenTestCase):
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get(urlresolvers.reverse("user-home"))
+        response = self.client.get(urls.reverse("user-home"))
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context["request"].user.is_authenticated())
+        self.assertTrue(response.context["request"].user.is_authenticated)
 
     def test_ratelimit(self):
         params = {
@@ -120,11 +120,11 @@ class LoginTestCase(InboxenTestCase):
         response = self.client.post(dj_settings.LOGIN_URL, params)
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get(urlresolvers.reverse("user-home"))
+        response = self.client.get(urls.reverse("user-home"))
         self.assertEqual(response.status_code, 302)
 
-        response = self.client.get(urlresolvers.reverse("index"))
-        self.assertFalse(response.context["request"].user.is_authenticated())
+        response = self.client.get(urls.reverse("index"))
+        self.assertFalse(response.context["request"].user.is_authenticated)
 
     def test_no_csrf_cookie(self):
         response = self.client.get(dj_settings.LOGIN_URL)
@@ -134,12 +134,12 @@ class LoginTestCase(InboxenTestCase):
 
 class IndexTestCase(InboxenTestCase):
     def test_index_page(self):
-        response = self.client.get(urlresolvers.reverse("index"))
+        response = self.client.get(urls.reverse("index"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("Join", str(response.content))
 
         with override_settings(ENABLE_REGISTRATION=False):
-            response = self.client.get(urlresolvers.reverse("index"))
+            response = self.client.get(urls.reverse("index"))
             self.assertEqual(response.status_code, 200)
             self.assertNotIn("Join", str(response.content))
 
@@ -147,12 +147,12 @@ class IndexTestCase(InboxenTestCase):
         user = factories.UserFactory()
         assert self.client.login(username=user.username, password="123456", request=MockRequest(user))
 
-        response = self.client.get(urlresolvers.reverse("index"))
+        response = self.client.get(urls.reverse("index"))
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("Join", str(response.content))
 
         with override_settings(ENABLE_REGISTRATION=False):
-            response = self.client.get(urlresolvers.reverse("index"))
+            response = self.client.get(urls.reverse("index"))
             self.assertEqual(response.status_code, 200)
             self.assertNotIn("Join", str(response.content))
 
@@ -349,21 +349,21 @@ class UrlStatsCommandTest(InboxenTestCase):
         mgmt_command = url_stats.Command()
 
         url_list = StringIO()
-        url_list.write("%s\n" % urlresolvers.reverse("single-inbox", kwargs={"inbox": "123", "domain": "example.com"}))
-        url_list.write("%s\n" % urlresolvers.reverse("single-inbox", kwargs={"inbox": "321", "domain": "example.com"}))
-        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.write("%s\n" % urls.reverse("single-inbox", kwargs={"inbox": "123", "domain": "example.com"}))
+        url_list.write("%s\n" % urls.reverse("single-inbox", kwargs={"inbox": "321", "domain": "example.com"}))
+        url_list.write("%s\n" % urls.reverse("unified-inbox"))
         url_list.write("/dfsdfsdf/sdfsdss/111\n")
-        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
-        url_list.write("%s\n" % urlresolvers.reverse("unified-inbox"))
+        url_list.write("%s\n" % urls.reverse("unified-inbox"))
+        url_list.write("%s\n" % urls.reverse("unified-inbox"))
         url_list.seek(0)
 
-        urls, non_matches = mgmt_command.count_urls(url_list)
+        returned_urls, non_matches = mgmt_command.count_urls(url_list)
 
-        self.assertEqual(len(urls), 2)
+        self.assertEqual(len(returned_urls), 2)
         self.assertEqual(len(non_matches), 1)
 
-        self.assertEqual(urls["single-inbox"], 2)
-        self.assertEqual(urls["unified-inbox"], 3)
+        self.assertEqual(returned_urls["single-inbox"], 2)
+        self.assertEqual(returned_urls["unified-inbox"], 3)
 
 
 class RouterCommandTestCase(InboxenTestCase):
@@ -456,21 +456,21 @@ class ErrorViewTestCase(InboxenTestCase):
 class StyleguideTestCase(InboxenTestCase):
     def tearDown(self):
         # make sure URLConf is reset no matter what
-        urlresolvers.clear_url_caches()
+        urls.clear_url_caches()
         reload_urlconf()
 
     def test_get(self):
         # make sure it's accessible when DEBUG=True
         with override_settings(DEBUG=True):
-            urlresolvers.clear_url_caches()
+            urls.clear_url_caches()
             reload_urlconf()
-            url = urlresolvers.reverse('inboxen-styleguide')
+            url = urls.reverse('inboxen-styleguide')
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
         # make sure it's not accessible when DEBUG=False
         with override_settings(DEBUG=False):
-            urlresolvers.clear_url_caches()
+            urls.clear_url_caches()
             reload_urlconf()
             # url should no longer exist
             response = self.client.get(url)
@@ -508,7 +508,7 @@ class SSLRedirectTestCase(InboxenTestCase):
 class CSRFCheckedTestCase(InboxenTestCase):
     def setUp(self):
         self.client = SecureClient(enforce_csrf_checks=True)
-        self.url = urlresolvers.reverse('user-registration')
+        self.url = urls.reverse('user-registration')
 
     def test_csrf_token_missing(self):
         data = {
@@ -617,7 +617,7 @@ class XContentTypeOptionsTestCase(InboxenTestCase):
 
 class ManifestTestCase(InboxenTestCase):
     def test_get(self):
-        url = urlresolvers.reverse('inboxen-manifest')
+        url = urls.reverse('inboxen-manifest')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 

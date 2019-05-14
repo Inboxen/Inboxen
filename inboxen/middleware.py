@@ -20,6 +20,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.utils.deprecation import MiddlewareMixin
 from django.utils.translation import ugettext as _
 
 from ratelimitbackend.exceptions import RateLimitException
@@ -28,7 +29,7 @@ from ratelimitbackend.exceptions import RateLimitException
 SESSION_HALF_COOKIE_AGE = settings.SESSION_COOKIE_AGE / 2
 
 
-class RateLimitMiddleware(object):
+class RateLimitMiddleware(MiddlewareMixin):
     """Handles exceptions thrown by rate-limited login attepmts."""
     def process_exception(self, request, exception):
         if isinstance(exception, RateLimitException):
@@ -36,10 +37,10 @@ class RateLimitMiddleware(object):
             return redirect("user-login")
 
 
-class ExtendSessionMiddleware(object):
+class ExtendSessionMiddleware(MiddlewareMixin):
     """Extends the expiry of sessions for logged in users"""
     def process_request(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             if '_session_expiry' not in request.session:
                 # get_expiry_age() will return settings.SESSION_COOKIE_AGE if
                 # no custom expiry is set.
@@ -52,7 +53,7 @@ class ExtendSessionMiddleware(object):
                 request.session.modified = True
 
 
-class MakeXSSFilterChromeSafeMiddleware(object):
+class MakeXSSFilterChromeSafeMiddleware(MiddlewareMixin):
     def process_response(self, request, response):
         # we have CSP and filter user input to protect against XSS, adding
         # X-XSS-Protection would be great as a defence in depth. However, there

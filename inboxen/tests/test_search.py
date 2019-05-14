@@ -21,7 +21,8 @@
 from unittest import mock
 
 from celery import exceptions
-from django.core import urlresolvers, cache
+from django import urls
+from django.core import cache
 from watson.models import SearchEntry
 import urllib
 
@@ -35,7 +36,7 @@ class SearchViewTestCase(InboxenTestCase):
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
-        self.url = urlresolvers.reverse("user-search", kwargs={"q": "cheddär"})
+        self.url = urls.reverse("user-search", kwargs={"q": "cheddär"})
         key = "%s-None-None-cheddär" % self.user.id
         self.key = urllib.parse.quote(key)
 
@@ -58,7 +59,7 @@ class SearchViewTestCase(InboxenTestCase):
         # TODO test the template directly
         with mock.patch("inboxen.views.user.search.SearchView.get_queryset", return_value={}):
             response = self.client.get(self.url)
-            self.assertIn(u'data-url="%s"' % urlresolvers.reverse(
+            self.assertIn(u'data-url="%s"' % urls.reverse(
                           "user-searchapi", kwargs={"q": "cheddär"}), response.content.decode("utf-8"))
 
     def test_get(self):
@@ -202,7 +203,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
 
     def test_no_query(self):
-        url = urlresolvers.reverse("user-search")
+        url = urls.reverse("user-search")
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -215,7 +216,7 @@ class SearchApiViewTestCase(InboxenTestCase):
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
-        self.url = urlresolvers.reverse("user-searchapi", kwargs={"q": "cheddär"})
+        self.url = urls.reverse("user-searchapi", kwargs={"q": "cheddär"})
         key = "%s-None-None-cheddär" % self.user.id
         self.key = urllib.parse.quote(key)
 

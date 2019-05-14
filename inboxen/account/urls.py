@@ -18,25 +18,17 @@
 ##
 
 from django.conf import settings as dj_settings, urls
-from django.contrib.auth import views as auth_views
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView
 import elevate.views
 
 from inboxen.account.decorators import anonymous_required
-from inboxen.account.forms import PlaceHolderPasswordChangeForm, PlaceHolderSudoForm
+from inboxen.account.forms import PlaceHolderSudoForm
 from inboxen.account.views import delete, otp, register, settings
 
 
 urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
-    urls.url(r'^security/password$', auth_views.password_change,
-             {
-                 'template_name': 'account/password.html',
-                 'post_change_redirect': reverse_lazy('user-security'),
-                 'password_change_form': PlaceHolderPasswordChangeForm,
-             },
-             name='user-password'),
+    urls.url(r'^security/password$', settings.PasswordChangeView.as_view(), name='user-password'),
     urls.url(r'^security/sudo/$', elevate.views.elevate, {'form_class': PlaceHolderSudoForm}, name='user-sudo'),
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
@@ -47,7 +39,7 @@ urlpatterns = [
     urls.url(r'^delete/$', delete.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^username/$', settings.UsernameChangeView.as_view(), name='user-username'),
     urls.url(r'^login/$', otp.login, name='user-login'),
-    urls.url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='user-logout'),
+    urls.url(r'^logout/$', settings.LogoutView.as_view(), name='user-logout'),
 
     # liberation app
     urls.url(r'^liberate/', urls.include("inboxen.liberation.urls")),

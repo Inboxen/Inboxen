@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django import urls
 
 from inboxen.test import InboxenTestCase
 from inboxen import redirect
@@ -25,7 +25,7 @@ from inboxen import redirect
 
 class RedirectTestCase(InboxenTestCase):
     def test_get(self):
-        url = urlresolvers.reverse("redirect")
+        url = urls.reverse("redirect")
         url = "%s?url=/" % url
         response = self.client.get(url, follow=True)
 

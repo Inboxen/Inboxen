@@ -21,6 +21,7 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse, UnreadablePostError
+from django.utils.decorators import classonlymethod
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -67,6 +68,19 @@ class ErrorView(TemplateView):
         templates = ["{0}.html".format(self.get_error_code())]
         templates.extend(super(ErrorView, self).get_template_names())
         return templates
+
+    @classonlymethod
+    def as_view(cls, **initkwargs):
+        """A very stripped down version of as_view that will work with the
+        error handler *check* code"""
+        # grumbles grumbles
+
+        def view(request, *args, **kwargs):
+            self = cls(**initkwargs)
+            self.setup(request, *args, **kwargs)
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
 
 
 not_found = ErrorView.as_view(

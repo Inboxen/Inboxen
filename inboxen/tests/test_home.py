@@ -18,7 +18,7 @@
 ##
 
 from django.conf import settings as dj_settings
-from django.core import urlresolvers
+from django import urls
 
 from inboxen import models
 from inboxen.tests import factories
@@ -39,7 +39,7 @@ class HomeViewTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-home")
+        return urls.reverse("user-home")
 
     def test_context(self):
         response = self.client.get(self.get_url())
@@ -172,7 +172,7 @@ class HomeViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_post_form_view(self):
-        url = urlresolvers.reverse("form-home")
+        url = urls.reverse("form-home")
 
         inbox = self.inboxes[0]
         was_pinned = inbox.pinned

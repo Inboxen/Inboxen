@@ -59,7 +59,7 @@ class Question(models.Model, RenderBodyMixin):
         (RESOLVED, _("Resolved")),
     )
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True, db_index=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -90,8 +90,8 @@ class Question(models.Model, RenderBodyMixin):
 
 
 class Response(models.Model, RenderBodyMixin):
-    question = models.ForeignKey(Question)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True, db_index=True)
 
     body = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])

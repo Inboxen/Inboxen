@@ -47,21 +47,21 @@ def styleguide(request):
         mock.Mock(
             inbox="qwerty",
             domain=domain,
-            get_bools_for_labels={"new": False},
+            get_bools_for_labels=(("new", False),),
             last_activity=now,
             form=InboxEditForm(request),
         ),
         mock.Mock(
             inbox="qwerty",
             domain=domain,
-            get_bools_for_labels={"disabled": True},
+            get_bools_for_labels=(("disabled", True),),
             last_activity=now,
             form=False,
         ),
         mock.Mock(
             inbox="qwerty",
             domain=domain,
-            get_bools_for_labels={"new": True, "pinned": True},
+            get_bools_for_labels=(("new", True), ("pinned", True)),
             last_activity=now,
             form=False,
         ),
@@ -71,12 +71,12 @@ def styleguide(request):
     emails = [
         mock.Mock(
             inbox=inboxes[0],
-            get_bools_for_labels={"important": True},
+            get_bools_for_labels=(("important", True),),
             received_date=now,
         ),
         mock.Mock(
             inbox=inboxes[0],
-            get_bools_for_labels={"important": False},
+            get_bools_for_labels=(("important", False),),
             received_date=now,
         ),
     ]

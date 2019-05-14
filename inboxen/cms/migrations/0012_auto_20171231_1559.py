@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='helpbasepage',
             name='url_cache',
-            field=models.CharField(default=b'', max_length=255, validators=[inboxen.validators.ProhibitNullCharactersValidator()]),
+            field=models.CharField(default='', max_length=255, validators=[inboxen.validators.ProhibitNullCharactersValidator()]),
         ),
         migrations.AlterField(
             model_name='helppage',

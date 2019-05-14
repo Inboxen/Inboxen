@@ -19,7 +19,7 @@
 
 from django import template
 from django.utils.translation import ugettext as _
-from django.core import urlresolvers
+from django import urls
 
 
 register = template.Library()
@@ -57,7 +57,7 @@ class AccountMenuNode(template.Node):
             if url == self.active:
                 classes = classes + self.item_active_class
 
-            url = urlresolvers.reverse(url)
+            url = urls.reverse(url)
 
             menu_item = self.item_template.format(tag=self.item_tag, classes=classes, url=url, title=title)
             items.append(menu_item)

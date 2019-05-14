@@ -144,7 +144,7 @@ class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
         super().clean()
 
         # we have to do this here rather than in clean_username because we want other validators to run too
-        username = self.cleaned_data["username"]
+        username = self.cleaned_data.get("username")
 
         try:
             if get_user_model().objects.filter(username__iexact=username).exists():
