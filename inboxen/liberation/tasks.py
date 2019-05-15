@@ -27,7 +27,6 @@ import tarfile
 import time
 from shutil import rmtree
 
-from async_messages import message_user
 from celery import chain, chord
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -42,6 +41,7 @@ from inboxen.models import Email, Inbox
 from inboxen.liberation import utils
 from inboxen import tasks
 from inboxen.utils.tasks import task_group_skew
+from inboxen.async_messages import message_user
 
 log = logging.getLogger(__name__)
 

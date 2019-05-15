@@ -1,0 +1,7 @@
+This is an Inboxen specific clone of https://github.com/codeinthehole/django-async-messages
+
+As upstream is virtually abandoned and we wanted to get rid of the dependency
+anyway, I figured we'd keep a local copy here for the timebeing.
+
+See https://github.com/Inboxen/Inboxen/issues/130 for what we want to replace
+async_messages with

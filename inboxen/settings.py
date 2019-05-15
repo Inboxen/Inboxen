@@ -179,7 +179,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'async_messages.middleware.AsyncMiddleware',
+    'inboxen.async_messages.middleware.AsyncMiddleware',
     'inboxen.middleware.RateLimitMiddleware',
     'inboxen.middleware.ExtendSessionMiddleware',
     'inboxen.middleware.MakeXSSFilterChromeSafeMiddleware',
@@ -202,6 +202,7 @@ INSTALLED_APPS = (
 
     # Other Inboxen apps
     'inboxen.account',
+    'inboxen.async_messages',
     'inboxen.blog',
     'inboxen.cms',
     'inboxen.liberation',
