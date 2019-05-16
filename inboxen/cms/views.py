@@ -18,7 +18,7 @@
 ##
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect

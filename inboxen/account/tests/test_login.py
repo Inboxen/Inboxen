@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django import urls
 
 from inboxen.test import InboxenTestCase
 
@@ -30,7 +30,7 @@ class LoginTestCase(InboxenTestCase):
             "login_view-current_step": "auth",
         }
 
-        response = self.client.post(urlresolvers.reverse("user-login"), good_data)
+        response = self.client.post(urls.reverse("user-login"), good_data)
         # form was validated and *form* errors returned
         self.assertEqual(response.status_code, 200)
 
@@ -38,6 +38,6 @@ class LoginTestCase(InboxenTestCase):
             "auth-username": "user1",
             "auth-password": "pass1",
         }
-        response = self.client.post(urlresolvers.reverse("user-login"), bad_data)
+        response = self.client.post(urls.reverse("user-login"), bad_data)
         # Bad request, but no exception generated
         self.assertEqual(response.status_code, 400)

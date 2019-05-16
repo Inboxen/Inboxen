@@ -44,11 +44,12 @@ class SearchableAbstract(models.Model):
     search_tsv = SearchVectorField(null=True)
 
     def update_search(self):
-        vectors = SearchVector(Value(""), config=settings.SEARCH_CONFIG)
+        vectors = SearchVector(Value("", output_field=models.TextField()), config=settings.SEARCH_CONFIG)
         for weight in ["a", "b", "c", "d"]:
             if hasattr(self, "index_search_{}".format(weight)):
                 content = getattr(self, "index_search_{}".format(weight))()
-                vectors = vectors + SearchVector(Value(content), config=settings.SEARCH_CONFIG, weight=weight.upper())
+                vectors = vectors + SearchVector(Value(content, output_field=models.TextField()),
+                                                 config=settings.SEARCH_CONFIG, weight=weight.upper())
 
         self.search_tsv = vectors
 

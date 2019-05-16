@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=255)),
-                ('file', models.ImageField(height_field=b'height', upload_to=b'', width_field=b'width')),
+                ('file', models.ImageField(height_field=b'height', upload_to='', width_field=b'width')),
                 ('width', models.IntegerField(editable=False)),
                 ('height', models.IntegerField(editable=False)),
                 ('created', models.DateTimeField(auto_now_add=True)),

@@ -29,6 +29,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='liberation',
             name='user',
-            field=annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL),
+            field=annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
     ]

@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 
 
@@ -26,7 +26,7 @@ def anonymous_required(function, redirect_url=None):
         redirect_url = reverse_lazy("user-home")
 
     def wrapper(request, *args, **kwargs):
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return function(request, *args, **kwargs)
         else:
             return HttpResponseRedirect(redirect_url)

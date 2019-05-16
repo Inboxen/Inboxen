@@ -17,7 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
@@ -26,7 +27,7 @@ from elevate.mixins import ElevateMixin
 from inboxen.account import forms
 
 
-__all__ = ["GeneralSettingsView", "UsernameChangeView"]
+__all__ = ["GeneralSettingsView", "UsernameChangeView", "PasswordChangeView", "LogoutView"]
 
 
 class GeneralSettingsView(LoginRequiredMixin, generic.FormView):
@@ -60,3 +61,13 @@ class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
     def form_valid(self, form, *args, **kwargs):
         form.save()
         return super(UsernameChangeView, self).form_valid(form=form, *args, **kwargs)
+
+
+class PasswordChangeView(auth_views.PasswordChangeView):  # PasswordChangeView already checks loggedin-ness
+    password_change_form = forms.PlaceHolderPasswordChangeForm
+    post_change_redirect = reverse_lazy('user-security')
+    template_name = 'account/password.html'
+
+
+class LogoutView(auth_views.LogoutView):
+    next_page = "/"

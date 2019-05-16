@@ -21,7 +21,7 @@ import pprint
 import sys
 
 from django.core.management.base import BaseCommand
-from django.core.urlresolvers import resolve, Resolver404
+from django.urls import resolve, Resolver404
 
 _help = """
 Given a list of URLs, will display statistics for named URLs.

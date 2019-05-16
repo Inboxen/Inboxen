@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core.urlresolvers import reverse, resolve, Resolver404, reverse_lazy
+from django.urls import reverse, resolve, Resolver404, reverse_lazy
 from django.http import Http404
 from django.views import generic
 

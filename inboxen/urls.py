@@ -75,7 +75,7 @@ urlpatterns = [
     urls.url(r'^source/', urls.include("inboxen.source.urls")),
     urls.url(r'^user/account/', urls.include("inboxen.account.urls")),
     urls.url(r'^help/', urls.include("inboxen.cms.urls")),
-    urls.url(r'^admin/', urls.include("inboxen.cms.admin_urls", namespace="admin")),
+    urls.url(r'^admin/', urls.include(("inboxen.cms.admin_urls", "cms"), namespace="admin")),
 ]
 
 if settings.DEBUG:

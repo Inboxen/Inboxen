@@ -34,8 +34,8 @@ import uu
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.core import urlresolvers
-from django.core.urlresolvers import reverse
+from django import urls
+from django.urls import reverse
 from salmon import mail
 
 from inboxen import models
@@ -291,7 +291,7 @@ class LiberateViewTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
     def get_url(self):
-        return urlresolvers.reverse("user-liberate")
+        return urls.reverse("user-liberate")
 
     def test_form_bad_data(self):
         params = {"storage_type": 180, "compression_type": 180}

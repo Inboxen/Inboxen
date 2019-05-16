@@ -27,11 +27,10 @@ import tarfile
 import time
 from shutil import rmtree
 
-from async_messages import message_user
 from celery import chain, chord
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers
+from django import urls
 from django.db import IntegrityError, transaction
 from django.utils import safestring, timezone
 from django.utils.crypto import get_random_string
@@ -42,6 +41,7 @@ from inboxen.models import Email, Inbox
 from inboxen.liberation import utils
 from inboxen import tasks
 from inboxen.utils.tasks import task_group_skew
+from inboxen.async_messages import message_user
 
 log = logging.getLogger(__name__)
 
@@ -256,7 +256,7 @@ def liberation_finish(result, options):
 
     message = _("Your request for your personal data has been completed. Click "
                 "<a class=\"alert-link\" href=\"%s\">here</a> to download your archive.")
-    message_user(user, safestring.mark_safe(message % urlresolvers.reverse("user-liberate-get")))
+    message_user(user, safestring.mark_safe(message % urls.reverse("user-liberate-get")))
 
     log.info("Finished liberation for %s", options['user'])
 

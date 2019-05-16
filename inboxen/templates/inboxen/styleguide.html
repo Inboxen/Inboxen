@@ -198,7 +198,7 @@
                     </a>
                 </div>
                 {% for inbox in inboxes %}
-                    {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.get_bools_labels last_activity=inbox.last_activity desc=inbox.description %}
+                    {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.get_bools_for_labels last_activity=inbox.last_activity desc=inbox.description %}
                     {% if inbox.form %}
                     <div class="inbox-edit-form-row row">
                         <div class="col-xs-12">

@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.core import urlresolvers
+from django import urls
 from django.http import Http404
 import factory
 
@@ -39,7 +39,7 @@ class DomainAdminIndexTestCase(InboxenTestCase):
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
 
-        response = self.client.get(urlresolvers.reverse("admin:domains:index"))
+        response = self.client.get(urls.reverse("admin:domains:index"))
         self.assertEqual(response.resolver_match.func, admin.domain_admin_index)
         self.assertEqual(response.status_code, 200)
 
@@ -68,7 +68,7 @@ class DomainAdminCreateTestCase(InboxenTestCase):
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
 
-        response = self.client.get(urlresolvers.reverse("admin:domains:create"))
+        response = self.client.get(urls.reverse("admin:domains:create"))
         self.assertEqual(response.resolver_match.func, admin.domain_admin_create)
         self.assertEqual(response.status_code, 200)
 
@@ -89,7 +89,7 @@ class DomainAdminCreateTestCase(InboxenTestCase):
 
         response = admin.domain_admin_create(request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:domains:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:domains:index"))
 
         domain = models.Domain.objects.get()
         self.assertEqual(domain.owner, None)
@@ -117,7 +117,7 @@ class DomainAdminCreateTestCase(InboxenTestCase):
 
         response = admin.domain_admin_create(request)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:domains:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:domains:index"))
 
         domain = models.Domain.objects.get()
         self.assertEqual(domain.owner, self.user)
@@ -140,7 +140,7 @@ class DomainAdminEditTestCase(InboxenTestCase):
         grant_otp(self.client, self.user)
         grant_sudo(self.client)
 
-        response = self.client.get(urlresolvers.reverse("admin:domains:edit", kwargs={"domain_pk": self.domain.pk}))
+        response = self.client.get(urls.reverse("admin:domains:edit", kwargs={"domain_pk": self.domain.pk}))
         self.assertEqual(response.resolver_match.func, admin.domain_admin_edit)
         self.assertEqual(response.status_code, 200)
 
@@ -161,7 +161,7 @@ class DomainAdminEditTestCase(InboxenTestCase):
 
         response = admin.domain_admin_edit(request, self.domain.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:domains:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:domains:index"))
 
         self.domain.refresh_from_db()
         self.assertEqual(self.domain.enabled, False)
@@ -188,7 +188,7 @@ class DomainAdminEditTestCase(InboxenTestCase):
 
         response = admin.domain_admin_edit(request, self.domain.pk)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response["Location"], urlresolvers.reverse("admin:domains:index"))
+        self.assertEqual(response["Location"], urls.reverse("admin:domains:index"))
         self.assertEqual(models.Domain.objects.count(), 1)
 
         self.domain.refresh_from_db()

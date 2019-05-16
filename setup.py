@@ -34,7 +34,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "Django>=1.11,<1.12",
+        "Django>=2.2,<2.3",
         "Markdown",
         "celery>=4.1,<4.2",
         "configobj",

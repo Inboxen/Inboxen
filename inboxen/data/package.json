@@ -4,7 +4,7 @@
         "bootstrap-sass": "^3.4.1",
         "chart.js": "~2.7.3",
         "font-awesome": "^4.7.0",
-        "jquery": "^3.4.0",
-        "uglify-js": "^3.5.9"
+        "jquery": "^3.4.1",
+        "uglify-js": "^3.5.12"
     }
 }

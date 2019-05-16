@@ -20,7 +20,7 @@
 import json
 
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from inboxen import models
 from inboxen.test import InboxenTestCase

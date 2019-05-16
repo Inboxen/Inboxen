@@ -25,7 +25,6 @@ class InboxenConfig(AppConfig):
     verbose_name = "Inboxen Core"
 
     def ready(self):
-        from django.contrib.auth.models import update_last_login
         from django.contrib.auth.signals import user_logged_in, user_logged_out
         from watson import search as watson_search
 
@@ -37,10 +36,10 @@ class InboxenConfig(AppConfig):
         Email = self.get_model("Email")
 
         # Unregister update_last_login handler
-        user_logged_in.disconnect(update_last_login)
+        assert user_logged_in.disconnect(dispatch_uid='update_last_login'), "Last login not disconnected"
 
         # Search
         watson_search.register(Email, search.EmailSearchAdapter)
         watson_search.register(Inbox, search.InboxSearchAdapter)
 
-        user_logged_out.connect(signals.logout_message)
+        user_logged_out.connect(signals.logout_message, dispatch_uid='inboxen_logout_message')

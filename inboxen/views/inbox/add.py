@@ -18,7 +18,7 @@
 ##
 
 from django.views import generic
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from braces.views import LoginRequiredMixin
 

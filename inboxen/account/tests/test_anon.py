@@ -19,7 +19,7 @@
 
 from unittest import mock
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from inboxen.account import decorators
 from inboxen.tests import factories
@@ -35,24 +35,22 @@ class AnonRequiredTestCase(InboxenTestCase):
 
         # anon
         request = mock.Mock()
-        request.user.is_authenticated.return_value = False
+        request.user.is_authenticated = False
 
         response = decorated_function(request)
         self.assertEqual(request, response)  # our "view" just returns the request
-        self.assertTrue(request.user.is_authenticated.called)
 
         # logged in
         request = mock.Mock()
-        request.user.is_authenticated.return_value = True
+        request.user.is_authenticated = True
 
         response = decorated_function(request)
         self.assertEqual(response["Location"], reverse("user-home"))
-        self.assertTrue(request.user.is_authenticated.called)
 
         # logged in & custom url
         decorated_function = decorators.anonymous_required(lambda request: request, "/some/url/")
         request = mock.Mock()
-        request.user.is_authenticated.return_value = True
+        request.user.is_authenticated = True
 
         response = decorated_function(request)
         self.assertEqual(response["Location"], "/some/url/")
