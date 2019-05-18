@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
-from django.db import migrations
+from django.db import migrations, models
 from django.db.models.expressions import Value
 
 
@@ -22,8 +22,8 @@ def unicode_damnit(data, charset="utf-8", errors="replace"):
 
 
 def combine_index(field_a, field_b):
-    vector = SearchVector(Value(field_a), config=settings.SEARCH_CONFIG, weight="A") + \
-             SearchVector(Value(field_b), config=settings.SEARCH_CONFIG, weight="B")
+    vector = SearchVector(Value(field_a, output_field=models.TextField()), config=settings.SEARCH_CONFIG, weight="A") + \
+             SearchVector(Value(field_b, output_field=models.TextField()), config=settings.SEARCH_CONFIG, weight="B")
 
     return vector
 
