@@ -48,6 +48,8 @@ urlpatterns = [
              views.AttachmentDownloadView.as_view(), name='email-attachment'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)/$',
              views.EmailView.as_view(), name='email-view'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<email>[a-fA-F0-9]+)/download/$',
+             views.download_email, name='download-email-view'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)/$',
              views.SingleInboxView.as_view(), name='single-inbox'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',

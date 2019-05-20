@@ -22,11 +22,12 @@ from django.http import Http404, HttpResponse
 from django.views import generic
 
 from inboxen import models
+from inboxen.liberation.utils import make_message
 
 
 HEADER_CLEAN = re.compile(r'\s+')
 
-__all__ = ["AttachmentDownloadView"]
+__all__ = ["AttachmentDownloadView", "download_email"]
 
 
 class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
@@ -69,3 +70,28 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         response["Content-Type"] = HEADER_CLEAN.sub(" ", content_type)
 
         return response
+
+
+def download_email(request, inbox=None, domain=None, email=None):
+    try:
+        email = models.Email.objects.viewable(request.user).filter(
+            inbox__inbox=inbox,
+            inbox__domain__domain=domain,
+        ).select_related("inbox", "inbox__domain").get(id=int(email, 16))
+    except models.Email.DoesNotExist:
+        raise Http404
+
+    msg = make_message(email)
+    # set unixfrom to True to turn a single message into a valid mbox
+    data = msg.as_bytes(unixfrom=True)
+
+    response = HttpResponse(
+        content=data,
+        status=200,
+    )
+
+    response["Content-Length"] = len(data)
+    response["Content-Disposition"] = "attachment; filename={}-{}.mbox".format(str(email.inbox), email)
+    response["Content-Type"] = "application/mbox"  # a single email is the same as a mbox
+
+    return response

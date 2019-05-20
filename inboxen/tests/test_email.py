@@ -18,7 +18,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from tempfile import NamedTemporaryFile
 from unittest import mock
+import mailbox
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django import urls
@@ -542,3 +544,54 @@ class UtilityTestCase(InboxenTestCase):
         # and it should be a leaf node
         self.assertTrue(bodies[0].is_leaf_node())
         self.assertEqual(bodies[0], alt2_part)
+
+
+class DownloadTestCase(InboxenTestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.user = factories.UserFactory()
+        self.email = factories.EmailFactory(inbox__user=self.user)
+        body = factories.BodyFactory(data=BODY)
+        self.part = factories.PartListFactory(email=self.email, body=body)
+        self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type",
+                                                              data="text/html; charset=\"utf-8\"")
+
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def test_not_email(self):
+        url = urls.reverse("download-email-view", kwargs={"email": self.email.eid + "1",  # not a valid eid
+                                                          "inbox": self.email.inbox.inbox,
+                                                          "domain": self.email.inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_not_viewable(self):
+        self.email.deleted = True
+        self.email.save()
+
+        url = urls.reverse("download-email-view", kwargs={"email": self.email.eid,
+                                                          "inbox": self.email.inbox.inbox,
+                                                          "domain": self.email.inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_download(self):
+        url = urls.reverse("download-email-view", kwargs={"email": self.email.eid,
+                                                          "inbox": self.email.inbox.inbox,
+                                                          "domain": self.email.inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Disposition"],
+                         "attachment; filename={}-{}.mbox".format(str(self.email.inbox), self.email.eid))
+        self.assertEqual(response["Content-Type"], "application/mbox")
+
+        with NamedTemporaryFile() as tmp:
+            tmp.write(response.content)
+            tmp.file.flush()  # just to be sure
+
+            box = mailbox.mbox(tmp.name)
+            self.assertEqual(len(box), 1)
