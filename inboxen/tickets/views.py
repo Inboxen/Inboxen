@@ -87,7 +87,7 @@ class QuestionHomeView(LoginRequiredMixin, generic.ListView, FormMixin):
 
 
 class QuestionListView(LoginRequiredMixin, generic.ListView):
-    paginate_by = 50
+    paginate_by = 25
     model = models.Question
 
     def get_context_data(self, **kwargs):

@@ -31,7 +31,7 @@ class HomeViewTestCase(InboxenTestCase):
         super(HomeViewTestCase, self).setUp()
         self.user = factories.UserFactory()
         domain = factories.DomainFactory()
-        self.inboxes = factories.InboxFactory.create_batch(150, domain=domain, user=self.user)
+        self.inboxes = factories.InboxFactory.create_batch(30, domain=domain, user=self.user)
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
@@ -120,7 +120,7 @@ class HomeViewTestCase(InboxenTestCase):
 
         # Get the page, they should have been pushed to the second page.
         response = self.client.get(self.get_url() + "2/")
-        objs = response.context["page_obj"].object_list[45:]
+        objs = response.context["page_obj"].object_list
 
         # Check the last three are disabled
         self.assertEqual(
@@ -135,8 +135,8 @@ class HomeViewTestCase(InboxenTestCase):
         )
 
     def test_pagin(self):
-        # there should be 150 inboxes in the test fixtures
-        # and pages are paginated by 100 items
+        # there should be 30 inboxes in the test fixtures
+        # and pages are paginated by 25 items
         response = self.client.get(self.get_url() + "2/")
         self.assertEqual(response.status_code, 200)
 

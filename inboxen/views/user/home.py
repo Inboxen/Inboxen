@@ -33,7 +33,7 @@ class UserHomeView(LoginRequiredMixin, generic.ListView):
     """ The user's home which lists the inboxes """
     allow_empty = True
     model = models.Inbox
-    paginate_by = 100
+    paginate_by = 25
     template_name = "inboxen/user/home.html"
 
     def get_queryset(self):

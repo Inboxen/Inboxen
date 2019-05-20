@@ -35,7 +35,7 @@ __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
 class InboxView(LoginRequiredMixin, generic.ListView):
     """Base class for Inbox views"""
     model = models.Email
-    paginate_by = 100
+    paginate_by = 25
     template_name = 'inboxen/inbox/inbox.html'
 
     def get_success_url(self):
