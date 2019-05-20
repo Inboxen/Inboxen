@@ -194,7 +194,7 @@ class QuestionListTestCase(InboxenTestCase):
         super(QuestionListTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        QuestionFactory.create_batch(75, author=self.user, status=models.Question.NEW)
+        QuestionFactory.create_batch(30, author=self.user, status=models.Question.NEW)
 
         self.page = AppPage.objects.get(app="tickets.urls")
 

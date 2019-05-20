@@ -137,8 +137,8 @@ class InboxTestAbstract(object):
         )
 
     def test_pagin(self):
-        # there should be 150 emails in the test fixtures
-        # and pages are paginated by 100 items
+        # there should be 30 emails in the test fixtures
+        # and pages are paginated by 25 items
         response = self.client.get(self.get_url() + "2/")
         self.assertEqual(response.status_code, 200)
 
@@ -157,7 +157,7 @@ class SingleInboxTestCase(InboxTestAbstract, InboxenTestCase):
             raise Exception("Could not log in")
 
         self.inbox = factories.InboxFactory(user=self.user)
-        self.emails = factories.EmailFactory.create_batch(150, inbox=self.inbox)
+        self.emails = factories.EmailFactory.create_batch(30, inbox=self.inbox)
         self.not_mine = factories.EmailFactory.create(inbox__user=self.user)
 
         for email in self.emails:
@@ -181,7 +181,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
         if not login:
             raise Exception("Could not log in")
 
-        self.emails = factories.EmailFactory.create_batch(150, inbox__user=self.user)
+        self.emails = factories.EmailFactory.create_batch(30, inbox__user=self.user)
         self.not_mine = factories.EmailFactory.create()
 
         for email in self.emails:
@@ -439,7 +439,7 @@ class InboxEmailEditTestCase(InboxenTestCase):
             raise Exception("Could not log in")
 
         self.inbox = factories.InboxFactory(user=self.user)
-        self.emails = factories.EmailFactory.create_batch(150, inbox=self.inbox)
+        self.emails = factories.EmailFactory.create_batch(30, inbox=self.inbox)
         self.not_mine = factories.EmailFactory.create(inbox__user=self.user)
 
         for email in self.emails:
