@@ -69,7 +69,7 @@ class Command(BaseCommand):
                 ], env=self.salmon_env)
                 output.append(name % handler['boot'])
             except CalledProcessError as error:
-                output.append("Exit code %d: %s" % (error.returncode, error.output))
+                output.append("Exit code %d: %s" % (error.returncode, force_text(error.output)))
 
         return output
 
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                     handler['pid'],
                 ], env=self.salmon_env))
             except CalledProcessError as error:
-                output.append("Exit code %d: %s" % (error.returncode, error.output))
+                output.append("Exit code %d: %s" % (error.returncode, force_text(error.output)))
 
         return output
 
@@ -94,6 +94,6 @@ class Command(BaseCommand):
             try:
                 output.append(check_output([self.salmon_bin, 'status', '--pid', handler['pid']], env=self.salmon_env))
             except CalledProcessError as error:
-                output.append("Exit code %d: %s" % (error.returncode, error.output))
+                output.append("Exit code %d: %s" % (error.returncode, force_text(error.output)))
 
         return output

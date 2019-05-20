@@ -37,7 +37,7 @@ update-js-requirements:
 
 .PHONY: celery-stop
 celery-stop:
-	-pkill -f "celery worker" || echo "No celery worker found"
+	pkill -f "celery worker"
 
 .PHONY: celery-start
 celery-start:

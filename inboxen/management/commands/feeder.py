@@ -21,6 +21,7 @@ from email.utils import parseaddr
 import mailbox
 import os
 import smtplib
+import socket
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -71,8 +72,14 @@ class Command(BaseCommand):
         self.stdout.flush()
 
     def _iterate(self):
+        errors = []
+
         for key in bar.ShadyBar("Feeding").iter(list(self.mbox.keys())):
-            server = self._get_server()
+            try:
+                server = self._get_server()
+            except socket.error as exp:
+                raise CommandError("Could not connect to Salmon, got {}".format(str(exp)))
+
             message = self.mbox.get(key)
 
             if self.inbox:
@@ -80,9 +87,20 @@ class Command(BaseCommand):
                     message.replace_header("To", str(self.inbox))
                 except KeyError:
                     message["To"] = str(self.inbox)
+            try:
+                server.sendmail(self._get_address(message['From']), self._get_address(message['To']),
+                                message.as_string())
+            except smtplib.SMTPException as exp:
+                errors.append(str(exp))
+            else:
+                self.mbox.remove(key)
 
-            server.sendmail(self._get_address(message['From']), self._get_address(message['To']), message.as_string())
-            self.mbox.remove(key)
+        if errors:
+            self.stdout.write("There were some errors:\n")
+            for err in errors:
+                self.stdout.write(err)
+
+            self.stdout.write("Messages that caused an error are left in the mbox.\n")
 
     def _get_address(self, address):
         name, email = parseaddr(address)
