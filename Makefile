@@ -45,11 +45,11 @@ celery-start:
 
 .PHONY: salmon-stop
 salmon-stop:
-	./manage.py router --stop
+	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid run/router.pid
 
 .PHONY: salmon-start
 salmon-start:
-	./manage.py router --start
+	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
 
 ##
 #	Inboxen.org specific tasks
