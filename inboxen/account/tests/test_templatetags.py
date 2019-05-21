@@ -20,7 +20,7 @@
 
 from unittest import mock
 
-from django.template import Template, Context
+from django.template import Context, Template
 
 from inboxen.account.templatetags import inboxen_account
 from inboxen.test import InboxenTestCase

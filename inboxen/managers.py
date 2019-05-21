@@ -22,7 +22,7 @@ import hashlib
 
 from django.conf import settings
 from django.db import IntegrityError, models, transaction
-from django.db.models import Q, Max
+from django.db.models import Max, Q
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -30,8 +30,8 @@ from django.utils.crypto import get_random_string
 from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
-from inboxen.utils import is_reserved
 from inboxen.search.models import SearchQuerySet
+from inboxen.utils import is_reserved
 
 
 class HashedQuerySet(QuerySet):

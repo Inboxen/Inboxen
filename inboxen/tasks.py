@@ -38,7 +38,6 @@ from inboxen.celery import app
 from inboxen.search.utils import create_search_cache_key
 from inboxen.utils.tasks import task_group_skew
 
-
 log = logging.getLogger(__name__)
 
 SEARCH_TIMEOUT = 60 * 30

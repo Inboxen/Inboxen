@@ -19,15 +19,15 @@
 
 from django import forms
 from django.contrib import messages
-from django.core.exceptions import ValidationError, SuspiciousOperation
+from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.utils.translation import ugettext as _
 from django_otp.decorators import otp_required
 from elevate.decorators import elevate_required
 from two_factor import forms as two_forms
 from two_factor.views import core, profile
 
-from inboxen.account.forms import PlaceHolderAuthenticationForm
 from inboxen.account.decorators import anonymous_required
+from inboxen.account.forms import PlaceHolderAuthenticationForm
 
 
 class LoginView(core.LoginView):

@@ -20,13 +20,13 @@
 
 import itertools
 
+from django import urls
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django import urls
 
-from inboxen.account.forms import SettingsForm, UsernameChangeForm, DeleteAccountForm
+from inboxen.account.forms import DeleteAccountForm, SettingsForm, UsernameChangeForm
+from inboxen.test import InboxenTestCase, MockRequest, grant_sudo
 from inboxen.tests import factories
-from inboxen.test import MockRequest, InboxenTestCase, grant_sudo
 
 
 class SettingsTestCase(InboxenTestCase):

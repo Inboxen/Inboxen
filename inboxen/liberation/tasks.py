@@ -17,31 +17,31 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import json
+from shutil import rmtree
 import hashlib
+import json
 import logging
 import mailbox
 import os
 import string
 import tarfile
 import time
-from shutil import rmtree
 
 from celery import chain, chord
+from django import urls
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django import urls
 from django.db import IntegrityError, transaction
 from django.utils import safestring, timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext as _
 
-from inboxen.celery import app
-from inboxen.models import Email, Inbox
-from inboxen.liberation import utils
 from inboxen import tasks
-from inboxen.utils.tasks import task_group_skew
 from inboxen.async_messages import message_user
+from inboxen.celery import app
+from inboxen.liberation import utils
+from inboxen.models import Email, Inbox
+from inboxen.utils.tasks import task_group_skew
 
 log = logging.getLogger(__name__)
 

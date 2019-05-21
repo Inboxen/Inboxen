@@ -21,7 +21,6 @@ from django import forms
 
 from inboxen.cms import models
 
-
 PAGE_TYPES = (
     models.HelpIndex,
     models.AppPage,

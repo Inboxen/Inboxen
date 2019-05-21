@@ -19,16 +19,14 @@
 
 import logging
 
+from braces.views import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from django.views import generic
-
-from braces.views import LoginRequiredMixin
 from watson import search
 
 from inboxen import models
 from inboxen.utils.email import find_bodies, render_body
-
 
 __all__ = ["EmailView"]
 

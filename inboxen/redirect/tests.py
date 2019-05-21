@@ -19,8 +19,8 @@
 
 from django import urls
 
-from inboxen.test import InboxenTestCase
 from inboxen import redirect
+from inboxen.test import InboxenTestCase
 
 
 class RedirectTestCase(InboxenTestCase):

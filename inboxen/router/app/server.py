@@ -21,15 +21,14 @@
 
 import logging
 
-from salmon.routing import nolocking, route, stateless
-from salmon.server import SMTPError, Relay
-
 from django.conf import settings
 from django.db import DatabaseError, transaction
+from salmon.routing import nolocking, route, stateless
+from salmon.server import Relay, SMTPError
 from watson import search
 
-from inboxen.router.app.helpers import make_email
 from inboxen.models import Inbox
+from inboxen.router.app.helpers import make_email
 from inboxen.utils import RESERVED_LOCAL_PARTS_REGEX
 
 # we want to match *something*, but not something consumed by forward_to_admins

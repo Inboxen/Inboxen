@@ -25,7 +25,6 @@ import socket
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-
 from progress import bar
 
 from inboxen.models import Inbox

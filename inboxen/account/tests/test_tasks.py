@@ -18,12 +18,11 @@
 ##
 from datetime import datetime
 
+from django.contrib.auth import get_user_model
 from pytz import utc
 
-from django.contrib.auth import get_user_model
-
-from inboxen.account import tasks
 from inboxen import models
+from inboxen.account import tasks
 from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
 

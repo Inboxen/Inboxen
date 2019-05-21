@@ -21,7 +21,6 @@ from django.conf import urls
 
 from inboxen.tickets import views
 
-
 urlpatterns = [
     urls.url(r'^$', views.question_admin_index, name='index'),
     urls.url(r'^response/(?P<question_pk>\d+)/$', views.question_admin_response, name='response'),

@@ -17,14 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
-from django.urls import reverse_lazy
-
 from braces.views import LoginRequiredMixin
-
-from inboxen.models import Inbox
+from django.urls import reverse_lazy
+from django.views import generic
 
 from inboxen import forms
+from inboxen.models import Inbox
 
 __all__ = ["InboxAddView", "FormInboxAddView"]
 

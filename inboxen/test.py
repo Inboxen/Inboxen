@@ -27,15 +27,14 @@ from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.storage.session import SessionStorage
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest, HttpResponse
+from django.test.runner import DiscoverRunner
 from django.utils.crypto import get_random_string
 from django_assets import env as assets_env
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.middleware import OTPMiddleware
 from django_otp.plugins.otp_static.models import StaticDevice
-from django.test.runner import DiscoverRunner
 from elevate import settings as elevate_settings
 from elevate.middleware import ElevateMiddleware
-
 
 _log = logging.getLogger(__name__)
 

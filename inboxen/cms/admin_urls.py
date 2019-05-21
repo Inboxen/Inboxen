@@ -21,7 +21,6 @@ from django.conf import urls
 
 from inboxen.cms import views
 
-
 urlpatterns = [
     urls.url(r'^$', views.index, name='index'),
     urls.url(r'^(?P<page_pk>\d+)/$', views.index, name='index'),

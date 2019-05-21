@@ -31,7 +31,6 @@ from watson import models as watson_models
 from inboxen import models, tasks
 from inboxen.search.utils import create_search_cache_key
 
-
 __all__ = ["SearchView", "SearchApiView"]
 
 

@@ -19,7 +19,6 @@
 
 import ipaddress
 
-
 IPV4_HOST_CLASS = 32
 IPV6_HOST_CLASS = 64
 

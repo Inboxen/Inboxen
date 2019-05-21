@@ -18,16 +18,16 @@
 ##
 
 from django.contrib.contenttypes.models import ContentType
-from django.urls import reverse
 from django.db import transaction
 from django.db.models import F
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 
-from inboxen.cms.models import HelpBasePage
-from inboxen.cms.utils import get_root_page, breadcrumb_iterator
-from inboxen.cms.forms import PAGE_TYPES, get_page_form, DeleteForm
 from inboxen.cms.decorators import is_secure_admin
+from inboxen.cms.forms import PAGE_TYPES, DeleteForm, get_page_form
+from inboxen.cms.models import HelpBasePage
+from inboxen.cms.utils import breadcrumb_iterator, get_root_page
 
 
 def page(request, path):

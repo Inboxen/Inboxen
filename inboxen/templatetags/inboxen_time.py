@@ -23,8 +23,8 @@ import calendar
 from django import template
 from django.utils import timezone
 from django.utils.html import avoid_wrapping
-from django.utils.translation import ungettext_lazy, ugettext as _
-
+from django.utils.translation import ugettext as _
+from django.utils.translation import ungettext_lazy
 
 register = template.Library()
 

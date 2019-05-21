@@ -19,15 +19,15 @@
 ##
 
 from unittest import mock
+import urllib
 
 from celery import exceptions
 from django import urls
 from django.core import cache
 from watson.models import SearchEntry
-import urllib
 
+from inboxen.test import InboxenTestCase, MockRequest, override_settings
 from inboxen.tests import factories
-from inboxen.test import MockRequest, InboxenTestCase, override_settings
 
 
 class SearchViewTestCase(InboxenTestCase):

@@ -19,7 +19,7 @@
 
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
-from django.contrib.postgres.search import SearchRank, SearchQuery, SearchVector, SearchVectorField
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, SearchVectorField
 from django.db import models
 from django.db.models.expressions import Value
 

@@ -17,12 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings as dj_settings
 from django import urls
+from django.conf import settings as dj_settings
 
 from inboxen import models
-from inboxen.tests import factories
 from inboxen.test import InboxenTestCase, MockRequest
+from inboxen.tests import factories
 import inboxen
 
 

@@ -22,13 +22,13 @@ from unittest import mock
 import itertools
 import warnings
 
-from django.conf import settings
 from django import urls
+from django.conf import settings
 from watson.models import SearchEntry
 
 from inboxen import forms as inboxen_forms
 from inboxen import models
-from inboxen.test import MockRequest, InboxenTestCase, override_settings
+from inboxen.test import InboxenTestCase, MockRequest, override_settings
 from inboxen.tests import factories
 from inboxen.utils.ratelimit import inbox_ratelimit
 

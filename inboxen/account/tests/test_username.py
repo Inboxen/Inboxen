@@ -17,9 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from inboxen.tests import factories
 from inboxen.account import forms
-from inboxen.test import MockRequest, InboxenTestCase
+from inboxen.test import InboxenTestCase, MockRequest
+from inboxen.tests import factories
 
 
 class LowerCaseUsernameTestCase(InboxenTestCase):

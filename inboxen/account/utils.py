@@ -22,8 +22,7 @@ import urllib
 
 from django.conf import settings
 
-from inboxen.utils import ratelimit, ip
-
+from inboxen.utils import ip, ratelimit
 
 logger = logging.getLogger(__name__)
 

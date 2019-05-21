@@ -24,7 +24,6 @@ from django.views import generic
 from inboxen import models
 from inboxen.liberation.utils import make_message
 
-
 HEADER_CLEAN = re.compile(r'\s+')
 
 __all__ = ["AttachmentDownloadView", "download_email"]

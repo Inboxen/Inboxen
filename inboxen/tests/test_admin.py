@@ -21,8 +21,8 @@ from django import urls
 from django.http import Http404
 import factory
 
-from inboxen.cms.decorators import is_secure_admin
 from inboxen import models
+from inboxen.cms.decorators import is_secure_admin
 from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories
 from inboxen.views import admin

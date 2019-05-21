@@ -19,12 +19,11 @@
 
 from datetime import timedelta
 import logging
+import urllib
 
 from django.conf import settings
 from django.core.cache import cache
 from django.utils import timezone
-import urllib
-
 
 logger = logging.getLogger(__name__)
 

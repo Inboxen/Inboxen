@@ -21,14 +21,12 @@ import datetime
 import os
 import string
 
-from django.contrib.messages import constants as message_constants
 from django import urls
+from django.contrib.messages import constants as message_constants
 from django.utils.translation import ugettext_lazy as _
-
 from kombu.common import Broadcast, Exchange, Queue
 
 from inboxen.config import *  # noqa
-
 
 # Hash used to store uniqueness of certain models
 # if you change this, you'll need to do a datamigration to change the rest

@@ -17,18 +17,16 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from braces.views import LoginRequiredMixin
 from django import http
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
-
-from braces.views import LoginRequiredMixin
 from sendfile import sendfile
 
 from inboxen.liberation import forms
 from inboxen.liberation.tasks import TAR_TYPES
-
 
 __all__ = ["LiberationView", "LiberationDownloadView"]
 

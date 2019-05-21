@@ -26,7 +26,7 @@ from django.urls.exceptions import NoReverseMatch
 
 from inboxen.cms import models
 from inboxen.cms.tests import factories
-from inboxen.test import MockRequest, InboxenTestCase
+from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tickets import views as ticket_views
 
 

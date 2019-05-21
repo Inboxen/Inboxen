@@ -27,8 +27,8 @@ import factory.fuzzy
 from inboxen.cms.decorators import is_secure_admin
 from inboxen.cms.models import AppPage
 from inboxen.cms.utils import app_reverse
+from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo, override_settings
 from inboxen.tests import factories
-from inboxen.test import override_settings, InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tickets import models, views
 from inboxen.tickets.templatetags import tickets_flags
 

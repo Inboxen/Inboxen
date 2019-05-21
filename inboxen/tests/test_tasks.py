@@ -27,8 +27,8 @@ from django.utils import timezone
 from watson.models import SearchEntry
 
 from inboxen import models, tasks
-from inboxen.tests import factories
 from inboxen.test import InboxenTestCase, override_settings
+from inboxen.tests import factories
 
 
 class StatsTestCase(InboxenTestCase):

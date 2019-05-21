@@ -19,8 +19,8 @@
 
 from django.conf import settings
 from django.contrib import messages
-from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
 

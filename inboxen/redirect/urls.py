@@ -21,7 +21,6 @@ from django.conf import urls
 
 from inboxen.redirect import views
 
-
 urlpatterns = [
     urls.url(
         r'^$',

@@ -22,7 +22,6 @@ from django.utils.translation import ugettext_lazy
 
 from inboxen.utils.flags import create_render_bool_template_tag
 
-
 register = template.Library()
 
 

@@ -26,7 +26,6 @@ from watson import search
 
 from inboxen.models import Body, Email, Header, PartList
 
-
 log = logging.getLogger(__name__)
 
 

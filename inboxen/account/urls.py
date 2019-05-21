@@ -17,14 +17,14 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings as dj_settings, urls
+from django.conf import settings as dj_settings
+from django.conf import urls
 from django.views.generic import TemplateView
 import elevate.views
 
 from inboxen.account.decorators import anonymous_required
 from inboxen.account.forms import PlaceHolderSudoForm
 from inboxen.account.views import delete, otp, register, settings
-
 
 urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),

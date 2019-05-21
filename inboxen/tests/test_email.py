@@ -22,31 +22,20 @@ from tempfile import NamedTemporaryFile
 from unittest import mock
 import mailbox
 
-from django.contrib.staticfiles.storage import staticfiles_storage
 from django import urls
+from django.contrib.staticfiles.storage import staticfiles_storage
 from salmon import mail
 
 from inboxen import models
-from inboxen.tests import factories
-from inboxen.tests.example_emails import (
-    BADLY_ENCODED_BODY,
-    BAD_HTTP_EQUIV_BODY,
-    BODILESS_BODY,
-    BODY,
-    CHARSETLESS_BODY,
-    EMPTY_ANCHOR_TAG,
-    EXAMPLE_ALT,
-    EXAMPLE_DIGEST,
-    EXAMPLE_PREMAILER_BROKEN_CSS,
-    EXAMPLE_PREMIME_EMAIL,
-    EXAMPLE_SIGNED_FORWARDED_DIGEST,
-    LONELY_ANCHOR_TAG,
-    METALESS_BODY,
-    UNSUPPORTED_CSS_BODY,
-)
-from inboxen.test import InboxenTestCase, MockRequest
-from inboxen.utils import email as email_utils
 from inboxen.router.app.helpers import make_email
+from inboxen.test import InboxenTestCase, MockRequest
+from inboxen.tests import factories
+from inboxen.tests.example_emails import (BAD_HTTP_EQUIV_BODY, BADLY_ENCODED_BODY, BODILESS_BODY, BODY,
+                                          CHARSETLESS_BODY, EMPTY_ANCHOR_TAG, EXAMPLE_ALT, EXAMPLE_DIGEST,
+                                          EXAMPLE_PREMAILER_BROKEN_CSS, EXAMPLE_PREMIME_EMAIL,
+                                          EXAMPLE_SIGNED_FORWARDED_DIGEST, LONELY_ANCHOR_TAG, METALESS_BODY,
+                                          UNSUPPORTED_CSS_BODY)
+from inboxen.utils import email as email_utils
 
 
 class EmailViewTestCase(InboxenTestCase):

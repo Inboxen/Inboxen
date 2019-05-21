@@ -21,7 +21,6 @@ import re
 
 from django import template
 
-
 register = template.Library()
 
 SELECTOR_REGEX = re.compile(r"([:.,@|\[\]<>+])")

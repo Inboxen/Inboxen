@@ -30,15 +30,9 @@ from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.querysets import TreeQuerySet
 
-from inboxen.cms.fields import (
-    DEFAULT_ALLOW_TAGS,
-    DEFAULT_MARKDOWN_EXTENSIONS,
-    DEFAULT_MARKDOWN_EXTENSION_CONFIGS,
-    DEFAULT_SAFE_ATTRS,
-    RichTextField,
-)
 from inboxen import validators
-
+from inboxen.cms.fields import (DEFAULT_ALLOW_TAGS, DEFAULT_MARKDOWN_EXTENSION_CONFIGS, DEFAULT_MARKDOWN_EXTENSIONS,
+                                DEFAULT_SAFE_ATTRS, RichTextField)
 
 HELP_PAGE_TAGS = DEFAULT_ALLOW_TAGS + ["h%s" % i for i in range(1, 6)]
 HELP_PAGE_ATTRS = DEFAULT_SAFE_ATTRS + ["id"]

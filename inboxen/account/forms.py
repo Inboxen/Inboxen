@@ -28,10 +28,9 @@ from django.utils.translation import ugettext as _
 from elevate.forms import ElevateForm
 from ratelimitbackend.forms import AuthenticationForm
 
+from inboxen import models, validators
 from inboxen.account import fields
 from inboxen.account.tasks import delete_account
-from inboxen import models
-from inboxen import validators
 from inboxen.forms.mixins import PlaceHolderMixin
 
 __all__ = [

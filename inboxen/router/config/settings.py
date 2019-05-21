@@ -1,11 +1,11 @@
 import os
 
-from salmon.server import SMTPReceiver, LMTPReceiver
+from django.conf import settings  # noqa
+from salmon.server import LMTPReceiver, SMTPReceiver
+import django  # noqa
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'inboxen.settings'
 
-from django.conf import settings  # noqa
-import django  # noqa
 django.setup()
 
 # where to listen for incoming messages
