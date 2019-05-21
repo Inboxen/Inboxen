@@ -21,7 +21,6 @@ from datetime import datetime
 from email.message import Message
 from importlib import reload
 from io import StringIO
-from subprocess import CalledProcessError
 from unittest import mock
 import ipaddress
 import sys
@@ -36,7 +35,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test.client import RequestFactory
 
-from inboxen.management.commands import router, feeder, url_stats
+from inboxen.management.commands import feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
 from inboxen.models import Domain
 from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
@@ -364,49 +363,6 @@ class UrlStatsCommandTest(InboxenTestCase):
 
         self.assertEqual(returned_urls["single-inbox"], 2)
         self.assertEqual(returned_urls["unified-inbox"], 3)
-
-
-class RouterCommandTestCase(InboxenTestCase):
-    def test_command(self):
-        with self.assertRaises(CommandError) as error:
-            call_command("router")
-        self.assertEqual(str(error.exception), "Error: one of the arguments --start --stop --status is required")
-
-    def test_handle(self):
-        def func():
-            raise OSError
-
-        mgmt_command = router.Command()
-
-        with self.assertRaises(CommandError) as error:
-            mgmt_command.handle(cmd=func)
-        self.assertEqual(str(error.exception), "OSError from subprocess, salmon is probably not in your path.")
-
-        mgmt_command.stdout = StringIO()
-        mgmt_command.handle(cmd=lambda: "test")
-        self.assertEqual(mgmt_command.stdout.getvalue(), "test")
-
-    @mock.patch("inboxen.management.commands.router.check_output")
-    def test_process_error(self, check_mock):
-        check_mock.side_effect = CalledProcessError(-1, "salmon", "test")
-        mgmt_command = router.Command()
-
-        output = mgmt_command.salmon_start()
-        self.assertEqual(output, ["Exit code -1: test"])
-
-        output = mgmt_command.salmon_status()
-        self.assertEqual(output, ["Exit code -1: test"])
-
-        output = mgmt_command.salmon_stop()
-        self.assertEqual(output, ["Exit code -1: test"])
-
-    @mock.patch("inboxen.management.commands.router.check_output")
-    def test_start_message(self, check_mock):
-        check_mock.return_value = "test"
-        mgmt_command = router.Command()
-
-        output = mgmt_command.salmon_start()
-        self.assertEqual(output, ["Starting Salmon handler: inboxen.router.config.boot\n"])
 
 
 class CreateDomainCommandTestCase(InboxenTestCase):

@@ -95,7 +95,7 @@ Now we've got some configuration, let's finish the setup:
    (env) $ ./manage.py migrate
    (env) $ ./manage.py compilemessages
    (env) $ ./manage.py collectstatic
-   (env) $ ./manage.py router --start
+   (env) $ SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
    (env) $ DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -B -E -D -l info --logfile logs/celery.log --pidfile run/tasks.pid
 
 Finally, there are some external services that you will need to configure:
@@ -143,7 +143,7 @@ Upgrading
 
 .. code-block:: shell
 
-   (env) $ ./manage.py router --stop
+   (env) $ SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid run/router.pid
    (env) $ pkill celery
    (env) $ git pull
 
@@ -169,6 +169,6 @@ Finally, restart services:
 
 .. code-block:: shell
 
-   (env) $ ./manage.py router --start
+   (env) $ SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
    (env) $ DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -B -E -D -l info --logfile logs/celery.log --pidfile run/tasks.pid
    (env) $ touch inboxen/wsgi.py
