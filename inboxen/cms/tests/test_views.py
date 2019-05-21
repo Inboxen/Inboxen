@@ -17,12 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.urls import reverse
 from django.http import Http404
+from django.urls import reverse
 
 from inboxen.cms import models, views
+from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories
-from inboxen.test import InboxenTestCase, MockRequest, grant_sudo, grant_otp
 
 
 class PageTestCase(InboxenTestCase):

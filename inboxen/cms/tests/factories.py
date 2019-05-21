@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import factory
 from django.contrib.contenttypes.models import ContentType
+import factory
 
 from inboxen.cms import models
 

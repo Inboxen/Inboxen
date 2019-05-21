@@ -19,9 +19,9 @@
 
 from django.core.checks import Error
 
+from inboxen.checks import DOMAIN_ERROR_MSG, domains_available_check
 from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
-from inboxen.checks import domains_available_check, DOMAIN_ERROR_MSG
 
 
 class DomainCheckTestCase(InboxenTestCase):

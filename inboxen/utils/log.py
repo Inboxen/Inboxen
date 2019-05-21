@@ -20,7 +20,6 @@
 import inspect
 import logging
 
-
 IS_SALMON = inspect.stack()[-1][1].endswith("salmon")
 
 

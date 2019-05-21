@@ -22,8 +22,8 @@ from unittest import mock
 from django.urls import reverse
 
 from inboxen.account import decorators
-from inboxen.tests import factories
 from inboxen.test import InboxenTestCase, MockRequest
+from inboxen.tests import factories
 
 
 class AnonRequiredTestCase(InboxenTestCase):

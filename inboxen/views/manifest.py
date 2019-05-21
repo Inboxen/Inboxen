@@ -16,9 +16,9 @@
 ##
 
 from django.conf import settings
-from django.urls import reverse
 from django.http import JsonResponse
 from django.templatetags.static import static
+from django.urls import reverse
 from django.views.decorators.http import require_GET
 
 

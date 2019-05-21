@@ -19,9 +19,9 @@
 
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.urls import reverse, reverse_lazy
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse, reverse_lazy
 from django.utils.feedgenerator import Atom1Feed
 from django.utils.translation import ugettext as _
 from django.views import generic

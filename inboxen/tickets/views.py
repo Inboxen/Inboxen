@@ -17,13 +17,12 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.urls import reverse
+from braces.views import LoginRequiredMixin
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.views import generic
-
-from braces.views import LoginRequiredMixin
 
 from inboxen.cms.decorators import is_secure_admin
 from inboxen.cms.utils import app_reverse

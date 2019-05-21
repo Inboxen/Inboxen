@@ -17,9 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.db import models
-
 from annoying import fields as annoying_fields
+from django.db import models
 
 
 class DeferAutoOneToOneField(annoying_fields.AutoOneToOneField):

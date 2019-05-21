@@ -21,11 +21,10 @@ import os
 import stat
 
 from django.conf import settings
-from django.core.checks import register, Tags, Error
 from django.core import exceptions
+from django.core.checks import Error, Tags, register
 
 from inboxen.models import Domain
-
 
 PERMISSION_ERROR_MSG = "Other users could be able to interact with your settings file.\
  Please check file permissions on {}".format(settings.CONFIG_PATH)

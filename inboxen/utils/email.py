@@ -21,20 +21,20 @@ models.py) for emails
 
 It's in "utils" because "domain.py" would get confusing :P """
 
-import re
 import logging
+import re
 
 from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.utils import html as html_utils, safestring
+from django.utils import html as html_utils
+from django.utils import safestring
 from django.utils.translation import ugettext as _
-
-from lxml import etree, html as lxml_html
+from lxml import etree
+from lxml import html as lxml_html
 from lxml.html.clean import Cleaner
 from premailer.premailer import Premailer
 
 from inboxen.redirect import proxy_url
-
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 

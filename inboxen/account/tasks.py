@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import logging
 from datetime import datetime
+import logging
 
 from celery import chord
 from django.contrib.auth import get_user_model

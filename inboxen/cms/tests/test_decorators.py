@@ -25,8 +25,8 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 
 from inboxen.cms.decorators import is_secure_admin
+from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests.factories import UserFactory
-from inboxen.test import MockRequest, InboxenTestCase
 
 
 @is_secure_admin

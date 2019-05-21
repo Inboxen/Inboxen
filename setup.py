@@ -17,10 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 import versioneer
-
 
 setup(
     name="inboxen",

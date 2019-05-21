@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from inboxen.test import InboxenTestCase
 from inboxen.search.models import SearchTestModel
+from inboxen.test import InboxenTestCase
 
 
 class SearchModelTestCase(InboxenTestCase):

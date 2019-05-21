@@ -26,9 +26,8 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from inboxen import models
+from inboxen.test import InboxenTestCase, override_settings
 from inboxen.tests import factories
-from inboxen.test import override_settings, InboxenTestCase
-
 
 User = get_user_model()
 

@@ -22,7 +22,6 @@ from django.core.exceptions import ValidationError
 from inboxen.account import fields, validators
 from inboxen.test import InboxenTestCase
 
-
 BAD_PASSWORD = "aaaaaaaaaaaaa"
 GOOD_PASSWORD = "abcdefgh!!!!!"  # for smaller values of "good"
 

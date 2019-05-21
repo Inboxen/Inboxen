@@ -22,9 +22,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.translation import ugettext as _
-
 from ratelimitbackend.exceptions import RateLimitException
-
 
 SESSION_HALF_COOKIE_AGE = settings.SESSION_COOKIE_AGE / 2
 

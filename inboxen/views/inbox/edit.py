@@ -17,15 +17,13 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.urls import reverse, resolve, Resolver404, reverse_lazy
-from django.http import Http404
-from django.views import generic
-
 from braces.views import LoginRequiredMixin
+from django.http import Http404
+from django.urls import Resolver404, resolve, reverse, reverse_lazy
+from django.views import generic
 
 from inboxen import forms
 from inboxen.models import Inbox
-
 
 __all__ = ["InboxEditView", "FormInboxEditView", "InboxDisownView"]
 

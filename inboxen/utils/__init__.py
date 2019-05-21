@@ -17,9 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+import logging
 import os
 import re
-import logging
 
 from django.conf import settings
 from django.template import loader
@@ -27,7 +27,6 @@ from django_assets import env as assets_env
 from webassets.script import GenericArgparseImplementation
 
 from inboxen.context_processors import reduced_settings_context
-
 
 # use the following to get a pipe separated list of inboxes that should be reserved
 # cat /etc/aliases | egrep "^[^#]" | awk '{gsub (":", ""); print $1}' | sort | tr "\n" "|" | sed 's/|$/\n/'

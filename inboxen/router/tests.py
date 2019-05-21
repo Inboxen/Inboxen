@@ -26,12 +26,11 @@ from salmon.mail import MailRequest
 from salmon.routing import Router
 from salmon.server import SMTPError
 
-from inboxen.test import override_settings, InboxenTestCase
 from inboxen import models
-from inboxen.tests import factories
 from inboxen.router.app.helpers import make_email
-from inboxen.router.app.server import process_message, forward_to_admins
-
+from inboxen.router.app.server import forward_to_admins, process_message
+from inboxen.test import InboxenTestCase, override_settings
+from inboxen.tests import factories
 
 TEST_MSG = """From: Test <test@localhost>
 To: no-reply@example.com

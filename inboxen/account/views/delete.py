@@ -17,10 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.views import generic
-from django.urls import reverse_lazy
-
 from braces.views import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.views import generic
 from elevate.mixins import ElevateMixin
 
 from inboxen.account import forms

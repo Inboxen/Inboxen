@@ -20,9 +20,9 @@
 
 from django.urls.exceptions import NoReverseMatch
 
-from inboxen.cms.utils import app_reverse, get_root_page, breadcrumb_iterator
-from inboxen.cms.models import HelpBasePage, AppPage
+from inboxen.cms.models import AppPage, HelpBasePage
 from inboxen.cms.tests.factories import HelpBasePageFactory
+from inboxen.cms.utils import app_reverse, breadcrumb_iterator, get_root_page
 from inboxen.test import InboxenTestCase
 
 

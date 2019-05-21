@@ -25,10 +25,10 @@ from unittest import mock
 import ipaddress
 import sys
 
+from django import urls
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
-from django import urls
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
@@ -38,9 +38,9 @@ from django.test.client import RequestFactory
 from inboxen.management.commands import feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
 from inboxen.models import Domain
-from inboxen.test import MockRequest, override_settings, InboxenTestCase, SecureClient
+from inboxen.test import InboxenTestCase, MockRequest, SecureClient, override_settings
 from inboxen.tests import factories
-from inboxen.utils import is_reserved, ip, ratelimit
+from inboxen.utils import ip, is_reserved, ratelimit
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 

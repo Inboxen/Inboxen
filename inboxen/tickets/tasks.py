@@ -24,7 +24,6 @@ from django.core.mail import mail_admins
 
 from inboxen.celery import app
 
-
 log = logging.getLogger(__name__)
 
 

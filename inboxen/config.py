@@ -21,7 +21,6 @@ import os
 import warnings
 
 from django.core import exceptions
-
 import configobj
 import validate
 

@@ -17,12 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from braces.views import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
-
-from braces.views import LoginRequiredMixin
 from watson import search
 
 from inboxen import models

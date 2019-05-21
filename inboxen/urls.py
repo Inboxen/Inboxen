@@ -22,7 +22,6 @@ from django.conf.urls.static import static
 
 from inboxen import views
 
-
 urls.handler400 = views.error.bad_request
 urls.handler403 = views.error.permission_denied
 urls.handler404 = views.error.not_found

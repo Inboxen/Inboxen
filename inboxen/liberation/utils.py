@@ -26,7 +26,6 @@ import uu
 
 from inboxen.models import HEADER_PARAMS
 
-
 INBOXEN_ENCODING_ERROR_HEADER_NAME = "Inboxen-Liberation-Error"
 
 

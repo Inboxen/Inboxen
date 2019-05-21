@@ -22,7 +22,7 @@ from unittest import mock
 from django.contrib.contenttypes.models import ContentType
 from django.forms import ValidationError
 
-from inboxen.cms import models, forms
+from inboxen.cms import forms, models
 from inboxen.test import InboxenTestCase
 
 

@@ -17,10 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django import template
+from django import template, urls
 from django.utils.translation import ugettext as _
-from django import urls
-
 
 register = template.Library()
 

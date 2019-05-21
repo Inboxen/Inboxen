@@ -23,7 +23,6 @@ from django.utils.translation import ugettext_lazy
 from inboxen.cms.utils import app_reverse
 from inboxen.utils.flags import create_render_bool_template_tag
 
-
 register = template.Library()
 
 

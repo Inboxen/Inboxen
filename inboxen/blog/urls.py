@@ -21,7 +21,6 @@ from django.conf import urls
 
 from inboxen.blog import views
 
-
 urlpatterns = [
     urls.url(r'^post/(?P<slug>[-\w]+)/$', views.BlogDetailView.as_view(), name='blog-post'),
     urls.url(r'^feed/atom/$', views.AtomFeed(), name='blog-feed-atom'),

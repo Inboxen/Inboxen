@@ -20,7 +20,6 @@
 from django.urls import reverse
 from django.utils.http import urlquote
 
-
 ALLOW_URL_SCHEMES = [
     'http',
     'https',

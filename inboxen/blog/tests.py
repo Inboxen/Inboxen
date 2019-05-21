@@ -19,16 +19,14 @@
 
 from django import urls
 from django.http import Http404
-
 import factory
 import factory.fuzzy
 
-from inboxen.blog import models, forms, views
+from inboxen.blog import forms, models, views
 from inboxen.blog.templatetags import blog_admin_tags
 from inboxen.cms.decorators import is_secure_admin
-from inboxen.tests import factories
 from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
-
+from inboxen.tests import factories
 
 BODY = """
 Hey there!
