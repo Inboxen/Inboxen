@@ -42,7 +42,18 @@ class DeleteTestCase(InboxenTestCase):
         self.assertEqual(models.Inbox.objects.filter(user__isnull=False).count(), 0)
 
     def test_disown_inbox(self):
-        inbox = factories.InboxFactory(user=self.user)
+        defaults = {field: models.Inbox._meta.get_field(field).get_default() for field in tasks.INBOX_RESET_FIELDS}
+
+        inbox = factories.InboxFactory(user=self.user, description="hello", disabled=True,
+                                       exclude_from_unified=True, new=True, pinned=True)
+        inbox.update_search()
+        inbox.save()
+
+        # make sure the values we're interested in are actually set to a non-default value
+        for field_name in tasks.INBOX_RESET_FIELDS:
+            with self.subTest(field_name=field_name):
+                self.assertNotEqual(getattr(inbox, field_name), defaults[field_name])
+
         result = tasks.disown_inbox(inbox.id)
         self.assertTrue(result)
 
@@ -51,6 +62,10 @@ class DeleteTestCase(InboxenTestCase):
         self.assertNotEqual(new_inbox.description, inbox.description)
         self.assertTrue(new_inbox.deleted)
         self.assertEqual(new_inbox.user, None)
+
+        for field_name in tasks.INBOX_RESET_FIELDS:
+            with self.subTest(field_name=field_name):
+                self.assertEqual(getattr(new_inbox, field_name), defaults[field_name])
 
         result = tasks.disown_inbox(inbox.id + 12)
         self.assertFalse(result)
