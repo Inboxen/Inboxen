@@ -31,6 +31,16 @@ from inboxen.tasks import batch_delete_items
 
 log = logging.getLogger(__name__)
 
+INBOX_RESET_FIELDS = [
+    "description",
+    "disabled",
+    "exclude_from_unified",
+    "new",
+    "pinned",
+    "search_tsv",
+    "user",
+]
+
 
 @app.task(rate_limit="10/m", default_retry_delay=5 * 60)  # 5 minutes
 @transaction.atomic()
@@ -43,12 +53,14 @@ def disown_inbox(inbox_id):
     # delete emails in another task(s)
     batch_delete_items.delay("email", kwargs={'inbox__id': inbox.pk})
 
-    # remove identifying data from inbox
+    # remove data from inbox
+    for field_name in INBOX_RESET_FIELDS:
+        field = Inbox._meta.get_field(field_name)
+        setattr(inbox, field_name, field.get_default())
+
     inbox.deleted = True
-    inbox.description = ""
-    inbox.user = None
     inbox.created = datetime.utcfromtimestamp(0).replace(tzinfo=utc)
-    inbox.search_tsv = None
+
     inbox.save()
 
     return True
