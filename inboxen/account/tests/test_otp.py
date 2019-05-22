@@ -33,10 +33,11 @@ class OtpTestCase(InboxenTestCase):
 
     def test_sudo_required(self):
         test_urls = [
-            urls.reverse("user-twofactor-setup"),
             urls.reverse("user-twofactor-backup"),
+            urls.reverse("user-twofactor-backup-download"),
             urls.reverse("user-twofactor-disable"),
             urls.reverse("user-twofactor-qrcode"),
+            urls.reverse("user-twofactor-setup"),
         ]
 
         grant_otp(self.client, self.user)
@@ -61,6 +62,7 @@ class OtpTestCase(InboxenTestCase):
     def test_otp_required(self):
         test_urls = [
             urls.reverse("user-twofactor-backup"),
+            urls.reverse("user-twofactor-backup-download"),
             urls.reverse("user-twofactor-disable"),
         ]
 
@@ -101,3 +103,32 @@ class SetupTestCase(InboxenTestCase):
         response = self.client.post(urls.reverse("user-twofactor-setup"), bad_data)
         # Bad request, but no exception generated
         self.assertEqual(response.status_code, 400)
+
+
+class BackupDownloadTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+        grant_sudo(self.client)
+        grant_otp(self.client, self.user)
+
+    def test_get(self):
+        static_device = self.user.staticdevice_set.create(name="backup")
+        static_device.token_set.create(token="123")
+        static_device.token_set.create(token="456")
+
+        response = self.client.get(urls.reverse("user-twofactor-backup-download"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain")
+        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"inboxen-backup-tokens.txt\"")
+        self.assertEqual(response.content, b"123\n456\n\n")
+
+    def test_404(self):
+        response = self.client.get(urls.reverse("user-twofactor-backup-download"))
+
+        self.assertEqual(response.status_code, 404)

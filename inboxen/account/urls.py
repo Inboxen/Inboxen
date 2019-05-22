@@ -32,6 +32,7 @@ urlpatterns = [
     urls.url(r'^security/sudo/$', elevate.views.elevate, {'form_class': PlaceHolderSudoForm}, name='user-sudo'),
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
+    urls.url(r'^security/backup/download/$', otp.backup_download_view, name='user-twofactor-backup-download'),
     urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
     urls.url(r'^security/qrcode/$', otp.qrcode_view, name='user-twofactor-qrcode'),
     urls.url(r'^security/$', otp.twofactor_view, name='user-security'),

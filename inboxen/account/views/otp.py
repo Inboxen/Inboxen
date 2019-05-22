@@ -20,7 +20,10 @@
 from django import forms
 from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation, ValidationError
+from django.http import Http404
+from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
+from django.views.decorators.cache import never_cache
 from django_otp.decorators import otp_required
 from elevate.decorators import elevate_required
 from two_factor import forms as two_forms
@@ -79,6 +82,22 @@ class TwoFactorSetupView(core.SetupView):
             return super(TwoFactorSetupView, self).post(*args, **kwargs)
         except ValidationError:
             raise SuspiciousOperation("ManagementForm data is missing or has been tampered.")
+
+
+@never_cache
+@otp_required
+@elevate_required
+def backup_download_view(request):
+    static_device = request.user.staticdevice_set.get_or_create(name='backup')[0]
+    if static_device.token_set.count() == 0:
+        raise Http404
+
+    response = TemplateResponse(request, "account/twofactor-backup-download.txt",
+                                context={"tokens": static_device.token_set.all()},
+                                content_type="text/plain")
+    response["Content-Disposition"] = "attachment; filename=\"inboxen-backup-tokens.txt\""
+
+    return response
 
 
 backup_view = elevate_required(core.BackupTokensView.as_view(template_name="account/twofactor-backup.html",
