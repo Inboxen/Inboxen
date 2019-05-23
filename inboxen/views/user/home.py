@@ -18,7 +18,7 @@
 ##
 
 
-from braces.views import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.views import generic
 from watson import search

@@ -17,11 +17,11 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from braces.views import LoginRequiredMixin
 from celery import exceptions
 from celery.result import AsyncResult
 from django import http
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.db.models import Case, When

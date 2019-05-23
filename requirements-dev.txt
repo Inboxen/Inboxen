@@ -28,7 +28,6 @@ django-annoying==0.10.4
 django-assets==0.12
 django-async-messages==0.3.1
 django-bootstrap-form==3.4
-django-braces==1.13.0
 django-csp==3.5
 django-cursor-pagination==0.1.4
 django-debug-toolbar==1.11

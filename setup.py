@@ -41,7 +41,6 @@ setup(
         "django-assets",
         "django-async-messages",
         "django-bootstrap-form",
-        "django-braces",
         "django-csp>3.0",
         "django-cursor-pagination",
         "django-extensions",
