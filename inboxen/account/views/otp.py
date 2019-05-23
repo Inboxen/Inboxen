@@ -19,7 +19,6 @@
 
 from django import forms
 from django.contrib import messages
-from django.core.exceptions import SuspiciousOperation, ValidationError
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
@@ -47,12 +46,6 @@ class LoginView(core.LoginView):
         else:
             return super(LoginView, self).get_form_kwargs(step)
 
-    def post(self, *args, **kwargs):
-        try:
-            return super(LoginView, self).post(*args, **kwargs)
-        except ValidationError:
-            raise SuspiciousOperation("ManagementForm data is missing or has been tampered.")
-
 
 class TwoFactorSetupView(core.SetupView):
     template_name = "account/twofactor-setup.html"
@@ -76,12 +69,6 @@ class TwoFactorSetupView(core.SetupView):
             context["secret"] = self.request.session[self.session_key_name]
 
         return context
-
-    def post(self, *args, **kwargs):
-        try:
-            return super(TwoFactorSetupView, self).post(*args, **kwargs)
-        except ValidationError:
-            raise SuspiciousOperation("ManagementForm data is missing or has been tampered.")
 
 
 @never_cache
