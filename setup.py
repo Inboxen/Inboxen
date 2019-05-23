@@ -53,7 +53,6 @@ setup(
         # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
         "faker==0.8.5",
         "factory-boy",
-        "ipaddress",
         "jsmin",
         "lxml",
         # make sure django-phonenumbers uses the smaller package

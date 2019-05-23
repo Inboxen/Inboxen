@@ -47,7 +47,6 @@ faker==0.8.5              # via factory-boy
 filelock==3.0.12          # via tox
 glob2==0.6                # via jasmine-core
 idna==2.8                 # via requests
-ipaddress==1.0.22
 ipython-genutils==0.2.0   # via traitlets
 ipython==7.5.0
 isort==4.3.20
