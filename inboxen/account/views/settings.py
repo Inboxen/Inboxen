@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from braces.views import LoginRequiredMixin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
 from elevate.mixins import ElevateMixin

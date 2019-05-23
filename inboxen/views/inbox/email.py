@@ -19,7 +19,7 @@
 
 import logging
 
-from braces.views import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from django.views import generic

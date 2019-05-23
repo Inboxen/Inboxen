@@ -39,13 +39,10 @@ setup(
         "configobj",
         "django-annoying",
         "django-assets",
-        "django-async-messages",
         "django-bootstrap-form",
-        "django-braces",
         "django-csp>3.0",
         "django-cursor-pagination",
         "django-extensions",
-        "django-formtools",
         "django-mptt",
         "django-otp",
         "django-ratelimit-backend",
@@ -56,7 +53,6 @@ setup(
         # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
         "faker==0.8.5",
         "factory-boy",
-        "ipaddress",
         "jsmin",
         "lxml",
         # make sure django-phonenumbers uses the smaller package

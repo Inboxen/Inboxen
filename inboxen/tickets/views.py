@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from braces.views import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Max
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
