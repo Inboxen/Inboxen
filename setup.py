@@ -44,7 +44,6 @@ setup(
         "django-csp>3.0",
         "django-cursor-pagination",
         "django-extensions",
-        "django-formtools",
         "django-mptt",
         "django-otp",
         "django-ratelimit-backend",
