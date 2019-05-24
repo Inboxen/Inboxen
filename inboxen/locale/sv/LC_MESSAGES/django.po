@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-10 17:43+0000\n"
+"POT-Creation-Date: 2019-05-24 20:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,124 +18,124 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: inboxen/forms/inbox.py:60
+#: inboxen/forms/inbox.py:59
 msgid "Slow down! You're creating inboxes too quickly."
 msgstr ""
 
-#: inboxen/forms/inbox.py:70
+#: inboxen/forms/inbox.py:71
 #, python-brace-format
 msgid "{0}@{1} has been created."
 msgstr ""
 
-#: inboxen/forms/inbox.py:76
+#: inboxen/forms/inbox.py:77
 msgid "Empty Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:77
+#: inboxen/forms/inbox.py:78
 msgid "Delete all emails in this Inbox. Cannot be undone."
 msgstr ""
 
-#: inboxen/forms/inbox.py:92
+#: inboxen/forms/inbox.py:93
 msgid "Inbox cannot be disabled and pinned at the same time"
 msgstr ""
 
-#: inboxen/forms/inbox.py:102
+#: inboxen/forms/inbox.py:103
 #, python-brace-format
 msgid "All emails in {0}@{1} are being deleted."
 msgstr ""
 
-#: inboxen/forms/inbox.py:113
+#: inboxen/forms/inbox.py:116
 msgid "Yes, I'm sure!"
 msgstr ""
 
-#: inboxen/forms/inbox.py:114
+#: inboxen/forms/inbox.py:117
 msgid ""
 "Delete this Inbox. No one will be able to use it again and there is no undo "
 "button!"
 msgstr ""
 
-#: inboxen/forms/inbox.py:127
+#: inboxen/forms/inbox.py:130
 #, python-brace-format
 msgid "{0}@{1} has been deleted."
 msgstr ""
 
-#: inboxen/managers.py:67
+#: inboxen/managers.py:68
 msgid "You need to provide a Domain object for an Inbox"
 msgstr ""
 
-#: inboxen/middleware.py:35
+#: inboxen/middleware.py:34
 msgid "Too many login attempts, further login attempts will be ignored."
 msgstr ""
 
-#: inboxen/models.py:47
+#: inboxen/models.py:50
 msgid "Always ask to display images"
 msgstr ""
 
-#: inboxen/models.py:48
+#: inboxen/models.py:51
 msgid "Always display images"
 msgstr ""
 
-#: inboxen/models.py:49
+#: inboxen/models.py:52
 msgid "Never display images"
 msgstr ""
 
-#: inboxen/models.py:56
+#: inboxen/models.py:59
 msgid "Reject new emails"
 msgstr ""
 
-#: inboxen/models.py:57
+#: inboxen/models.py:60
 msgid "Delete old emails"
 msgstr ""
 
-#: inboxen/models.py:62
+#: inboxen/models.py:66
 msgid "Prefer a particular domain when adding a new Inbox"
 msgstr ""
 
-#: inboxen/models.py:63
+#: inboxen/models.py:67
 msgid "Prefer HTML emails"
 msgstr ""
 
-#: inboxen/models.py:67
+#: inboxen/models.py:71
 msgid "Auto-delete emails"
 msgstr ""
 
-#: inboxen/models.py:68
+#: inboxen/models.py:72
 #, python-format
 msgid ""
 "Delete emails after %(days)s days. Emails that have been marked as important "
 "will not be deleted."
 msgstr ""
 
-#: inboxen/models.py:73
+#: inboxen/models.py:77
 msgid "Display options for HTML emails"
 msgstr ""
 
-#: inboxen/models.py:74
+#: inboxen/models.py:78
 msgid ""
 "Warning: Images in HTML emails can be used to track if you read an email!"
 msgstr ""
 
-#: inboxen/models.py:79
+#: inboxen/models.py:83
 msgid "What happens once your email quota is reached?"
 msgstr ""
 
-#: inboxen/models.py:170
+#: inboxen/models.py:174
 msgid "Exclude from Unified Inbox"
 msgstr ""
 
-#: inboxen/models.py:171
+#: inboxen/models.py:175
 msgid "Disable Inbox"
 msgstr ""
 
-#: inboxen/models.py:172
+#: inboxen/models.py:176
 msgid "This Inbox will no longer receive emails."
 msgstr ""
 
-#: inboxen/models.py:173
+#: inboxen/models.py:177
 msgid "Pin Inbox to top"
 msgstr ""
 
-#: inboxen/settings.py:232
+#: inboxen/settings.py:233
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
@@ -181,7 +181,7 @@ msgid "Owner"
 msgstr ""
 
 #: inboxen/templates/inboxen/admin/domain_index.html:20
-#: inboxen/templatetags/inboxen_admin_tags.py:33
+#: inboxen/templatetags/inboxen_admin_tags.py:31
 msgid "Enabled"
 msgstr ""
 
@@ -318,7 +318,7 @@ msgid ""
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/disown.html:29
-#: inboxen/templates/inboxen/inbox/email.html:32
+#: inboxen/templates/inboxen/inbox/email.html:33
 #: inboxen/templates/inboxen/inbox/inbox.html:24
 msgid "Delete"
 msgstr ""
@@ -350,40 +350,44 @@ msgstr ""
 msgid "Click here to view images"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:38
+#: inboxen/templates/inboxen/inbox/email.html:39
 msgid "Unmark as important"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:40
+#: inboxen/templates/inboxen/inbox/email.html:41
 msgid "Mark as important"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:46
+#: inboxen/templates/inboxen/inbox/email.html:47
 msgid "Hide headers"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:49
+#: inboxen/templates/inboxen/inbox/email.html:50
 msgid "Show headers"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:54
+#: inboxen/templates/inboxen/inbox/email.html:56
 msgid "From"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:55
+#: inboxen/templates/inboxen/inbox/email.html:57
 msgid "Received"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:58
+#: inboxen/templates/inboxen/inbox/email.html:60
 msgid "Raw Headers"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:63
+#: inboxen/templates/inboxen/inbox/email.html:65
 msgid "Message"
 msgstr ""
 
-#: inboxen/templates/inboxen/inbox/email.html:68
+#: inboxen/templates/inboxen/inbox/email.html:69
 msgid "Attachments"
+msgstr ""
+
+#: inboxen/templates/inboxen/inbox/email.html:78
+msgid "Download entire email"
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/inbox.html:13
@@ -396,7 +400,7 @@ msgid "Copy inbox address"
 msgstr ""
 
 #: inboxen/templates/inboxen/inbox/inbox.html:22
-#: inboxen/templatetags/inboxen_flags.py:50
+#: inboxen/templatetags/inboxen_flags.py:48
 msgid "Important"
 msgstr ""
 
@@ -431,7 +435,7 @@ msgstr ""
 
 #: inboxen/templates/inboxen/includes/email_line.html:16
 #: inboxen/templates/inboxen/includes/email_line.html:17
-#: inboxen/templates/inboxen/user/home.html:17 inboxen/views/inbox/inbox.py:169
+#: inboxen/templates/inboxen/user/home.html:17 inboxen/views/inbox/inbox.py:168
 msgid "Inbox"
 msgstr ""
 
@@ -696,53 +700,53 @@ msgstr ""
 msgid "If you search for nothing, you won't get anything."
 msgstr ""
 
-#: inboxen/templatetags/inboxen_admin_tags.py:32
+#: inboxen/templatetags/inboxen_admin_tags.py:30
 msgid "Domain enabled"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_admin_tags.py:37
+#: inboxen/templatetags/inboxen_admin_tags.py:35
 msgid "Domain disabled"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_admin_tags.py:38
-#: inboxen/templatetags/inboxen_flags.py:60
+#: inboxen/templatetags/inboxen_admin_tags.py:36
+#: inboxen/templatetags/inboxen_flags.py:58
 msgid "Disabled"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:32
+#: inboxen/templatetags/inboxen_flags.py:30
 msgid "New messages"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:33
-#: inboxen/templatetags/inboxen_flags.py:38
+#: inboxen/templatetags/inboxen_flags.py:31
+#: inboxen/templatetags/inboxen_flags.py:36
 msgid "New"
 msgstr "Ny"
 
-#: inboxen/templatetags/inboxen_flags.py:37
+#: inboxen/templatetags/inboxen_flags.py:35
 msgid "New message"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:43
+#: inboxen/templatetags/inboxen_flags.py:41
 msgid "Unread message"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:44
+#: inboxen/templatetags/inboxen_flags.py:42
 msgid "Unread"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:49
+#: inboxen/templatetags/inboxen_flags.py:47
 msgid "Message has been marked as important"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:54
+#: inboxen/templatetags/inboxen_flags.py:52
 msgid "Inbox has been pinned"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:55
+#: inboxen/templatetags/inboxen_flags.py:53
 msgid "Pinned"
 msgstr ""
 
-#: inboxen/templatetags/inboxen_flags.py:59
+#: inboxen/templatetags/inboxen_flags.py:57
 msgid "Inbox has been disabled"
 msgstr ""
 
@@ -792,16 +796,16 @@ msgstr[1] ""
 msgid "just now"
 msgstr ""
 
-#: inboxen/utils/email.py:101
+#: inboxen/utils/email.py:99
 msgid "Part of this message could not be parsed - it may not display correctly"
 msgstr ""
 
-#: inboxen/utils/email.py:199
+#: inboxen/utils/email.py:197
 msgid ""
 "Some parts of this email contained invalid HTML and could not be displayed"
 msgstr ""
 
-#: inboxen/validators.py:63
+#: inboxen/validators.py:61
 msgid "Null characters are not allowed."
 msgstr ""
 
@@ -809,52 +813,52 @@ msgstr ""
 msgid "Some sort of error or something"
 msgstr ""
 
-#: inboxen/views/error.py:73
+#: inboxen/views/error.py:86
 msgid ""
 "The page you requested does not exist, or it does exist but we don't want to "
 "show it to you."
 msgstr ""
 
-#: inboxen/views/error.py:75
+#: inboxen/views/error.py:88
 msgid "Not Found"
 msgstr ""
 
-#: inboxen/views/error.py:80
+#: inboxen/views/error.py:93
 msgid ""
 "You do not have permission to view this page and you probably know that."
 msgstr ""
 
-#: inboxen/views/error.py:82 inboxen/views/error.py:91
+#: inboxen/views/error.py:95 inboxen/views/error.py:104
 msgid "Permission Denied"
 msgstr ""
 
-#: inboxen/views/error.py:87
+#: inboxen/views/error.py:100
 msgid ""
 "Oh no! Your browser is either not sending us the correct referer header (no, "
 "that's not a spelling mistake) or has removed the hidden token from the form "
 "you just tried to submit."
 msgstr ""
 
-#: inboxen/views/error.py:96
+#: inboxen/views/error.py:109
 msgid ""
 "There has been an error with our software and our administrators have been "
 "notified. Check the Help pages for how to contact the administrators."
 msgstr ""
 
-#: inboxen/views/error.py:99
+#: inboxen/views/error.py:112
 msgid "Error"
 msgstr ""
 
-#: inboxen/views/error.py:104
+#: inboxen/views/error.py:117
 msgid ""
 "I have no idea what you were trying to do, but you probably shouldn't be "
 "doing it!"
 msgstr ""
 
-#: inboxen/views/error.py:106
+#: inboxen/views/error.py:119
 msgid "Bad Request"
 msgstr ""
 
-#: inboxen/views/inbox/inbox.py:193
+#: inboxen/views/inbox/inbox.py:192
 msgid "No Inbox found matching the query."
 msgstr ""

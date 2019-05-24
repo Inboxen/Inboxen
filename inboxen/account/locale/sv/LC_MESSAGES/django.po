@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-10 17:43+0000\n"
+"POT-Creation-Date: 2019-05-24 20:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,56 +18,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: inboxen/account/forms.py:45
+#: inboxen/account/forms.py:44
 msgid "Please type your username to confirm"
 msgstr ""
 
-#: inboxen/account/forms.py:46
+#: inboxen/account/forms.py:45
 msgid "Username"
 msgstr ""
 
-#: inboxen/account/forms.py:58
+#: inboxen/account/forms.py:57
 msgid "The username entered does not match your username"
 msgstr ""
 
-#: inboxen/account/forms.py:65
+#: inboxen/account/forms.py:64
 msgid "Account deleted. Thanks for using our service."
 msgstr ""
 
-#: inboxen/account/forms.py:85
+#: inboxen/account/forms.py:84
 msgid "New password"
 msgstr ""
 
-#: inboxen/account/forms.py:94
+#: inboxen/account/forms.py:93
 msgid "Password"
 msgstr ""
 
-#: inboxen/account/forms.py:98 inboxen/account/forms.py:141
+#: inboxen/account/forms.py:97 inboxen/account/forms.py:140
 msgid "Letters, numbers, and the symbols @/./+/-/_ are allowed."
 msgstr ""
 
-#: inboxen/account/forms.py:107 inboxen/account/forms.py:151
+#: inboxen/account/forms.py:106 inboxen/account/forms.py:150
 msgid "A user with that username already exists."
 msgstr ""
 
-#: inboxen/account/forms.py:120
+#: inboxen/account/forms.py:119
 msgid "(No preference)"
 msgstr ""
 
-#: inboxen/account/forms.py:135
+#: inboxen/account/forms.py:134
 msgid "Repeat new username"
 msgstr ""
 
-#: inboxen/account/forms.py:140
+#: inboxen/account/forms.py:139
 msgid "New username"
 msgstr ""
 
-#: inboxen/account/forms.py:163
+#: inboxen/account/forms.py:162
 msgid "The two username fields don't match."
 msgstr ""
 
 #: inboxen/account/templates/account/delete.html:5
-#: inboxen/account/templatetags/inboxen_account.py:43
+#: inboxen/account/templatetags/inboxen_account.py:40
 msgid "Delete Account"
 msgstr ""
 
@@ -100,7 +100,7 @@ msgid "Delete my account"
 msgstr ""
 
 #: inboxen/account/templates/account/index.html:5
-#: inboxen/account/templatetags/inboxen_account.py:40
+#: inboxen/account/templatetags/inboxen_account.py:37
 msgid "Settings"
 msgstr ""
 
@@ -237,7 +237,7 @@ msgid ""
 msgstr ""
 
 #: inboxen/account/templates/account/security.html:5
-#: inboxen/account/templatetags/inboxen_account.py:41
+#: inboxen/account/templatetags/inboxen_account.py:38
 msgid "Security"
 msgstr ""
 
@@ -427,7 +427,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: inboxen/account/templatetags/inboxen_account.py:42
+#: inboxen/account/templatetags/inboxen_account.py:39
 msgid "Liberate Data"
 msgstr ""
 
@@ -443,7 +443,7 @@ msgid ""
 "spaces, punctuation."
 msgstr ""
 
-#: inboxen/account/views/otp.py:66
+#: inboxen/account/views/otp.py:62
 msgid "Two factor authentication has been enabled on your account."
 msgstr ""
 

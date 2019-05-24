@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-10 17:43+0000\n"
+"POT-Creation-Date: 2019-05-24 20:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,7 +31,7 @@ msgid "New"
 msgstr ""
 
 #: inboxen/tickets/models.py:57
-#: inboxen/tickets/templatetags/tickets_flags.py:41
+#: inboxen/tickets/templatetags/tickets_flags.py:39
 msgid "In progress"
 msgstr ""
 
@@ -168,14 +168,14 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: inboxen/tickets/templatetags/tickets_flags.py:36
+#: inboxen/tickets/templatetags/tickets_flags.py:34
 msgid "New question"
 msgstr ""
 
-#: inboxen/tickets/templatetags/tickets_flags.py:46
+#: inboxen/tickets/templatetags/tickets_flags.py:44
 msgid "Need more info from user"
 msgstr ""
 
-#: inboxen/tickets/templatetags/tickets_flags.py:51
+#: inboxen/tickets/templatetags/tickets_flags.py:49
 msgid "Resolved question"
 msgstr ""

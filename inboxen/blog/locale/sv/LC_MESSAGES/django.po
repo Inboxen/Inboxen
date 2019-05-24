@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-10 17:43+0000\n"
+"POT-Creation-Date: 2019-05-24 20:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,19 +107,19 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: inboxen/blog/templatetags/blog_admin_tags.py:32
+#: inboxen/blog/templatetags/blog_admin_tags.py:30
 msgid "Draft post"
 msgstr ""
 
-#: inboxen/blog/templatetags/blog_admin_tags.py:33
+#: inboxen/blog/templatetags/blog_admin_tags.py:31
 msgid "Draft"
 msgstr ""
 
-#: inboxen/blog/templatetags/blog_admin_tags.py:37
+#: inboxen/blog/templatetags/blog_admin_tags.py:35
 msgid "Live post"
 msgstr ""
 
-#: inboxen/blog/templatetags/blog_admin_tags.py:38
+#: inboxen/blog/templatetags/blog_admin_tags.py:36
 msgid "Live"
 msgstr ""
 
