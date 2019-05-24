@@ -81,13 +81,13 @@ deploy-%:
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
 	git fetch --prune
 	git verify-tag $@
-	$(MAKE) celery-stop salmon-stop
+	-$(MAKE) celery-stop salmon-stop
 	git checkout $@
 	$(MAKE) common-deploy
 
 .PHONY: dev-deploy
 dev-deploy:
 	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
-	$(MAKE) celery-stop salmon-stop
+	-$(MAKE) celery-stop salmon-stop
 	git describe --dirty
 	$(MAKE) common-deploy
