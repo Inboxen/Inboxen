@@ -2,6 +2,16 @@
 
 ## Releases
 
+### Deploy for 2019-05-24
+
+* Update to Django 2.2 (#367)
+* Add feature to download a single email (#176)
+* Reduce pagination size from 100 to 25. This is still more than a screen full. (#423)
+* Make console commands for interacting with Salmon nicer (#216)
+* Set Inbox flags to their default state when disowning (#335)
+* Add feature to download backup tokens (#332)
+* Remove old dependencies required for Python 2.7 and Django 1.11
+
 ### Deploy for 2019-05-01
 
 * Fix liberation bug due to user having a prefered domain (#418)
