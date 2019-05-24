@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file=extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
 #
+-e git+https://github.com/justinmayer/django-elevate.git#egg=django-elevate
 -e git+https://github.com/Bouke/django-two-factor-auth.git@87b644ce5bbd9f65959bd619b1782868f14888d3#egg=django-two-factor-auth
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
@@ -25,7 +26,6 @@ django-assets==0.12
 django-bootstrap-form==3.4
 django-csp==3.5
 django-cursor-pagination==0.1.4
-django-elevate==1.0.0
 django-extensions==2.1.7
 django-formtools==2.1
 django-js-asset==1.2.2    # via django-mptt
