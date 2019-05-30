@@ -295,14 +295,8 @@ class Body(models.Model):
     hashed = models.CharField(max_length=80, unique=True,
                               validators=[validators.ProhibitNullCharactersValidator()])  # <algo>:<hash>
     data = models.BinaryField(default=b"")
-    size = models.PositiveIntegerField(null=True)
 
     objects = BodyQuerySet.as_manager()
-
-    def save(self, *args, **kwargs):
-        if self.size is None:
-            self.size = len(self.data)
-        return super(Body, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.hashed

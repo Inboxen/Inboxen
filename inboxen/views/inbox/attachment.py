@@ -64,7 +64,7 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
             status=200,
         )
 
-        response["Content-Length"] = self.object.body.size or len(data)
+        response["Content-Length"] = len(data)
         response["Content-Disposition"] = disposition
         response["Content-Type"] = HEADER_CLEAN.sub(" ", content_type)
 
