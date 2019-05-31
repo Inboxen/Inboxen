@@ -234,6 +234,7 @@ LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
 REGISTER_LIMIT_CACHE_PREFIX = "inboxen-register-"
 INBOX_LIMIT_CACHE_PREFIX = "inboxen-inbox-"
+SINGLE_EMAIL_LIMIT_CACHE_PREFIX = "inboxen-single-email-"
 
 X_FRAME_OPTIONS = "DENY"
 SECURE_BROWSER_XSS_FILTER = True
