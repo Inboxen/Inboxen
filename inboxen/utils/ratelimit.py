@@ -56,7 +56,7 @@ class RateLimit(object):
         cache.set(key, cache.get(key, 0) + 1, self.cache_expires)
 
 
-def make_key(request, dt):
+def inbox_make_key(request, dt):
     key = "{}{}-{}".format(
         settings.INBOX_LIMIT_CACHE_PREFIX,
         request.user.id,
@@ -67,13 +67,36 @@ def make_key(request, dt):
     return key
 
 
-def full_callback(request):
+def inbox_full_callback(request):
     logger.warning("Inbox rate-limit reached: USER %s", request.user)
 
 
 inbox_ratelimit = RateLimit(
-    make_key,
-    full_callback,
+    inbox_make_key,
+    inbox_full_callback,
     settings.INBOX_LIMIT_WINDOW,
     settings.INBOX_LIMIT_COUNT,
+)
+
+
+def single_email_make_key(request, dt):
+    key = "{}{}-{}".format(
+        settings.SINGLE_EMAIL_LIMIT_CACHE_PREFIX,
+        request.user.id,
+        dt.strftime("%Y%m%d%H%M"),
+    )
+
+    key = urllib.parse.quote(key.encode("utf-8"))
+    return key
+
+
+def single_email_full_callback(request):
+    logger.warning("Single email rate-limit reached: USER %s", request.user)
+
+
+single_email_ratelimit = RateLimit(
+    single_email_make_key,
+    single_email_full_callback,
+    settings.SINGLE_EMAIL_LIMIT_WINDOW,
+    settings.SINGLE_EMAIL_LIMIT_COUNT,
 )

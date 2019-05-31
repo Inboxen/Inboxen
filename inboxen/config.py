@@ -105,6 +105,12 @@ REGISTER_LIMIT_WINDOW = config["general"]["register_limit_window"]
 # Maximum number of registrations
 REGISTER_LIMIT_COUNT = config["general"]["register_limit_count"]
 
+# Cooloff time, in minutes, for registrations
+SINGLE_EMAIL_LIMIT_WINDOW = config["general"]["single_email_limit_window"]
+
+# Maximum number of registrations
+SINGLE_EMAIL_LIMIT_COUNT = config["general"]["single_email_limit_count"]
+
 # Language code, e.g. en-gb
 LANGUAGE_CODE = config["general"]["language_code"]
 

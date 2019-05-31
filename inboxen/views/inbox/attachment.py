@@ -23,6 +23,7 @@ from django.views import generic
 
 from inboxen import models
 from inboxen.liberation.utils import make_message
+from inboxen.utils.ratelimit import single_email_ratelimit
 
 HEADER_CLEAN = re.compile(r'\s+')
 
@@ -72,6 +73,9 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
 
 
 def download_email(request, inbox=None, domain=None, email=None):
+    if single_email_ratelimit.counter_full(request):
+        raise Http404
+
     try:
         email = models.Email.objects.viewable(request.user).filter(
             inbox__inbox=inbox,
@@ -79,6 +83,8 @@ def download_email(request, inbox=None, domain=None, email=None):
         ).select_related("inbox", "inbox__domain").get(id=int(email, 16))
     except models.Email.DoesNotExist:
         raise Http404
+
+    single_email_ratelimit.counter_increase(request)
 
     msg = make_message(email)
     # set unixfrom to True to turn a single message into a valid mbox

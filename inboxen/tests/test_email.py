@@ -23,7 +23,10 @@ from unittest import mock
 import mailbox
 
 from django import urls
+from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core import cache
+from django.utils import timezone
 from salmon import mail
 
 from inboxen import models
@@ -36,6 +39,7 @@ from inboxen.tests.example_emails import (BAD_HTTP_EQUIV_BODY, BADLY_ENCODED_BOD
                                           EXAMPLE_SIGNED_FORWARDED_DIGEST, LONELY_ANCHOR_TAG, METALESS_BODY,
                                           UNSUPPORTED_CSS_BODY)
 from inboxen.utils import email as email_utils
+from inboxen.utils import ratelimit
 
 
 class EmailViewTestCase(InboxenTestCase):
@@ -584,3 +588,32 @@ class DownloadTestCase(InboxenTestCase):
 
             box = mailbox.mbox(tmp.name)
             self.assertEqual(len(box), 1)
+
+    def test_rate_limit(self):
+        url = urls.reverse("download-email-view", kwargs={"email": self.email.eid,
+                                                          "inbox": self.email.inbox.inbox,
+                                                          "domain": self.email.inbox.domain.domain})
+        request = MockRequest(user=self.user)
+        for i in range(settings.SINGLE_EMAIL_LIMIT_COUNT - 1):
+            ratelimit.single_email_ratelimit.counter_increase(request)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        cache.cache.clear()
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_rate_limit_key(self):
+        now = timezone.now()
+        request = MockRequest(user=self.user)
+
+        key = ratelimit.single_email_make_key(request, now)
+        self.assertEqual(key, "inboxen-single-email-{}-{}".format(
+            self.user.id,
+            now.strftime("%Y%m%d%H%M")),
+        )
