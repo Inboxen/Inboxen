@@ -24,6 +24,7 @@ BODY = u"""<html>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
 p {color: #ffffff;background:transparent url(<a href="http://cdn-images.mailchimp.com/awesomebar-sprite.png">http://cdn-images.mailchimp.com/awesomebar-sprite.png</a>) 0 -200px;}
+body {background-color: red;}
 </style>
 <script><!-- console.log("I'm a bad email") --></script>
 </head>
