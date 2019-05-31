@@ -437,6 +437,12 @@ class AttachmentTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
 
+    def test_body_is_in_response(self):
+        url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, BODY)
+
 
 class UtilityTestCase(InboxenTestCase):
     def test_is_unicode(self):
