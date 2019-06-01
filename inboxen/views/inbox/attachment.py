@@ -59,7 +59,7 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
             content_type = "application/octet-stream"
 
         # make header object
-        data = self.object.body.data or ""
+        data = bytes(self.object.body.data)
         response = HttpResponse(
             content=data,
             status=200,
