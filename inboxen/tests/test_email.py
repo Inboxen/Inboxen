@@ -78,7 +78,7 @@ class EmailViewTestCase(InboxenTestCase):
 
         # check that premailer removes invalid CSS
         self.assertNotIn("awesomebar-sprite.png", response.content.decode("utf-8"))
-        self.assertIn("background-color: red", response.content.decode("utf-8"))
+        self.assertIn("<div style=\"background-color:red\">", response.content.decode("utf-8"))
 
         # check for same-origin
         self.assertIn('<meta name="referrer" content="same-origin">', response.content.decode("utf-8"))

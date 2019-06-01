@@ -44,6 +44,8 @@ HTML_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre",
                    "code", "img", "div", "span", "table", "tr", "th", "td",
                    "thead", "tbody", "tfooter", "br"]
 
+HTML_CONVERT_TO_DIV_TAGS = ["body"]
+
 
 _log = logging.getLogger(__name__)
 
@@ -52,6 +54,19 @@ class InboxenPremailer(Premailer):
     def _load_external(self, url):
         """Don't load external resources"""
         return ""
+
+
+class DivDropHtmlElement(lxml_html.HtmlElement):
+    def drop_tag(self):
+        self.tag = "div"
+
+
+inboxen_parser = lxml_html.HTMLParser()
+
+# Only use our custom element class on tags we wish to preserve
+inboxen_parser.set_element_class_lookup(lxml_html.HtmlElementClassLookup(
+    classes={tag: DivDropHtmlElement for tag in HTML_CONVERT_TO_DIV_TAGS},
+))
 
 
 def unicode_damnit(data, charset="utf-8", errors="replace"):
@@ -74,7 +89,7 @@ def _clean_html_body(request, email, body, charset):
 
     Doesn't catch LXML errors
     """
-    html_tree = lxml_html.fromstring(body)
+    html_tree = lxml_html.fromstring(body, parser=inboxen_parser)
 
     # if the HTML doc says its a different encoding, use that
     for meta_tag in html_tree.xpath("/html/head/meta"):
