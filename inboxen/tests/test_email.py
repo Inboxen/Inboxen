@@ -78,6 +78,7 @@ class EmailViewTestCase(InboxenTestCase):
 
         # check that premailer removes invalid CSS
         self.assertNotIn("awesomebar-sprite.png", response.content.decode("utf-8"))
+        self.assertIn("<div style=\"background-color:red\">", response.content.decode("utf-8"))
 
         # check for same-origin
         self.assertIn('<meta name="referrer" content="same-origin">', response.content.decode("utf-8"))
@@ -481,6 +482,28 @@ class UtilityTestCase(InboxenTestCase):
 
         # empty tags should not have their closing tag removed
         returned_body = email_utils._clean_html_body(None, email, EMPTY_ANCHOR_TAG, "ascii")
+        self.assertEqual(returned_body, expected_html)
+
+    def test_body_tag_get_turned_to_div(self):
+        email = {"display_images": True, "eid": "abc"}
+        expected_html = "".join([
+            """<div><div style="hi"><a href="/click/?url=https%3A//example.com" target="_blank" """,
+            """rel="noreferrer"></a></div></div>""",
+        ])
+
+        text = """<html><body style="hi">{}</body></html>""".format(EMPTY_ANCHOR_TAG)
+        returned_body = email_utils._clean_html_body(None, email, text, "ascii")
+        self.assertEqual(returned_body, expected_html)
+
+    def test_unknown_tag_get_dropped(self):
+        email = {"display_images": True, "eid": "abc"}
+        expected_html = "".join([
+            """<div><div><a href="/click/?url=https%3A//example.com" target="_blank" """,
+            """rel="noreferrer"></a></div></div>""",
+        ])
+
+        text = """<html><body><section style="hi">{}</section></body></html>""".format(EMPTY_ANCHOR_TAG)
+        returned_body = email_utils._clean_html_body(None, email, text, "ascii")
         self.assertEqual(returned_body, expected_html)
 
     def test_render_body_bad_encoding(self):
