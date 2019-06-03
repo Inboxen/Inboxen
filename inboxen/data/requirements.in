@@ -3,4 +3,5 @@
 -e git+https://github.com/Bouke/django-two-factor-auth.git@ea77ea4c1b84c1d92bebd5534fc1dbdaa33d5386#egg=django-two-factor-auth
 -e git+https://github.com/justinmayer/django-elevate.git#egg=django-elevate
 pip-tools
-amqp!=2.4.0
+amqp==2.4.2
+kombu==4.5.0
