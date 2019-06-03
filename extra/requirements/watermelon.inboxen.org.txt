@@ -5,7 +5,7 @@
 #    pip-compile --output-file=extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
 #
 -e git+https://github.com/justinmayer/django-elevate.git#egg=django-elevate
--e git+https://github.com/Bouke/django-two-factor-auth.git@87b644ce5bbd9f65959bd619b1782868f14888d3#egg=django-two-factor-auth
+-e git+https://github.com/Bouke/django-two-factor-auth.git@ea77ea4c1b84c1d92bebd5534fc1dbdaa33d5386#egg=django-two-factor-auth
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
 amqp==2.4.2
@@ -51,7 +51,7 @@ lxml==4.2.6
 markdown==3.1.1
 parso==0.4.0              # via jedi
 pexpect==4.7.0            # via ipython
-phonenumberslite==8.10.12
+phonenumberslite==8.10.13
 pickleshare==0.7.5        # via ipython
 pillow==6.0.0
 pip-tools==3.7.0
