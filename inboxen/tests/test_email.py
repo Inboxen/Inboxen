@@ -78,7 +78,7 @@ class EmailViewTestCase(InboxenTestCase):
 
         # check that premailer removes invalid CSS
         self.assertNotIn("awesomebar-sprite.png", response.content.decode("utf-8"))
-        self.assertIn("<div style=\"background-color:red\">", response.content.decode("utf-8"))
+        self.assertIn("<div style=\"background-color:red\" bgcolor=\"red\">", response.content.decode("utf-8"))
 
         # check for same-origin
         self.assertIn('<meta name="referrer" content="same-origin">', response.content.decode("utf-8"))
@@ -508,9 +508,17 @@ class UtilityTestCase(InboxenTestCase):
             """rel="noreferrer"></a></div></div>""",
         ])
 
-        text = """<html><body><section style="hi">{}</section></body></html>""".format(EMPTY_ANCHOR_TAG)
+        text = """<html><body><details style="hi">{}</section></body></html>""".format(EMPTY_ANCHOR_TAG)
         returned_body = email_utils._clean_html_body(None, email, text, "ascii")
         self.assertEqual(returned_body, expected_html)
+
+    def test_converted_tags_are_not_allowed(self):
+        self.assertTrue(set(email_utils.HTML_ALLOW_TAGS).isdisjoint(email_utils.HTML_CONVERT_TO_DIV_TAGS))
+
+    def test_no_duplicate_tags(self):
+        self.assertEqual(len(set(email_utils.HTML_ALLOW_TAGS)), len(email_utils.HTML_ALLOW_TAGS))
+        self.assertEqual(len(set(email_utils.HTML_CONVERT_TO_DIV_TAGS)),
+                         len(email_utils.HTML_CONVERT_TO_DIV_TAGS))
 
     def test_render_body_bad_encoding(self):
         email = {"display_images": True, "eid": "abc"}
