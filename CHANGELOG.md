@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Deploy for 2019-06-04
+
+* Rate limit single email download (#433)
+* Improve cleaning of HTML parts to improve how they are displayed (#404)
+* Fix attachment download (#437)
+
 ### Deploy for 2019-05-24
 
 * Update to Django 2.2 (#367)
