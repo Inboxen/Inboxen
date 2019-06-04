@@ -38,13 +38,75 @@ from inboxen.redirect import proxy_url
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
 
-HTML_SAFE_ATTRS = ["style", "title", "href", "src", "height", "width"]
+HTML_SAFE_ATTRS = [
+    "align",
+    "alt",
+    "background",
+    "bgcolor",
+    "border",
+    "cite",
+    "color",
+    "colspan",
+    "datetime",
+    "height",
+    "href",
+    "reversed",
+    "rowspan",
+    "src",
+    "start",
+    "style",
+    "title",
+    "valign",
+    "width",
+]
 
-HTML_ALLOW_TAGS = ["p", "a", "i", "b", "em", "strong", "ol", "ul", "li", "pre",
-                   "code", "img", "div", "span", "table", "tr", "th", "td",
-                   "thead", "tbody", "tfooter", "br"]
+HTML_ALLOW_TAGS = [
+    "a",
+    "b",
+    "blockquote",
+    "br",
+    "caption",
+    "code",
+    "col",
+    "colgroup",
+    "div",
+    "em",
+    "hr",
+    "i",
+    "img",
+    "li",
+    "ol",
+    "p",
+    "pre",
+    "q",
+    "s",
+    "span",
+    "strong",
+    "table",
+    "tbody",
+    "td",
+    "tfoot",
+    "th",
+    "thead",
+    "time",
+    "tr",
+    "ul",
+]
 
-HTML_CONVERT_TO_DIV_TAGS = ["body"]
+HTML_CONVERT_TO_DIV_TAGS = [
+    "article",
+    "body",
+    "footer",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "header",
+    "main",
+    "section",
+]
 
 
 _log = logging.getLogger(__name__)
