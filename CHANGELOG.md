@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Deploy for 2019-06-09
+
+* Fix error in the way the password change view redirects (#441)
+
 ### Deploy for 2019-06-04
 
 * Rate limit single email download (#433)
