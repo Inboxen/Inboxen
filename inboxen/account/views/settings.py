@@ -62,8 +62,8 @@ class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
 
 
 class PasswordChangeView(auth_views.PasswordChangeView):  # PasswordChangeView already checks loggedin-ness
-    password_change_form = forms.PlaceHolderPasswordChangeForm
-    post_change_redirect = reverse_lazy('user-security')
+    form_class = forms.PlaceHolderPasswordChangeForm
+    success_url = reverse_lazy('user-security')
     template_name = 'account/password.html'
 
 

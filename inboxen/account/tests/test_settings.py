@@ -24,7 +24,7 @@ from django import urls
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 
-from inboxen.account.forms import DeleteAccountForm, SettingsForm, UsernameChangeForm
+from inboxen.account.forms import DeleteAccountForm, PlaceHolderPasswordChangeForm, SettingsForm, UsernameChangeForm
 from inboxen.test import InboxenTestCase, MockRequest, grant_sudo
 from inboxen.tests import factories
 
@@ -237,3 +237,48 @@ class DeleteTestCase(InboxenTestCase):
         grant_sudo(self.client)
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
+
+
+class PasswordChangeTestCase(InboxenTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        return urls.reverse("user-password")
+
+    def test_get(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(isinstance(response.context["form"], PlaceHolderPasswordChangeForm))
+
+    def test_post(self):
+        old_password_hash = self.user.password
+        params = {
+            "old_password": "123456",
+            "new_password1": "qwerty123456",
+            "new_password2": "qwerty123456",
+        }
+        response = self.client.post(self.get_url(), params)
+        self.user.refresh_from_db()
+
+        self.assertRedirects(response, urls.reverse("user-security"), fetch_redirect_response=False)
+        self.assertNotEqual(self.user.password, old_password_hash)
+
+    def test_post_bad(self):
+        old_password_hash = self.user.password
+        params = {
+            "old_password": "123456",
+            "new_password1": "qwerty",
+            "new_password2": "qwerty123456",
+        }
+        response = self.client.post(self.get_url(), params)
+        self.user.refresh_from_db()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.user.password, old_password_hash)
