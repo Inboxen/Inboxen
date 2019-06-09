@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
--e git+https://github.com/justinmayer/django-elevate.git#egg=django-elevate
 -e git+https://github.com/Bouke/django-two-factor-auth.git@ea77ea4c1b84c1d92bebd5534fc1dbdaa33d5386#egg=django-two-factor-auth
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
@@ -31,6 +30,7 @@ django-bootstrap-form==3.4
 django-csp==3.5
 django-cursor-pagination==0.1.4
 django-debug-toolbar==1.11
+django-elevate==1.0.1
 django-extensions==2.1.7
 django-formtools==2.1
 django-js-asset==1.2.2    # via django-mptt
@@ -67,10 +67,10 @@ more-itertools==7.0.0     # via cheroot, cherrypy, jaraco.functools
 ordereddict==1.1          # via jasmine-core
 parso==0.4.0              # via jedi
 pexpect==4.7.0            # via ipython
-phonenumberslite==8.10.13
+phonenumberslite==8.10.13  # via django-phonenumber-field
 pickleshare==0.7.5        # via ipython
 pillow==6.0.0
-pip-tools==3.7.0
+pip-tools==3.8.0
 pluggy==0.12.0            # via tox
 portend==2.4              # via cherrypy
 premailer==3.4.1

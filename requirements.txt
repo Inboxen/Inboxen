@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements.txt inboxen/data/requirements.in
 #
--e git+https://github.com/justinmayer/django-elevate.git#egg=django-elevate
 -e git+https://github.com/Bouke/django-two-factor-auth.git@ea77ea4c1b84c1d92bebd5534fc1dbdaa33d5386#egg=django-two-factor-auth
 -e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
@@ -24,6 +23,7 @@ django-assets==0.12
 django-bootstrap-form==3.4
 django-csp==3.5
 django-cursor-pagination==0.1.4
+django-elevate==1.0.1
 django-extensions==2.1.7
 django-formtools==2.1
 django-js-asset==1.2.2    # via django-mptt
@@ -44,9 +44,9 @@ lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.3.3               # via premailer
 markdown==3.1.1
-phonenumberslite==8.10.13
+phonenumberslite==8.10.13  # via django-phonenumber-field
 pillow==6.0.0
-pip-tools==3.7.0
+pip-tools==3.8.0
 premailer==3.4.1
 progress==1.5
 psycopg2==2.8.2
