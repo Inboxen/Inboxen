@@ -27,7 +27,6 @@ You'll need the following tools:
 * Python (we strongly recommend you use virtualenv too)
 * PostgreSQL
 * NodeJS
-* Sass
 * jshint
 * [EditorConfig](http://editorconfig.org/) *(optional)*
 
@@ -150,7 +149,6 @@ You'll need the following tools:
 * Python (we strongly recommend you use virtualenv too)
 * PostgreSQL
 * NodeJS
-* Sass
 
 Set yourself up with a virtual environment and run the following:
 
