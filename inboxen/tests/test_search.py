@@ -24,9 +24,10 @@ import urllib
 from celery import exceptions
 from django import urls
 from django.core import cache
+from django.test import override_settings
 from watson.models import SearchEntry
 
-from inboxen.test import InboxenTestCase, MockRequest, override_settings
+from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 
 

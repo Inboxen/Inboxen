@@ -33,12 +33,13 @@ from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.test import override_settings
 from django.test.client import RequestFactory
 
 from inboxen.management.commands import feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
 from inboxen.models import Domain
-from inboxen.test import InboxenTestCase, MockRequest, SecureClient, override_settings
+from inboxen.test import InboxenTestCase, MockRequest, SecureClient
 from inboxen.tests import factories
 from inboxen.utils import ip, is_reserved, ratelimit
 from inboxen.validators import ProhibitNullCharactersValidator

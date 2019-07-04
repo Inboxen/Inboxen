@@ -38,7 +38,6 @@ setup(
         "celery>=4.1,<4.2",
         "configobj",
         "django-annoying",
-        "django-assets",
         "django-bootstrap-form",
         "django-csp>3.0",
         "django-cursor-pagination",

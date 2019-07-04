@@ -1,67 +1,63 @@
-language: python
-python:
-    - "3.6"
-addons:
-    postgresql: "9.6"
-
-before_script:
-    - psql -c 'create database inboxenTest;' -U postgres
-    - psql -c 'SELECT version();' -U postgres
-
-before_install:
-    - mkdir node_modules
-    - travis_retry npm install
-
-install:
-    - travis_retry pip install -q -U setuptools
-    - travis_retry pip install -q -r requirements.txt
-    - travis_retry pip install -q codecov
-    - travis_retry gem install sass -v '< 3.5.0'
-    - python manage.py compilemessages --settings=inboxen.tests.settings
-    - python manage.py collectstatic --noinput --settings=inboxen.tests.settings
-
 matrix:
     include:
-      - python: "3.6"
-        env: TOX_ENV=docs
-        install: pip install tox
-        script: tox -e $TOX_ENV
-      - python: "3.6"
-        env: TOX_ENV=js-lint,py-lint,isort
-        install:
-            - pip install tox
-            - npm install -g jshint
-        script: tox -e $TOX_ENV
-      - python: "3.6"
+      - language: python
+        python: "3.6"
+        script: make tests-py-coverage
+        addons:
+            postgresql: "9.6"
+        before_script:
+            - psql -c 'create database inboxenTest;' -U postgres
+            - psql -c 'SELECT version();' -U postgres
+        after_script:
+          - pip install codecov
+          - codecov
+
+      - language: python
+        python: "3.6"
+        env: TOX_ENV=lint,isort
+
+      - language: node_js
+        node_js: "8"
         env:
-            - TOX_ENV=js-firefox
+          - GRUNT_TASK=karma:firefox
+          - MOZ_HEADLESS=1
+          - FIREFOX=esr
+        after_script:
+          - npm install codecov
+          - npx codecov
+        addons:
+            firefox: latest-esr
+
+      - language: node_js
+        node_js: "8"
+        env:
+          - GRUNT_TASK=karma:firefox
+          - MOZ_HEADLESS=1
+          - FIREFOX=latest
+        after_script:
+          - npm install codecov
+          - npx codecov
         addons:
             firefox: latest
-        install:
-            - wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
-            - mkdir geckodriver
-            - tar -xzf geckodriver-v0.23.0-linux64.tar.gz -C geckodriver
-            - export PATH=$PATH:$PWD/geckodriver
-            - pip install tox
-        script: tox -e $TOX_ENV
-      - python: "3.6"
 
-script:
-    - coverage run --branch  manage.py test --settings=inboxen.tests.settings
+      - language: node_js
+        node_js: "8"
+        env: GRUNT_TASK=karma:chrome
+        after_script:
+          - npm install codecov
+          - npx codecov
+        addons:
+            chrome: stable
+      - language: node_js
+        node_js: "8"
+        env: GRUNT_TASK=jshint
 
-after_success: codecov
+install: if [[ $TOX_ENV ]]; then pip install tox; elif [[ $GRUNT_TASK ]]; then npm install; fi
+script: if [[ $TOX_ENV ]]; then tox -e $TOX_ENV; elif [[ $GRUNT_TASK ]]; then npx grunt $GRUNT_TASK; fi
 
 notifications:
     irc:
         channels:
             - "ircs://irc.megworld.co.uk:9000#inboxen"
         use_notice: true
-
-    webhooks:
-        urls:
-            - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MG1vZ2dlcnM4NyUzQW1hdHJpeC5vcmcvJTIxZlRMa1dtaG9FWFRlUG1VaXhuJTNBbWF0cml4Lm9yZw"
-        on_success: always
-        on_failure: always
-        on_start: never
-
 sudo: false

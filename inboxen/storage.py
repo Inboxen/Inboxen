@@ -19,11 +19,11 @@
 
 from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
 
-from inboxen.utils import build_assets, generate_maintenance_page
+from inboxen.utils import generate_maintenance_page
 
 
 class InboxenStaticFilesStorage(ManifestStaticFilesStorage):
-    """Build webassets and generatate maintenance page after collecting static files"""
+    """Generatate maintenance page after collecting static files"""
 
     def post_process(self, *args, **kwargs):
         all_post_processed = super(ManifestStaticFilesStorage,
@@ -31,5 +31,4 @@ class InboxenStaticFilesStorage(ManifestStaticFilesStorage):
         for post_processed in all_post_processed:
             yield post_processed
 
-        build_assets()
         generate_maintenance_page()

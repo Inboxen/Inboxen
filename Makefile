@@ -1,3 +1,7 @@
+##
+# Dev
+##
+
 .PHONY: install-dev-deps
 install-dev-deps: install-dev-py-deps install-js-deps
 
@@ -8,6 +12,33 @@ install-dev-py-deps:
 .PHONY: install-js-deps
 install-js-deps:
 	npm install
+
+.PHONY: tests-py
+tests-py: install-dev-deps
+	$(MAKE) static-dev
+	./manage.py test
+
+.PHONY: tests-py-coverage
+tests-py-coverage: install-dev-deps
+	pip install coverage
+	$(MAKE) static-dev
+	coverage run --branch ./manage.py test
+
+.PHONY: tests-js
+tests-js: install-dev-deps
+	npx grunt tests
+
+.PHONY: static-dev
+static-dev:
+	npx grunt
+	./manage.py compilemessages --settings=inboxen.tests.settings
+	./manage.py collectstatic --clear --noinput --settings=inboxen.tests.settings
+
+.PHONY: static
+static:
+	npx grunt
+	./manage.py compilemessages
+	./manage.py collectstatic --clear --noinput
 
 ##
 # Update requirements
@@ -73,8 +104,7 @@ install-watermelon-deps: install-watermelon-py-deps install-js-deps
 common-deploy:
 	$(MAKE) install-watermelon-deps
 	mkdir -p logs run
-	./manage.py collectstatic --no-input
-	./manage.py compilemessages
+	$(MAKE) static
 	./manage.py migrate
 	./manage.py check --deploy
 	touch inboxen/wsgi.py

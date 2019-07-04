@@ -23,11 +23,12 @@ import itertools
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
+from django.test import override_settings
 from django.utils import timezone
 from watson.models import SearchEntry
 
 from inboxen import models, tasks
-from inboxen.test import InboxenTestCase, override_settings
+from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
 
 
