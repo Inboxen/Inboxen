@@ -22,6 +22,7 @@ import shutil
 
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
+from django.test import override_settings
 from salmon.mail import MailRequest
 from salmon.routing import Router
 from salmon.server import SMTPError
@@ -29,7 +30,7 @@ from salmon.server import SMTPError
 from inboxen import models
 from inboxen.router.app.helpers import make_email
 from inboxen.router.app.server import forward_to_admins, process_message
-from inboxen.test import InboxenTestCase, override_settings
+from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
 
 TEST_MSG = """From: Test <test@localhost>

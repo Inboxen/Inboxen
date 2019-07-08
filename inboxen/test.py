@@ -19,7 +19,6 @@
 
 import logging
 import os
-import sys
 import warnings
 
 from django import test
@@ -29,7 +28,6 @@ from django.contrib.sessions.middleware import SessionMiddleware
 from django.http import HttpRequest, HttpResponse
 from django.test.runner import DiscoverRunner
 from django.utils.crypto import get_random_string
-from django_assets import env as assets_env
 from django_otp import DEVICE_ID_SESSION_KEY
 from django_otp.middleware import OTPMiddleware
 from django_otp.plugins.otp_static.models import StaticDevice
@@ -105,36 +103,6 @@ def grant_otp(client_or_request, user):
     session = client_or_request.session
     session[DEVICE_ID_SESSION_KEY] = device.persistent_id
     session.save()
-
-
-class WebAssetsOverrideMixin(object):
-    """Reset Django Assets crap
-
-    Work around for https://github.com/miracle2k/django-assets/issues/44
-    """
-
-    asset_modules = ["inboxen.assets"]
-
-    def disable(self, *args, **kwargs):
-        ret_value = super(WebAssetsOverrideMixin, self).disable(*args, **kwargs)
-
-        # reset asset env
-        assets_env.reset()
-        assets_env._ASSETS_LOADED = False
-
-        # unload asset modules so python reimports them
-        for module in self.asset_modules:
-            try:
-                del sys.modules[module]
-                __import__(module)
-            except (KeyError, ImportError):
-                _log.debug("Couldn't find %s in sys.modules", module)
-
-        return ret_value
-
-
-class override_settings(WebAssetsOverrideMixin, test.utils.override_settings):
-    pass
 
 
 class InboxenTestRunner(DiscoverRunner):

@@ -1,13 +1,11 @@
 {# Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n humanize assets %}
+{% load i18n humanize staticfiles %}
 
 {% block headline %}{% trans "Server Statistics" %}{% endblock %}
 
 {% block extra_js %}
-    {% assets "chart_js" %}
-        <script src="{{ ASSET_URL }}"></script>
-    {% endassets %}
+    <script src="{% static "stats.min.js" %}"></script>
 {% endblock %}
 
 {% block content %}

@@ -23,8 +23,6 @@ import re
 
 from django.conf import settings
 from django.template import loader
-from django_assets import env as assets_env
-from webassets.script import GenericArgparseImplementation
 
 from inboxen.context_processors import reduced_settings_context
 
@@ -56,19 +54,6 @@ def generate_maintenance_page():
     output = open(output_path, "w")
     output.write(rendered)
     output.close()
-
-
-def build_assets():
-    """Build assets like ./manage.py assets build does"""
-    if settings.ASSETS_AUTO_BUILD:
-        return
-
-    env = assets_env.get_env()
-    argparser = GenericArgparseImplementation(env=env, no_global_options=False)
-
-    errored = argparser.run_with_argv(["build"]) or 0
-    if errored != 0:
-        raise Exception("Asset building failed with error code %d" % errored)
 
 
 def is_reserved(inbox):

@@ -23,10 +23,11 @@ import itertools
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.test import override_settings
 from django.utils import timezone
 
 from inboxen import models
-from inboxen.test import InboxenTestCase, override_settings
+from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
 
 User = get_user_model()

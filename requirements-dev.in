@@ -1,6 +1,5 @@
 -r inboxen/data/requirements.in
 coverage
 django-debug-toolbar
-jasmine
 tox
 isort

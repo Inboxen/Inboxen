@@ -45,9 +45,6 @@ INBOX_AUTO_DELETE_TIME = 30
 # variable DJANGO_SETTINGS_MODULE to your module. See Django docs for details
 ##
 
-# assets building options
-ASSETS_DEBUG = DEBUG  # noqa: F405
-ASSETS_AUTO_BUILD = DEBUG  # noqa: F405
 ##
 # Celery options
 ##
@@ -125,13 +122,12 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
-        ("thirdparty", os.path.join(os.getcwd(), "node_modules")),
+        os.path.join(os.getcwd(), "frontend", "build", "compiled"),
 ]
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'django_assets.finders.AssetsFinder',
 )
 
 STATICFILES_STORAGE = 'inboxen.storage.InboxenStaticFilesStorage'
@@ -212,7 +208,6 @@ INSTALLED_APPS = (
 
     # third party
     'bootstrapform',
-    'django_assets',
     'django_extensions',
     'django_otp',
     'django_otp.plugins.otp_static',

@@ -21,13 +21,14 @@ from django import urls
 from django.core import mail
 from django.db.models import Max
 from django.http import Http404
+from django.test import override_settings
 import factory
 import factory.fuzzy
 
 from inboxen.cms.decorators import is_secure_admin
 from inboxen.cms.models import AppPage
 from inboxen.cms.utils import app_reverse
-from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo, override_settings
+from inboxen.test import InboxenTestCase, MockRequest, grant_otp, grant_sudo
 from inboxen.tests import factories
 from inboxen.tickets import models, views
 from inboxen.tickets.templatetags import tickets_flags

@@ -1,5 +1,7 @@
 .git
 htmlcov
-media_content
 node_modules
-static_content
+/static_content
+/media_content
+/frontend/build
+/coverage

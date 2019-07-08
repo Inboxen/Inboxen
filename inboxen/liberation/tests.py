@@ -35,6 +35,7 @@ from django import urls
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.test import override_settings
 from django.urls import reverse
 from salmon import mail
 
@@ -43,7 +44,7 @@ from inboxen.liberation import tasks
 from inboxen.liberation.forms import LiberationForm
 from inboxen.liberation.utils import INBOXEN_ENCODING_ERROR_HEADER_NAME, make_message
 from inboxen.router.app.helpers import make_email
-from inboxen.test import InboxenTestCase, MockRequest, override_settings
+from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (EXAMPLE_ALT, EXAMPLE_DIGEST, EXAMPLE_MISSING_CTE,
                                           EXAMPLE_PREMAILER_BROKEN_CSS, EXAMPLE_SIGNED_FORWARDED_DIGEST)

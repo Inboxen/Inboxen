@@ -9,21 +9,17 @@
 -e .
 amqp==2.4.2
 babel==2.7.0              # via django-phonenumber-field
-backports.functools-lru-cache==1.5  # via cheroot
 billiard==3.5.0.5         # via celery
 cachetools==3.1.1         # via premailer
 celery==4.1.1
 certifi==2019.6.16        # via requests
 chardet==3.0.4            # via requests, salmon-mail
-cheroot==6.5.5            # via cherrypy
-cherrypy==18.1.2          # via jasmine
 click==7.0                # via pip-tools
 configobj==5.0.6
 coverage==4.5.3
 cssselect==1.0.3          # via premailer
 cssutils==1.0.2           # via premailer
 django-annoying==0.10.4
-django-assets==0.12
 django-bootstrap-form==3.4
 django-csp==3.5
 django-cursor-pagination==0.1.4
@@ -37,35 +33,26 @@ django-otp==0.6.0
 django-phonenumber-field==1.3.0
 django-ratelimit-backend==2.0
 django-sendfile2==0.4.2
-django==2.2.3             # via django-annoying, django-assets, django-bootstrap-form, django-csp, django-debug-toolbar, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-ratelimit-backend, django-sendfile2
+django==2.2.3             # via django-annoying, django-bootstrap-form, django-csp, django-debug-toolbar, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-ratelimit-backend, django-sendfile2
 dnspython==1.16.0         # via salmon-mail
 docutils==0.14            # via python-daemon
 factory-boy==2.12.0
 faker==0.8.5              # via factory-boy
 filelock==3.0.12          # via tox
-glob2==0.7                # via jasmine-core
 idna==2.8                 # via requests
 importlib-metadata==0.18  # via pluggy, tox
 isort==4.3.21
-jaraco.functools==2.0     # via tempora
-jasmine-core==3.4.0       # via jasmine
-jasmine==3.4.0
-jinja2==2.10.1            # via jasmine
 jsmin==2.2.2
 kombu==4.5.0
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.3.4               # via premailer
 markdown==3.1.1
-markupsafe==1.1.1         # via jinja2
-more-itertools==7.1.0     # via cheroot, cherrypy, jaraco.functools
-ordereddict==1.1          # via jasmine-core
 packaging==19.0           # via tox
 phonenumberslite==8.10.14  # via django-phonenumber-field
 pillow==6.0.0
 pip-tools==3.8.0
 pluggy==0.12.0            # via tox
-portend==2.5              # via cherrypy
 premailer==3.4.1
 progress==1.5
 psycopg2==2.8.3
@@ -73,21 +60,19 @@ py==1.8.0                 # via tox
 pyparsing==2.4.0          # via packaging
 python-daemon==2.2.3      # via salmon-mail
 python-dateutil==2.8.0    # via faker
-pytz==2019.1              # via babel, celery, django, tempora
-pyyaml==3.13              # via jasmine
+pytz==2019.1              # via babel, celery, django
 qrcode==6.1
 requests==2.22.0          # via premailer
 salmon-mail==3.1.1
-selenium==3.141.0         # via jasmine
-six==1.12.0               # via cheroot, configobj, django-extensions, django-sendfile2, faker, packaging, pip-tools, python-dateutil, qrcode, salmon-mail, tempora, tox
+six==1.12.0               # via configobj, django-extensions, django-sendfile2, faker, packaging, pip-tools, python-dateutil, qrcode, salmon-mail, tox
 sqlparse==0.3.0           # via django, django-debug-toolbar
-tempora==1.14.1           # via portend
 toml==0.10.0              # via tox
 tox==3.13.2
 unidecode==1.1.1          # via faker
-urllib3==1.25.3           # via requests, selenium
+urllib3==1.25.3           # via requests
 vine==1.3.0               # via amqp
 virtualenv==16.6.1        # via tox
-webassets==0.12.1         # via django-assets
-zc.lockfile==1.4          # via cherrypy
 zipp==0.5.1               # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.0.1        # via markdown, python-daemon

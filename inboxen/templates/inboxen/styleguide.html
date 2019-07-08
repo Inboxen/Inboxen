@@ -1,5 +1,5 @@
 {# Copyright (c) 2017 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
-{% load assets bootstrap staticfiles %}
+{% load bootstrap staticfiles %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,9 +8,7 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        {% assets "inboxen_css" %}
-            <link href="{{ ASSET_URL }}" rel="stylesheet" type="text/css" />
-        {% endassets %}
+        <link href="{% static "website.css" %}" rel="stylesheet" type="text/css" />
         {% block header %}{% endblock %}
     </head>
     <body>
