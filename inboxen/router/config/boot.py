@@ -24,6 +24,7 @@ import os
 from django.conf import settings as dj_settings
 from salmon import queue
 from salmon.routing import Router
+from salmon.server import LMTPReceiver, SMTPReceiver
 
 from inboxen.router.config import settings
 
@@ -40,6 +41,13 @@ except OSError:
     pass
 
 logging.config.dictConfig(dj_settings.SALMON_LOGGING)
+
+# where to listen for incoming messages
+if dj_settings.SALMON_SERVER["type"] == "lmtp":
+    receiver = LMTPReceiver(socket=dj_settings.SALMON_SERVER["path"])
+elif dj_settings.SALMON_SERVER["type"] == "smtp":
+    receiver = SMTPReceiver(dj_settings.SALMON_SERVER['host'],
+                            dj_settings.SALMON_SERVER['port'])
 
 Router.load(['inboxen.router.app.server'])
 Router.RELOAD = False
