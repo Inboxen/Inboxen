@@ -75,11 +75,20 @@ except KeyError:
     else:
         raise exceptions.ImproperlyConfigured("You must set 'secret_key' in your settings.ini")
 
-if len(config["general"]["admin_names"]) != len(config["general"]["admin_emails"]):
+admin_names = config["general"]["admin_names"]
+admin_emails = config["general"]["admin_emails"]
+
+if isinstance(admin_names, str):
+    admin_names = [admin_names]
+
+if isinstance(admin_emails, str):
+    admin_emails = [admin_emails]
+
+if len(admin_names) != len(admin_emails):
     raise exceptions.ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.ini")
 
 # Admins (and managers)
-ADMINS = list(zip(config["general"]["admin_names"], config["general"]["admin_emails"]))
+ADMINS = list(zip(admin_names, admin_emails))
 
 # List of hosts allowed
 ALLOWED_HOSTS = config["general"]["allowed_hosts"]
