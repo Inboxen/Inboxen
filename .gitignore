@@ -22,6 +22,7 @@ docs/_build
 # local requirements
 /local-reqs.txt
 /local-reqs.in
+/local.mk
 
 *.py[cod]
 *.sw?

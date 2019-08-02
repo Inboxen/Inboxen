@@ -33,7 +33,7 @@ following:
 * Managing a cache like Memcache.
 
 We understand that this will make deploying Inboxen a far more daunting task,
-but we find that preferable to frustrated users in our issue tracker.
+but we find that preferable to masses of documentation of unknown quality.
 
 .. warning:
 
@@ -56,8 +56,8 @@ To use Inboxen, you'll need the following:
 
 - Git
 - NodeJS and ``npm``
-- Ruby Sass
 - GCC
+- GNU Make
 - PostgreSQL
 
   - ``pg_config`` needs to be in your ``$PATH``
@@ -93,16 +93,18 @@ Now we've got some configuration, let's finish the setup:
 .. code-block:: shell
 
    (env) $ ./manage.py migrate
-   (env) $ ./manage.py compilemessages
-   (env) $ ./manage.py collectstatic
-   (env) $ SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
-   (env) $ DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -B -E -D -l info --logfile logs/celery.log --pidfile run/tasks.pid
+   (env) $ make static
+   (env) $ mkdir -p run logs
+   (env) $ make salmon-start celery-start
 
 Finally, there are some external services that you will need to configure:
 
 * Your WSGI daemon needs to be configured to use your virtualenv (found in
-  ``env/``) and use the script ``inboxen/wsgi.py``
-* Your webserver should serve ``/static/`` from ``static_content``
+  ``env/``) and use the script ``inboxen/wsgi.py``. You should also set your
+  current working directory to same folder the contains ``setup.py`` Refer to
+  your WSGI daemon's documentation for details on how to do that.
+* Your webserver or your WSGI daemon (depending on your configuration) should
+  serve ``/static/`` from ``static_content``.
 * Your mailserver should forward mail to ``localhost:8823`` via SMTP
 
 Additional configuration
@@ -126,9 +128,14 @@ file called ``local-reqs.in`` and add the following:
 .. note::
 
    As well as the Memcache backend, if you're not using RabbitMQ for your task
-   queue you will need to install extra package for celery. Those packages
-   should be added to ``local-reqs.in`` as well. Refer to the celery
+   queue you will need to install extra package for Celery. Those packages
+   should be added to ``local-reqs.in`` as well. Refer to the Celery
    documentation for details.
+
+.. note::
+
+    You'll have to enable Memcache in your ``settings.ini`` file before using
+    it. The same applies to using a different Celery broker.
 
 Always pin your dependencies!
 
@@ -137,14 +144,31 @@ Always pin your dependencies!
    (env) $ pip-compile -U --output-file local-reqs.txt local-reqs.in
    (env) $ pip-sync local-reqs.txt
 
+make rules
+----------
+
+As you've seen already, we provide a number of make rules for common tasks. You
+can add your own in ``local.mk``. For example, you might want to have a rule to
+install dependencies:
+
+.. code-block:: text
+
+   .PHONY: install-local-deps
+   install-local: install-js-deps
+       pip-sync local-reqs.txt
+
+This would allow you to run the following:
+
+.. code-block:: shell
+
+   (env) $ make install-local-deps
 
 Upgrading
 =========
 
 .. code-block:: shell
 
-   (env) $ SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid run/router.pid
-   (env) $ pkill celery
+   (env) $ make salmon-stop celery-setop
    (env) $ git pull
 
 If you specified additional Python packages, then update your pinned dependencies:
@@ -162,13 +186,11 @@ Install updated packages and compile various assets:
    (env) $ pip-sync local-reqs.txt || pip-sync requirements.txt
    (env) $ npm install
    (env) $ ./manage.py migrate
-   (env) $ ./manage.py compilemessages
-   (env) $ ./manage.py collectstatic
+   (env) $ make static
 
 Finally, restart services:
 
 .. code-block:: shell
 
-   (env) $ SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
-   (env) $ DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -B -E -D -l info --logfile logs/celery.log --pidfile run/tasks.pid
+   (env) $ make salmon-start celery-start
    (env) $ touch inboxen/wsgi.py
