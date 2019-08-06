@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Deploy for 2019-08-06
+
+* Remove WebAssets, we now use GruntJS to build static assets (#447)
+* Switch from ruby-sass to dart-sass (#399)
+* Fix issue where a single admin would cause a configuration error (#455)
+
 ### Deploy for 2019-06-09
 
 * Fix error in the way the password change view redirects (#441)
