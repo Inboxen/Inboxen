@@ -269,7 +269,8 @@ a.soon {
     .attachment {
         width: 100%;
         padding: ceil(($grid-gutter-width / 2));
-        flex: 1 0 auto;
+        flex: none;
+        min-width: 300px;
 
         overflow-wrap: break-word;
         hyphens: none;
