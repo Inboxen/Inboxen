@@ -81,6 +81,8 @@ salmon-stop:
 .PHONY: salmon-start
 salmon-start:
 	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
+	sleep 5
+	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon status --pid run/router.pid
 
 ##
 #	Inboxen.org specific tasks
