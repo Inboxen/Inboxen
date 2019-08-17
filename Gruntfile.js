@@ -22,6 +22,9 @@ module.exports = function(grunt) {
             }
         },
         concat: {
+            options: {
+                sourceMap: true
+            },
             website: {
                 src: [
                     "<%= dirs.thirdparty %>/jquery/dist/jquery.js",
@@ -48,6 +51,12 @@ module.exports = function(grunt) {
             options: {
                 mangle: true,
                 compress: true,
+                sourceMap: {
+                    includeSources: true
+                },
+                sourceMapIn: function(path) {
+                    return path + ".map";
+                },
                 output: {
                     comments: /^!/
                 }
@@ -65,7 +74,10 @@ module.exports = function(grunt) {
             options: {
                 implementation: sass,
                 outputStyle: "compressed",
-                includePaths: ["<%= dirs.thirdparty %>"]
+                includePaths: ["<%= dirs.thirdparty %>"],
+                sourceMap: true,
+                sourceMapContents: true,
+                sourceMapEmbed: false
             },
             publicCss: {
                 src: ["<%= dirs.css %>/inboxen.scss"],
