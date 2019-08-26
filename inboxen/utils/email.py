@@ -356,7 +356,7 @@ def find_bodies(part):
         return
 
 
-def print_tree(part, func=lambda x: str(x)):
+def print_tree(part, func=str):
     """Pretty print a Mime tree
 
     For debugging emails
