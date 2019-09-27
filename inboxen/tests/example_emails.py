@@ -2455,6 +2455,361 @@ s+PN63nlOtiyy8KEqWnI
 
 """ # noqa
 
+EXAMPLE_CENTOS_ANNOUNCE_DIGEST = """Content-Type: multipart/mixed; boundary="===============2935033510413247323=="
+Mime-Version: 1.0
+From: centos-announce-request@centos.org
+Subject: CentOS-announce Digest, Vol 175, Issue 3
+To: centos-announce@centos.org
+Reply-To: centos-announce@centos.org
+Date: Wed, 25 Sep 2019 12:00:02 +0000
+Message-Id: <mailman.8.1569412802.22759.centos-announce@centos.org>
+X-Beenthere: centos-announce@centos.org
+X-Mailman-Version: 2.1.15
+Precedence: list
+List-Id: "CentOS announcements \(security and general\) will be posted to this
+ list." <centos-announce.centos.org>
+List-Unsubscribe: <https://lists.centos.org/mailman/options/centos-announce>,
+ <mailto:centos-announce-request@centos.org?subject=unsubscribe>
+List-Archive: <http://lists.centos.org/pipermail/centos-announce/>
+List-Post: <mailto:centos-announce@centos.org>
+List-Help: <mailto:centos-announce-request@centos.org?subject=help>
+List-Subscribe: <https://lists.centos.org/mailman/listinfo/centos-announce>,
+ <mailto:centos-announce-request@centos.org?subject=subscribe>
+Errors-To: centos-announce-bounces@centos.org
+Sender: "CentOS-announce" <centos-announce-bounces@centos.org>
+
+--===============2935033510413247323==
+Content-Type: text/plain; charset="us-ascii"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Description: CentOS-announce Digest, Vol 175, Issue 3
+Inboxen-Liberation-Error: Unknown Content-Transfer-Encoding: 7bit
+
+Send CentOS-announce mailing list submissions to
+	centos-announce@centos.org
+
+To subscribe or unsubscribe via the World Wide Web, visit
+	https://lists.centos.org/mailman/listinfo/centos-announce
+or, via email, send a message with subject or body 'help' to
+	centos-announce-request@centos.org
+
+You can reach the person managing the list at
+	centos-announce-owner@centos.org
+
+When replying, please edit your Subject line so it is more specific
+than "Re: Contents of CentOS-announce digest..."
+
+--===============2935033510413247323==
+Content-Type: text/plain; charset="us-ascii"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Description: Today's Topics (1 messages)
+Inboxen-Liberation-Error: Unknown Content-Transfer-Encoding: 7bit
+
+Today's Topics:
+
+   1. Release for CentOS Linux 8 and CentOS Streams (Karanbir Singh)
+
+--===============2935033510413247323==
+Content-Type: multipart/digest;
+ boundary="===============8083231416292337438=="
+Mime-Version: 1.0
+
+--===============8083231416292337438==
+Content-Type: message/rfc822
+Mime-Version: 1.0
+
+List-Post: <mailto:centos-announce@centos.org>
+From: Karanbir Singh <kbsingh@centos.org>
+Precedence: list
+Mime-Version: 1.0
+To: CentOS Announcements List <centos-announce@centos.org>
+Date: Tue, 24 Sep 2019 17:38:36 +0100
+Message-Id: <beeca6a3-6abd-2416-85e9-311571fc9990@centos.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="qzuPsjY2RN0f2E4fpSSfsEQDSCS01SkOs"
+Subject: [CentOS-announce] Release for CentOS Linux 8 and CentOS Streams
+Message: 1
+
+--qzuPsjY2RN0f2E4fpSSfsEQDSCS01SkOs
+Content-Type: multipart/mixed; boundary="X7UHN89T3Bsw6oDVXl09OSrFxwV8PTTdJ";
+ protected-headers="v1"
+From: Karanbir Singh <kbsingh@centos.org>
+To: CentOS Announcements List <centos-announce@centos.org>
+Message-Id: <beeca6a3-6abd-2416-85e9-311571fc9990@centos.org>
+Subject: Release for CentOS Linux 8 and CentOS Streams
+
+--X7UHN89T3Bsw6oDVXl09OSrFxwV8PTTdJ
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+
+We=20would=20like=20to=20announce=20the=20general=20availability=20of=20Cen=
+tOS=20Linux=208=20and
+the=20new=20CentOS=20Stream,=20on=20all=20architectures.
+
+
+----------
+CentOS=20Linux=208
+
+This=20is=20the=20first=20release=20for=20CentOS=20Linux=208=20and=20is=20v=
+ersion=20marked=20as
+8.0-1905,=20derived=20from=20sources=20published=20by=20Red=20Hat,=20delive=
+red=20via
+git.centos.org
+
+First,=20please=20read=20through=20the=20release=20notes=20at=20:
+http://wiki.centos.org/Manuals/ReleaseNotes/CentOSLinux8=20-=20these=20notes
+contain=20important=20information=20about=20the=20release=20and=20details=
+=20about=20some
+of=20the=20content=20inside=20the=20release=20from=20the=20CentOS=20QA=20te=
+am.=20These=20notes
+are=20updated=20constantly=20to=20include=20issues=20and=20incorporate=20fe=
+edback=20from
+the=20users=20and=20should=20be=20the=20first=20port=20of=20call=20for=20an=
+yone=20looking=20to=20use
+CentOS=20Linux=208.
+
+
+----------
+CentOS=20Stream
+
+
+When=20the=20CentOS=20Project=20announced=20it=20was=20joining=20forces=20w=
+ith=20Red=20Hat=20in
+January=202014,=20we=20put=20an=20emphasis=20on=20how=20the=20new=20relatio=
+nship=20would
+=E2=80=9C(drive)=20forward=20development=20and=20adoption=20of=20next-gener=
+ation=20open=20source
+technologies=E2=80=9D:
+https://www.redhat.com/en/about/press-releases/red-hat-and-centos-join-forc=
+es
+In=20the=20intervening=20years,=20the=20Project=20has=20grown=20to=20delive=
+r=20not=20just=20a
+Linux=20distribution,=20but=20an=20entire=20set=20of=20sub-communities=20us=
+ing=20new
+services=20in=20support=20of=20development=20work=20done=20on=20top=20of=20=
+that=20distro.
+Special=20interest=20groups=20(SIGs)=20have=20provided=20a=20base=20for=20l=
+ayered=20projects
+to=20develop=20on=20a=20stable=20platform.=20Additionally,=20CI/CD,=20the=
+=20community
+build=20system,=20better=20Git=20repository=20hosting,=20and=20container=20=
+pipelines,
+amongst=20others,=20have=20brought=20modern=20code=20and=20development=20pr=
+actices=20to
+the=20broader=20CentOS=20community.
+
+With=20the=20introduction=20of=20CentOS=20Stream
+https://wiki.centos.org/Manuals/ReleaseNotes/CentOSStream
+we=20are=20excited=20to=20continue=20working=20with=20Red=20Hat
+http://redhat.com/en/blog/transforming-development-experience-within-centos
+to=20bring=20you=20the=20biggest=20step=20forward=20the=20CentOS=20Project=
+=20has=20ever
+undertaken.
+
+CentOS=20Stream=20is=20a=20rolling-release=20Linux=20distro=20that=20exists=
+=20as=20a
+midstream=20between=20the=20upstream=20development=20in=20Fedora=20Linux=20=
+and=20the
+downstream=20development=20for=20Red=20Hat=20Enterprise=20Linux=20(RHEL).=
+=20It=20is=20a
+cleared-path=20to=20contributing=20into=20future=20minor=20releases=20of=20=
+RHEL=20while
+interacting=20with=20Red=20Hat=20and=20other=20open=20source=20developers.=
+=20This=20pairs
+nicely=20with=20the=20existing=20contribution=20path=20in=20Fedora=20for=20=
+future=20major
+releases=20of=20RHEL.
+
+In=20practice,=20CentOS=20Stream=20will=20contain=20the=20code=20being=20de=
+veloped=20for=20the
+next=20minor=20RHEL=20release.=20This=20development=20model=20will=20allow=
+=20the=20community
+to=20discuss,=20suggest,=20and=20contribute=20features=20and=20fixes=20into=
+=20RHEL=20more
+quickly.
+
+To=20do=20this,=20Red=20Hat=20Engineering=20is=20planning=20to=20move=20par=
+ts=20of=20RHEL
+development=20into=20the=20CentOS=20Project=20in=20order=20to=20collaborate=
+=20with
+everyone=20on=20updates=20to=20RHEL.
+
+There=20will=20not=20be=20a=20CentOS=20Stream=20for=20versions=20released=
+=20in=20the=20past,
+this=20is=20only=20a=20forward-looking=20version=20target.
+
+Please=20read=20through=20the=20release=20notes=20at=20:
+http://wiki.centos.org/Manuals/ReleaseNotes/CentOSStream=20-=20these=20notes
+contain=20important=20information=20about=20the=20release=20and=20details=
+=20about=20some
+of=20the=20content=20inside=20the=20release=20from=20the=20CentOS=20QA=20te=
+am.=20These=20notes
+are=20updated=20constantly=20to=20include=20issues=20and=20incorporate=20fe=
+edback=20from
+the=20users.
+
+----------
+Updates,=20Sources=20and=20DebugInfos
+
+Updates=20for=20both=20distributions=20are=20being=20built=20and=20will=20b=
+e=20online=20in=20the
+next=20few=20days=20to=20catchup.=20Sources=20and=20debuginfo=20for=20all=
+=20the=20released
+content=20is=20also=20available=20online=20at=20mirror.centos.org=20and=20v=
+ault.centos.org;
+
+In=20the=20coming=20days,=20we=20will=20work=20to=20get=20the=20cbs.centos.=
+org=20service
+enabled=20for=20both=20the=20new=20distributions,=20and=20encourage=20the=
+=20SIG's=20to=20start
+considering=20their=20executions=20plans=20forward.
+
+
+----------
+Download
+
+In=20order=20to=20conserve=20donor=20bandwidth,=20and=20to=20make=20it=20po=
+ssible=20to=20get=20the
+mirror=20content=20sync'd=20out=20as=20soon=20as=20possible,=20we=20recomme=
+nd=20using
+torrents=20to=20get=20your=20initial=20installer=20images:
+
+Get=20the=20torrent=20now=20:
+
+http://mirror.centos.org/centos/8/isos/x86_64/CentOS-8-x86_64-1905-dvd1.tor=
+rent
+SHA256=20707a66357f72eb822ca113991f3bb86a1ac1ed5fbc2fa5d968ed25fb48ee985c
+
+http://mirror.centos.org/centos/8-stream/isos/x86_64/CentOS-Stream-x86_64-d=
+vd1.torrent
+SHA256:=2088604a95189f91162d1f89f0ac7436f3413812506a41b8ec286baeaa833b1e91
+
+Images,=20sizes=20and=20their=20SHA256Sum's:
+
+CentOS-8-x86_64-1905-boot.iso:=20559939584=20bytes
+SHA256=20a7993a0d4b7fef2433e0d4f53530b63c715d3aadbe91f152ee5c3621139a2cbc
+CentOS-8-x86_64-1905-dvd1.iso:=207135559680=20bytes
+SHA256=20ea17ef71e0df3f6bf1d4bf1fc25bec1a76d1f211c115d39618fe688be34503e8
+
+CentOS-8-ppc64le-1905-boot.iso:=20567736320=20bytes
+SHA256=209062ae0d892126f57429c3194143e6e6e5485e5f32834e03d849bf5cf075ca7a
+CentOS-8-ppc64le-1905-dvd1.iso:=206376304640=20bytes
+SHA256=20bfd27297da1ddc1185a08fc65e46c58efebf51b25758ff8f12d29a6214aeae39
+
+CentOS-8-aarch64-1905-boot.iso:=20520048640=20bytes
+SHA256=2018a211a826bd3dd4d034ddc529303bc2b5dc6e1b63ea311644d7698e7b67fb3e
+CentOS-8-aarch64-1905-dvd1.iso:=205150640128=20bytes
+SHA256=20c950cf7599a2317e081506a3e0684f665ef9c8fe66963bf7492595d7c6ccc230
+
+
+CentOS-Stream-x86_64-boot.iso:=20558891008=20bytes
+SHA256=20e38192400212796085b7996f21828aa8f8a72d44b64059572eb8c725e13be4cc
+CentOS-Stream-x86_64-dvd1.iso:=208572108800=20bytes
+SHA256=20559715017959f5967d2b9876bd27f46d8a740e1d02f59dfb8fd5e7114dd5cc79
+
+
+The=20iso=20files=20are=20also=20available=20for=20direct=20download=20from
+http://mirror.centos.org/centos/8/isos/x86_64=20and
+http://mirror.centos.org/centos/8-stream/isos/x86_64
+
+Other=20media,=20including=20container,=20cloud,=20live=20media=20etc=20wil=
+l=20be
+posted=20in=20the=20near=20future.
+
+----------
+Events
+
+We=20try=20and=20organise=20Dojo's=20in=20various=20parts=20of=20the=20worl=
+d=20as=20a=20one=20day
+event,=20to=20bring=20together=20people=20who=20use=20CentOS=20and=20others=
+=20who=20are=20keen
+to=20learn=20about=20CentOS.=20The=20day's=20focus=20is=20on=20sharing=20te=
+chnical=20knowledge
+and=20success=20stories.=20Its=20also=20a=20great=20place=20to=20meet=20and=
+=20talk=20about
+upcoming=20technologies=20and=20learn=20how=20others=20are=20using=20them=
+=20on=20CentOS.
+
+Dojo=20at=20fosdem=20-=20https://wiki.centos.org/Events/Dojo/Brussels2020
+
+
+Please=20track=20the=20page=20at=20https://wiki.centos.org/Events/=20for=20=
+upcoming
+events,=20and=20if=20you=20would=20like=20to=20help=20organise=20something,=
+=20do=20get=20in
+touch=20with=20us.
+
+----------
+Getting=20Help
+
+The=20CentOS=20ecosystem=20is=20sustained=20by=20community=20driven=20help=
+=20and
+guidance.=20The=20best=20place=20to=20start=20for=20new=20users=20is=20at
+http://wiki.centos.org/GettingHelp
+
+
+----------
+Thanks
+
+I'd=20also=20like=20to=20thank=20our=20donors=20and=20sponsors=20for=20thei=
+r=20continued
+support=20for=20the=20project.=20Additionally,=20the=20CentOS=20QA=20team,=
+=20the=20Core=20SIG
+team=20and=20all=20the=20associated=20SIG's.
+
+And=20thanks=20to=20everyone=20who=20contributed=20with=20ideas,=20code,=20=
+test=20feedback
+and=20promoting=20CentOS=20into=20the=20ecosystem.
+
+Enjoy!
+
+-=20--=20
+Karanbir=20Singh,=20Project=20Lead,=20The=20CentOS=20Project
++44-207-0999389=20|=20https://www.centos.org/=20|=20twitter.com/CentOSProje=
+ct
+
+
+--X7UHN89T3Bsw6oDVXl09OSrFxwV8PTTdJ--
+
+--qzuPsjY2RN0f2E4fpSSfsEQDSCS01SkOs
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQEcBAEBAgAGBQJdikaMAAoJEI3Oi2Mx7xbtJXcIANfKXNfXVsdgNa8G5m71Gik9
+ve5Q4n7oBVtcc7Ig1M02I+HWwqRHqcvRU+ijAQ9VLS74yROTLWQaVdEyV/0gz/X0
+m+M34448VDPXb4Ja0LuHzYNr0Pv61sqYZhif4LTlI2pMqe56+AapxhwnMj4izIdW
+HvEDXP07w/AS9Qp0GAn5DeFkhJSCi3z58pToWJOKkUzhCF8N0SVh70MYXa2NsYVW
+pRHd8rrzHco+2FWHzRXeaEg2JymL2Y5EROjP1Qy2uHKtq2GIxgKISgGdOAEqnrQx
+68HofrdBaXjc2nSYUVkombjm6YIkgI9IPOjDzbNtfOoGna99WcYPcemPFQ8gYWs=
+=Fib0
+-----END PGP SIGNATURE-----
+
+--qzuPsjY2RN0f2E4fpSSfsEQDSCS01SkOs--
+
+--===============8083231416292337438==--
+
+--===============2935033510413247323==
+Content-Type: text/plain; charset="us-ascii"
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Description: Digest Footer
+Inboxen-Liberation-Error: Unknown Content-Transfer-Encoding: 7bit
+
+_______________________________________________
+CentOS-announce mailing list
+CentOS-announce@centos.org
+https://lists.centos.org/mailman/listinfo/centos-announce
+
+--===============2935033510413247323==--
+""" # noqa
+
 
 LONELY_ANCHOR_TAG = """<a href="https://example.com">""" # noqa
 

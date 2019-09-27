@@ -340,16 +340,12 @@ def find_bodies(part):
                 yield returned_child
     elif part.parent and part.parent.content_type == "multipart/digest":
         # we must be a message/rfc822, There should only be one child, which is
-        # either a text/ part or a multipart/signed
+        # either text/ or multipart/. Put it through find_bodies and yield
+        # everything it returns
         if len(part.get_children()) == 1:
             child = part.get_children()[0]
-            if child.content_type == "multipart/signed":
-                # signed messages will have at least two children, the
-                # signature and some other child if that child is a leaf text
-                # node, we should display it
-                yield [grandchild for grandchild in child.get_children() if is_leaf_text_node(grandchild)]
-            elif is_leaf_text_node(child):
-                yield [child]
+            for grand_child in find_bodies(child):
+                yield grand_child
     elif is_leaf_text_node(part):
         # part is a leaf node and has a content type that we can display
         yield [part]

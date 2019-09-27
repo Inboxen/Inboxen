@@ -34,10 +34,10 @@ from inboxen.router.app.helpers import make_email
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (BAD_HTTP_EQUIV_BODY, BADLY_ENCODED_BODY, BODILESS_BODY, BODY,
-                                          CHARSETLESS_BODY, EMPTY_ANCHOR_TAG, EXAMPLE_ALT, EXAMPLE_DIGEST,
-                                          EXAMPLE_PREMAILER_BROKEN_CSS, EXAMPLE_PREMIME_EMAIL,
-                                          EXAMPLE_SIGNED_FORWARDED_DIGEST, LONELY_ANCHOR_TAG, METALESS_BODY,
-                                          UNSUPPORTED_CSS_BODY)
+                                          CHARSETLESS_BODY, EMPTY_ANCHOR_TAG, EXAMPLE_ALT,
+                                          EXAMPLE_CENTOS_ANNOUNCE_DIGEST, EXAMPLE_DIGEST, EXAMPLE_PREMAILER_BROKEN_CSS,
+                                          EXAMPLE_PREMIME_EMAIL, EXAMPLE_SIGNED_FORWARDED_DIGEST, LONELY_ANCHOR_TAG,
+                                          METALESS_BODY, UNSUPPORTED_CSS_BODY)
 from inboxen.utils import email as email_utils
 from inboxen.utils import ratelimit
 
@@ -356,13 +356,32 @@ class RealExamplesTestCase(InboxenTestCase):
         make_email(self.msg, self.inbox)
         self.email = models.Email.objects.get()
 
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
+        self.assertEqual(leaf_part_count, 12)
+
         response = self.client.get(self.get_url())
         self.assertEqual(response.status_code, 200)
 
-        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
-        self.assertEqual(leaf_part_count, 12)
         self.assertEqual(len(response.context["email"]["bodies"]), 1)
         self.assertEqual(response.context["email"]["bodies"][0], "<pre>Hello\n</pre>")
+
+    def test_centos_announce_digest(self):
+        self.msg = mail.MailRequest("", "", "", EXAMPLE_CENTOS_ANNOUNCE_DIGEST)
+        make_email(self.msg, self.inbox)
+        self.email = models.Email.objects.get()
+
+        leaf_part_count = len([i for i in self.email.parts.all() if i.is_leaf_node()])
+        self.assertEqual(leaf_part_count, 5)
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+
+        # one of the leaf nodes is a pgp signature, so it won't be shown to the
+        # user
+        self.assertEqual(len(response.context["email"]["bodies"]), 4)
+        for i in range(4):
+            with self.subTest(i=i):
+                self.assertNotEqual(response.context["email"]["bodies"][i], "<pre></pre>")
 
     def test_alterative(self):
         self.msg = mail.MailRequest("", "", "", EXAMPLE_ALT)
