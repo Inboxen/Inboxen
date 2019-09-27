@@ -2,6 +2,18 @@
 # Dev
 ##
 
+# this rule should be the default
+.PHONY: dev-setup
+dev-setup: install-dev-deps
+	mkdir -p logs run
+	$(MAKE) static
+	./manage.py
+	./manage.py migrate
+	touch inboxen/wsgi.py
+	echo "You're now set for Inboxen development."
+	echo "If you require salmon, run 'make salmon-start'"
+	echo "If you require celery, run 'make celery-start'"
+
 .PHONY: install-dev-deps
 install-dev-deps: install-dev-py-deps install-js-deps
 
@@ -15,30 +27,18 @@ install-js-deps:
 
 .PHONY: tests-py
 tests-py: install-dev-deps
-	$(MAKE) static-dev
+	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
 	./manage.py test
 
 .PHONY: tests-py-coverage
 tests-py-coverage: install-dev-deps
+	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
 	pip install coverage
-	$(MAKE) static-dev
 	coverage run --branch ./manage.py test
 
 .PHONY: tests-js
 tests-js: install-dev-deps
 	npx grunt tests
-
-.PHONY: static-dev
-static-dev:
-	npx grunt
-	./manage.py compilemessages --settings=inboxen.tests.settings
-	./manage.py collectstatic --clear --noinput --settings=inboxen.tests.settings
-
-.PHONY: static
-static:
-	npx grunt
-	./manage.py compilemessages
-	./manage.py collectstatic --clear --noinput
 
 ##
 # Update requirements
@@ -63,6 +63,16 @@ update-js-requirements:
 	npm update
 
 ##
+# Static assets
+##
+
+.PHONY: static
+static:
+	npx grunt
+	./manage.py compilemessages
+	./manage.py collectstatic --clear --noinput
+
+##
 # Daemon control
 ##
 
@@ -85,45 +95,8 @@ salmon-start:
 	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon status --pid run/router.pid
 
 ##
-#	Inboxen.org specific tasks
+# Includes
 ##
 
-.PHONY: setup-node
-setup-node:
-	nodeenv -p -n 8.16.0 --with-npm
-
-.PHONY: install-watermelon-py-deps
-install-watermelon-py-deps:
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
-	pip-sync extra/requirements/watermelon.inboxen.org.txt || pip install -r extra/requirements/watermelon.inboxen.org.txt
-
-.PHONY: install-watermelon-deps
-install-watermelon-deps: install-watermelon-py-deps install-js-deps
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
-
-# common deployment stuff
-.PHONY: common-deploy
-common-deploy:
-	$(MAKE) install-watermelon-deps
-	mkdir -p logs run
-	$(MAKE) static
-	./manage.py migrate
-	./manage.py check --deploy
-	touch inboxen/wsgi.py
-	$(MAKE) celery-start salmon-start
-
-.PHONY: deploy-%
-deploy-%:
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
-	git fetch --prune
-	git verify-tag $@
-	-$(MAKE) celery-stop salmon-stop
-	git checkout $@
-	$(MAKE) common-deploy
-
-.PHONY: dev-deploy
-dev-deploy:
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
-	-$(MAKE) celery-stop salmon-stop
-	git describe --dirty
-	$(MAKE) common-deploy
+include extra/makefiles/watermleon.mk
+-include local.mk

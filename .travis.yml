@@ -16,6 +16,10 @@ matrix:
         python: "3.6"
         env: TOX_ENV=lint,isort
 
+      - language: python
+        python: "3.6"
+        env: TOX_ENV=docs
+
       - language: node_js
         node_js: "8"
         env:

@@ -27,7 +27,7 @@ You'll need the following tools:
 * Python (we strongly recommend you use virtualenv too)
 * PostgreSQL
 * NodeJS
-* jshint
+* GNU Make
 * [EditorConfig](http://editorconfig.org/) *(optional)*
 
 This project comes with a `.editorconfig` file - we recommend installing it to
@@ -39,17 +39,34 @@ Set yourself up with a virtual environment and run the following:
 ```
 git clone https://github.com/Inboxen/Inboxen.git
 cd Inboxen
-pip install -r requirements-dev.txt
-mkdir node_modules
-npm install
-python manage.py collectstatic
+make
 ```
 
-When you've made your changes, remember to run `tox -e js-lint,py-lint` to check your code
-style and run unit tests. To run the tests do the following:
+When you've made your changes, remember to check your code
+style and run unit tests.
+
+Python tests:
 
 ```
 python manage.py test
+```
+
+JS tests:
+
+```
+npx grunt karma
+```
+
+To check code style on Python:
+
+```
+tox -e isort,lint
+```
+
+And finally, check JS code style:
+
+```
+npx grunt jshint
 ```
 
 ### Local HTTP server
@@ -139,57 +156,3 @@ touch #234
 
 If you are committing on `master , then make sure to end your commit message
 with "IN MASTER" so we know who to blame when stuff breaks.
-
-Deploying
----------
-
-You'll need the following tools:
-
-* Git
-* Python (we strongly recommend you use virtualenv too)
-* PostgreSQL
-* NodeJS
-
-Set yourself up with a virtual environment and run the following:
-
-```
-git clone https://github.com/Inboxen/Inboxen.git
-cd Inboxen
-pip install -r requirements.txt
-mkdir node_modules
-npm install
-```
-
-After this has completed, see the next section on minimum configuration. Also,
-`settings.py` is well commented and explains what various configuration options
-do.
-
-We tag our deployments (you should too) - we use signed annotated tags (`git
-tag -as deploy-YYYYMMDD`). The tag should contain the changelog for development
-since the last deploy tag. This is particularly useful for rollbacks and keeps
-a record of deployments that's separate from git history.
-
-Please remember to sign tags with your GPG key.
-
-### settings.ini
-
-At the very least, this file should contain the following:
-
-```
-[general]
-secret_key = some_random_string
-```
-
-Where `some_random_string` is a long (at least a length of 50) string,
-containing random characters.
-
-### Web Server
-
-The WSGI script can be found at `inboxen/wsgi.py`
-
-### Static Files
-
-Static files are collected into `./static_content/`. You should configure your
-web server to point the URL `/static/` to this folder.
-
-Remember to run `python manage.py collectstatic`!
