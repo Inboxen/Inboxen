@@ -33,9 +33,8 @@
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         {% if user.is_authenticated %}
-                            <li><a id="add-inbox" href="{% url 'inbox-add' %}" data-form-url="{% url 'form-inbox-add' %}"><span class="fa" aria-hidden="true"></span>{% trans "Add Inbox" %}</a></li>
-                            <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                             <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
+                            <li><a href="{% url 'blog' %}">{% trans "Blog" %}</a></li>
                             <li><a href="{% url 'cms-index' '' %}">{% trans "Help" %}</a></li>
                             <li><a href="{% url 'user-logout' %}">{% trans "Logout" %}</a></li>
                         {% else %}
