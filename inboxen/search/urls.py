@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2014-2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2013 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,13 +17,10 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-import base64
+from django.conf import urls
 
-SEARCH_VERSION = 1  # bump this any time you change how the cache key workds
+from inboxen.search.views import search_api
 
-
-def create_search_cache_key(user_id, search_term, before, after):
-    key = "{}{}{}{}{}".format(SEARCH_VERSION, user_id, before, after, search_term)
-    key = base64.b64encode(key.encode()).decode()
-
-    return key
+urlpatterns = [
+    urls.url(r'^searchapi/$', search_api, name='api'),
+]

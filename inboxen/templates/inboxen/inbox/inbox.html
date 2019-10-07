@@ -2,6 +2,8 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n inboxen_flags %}
 
+{% block header %}{% include "search/includes/refresh.html" %}{% endblock %}
+
 {% block headline %}{{ headline }}{% endblock %}
 
 {% block breadcumbs %}
@@ -16,49 +18,66 @@
 {% endblock %}
 
 {% block content %}
-<form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}" data-inbox-name=".breadcrumb .active" data-button-container=".inbox-btn-group" data-button-classes="btn btn-default" data-button-text="{% trans "Copy inbox address" %}">
-    {% csrf_token %}
-    <div class="inbox-btn-group">
-    <button class="btn btn-default" type="submit" name="important"><span class="fa fa-star" aria-hidden="true"></span>{% trans "Important" %}</button>
-    <button class="btn btn-default" type="submit" name="unimportant"><span class="fa fa-star-o" aria-hidden="true"></span>{% trans "Unimportant" %}</button>
-    <button class="btn btn-danger" type="submit" name="delete"><span class="fa fa-trash" aria-hidden="true"></span>{% trans "Delete" %}</button>
-    {% if inbox %}
-        <a class="btn btn-default inbox-edit pull-right undo-pull-right-sm" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
-                data-inbox-id="{{ inbox }}@{{ domain }}">
-            <span class="fa fa-cog" aria-hidden="true"></span>{% trans "Inbox Options" %}
-        </a>
-    {% endif %}
-    </div>
-
-    <div class="honeydew">
-        {% for email in page_obj.object_list %}
-            {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.get_bools_for_labels inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
-        {% empty %}
-            <div class="row empty-message">
-                <span class="clickable">
-                    <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
-                </span>
-            </div>
-        {% endfor %}
+{% if inbox %}
+    {% url "single-inbox-search" inbox=inbox domain=domain as search_url %}
+{% else %}
+    {% url "unified-inbox-search" as search_url %}
+{% endif %}
+<form id="inboxen-search-box" class="form" action="{{ search_url }}">
+    <div class="input-group">
+        <label class="sr-only">Search Emails</label>
+        <input type="text" class="form-control" name="q" value="{{ query }}">
+        <span class="input-group-btn">
+            <button class="btn btn-default">Search</button>
+        </span>
     </div>
 </form>
-{% if inbox %}
-    {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
+{% if not waiting %}
+    <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}" data-inbox-name=".breadcrumb .active" data-button-container=".inbox-btn-group" data-button-classes="btn btn-default" data-button-text="{% trans "Copy inbox address" %}">
+        {% csrf_token %}
+        <div class="inbox-btn-group">
+        <button class="btn btn-default" type="submit" name="important"><span class="fa fa-star" aria-hidden="true"></span>{% trans "Important" %}</button>
+        <button class="btn btn-default" type="submit" name="unimportant"><span class="fa fa-star-o" aria-hidden="true"></span>{% trans "Unimportant" %}</button>
+        <button class="btn btn-danger" type="submit" name="delete"><span class="fa fa-trash" aria-hidden="true"></span>{% trans "Delete" %}</button>
+        {% if inbox %}
+            <a class="btn btn-default inbox-edit pull-right undo-pull-right-sm" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
+                    data-inbox-id="{{ inbox }}@{{ domain }}">
+                <span class="fa fa-cog" aria-hidden="true"></span>{% trans "Inbox Options" %}
+            </a>
+        {% endif %}
+        </div>
+        <div class="honeydew">
+            {% for email in page_obj.object_list %}
+                {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.get_bools_for_labels inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
+            {% empty %}
+                <div class="row empty-message">
+                    <span class="clickable">
+                        <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </form>
+    {% if inbox %}
+        {% url 'single-inbox' inbox=inbox domain=domain as inbox_url %}
+    {% else %}
+        {% url 'unified-inbox' as inbox_url %}
+    {% endif %}
+
+    <ul class="pager">
+        {% if page_obj.has_previous %}
+            <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">
+                <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
+            </a></li>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <li class="next"><a href="{{ inbox_url }}{{ page_obj.next_page_number }}/">
+                <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
+            </a></li>
+        {% endif %}
+    </ul>
 {% else %}
-    {% url 'unified-inbox' as inbox_url %}
+    {% include "search/includes/status.html" %}
 {% endif %}
-
-<ul class="pager">
-    {% if page_obj.has_previous %}
-        <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">
-            <span aria-hidden="true">&laquo;</span><span class="sr-only">{% trans "Previous" %}</span>
-        </a></li>
-    {% endif %}
-
-    {% if page_obj.has_next %}
-        <li class="next"><a href="{{ inbox_url }}{{ page_obj.next_page_number }}/">
-            <span aria-hidden="true">&raquo;</span><span class="sr-only">{% trans "Next" %}</span>
-        </a></li>
-    {% endif %}
-</ul>
 {% endblock %}

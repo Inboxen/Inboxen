@@ -36,6 +36,16 @@ class FuzzyBinary(factory.fuzzy.FuzzyText):
         return fuzz.encode("utf-8")
 
 
+class SearchFactoryMixin:
+    @classmethod
+    def _create(cls, *args, **kwargs):
+        obj = super()._create(*args, **kwargs)
+        obj.update_search()
+        obj.save()
+
+        return obj
+
+
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = get_user_model()
@@ -61,14 +71,14 @@ class DomainFactory(factory.django.DjangoModelFactory):
     domain = factory.Sequence(lambda n: "example%d.com" % n)
 
 
-class InboxFactory(factory.django.DjangoModelFactory):
+class InboxFactory(SearchFactoryMixin, factory.django.DjangoModelFactory):
     class Meta:
         model = models.Inbox
 
     domain = factory.SubFactory(DomainFactory)
 
 
-class EmailFactory(factory.django.DjangoModelFactory):
+class EmailFactory(SearchFactoryMixin, factory.django.DjangoModelFactory):
     class Meta:
         model = models.Email
 

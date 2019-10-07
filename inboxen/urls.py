@@ -36,25 +36,36 @@ urlpatterns = [
     urls.url(r'^stats/$', views.stats, name='stats'),
     urls.url(r'^stats_recent.json$', views.stats_recent, name='stats_recent'),
 
-    # inbox views
+    # inbox add/edit views
     urls.url(r'^inbox/add/$', views.InboxAddView.as_view(), name='inbox-add'),
     urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
              views.InboxEditView.as_view(), name='inbox-edit'),
     urls.url(r'^inbox/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
              views.InboxDisownView.as_view(), name='inbox-disown'),
 
+    # email views
     urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/download/$',
              views.AttachmentDownloadView.as_view(), name='email-attachment'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)/$',
              views.EmailView.as_view(), name='email-view'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<email>[a-fA-F0-9]+)/download/$',
              views.download_email, name='download-email-view'),
+
+    # inbox view
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)/$',
              views.SingleInboxView.as_view(), name='single-inbox'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
              views.SingleInboxView.as_view(), name='single-inbox'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/search/(?P<q>.*)/$',
+             views.SingleInboxView.as_view(), name='single-inbox-search'),
+    urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/search/$',
+             views.SingleInboxView.as_view(), name='single-inbox-search'),
+
+    # unified inbox view
     urls.url(r'^inbox/(?P<page>\d+)/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
     urls.url(r'^inbox/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
+    urls.url(r'^inbox/search/(?P<q>.*)/$', views.UnifiedInboxView.as_view(), name='unified-inbox-search'),
+    urls.url(r'^inbox/search/$', views.UnifiedInboxView.as_view(), name='unified-inbox-search'),
 
     # form inlines
     urls.url(r'^forms/inbox/add/$', views.FormInboxAddView.as_view(), name='form-inbox-add'),
@@ -66,9 +77,8 @@ urlpatterns = [
     # user views
     urls.url(r'^user/home/(?P<page>\d+)/$', views.UserHomeView.as_view(), name='user-home'),
     urls.url(r'^user/home/$', views.UserHomeView.as_view(), name='user-home'),
-    urls.url(r'^user/search/(?P<q>.*)/$', views.SearchView.as_view(), name='user-search'),
-    urls.url(r'^user/search/$', views.SearchView.as_view(), name='user-search'),
-    urls.url(r'^user/searchapi/(?P<q>.*)/$', views.SearchApiView.as_view(), name='user-searchapi'),
+    urls.url(r'^user/home/search/(?P<q>.*)/$', views.UserHomeView.as_view(), name='user-home-search'),
+    urls.url(r'^user/home/search/$', views.UserHomeView.as_view(), name='user-home-search'),
 
     # other apps
     urls.url(r'^blog/', urls.include("inboxen.blog.urls")),
@@ -77,6 +87,7 @@ urlpatterns = [
     urls.url(r'^user/account/', urls.include("inboxen.account.urls")),
     urls.url(r'^help/', urls.include("inboxen.cms.urls")),
     urls.url(r'^admin/', urls.include(("inboxen.cms.admin_urls", "cms"), namespace="admin")),
+    urls.url(r'^user/', urls.include(("inboxen.search.urls", "search"), namespace="search")),
 ]
 
 if settings.DEBUG:

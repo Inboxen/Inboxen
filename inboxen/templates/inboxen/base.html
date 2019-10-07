@@ -46,22 +46,6 @@
                             <li><a href="{% url 'cms-index' '' %}">{% trans "Help" %}</a></li>
                         {% endif %}
                     </ul>
-                    {% if user.is_authenticated %}
-                    <form
-                        id="inboxen-search-box"
-                        class="navbar-form navbar-right"
-                        method="GET"
-                        action="{% url 'user-search' %}"
-                    >
-                        <div class="input-group">
-                            <label class="sr-only">{% trans "Search emails and inboxes" %}</label>
-                            <input type="text" class="form-control" name="q" value="{{ query }}">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default">{% trans 'Search' %}</button>
-                            </span>
-                        </div>
-                    </form>
-                    {% endif %}
                 </div>
                 {% endblock %}
             </div>
