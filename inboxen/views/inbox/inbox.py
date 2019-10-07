@@ -22,7 +22,6 @@ from django.core.cache import cache
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.utils.translation import ugettext as _
 from django.views import generic
-from watson import search
 
 from inboxen import models
 from inboxen.search.views import SearchMixin
@@ -49,7 +48,6 @@ class InboxView(LoginRequiredMixin, SearchMixin, generic.ListView):
         qs = qs.viewable(self.request.user)
         return qs
 
-    @search.skip_index_update()
     def post(self, *args, **kwargs):
         qs = self.get_queryset()
 
@@ -196,9 +194,8 @@ class SingleInboxView(InboxView):
         context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
 
         if self.inbox_obj.new:
-            with search.skip_index_update():
-                self.inbox_obj.new = False
-                self.inbox_obj.save(update_fields=["new"])
+            self.inbox_obj.new = False
+            self.inbox_obj.save(update_fields=["new"])
 
         return context
 

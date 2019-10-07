@@ -62,7 +62,7 @@ class SearchTestCase(InboxenTestCase):
         result = tasks.search(self.user.id, "bazz", "inboxen.Inbox")
         self.assertEqual(result["results"], [])
 
-        # FieldError happens if you try to order by watson_rank when no results were found
+        # empty search and empty results
         result = tasks.search(self.user.id, "", "inboxen.Inbox")
         self.assertEqual(result["results"], [])
 

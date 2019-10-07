@@ -23,7 +23,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
 from django.views import generic
-from watson import search
 
 from inboxen import models
 from inboxen.utils.email import find_bodies, render_body
@@ -40,22 +39,20 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
     template_name = 'inboxen/inbox/email.html'
 
     def get(self, *args, **kwargs):
+        response = super(EmailView, self).get(*args, **kwargs)
+        if "all-headers" in self.request.GET:
+            self.object.view_all_headers = bool(int(self.request.GET["all-headers"]))
 
-        with search.skip_index_update():
-            out = super(EmailView, self).get(*args, **kwargs)
-            if "all-headers" in self.request.GET:
-                self.object.view_all_headers = bool(int(self.request.GET["all-headers"]))
-
-            self.object.read = True
-            self.object.seen = True
-            self.object.save(update_fields=["view_all_headers", "read", "seen"])
+        self.object.read = True
+        self.object.seen = True
+        self.object.save(update_fields=["view_all_headers", "read", "seen"])
 
         # pretend to be @csp_replace
-        out._csp_replace = {"style-src": ["'self'", "'unsafe-inline'"]}
+        response._csp_replace = {"style-src": ["'self'", "'unsafe-inline'"]}
         if getattr(self, "_has_images", False):
             # if we have images to display, allow loading over https
-            out._csp_replace["img-src"] = ["'self'", "https:"]
-        return out
+            response._csp_replace["img-src"] = ["'self'", "https:"]
+        return response
 
     def get_object(self, *args, **kwargs):
         # Convert the id from base 16 to 10
@@ -78,9 +75,8 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
         obj = self.get_object()
 
         if "important-toggle" in self.request.POST:
-            with search.skip_index_update():
-                obj.important = not bool(obj.important)
-                obj.save(update_fields=["important"])
+            obj.important = not bool(obj.important)
+            obj.save(update_fields=["important"])
 
         return HttpResponseRedirect(self.get_success_url())
 

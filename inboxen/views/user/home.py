@@ -21,7 +21,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.views import generic
-from watson import search
 
 from inboxen import models
 from inboxen.search.views import SearchMixin
@@ -44,7 +43,6 @@ class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
         qs = qs.viewable(self.request.user).add_last_activity().select_related("domain")
         return qs
 
-    @search.skip_index_update()
     def post(self, *args, **kwargs):
         qs = self.get_queryset().filter(disabled=False)
         try:
