@@ -29,7 +29,6 @@ from django.db import IntegrityError, transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, StdDev, Sum, When
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-from watson import search as watson_search
 
 from inboxen import models
 from inboxen.celery import app
@@ -146,10 +145,9 @@ def inbox_new_flag(user_id, inbox_id=None):
         profile.unified_has_new_messages = False
         profile.save(update_fields=["unified_has_new_messages"])
     else:
-        with watson_search.skip_index_update():
-            inbox = models.Inbox.objects.get(user__id=user_id, id=inbox_id)
-            inbox.new = False
-            inbox.save(update_fields=["new"])
+        inbox = models.Inbox.objects.get(user__id=user_id, id=inbox_id)
+        inbox.new = False
+        inbox.save(update_fields=["new"])
 
 
 @app.task(ignore_result=True)
@@ -158,9 +156,8 @@ def deal_with_flags(email_id_list, user_id, inbox_id=None):
     "new" flags on affected Inbox objects
     """
     with transaction.atomic():
-        with watson_search.skip_index_update():
-            # update seen flags
-            models.Email.objects.filter(id__in=email_id_list).update(seen=True)
+        # update seen flags
+        models.Email.objects.filter(id__in=email_id_list).update(seen=True)
 
     if inbox_id is None:
         # grab affected inboxes

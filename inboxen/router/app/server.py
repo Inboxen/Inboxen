@@ -23,7 +23,6 @@ from django.conf import settings
 from django.db import DatabaseError, transaction
 from salmon.routing import nolocking, route, stateless
 from salmon.server import Relay, SMTPError
-from watson import search
 
 from inboxen.models import Inbox
 from inboxen.router.app.helpers import make_email
@@ -64,9 +63,8 @@ def process_message(message, inbox=None, domain=None):
 
         make_email(message, inbox)
 
-        with search.skip_index_update():
-            inbox.new = True
-            inbox.save(update_fields=["new"])
+        inbox.new = True
+        inbox.save(update_fields=["new"])
 
         if not inbox.exclude_from_unified:
             profile = inbox.user.inboxenprofile

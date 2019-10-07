@@ -22,7 +22,6 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from pytz import utc
-from watson import search
 import factory
 import factory.fuzzy
 
@@ -117,14 +116,13 @@ class FullEmailFactory(EmailFactory):
     """
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        with search.update_index():
-            email = super(FullEmailFactory, cls)._create(model_class, *args, **kwargs)
-            body = BodyFactory(data="This mail body is searchable")
-            part = PartListFactory(email=email, body=body)
-            HeaderFactory(part=part, name="From")
-            HeaderFactory(part=part, name="Subject")
-            HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")
-            email.update_search()
-            email.save()
+        email = super(FullEmailFactory, cls)._create(model_class, *args, **kwargs)
+        body = BodyFactory(data="This mail body is searchable")
+        part = PartListFactory(email=email, body=body)
+        HeaderFactory(part=part, name="From")
+        HeaderFactory(part=part, name="Subject")
+        HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")
+        email.update_search()
+        email.save()
 
         return email

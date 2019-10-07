@@ -26,20 +26,11 @@ class InboxenConfig(AppConfig):
 
     def ready(self):
         from django.contrib.auth.signals import user_logged_in, user_logged_out
-        from watson import search as watson_search
 
         from inboxen import checks  # noqa
         from inboxen import signals
-        from inboxen.search import watson as search
-
-        Inbox = self.get_model("Inbox")
-        Email = self.get_model("Email")
 
         # Unregister update_last_login handler
         assert user_logged_in.disconnect(dispatch_uid='update_last_login'), "Last login not disconnected"
-
-        # Search
-        watson_search.register(Email, search.EmailSearchAdapter)
-        watson_search.register(Inbox, search.InboxSearchAdapter)
 
         user_logged_out.connect(signals.logout_message, dispatch_uid='inboxen_logout_message')
