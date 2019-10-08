@@ -22,8 +22,15 @@ import base64
 SEARCH_VERSION = 1  # bump this any time you change how the cache key workds
 
 
-def create_search_cache_key(user_id, search_term, before, after):
-    key = "{}{}{}{}{}".format(SEARCH_VERSION, user_id, before, after, search_term)
+def create_search_cache_key(user_id, query, model, before, after):
+    key = "{version}{user}{model}{before}{after}{query}".format(
+        version=SEARCH_VERSION,
+        user=user_id,
+        model=model,
+        before=before,
+        after=after,
+        query=query,
+    )
     key = base64.b64encode(key.encode()).decode()
 
     return key

@@ -40,7 +40,8 @@ class SearchMixin:
         return super().dispatch(request, *args, **kwargs)
 
     def get_cache_key(self):
-        return create_search_cache_key(self.request.user.id, self.query, self.first_item, self.last_item)
+        return create_search_cache_key(self.request.user.id, self.query, self.model._meta.label,
+                                       self.first_item, self.last_item)
 
     @cached_property
     def results(self):

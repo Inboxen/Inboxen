@@ -67,7 +67,7 @@ def search(user_id, search_term, model, before=None, after=None):
         results["last"] = paginator.cursor(page[-1])
         results["first"] = paginator.cursor(page[0])
 
-    key = create_search_cache_key(user_id, search_term, before, after)
+    key = create_search_cache_key(user_id, search_term, model, before, after)
     cache.set(key, results, SEARCH_TIMEOUT)
 
     return results
