@@ -55,14 +55,14 @@ class MockRequest(HttpRequest):
         self.META = {"REMOTE_ADDR": "127.0.0.1"}
 
         # sudo
-        ElevateMiddleware().process_request(self)
+        ElevateMiddleware(lambda x: x)(self)
         if has_sudo:
             grant_sudo(self)
 
         # otp
         if has_otp:
             grant_otp(self, self.user)
-        OTPMiddleware().process_request(self)
+        OTPMiddleware(lambda x: x)(self)
 
 
 # TODO: submit to django-elevate?
