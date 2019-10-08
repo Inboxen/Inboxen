@@ -571,7 +571,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.url = urls.reverse("single-inbox-search", kwargs={"q": "cheddär",
                                                                "inbox": self.inbox.inbox,
                                                                "domain": self.inbox.domain.domain})
-        self.key = create_search_cache_key(self.user.id, "cheddär", None, None)
+        self.key = create_search_cache_key(self.user.id, "cheddär", models.Email._meta.label, None, None)
 
         if not login:
             raise Exception("Could not log in")

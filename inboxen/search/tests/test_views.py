@@ -36,7 +36,7 @@ class SearchApiViewTestCase(InboxenTestCase):
 
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
-        self.key = create_search_cache_key(self.user.id, "cheddår", None, None)
+        self.key = create_search_cache_key(self.user.id, "cheddår", "inboxen.Inbox",  None, None)
         self.url = "%s?token=%s" % (
             urls.reverse("search:api"),
             self.key,
