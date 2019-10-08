@@ -49,8 +49,6 @@ setup(
         "django-elevate",
         "django-two-factor-auth>=1.5.0",
         "django-watson>=1.2.0",
-        # 0.8.6 and later require text-unidecode, which is incompatible with the AGPL :(
-        "faker==0.8.5",
         "factory-boy",
         "jsmin",
         "lxml",
