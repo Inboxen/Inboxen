@@ -588,7 +588,7 @@ class SearchViewTestCase(InboxenTestCase):
     def test_content(self):
         cache.set(self.key, {"results": []})
         response = self.client.get(self.url)
-        self.assertIn(u"This Inbox is <span title=\"The opposite of full.\">empty</span>.",
+        self.assertIn(u"No emails containing <i>cheddär</i>",
                       response.content.decode("utf-8"))
 
     def test_get(self):

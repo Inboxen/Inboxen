@@ -24,6 +24,8 @@ $honeydew-button-size: 1em;
 // width is relative to viewport size, so add in some slack to account for
 // gutters, etc.
 $chart-width: 90vw;
+// button padding
+$button-margin: 5px;
 
 html {
     position: relative;
@@ -79,7 +81,7 @@ body {
         margin-left: initial;
         margin-right: initial;
 
-        & > .clickable > div {
+        & > .clickable > div, &.empty-message > div  {
             padding: $table-cell-padding;
         }
 
@@ -124,12 +126,13 @@ body {
 }
 
 #inboxen-search-box {
-    margin-bottom: $grid-gutter-width;
+    margin-bottom: ceil(($grid-gutter-width / 2));
 }
 
 @media (min-width: $screen-md-min) {
     #inboxen-search-box {
         float: right;
+        margin-left: $button-margin;
     }
 }
 
@@ -180,7 +183,7 @@ body {
     text-align: right;
 
     .close {
-        margin: 5px;
+        margin: $button-margin;
         display: inline-block;
         float: none;
     }
@@ -192,7 +195,7 @@ body {
 }
 
 .btn > .fa, .nav .fa {
-    margin-right: 5px;
+    margin-right: $button-margin;
 }
 
 a.soon {
@@ -252,7 +255,7 @@ a.soon {
 }
 
 .inbox-btn-group .btn {
-    margin-bottom: 5px;
+    margin-bottom: $button-margin;
 }
 
 .index-heading {
