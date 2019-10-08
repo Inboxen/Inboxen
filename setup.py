@@ -50,7 +50,6 @@ setup(
         "django-two-factor-auth>=1.5.0",
         "django-watson>=1.2.0",
         "factory-boy",
-        "jsmin",
         "lxml",
         # make sure django-phonenumbers uses the smaller package
         "phonenumberslite",

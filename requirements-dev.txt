@@ -42,7 +42,6 @@ filelock==3.0.12          # via tox
 idna==2.8                 # via requests
 importlib-metadata==0.23  # via pluggy, tox
 isort==4.3.21
-jsmin==2.2.2
 kombu==4.5.0
 lmtpd==6.0.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
