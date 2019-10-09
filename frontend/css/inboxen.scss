@@ -112,6 +112,17 @@ body {
     }
 }
 
+.table-honeydew {
+    // old table style, still used by two-factor backup
+    border: 1px solid #ddd;
+    border-collapse: separate;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 #inboxen-search-box {
     margin-bottom: $grid-gutter-width;
 }
