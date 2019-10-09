@@ -8,7 +8,12 @@
 
 {% block breadcumbs %}
     <ul class="breadcrumb">
+        {% if query %}
+        <li><a href="{% url 'user-home' %}">{% blocktrans %}{{ user }}'s Home{% endblocktrans %}</a></li>
+        <li class="active">{% blocktrans %}Search: {{ query }}{% endblocktrans %}</li>
+        {% else %}
         <li class="active">{% blocktrans %}{{ user }}'s Home{% endblocktrans %}</li>
+        {% endif %}
     </ul>
 {% endblock %}
 
@@ -32,6 +37,7 @@
             <div class="{{ col3 }} hidden-xs hidden-sm">&nbsp;</div>
             <div class="{{ col4 }} hidden-xs hidden-sm">{% trans "Description" %}</div>
         </div>
+        {% if not query %}
         <div id="unified" class="row">
             <span class="clickable">
                 <div class="{{ col0 }}">
@@ -47,20 +53,17 @@
                 <div class="{{ col4 }}">&nbsp;</div>
             </a>
         </div>
+        {% endif %}
         {% for inbox in page_obj.object_list %}
             {% include "inboxen/includes/inbox_line.html" with inbox=inbox.inbox domain=inbox.domain.domain flags=inbox.get_bools_for_labels last_activity=inbox.last_activity desc=inbox.description %}
         {% empty %}
+            <div class="row empty-message">
             {% if query %}
-            <div class="row empty-message">
-                    <div class="col-xs-12"><i>{% trans "No inboxes found" %}</i></div>
-            </div>
+                <div class="col-xs-12">{% blocktrans %}No inboxes found containing <i>{{ query }}</i>{% endblocktrans %}</div>
             {% else %}
-            <div class="row empty-message">
-                <a href="{% url 'inbox-add' %}" class="clickable">
-                    <div class="col-xs-12"><b>{% trans "Click here to add an Inbox" %}</b></div>
-                </a>
-            </div>
+                    <div class="col-xs-12">{% trans "Click here to add an Inbox" %}</div>
             {% endif %}
+            </div>
         {% endfor %}
     </div>
     {% endwith %}

@@ -232,7 +232,7 @@ class SearchViewTestCase(InboxenTestCase):
     def test_content(self):
         cache.set(self.key, {"results": []})
         response = self.client.get(self.url)
-        self.assertIn(u"<i>No inboxes found</i>", response.content.decode("utf-8"))
+        self.assertIn(u"No inboxes found containing <i>cheddär</i>", response.content.decode("utf-8"))
 
     def test_get(self):
         cache.set(self.key, {"results": []})

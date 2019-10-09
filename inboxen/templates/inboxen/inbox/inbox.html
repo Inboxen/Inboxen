@@ -10,9 +10,19 @@
     <ul id="{{ inbox }}@{{ domain }}" class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
         {% if inbox %}
+            {% if query %}
+            <li><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></li>
+            <li class="active">{% blocktrans %}Search: {{ query }}{% endblocktrans %}</li>
+            {% else %}
             <li class="active">{{ inbox }}@{{ domain }}</li>
+            {% endif %}
         {% else %}
+            {% if query %}
+            <li><a href="{% url "unified-inbox" %}">{% trans "Unified Inbox" %}</a></li>
+            <li class="active">{% blocktrans %}Search: {{ query }}{% endblocktrans %}</li>
+            {% else %}
             <li class="active">{% trans "Unified Inbox" %}</li>
+            {% endif %}
         {% endif %}
     </ul>
 {% endblock %}
@@ -50,11 +60,13 @@
             {% for email in page_obj.object_list %}
                 {% include "inboxen/includes/email_line.html" with eid=email.eid flags=email.get_bools_for_labels inbox=email.inbox.inbox domain=email.inbox.domain.domain received_date=email.received_date subject=email.subject sender=email.sender %}
             {% empty %}
-                <div class="row empty-message">
-                    <span class="clickable">
-                        <div class="col-xs-12">{% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}</div>
-                    </span>
-                </div>
+                <div class="row empty-message"><div class="col-xs-12">
+                {% if query %}
+                    {% blocktrans %}No emails containing <i>{{ query }}</i>.{% endblocktrans %}
+                {% else %}
+                    {% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}
+                {% endif %}
+                </div></div>
             {% endfor %}
         </div>
     </form>
