@@ -83,7 +83,7 @@ class LoginTestCase(InboxenTestCase):
         self.assertEqual(login, True)
 
         user = get_user_model().objects.get(id=self.user.id)
-        self.assertEqual(user.last_login, None)
+        self.assertNotEqual(user.last_login, None)
 
     def test_normal_login(self):
         response = self.client.get(urls.reverse("user-home"))
