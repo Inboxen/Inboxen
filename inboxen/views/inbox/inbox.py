@@ -24,6 +24,8 @@ from django.utils.translation import ugettext as _
 from django.views import generic
 
 from inboxen import models
+from inboxen.search.tasks import search_single_inbox, search_unified_inbox
+from inboxen.search.utils import create_search_cache_key
 from inboxen.search.views import SearchMixin
 from inboxen.tasks import deal_with_flags, delete_inboxen_item
 from inboxen.utils.tasks import task_group_skew
@@ -175,6 +177,25 @@ class UnifiedInboxView(InboxView):
         except Http404:
             return HttpResponseRedirect(self.get_success_url())
 
+    def search_task(self):
+        kwargs = {
+            "user_id": self.request.user.id,
+            "search_term": self.query,
+            "before": self.first_item,
+            "after": self.last_item,
+        }
+
+        return search_unified_inbox.apply_async(kwargs=kwargs)
+
+    def get_cache_key(self):
+        return create_search_cache_key(
+            self.request.user.id,
+            self.query,
+            "inbox:unified",
+            self.first_item,
+            self.last_item,
+        )
+
 
 class SingleInboxView(InboxView):
     """View a single inbox"""
@@ -204,3 +225,23 @@ class SingleInboxView(InboxView):
             return super(SingleInboxView, self).post(*args, **kwargs)
         except Http404:
             return HttpResponseRedirect(self.get_success_url())
+
+    def search_task(self):
+        kwargs = {
+            "user_id": self.request.user.id,
+            "search_term": self.query,
+            "inbox": str(self.inbox_obj),
+            "before": self.first_item,
+            "after": self.last_item,
+        }
+
+        return search_single_inbox.apply_async(kwargs=kwargs)
+
+    def get_cache_key(self):
+        return create_search_cache_key(
+            self.request.user.id,
+            self.query,
+            "inbox:{}".format(self.inbox_obj),
+            self.first_item,
+            self.last_item,
+        )

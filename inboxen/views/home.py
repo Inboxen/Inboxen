@@ -23,6 +23,8 @@ from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.views import generic
 
 from inboxen import models
+from inboxen.search.tasks import search_home_page
+from inboxen.search.utils import create_search_cache_key
 from inboxen.search.views import SearchMixin
 
 __all__ = ["UserHomeView", "FormHomeView"]
@@ -54,6 +56,25 @@ class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
         inbox.save(update_fields=["pinned"])
 
         return HttpResponseRedirect(self.request.path)
+
+    def search_task(self):
+        kwargs = {
+            "user_id": self.request.user.id,
+            "search_term": self.query,
+            "before": self.first_item,
+            "after": self.last_item,
+        }
+
+        return search_home_page.apply_async(kwargs=kwargs)
+
+    def get_cache_key(self):
+        return create_search_cache_key(
+            self.request.user.id,
+            self.query,
+            "home",
+            self.first_item,
+            self.last_item,
+        )
 
 
 class FormHomeView(UserHomeView):

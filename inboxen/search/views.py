@@ -26,9 +26,6 @@ from django.db.models import Case, When
 from django.utils.functional import cached_property
 from django.views.decorators.http import require_http_methods
 
-from inboxen.search import tasks
-from inboxen.search.utils import create_search_cache_key
-
 TIMEOUT = 1
 
 
@@ -40,8 +37,10 @@ class SearchMixin:
         return super().dispatch(request, *args, **kwargs)
 
     def get_cache_key(self):
-        return create_search_cache_key(self.request.user.id, self.query, self.model._meta.label,
-                                       self.first_item, self.last_item)
+        raise NotImplementedError
+
+    def search_task(self):
+        raise NotImplementedError
 
     @cached_property
     def results(self):
@@ -54,14 +53,9 @@ class SearchMixin:
 
         result = cache.get(self.get_cache_key())
         if result is None or settings.CELERY_TASK_ALWAYS_EAGER:
-            if self.last_item:
-                task_kwargs = {"after": self.last_item}
-            else:
-                task_kwargs = {"before": self.first_item}
-            task_args = [self.request.user.id, self.query, self.model._meta.label]
-            search_task = tasks.search.apply_async(args=task_args, kwargs=task_kwargs)
+            search_task = self.search_task()
             result = {"task": search_task.id}
-            cache.set(self.get_cache_key(), result, tasks.SEARCH_TIMEOUT)
+            cache.set(self.get_cache_key(), result, settings.SEARCH_TIMEOUT)
         elif "task" in result:
             search_task = AsyncResult(result["task"])
         else:
@@ -71,6 +65,9 @@ class SearchMixin:
             return search_task.get(self.timeout)
         except exceptions.TimeoutError:
             return result or {}
+        except Exception:
+            # some error in the search task, so return an empty dict
+            return {}
 
     def get_search_queryset(self):
         if len(self.results.get("results", [])) > 0:
@@ -127,6 +124,8 @@ def search_api(request):
             search_task.get(TIMEOUT)
         except exceptions.TimeoutError:
             return http.HttpResponse(status=202)  # 202: still waiting for task
+        except Exception:
+            return http.HttpResponseBadRequest()  # 400: search task errored
         return http.HttpResponse(status=201)  # 201: search results ready
     elif result is not None:
         return http.HttpResponse(status=201)  # 201: search results ready

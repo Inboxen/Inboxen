@@ -219,7 +219,10 @@ INSTALLED_APPS = (
 
 ROOT_URLCONF = 'inboxen.urls'
 
+# search
 SEARCH_CONFIG = "english"
+SEARCH_TIMEOUT = 60 * 30  # 30 minutes
+SEARCH_PAGE_SIZE = 25
 
 LOGIN_URL = urls.reverse_lazy("user-login")
 LOGOUT_URL = urls.reverse_lazy("user-logout")

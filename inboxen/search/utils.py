@@ -19,14 +19,18 @@
 
 import base64
 
-SEARCH_VERSION = 1  # bump this any time you change how the cache key workds
+from cursor_pagination import CursorPaginator
+from django.conf import settings
+from django.core.cache import cache
+
+SEARCH_VERSION = 1  # bump this any time you change how the cache key words
 
 
-def create_search_cache_key(user_id, query, model, before, after):
-    key = "{version}{user}{model}{before}{after}{query}".format(
+def create_search_cache_key(user_id, query, identifier, before, after):
+    key = "{version}{user}{identifier}{before}{after}{query}".format(
         version=SEARCH_VERSION,
         user=user_id,
-        model=model,
+        identifier=identifier,
         before=before,
         after=after,
         query=query,
@@ -34,3 +38,34 @@ def create_search_cache_key(user_id, query, model, before, after):
     key = base64.b64encode(key.encode()).decode()
 
     return key
+
+
+def search(key, search_qs, before, after):
+    if before and after:
+        raise ValueError("You can't do this.")
+
+    page_kwargs = {
+        "after": after,
+        "before": before,
+    }
+    if before:
+        page_kwargs["last"] = settings.SEARCH_PAGE_SIZE
+    else:
+        page_kwargs["first"] = settings.SEARCH_PAGE_SIZE
+
+    paginator = CursorPaginator(search_qs, ordering=('-rank', '-id'))
+
+    page = paginator.page(**page_kwargs)
+    results = {
+        "results": [p.id for p in page],
+        "has_next": page.has_next,
+        "has_previous": page.has_previous,
+    }
+
+    if len(results["results"]) > 0:
+        results["last"] = paginator.cursor(page[-1])
+        results["first"] = paginator.cursor(page[0])
+
+    cache.set(key, results, settings.SEARCH_TIMEOUT)
+
+    return results
