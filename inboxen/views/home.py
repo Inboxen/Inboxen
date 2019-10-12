@@ -33,7 +33,7 @@ class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
     allow_empty = True
     model = models.Inbox
     paginate_by = 25
-    template_name = "inboxen/user/home.html"
+    template_name = "inboxen/home.html"
 
     def get_queryset(self):
         if self.query == "":

@@ -20,65 +20,68 @@
 from django.conf import settings, urls
 from django.conf.urls.static import static
 
-from inboxen import views
+from inboxen.views import attachment, email, error, home, index, manifest, stats, styleguide
+from inboxen.views.inbox import add as inbox_add
+from inboxen.views.inbox import edit as inbox_edit
+from inboxen.views.inbox import inbox
 
-urls.handler400 = views.error.bad_request
-urls.handler403 = views.error.permission_denied
-urls.handler404 = views.error.not_found
-urls.handler500 = views.error.server_error
+urls.handler400 = error.bad_request
+urls.handler403 = error.permission_denied
+urls.handler404 = error.not_found
+urls.handler500 = error.server_error
 
 
 urlpatterns = [
-    urls.url(r'^$', views.Index.as_view(), name='index'),
-    urls.url(r'^_csp_report/$', views.error.csp_report, name='csp_logger'),
-    urls.url(r'^manifest.json$', views.manifest, name='inboxen-manifest'),
+    urls.url(r'^$', index.Index.as_view(), name='index'),
+    urls.url(r'^_csp_report/$', error.csp_report, name='csp_logger'),
+    urls.url(r'^manifest.json$', manifest.manifest, name='inboxen-manifest'),
 
-    urls.url(r'^stats/$', views.stats, name='stats'),
-    urls.url(r'^stats_recent.json$', views.stats_recent, name='stats_recent'),
+    urls.url(r'^stats/$', stats.stats, name='stats'),
+    urls.url(r'^stats_recent.json$', stats.stats_recent, name='stats_recent'),
 
     # inbox add/edit views
-    urls.url(r'^inbox/add/$', views.InboxAddView.as_view(), name='inbox-add'),
+    urls.url(r'^inbox/add/$', inbox_add.InboxAddView.as_view(), name='inbox-add'),
     urls.url(r'^inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
-             views.InboxEditView.as_view(), name='inbox-edit'),
+             inbox_edit.InboxEditView.as_view(), name='inbox-edit'),
     urls.url(r'^inbox/delete/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
-             views.InboxDisownView.as_view(), name='inbox-disown'),
+             inbox_edit.InboxDisownView.as_view(), name='inbox-disown'),
 
     # email views
     urls.url(r'^inbox/attachment/(?P<attachmentid>\d+)/download/$',
-             views.AttachmentDownloadView.as_view(), name='email-attachment'),
+             attachment.AttachmentDownloadView.as_view(), name='email-attachment'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<id>[a-fA-F0-9]+)/$',
-             views.EmailView.as_view(), name='email-view'),
+             email.EmailView.as_view(), name='email-view'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/email/(?P<email>[a-fA-F0-9]+)/download/$',
-             views.download_email, name='download-email-view'),
+             attachment.download_email, name='download-email-view'),
 
     # inbox view
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/(?P<page>\d+)/$',
-             views.SingleInboxView.as_view(), name='single-inbox'),
+             inbox.SingleInboxView.as_view(), name='single-inbox'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
-             views.SingleInboxView.as_view(), name='single-inbox'),
+             inbox.SingleInboxView.as_view(), name='single-inbox'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/search/(?P<q>.*)/$',
-             views.SingleInboxView.as_view(), name='single-inbox-search'),
+             inbox.SingleInboxView.as_view(), name='single-inbox-search'),
     urls.url(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/search/$',
-             views.SingleInboxView.as_view(), name='single-inbox-search'),
+             inbox.SingleInboxView.as_view(), name='single-inbox-search'),
 
     # unified inbox view
-    urls.url(r'^inbox/(?P<page>\d+)/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
-    urls.url(r'^inbox/$', views.UnifiedInboxView.as_view(), name='unified-inbox'),
-    urls.url(r'^inbox/search/(?P<q>.*)/$', views.UnifiedInboxView.as_view(), name='unified-inbox-search'),
-    urls.url(r'^inbox/search/$', views.UnifiedInboxView.as_view(), name='unified-inbox-search'),
+    urls.url(r'^inbox/(?P<page>\d+)/$', inbox.UnifiedInboxView.as_view(), name='unified-inbox'),
+    urls.url(r'^inbox/$', inbox.UnifiedInboxView.as_view(), name='unified-inbox'),
+    urls.url(r'^inbox/search/(?P<q>.*)/$', inbox.UnifiedInboxView.as_view(), name='unified-inbox-search'),
+    urls.url(r'^inbox/search/$', inbox.UnifiedInboxView.as_view(), name='unified-inbox-search'),
 
     # form inlines
-    urls.url(r'^forms/inbox/add/$', views.FormInboxAddView.as_view(), name='form-inbox-add'),
-    urls.url(r'^forms/home/$', views.FormHomeView.as_view(), name='form-home'),
+    urls.url(r'^forms/inbox/add/$', inbox_add.FormInboxAddView.as_view(), name='form-inbox-add'),
+    urls.url(r'^forms/home/$', home.FormHomeView.as_view(), name='form-home'),
     urls.url(r'^forms/inbox/edit/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
-             views.FormInboxEditView.as_view(), name='form-inbox-edit'),
-    urls.url(r'^forms/inbox/email/$', views.FormInboxView.as_view(), name='form-inbox-email'),
+             inbox_edit.FormInboxEditView.as_view(), name='form-inbox-edit'),
+    urls.url(r'^forms/inbox/email/$', inbox.FormInboxView.as_view(), name='form-inbox-email'),
 
     # user views
-    urls.url(r'^user/home/(?P<page>\d+)/$', views.UserHomeView.as_view(), name='user-home'),
-    urls.url(r'^user/home/$', views.UserHomeView.as_view(), name='user-home'),
-    urls.url(r'^user/home/search/(?P<q>.*)/$', views.UserHomeView.as_view(), name='user-home-search'),
-    urls.url(r'^user/home/search/$', views.UserHomeView.as_view(), name='user-home-search'),
+    urls.url(r'^user/home/(?P<page>\d+)/$', home.UserHomeView.as_view(), name='user-home'),
+    urls.url(r'^user/home/$', home.UserHomeView.as_view(), name='user-home'),
+    urls.url(r'^user/home/search/(?P<q>.*)/$', home.UserHomeView.as_view(), name='user-home-search'),
+    urls.url(r'^user/home/search/$', home.UserHomeView.as_view(), name='user-home-search'),
 
     # other apps
     urls.url(r'^blog/', urls.include("inboxen.blog.urls")),
@@ -93,7 +96,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
-        urls.url(r'^styleguide$', views.styleguide, name='inboxen-styleguide'),
+        urls.url(r'^styleguide$', styleguide.styleguide, name='inboxen-styleguide'),
     ]
     try:
         import debug_toolbar  # NOQA

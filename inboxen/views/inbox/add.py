@@ -21,7 +21,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
 
-from inboxen import forms
+from inboxen.forms import inbox as inbox_forms
 from inboxen.models import Inbox
 
 __all__ = ["InboxAddView", "FormInboxAddView"]
@@ -29,7 +29,7 @@ __all__ = ["InboxAddView", "FormInboxAddView"]
 
 class InboxAddView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy('user-home')
-    form_class = forms.InboxAddForm
+    form_class = inbox_forms.InboxAddForm
     model = Inbox
     template_name = "inboxen/inbox/add.html"
 

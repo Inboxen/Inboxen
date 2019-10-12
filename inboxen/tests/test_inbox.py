@@ -28,8 +28,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.test import override_settings
 
-from inboxen import forms as inboxen_forms
 from inboxen import models
+from inboxen.forms import inbox as inboxen_forms
 from inboxen.search.utils import create_search_cache_key
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
