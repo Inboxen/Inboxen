@@ -36,7 +36,7 @@ _log = logging.getLogger(__name__)
 class EmailView(LoginRequiredMixin, generic.DetailView):
     model = models.Email
     pk_url_kwarg = "id"
-    template_name = 'inboxen/inbox/email.html'
+    template_name = 'inboxen/email.html'
 
     def get(self, *args, **kwargs):
         response = super(EmailView, self).get(*args, **kwargs)

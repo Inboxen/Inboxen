@@ -22,14 +22,14 @@ from django.http import Http404
 from django.urls import Resolver404, resolve, reverse, reverse_lazy
 from django.views import generic
 
-from inboxen import forms
+from inboxen.forms import inbox as inbox_forms
 from inboxen.models import Inbox
 
 __all__ = ["InboxEditView", "FormInboxEditView", "InboxDisownView"]
 
 
 class InboxEditView(LoginRequiredMixin, generic.UpdateView):
-    form_class = forms.InboxEditForm
+    form_class = inbox_forms.InboxEditForm
     template_name = "inboxen/inbox/edit.html"
     success_views = ["user-home", "unified-inbox", "single-inbox"]
 
@@ -69,7 +69,7 @@ class FormInboxEditView(InboxEditView):
 
 class InboxDisownView(LoginRequiredMixin, generic.UpdateView):
     template_name = "inboxen/inbox/disown.html"
-    form_class = forms.InboxDisownForm
+    form_class = inbox_forms.InboxDisownForm
     success_url = reverse_lazy("user-home")
 
     def get_object(self, *args, **kwargs):
