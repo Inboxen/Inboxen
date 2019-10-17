@@ -78,11 +78,13 @@ static:
 
 .PHONY: celery-stop
 celery-stop:
-	pkill -f "celery worker"
+	kill `cat run/worker.pid`
+	kill `cat run/beat.pid`
 
 .PHONY: celery-start
 celery-start:
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn -B -E -D -f celery.log
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn --events --detach -f logs/celery-worker.log --pidfile run/worker.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warn --detach -f logs/celery-beat.log --pidfile run/beat.pid
 
 .PHONY: salmon-stop
 salmon-stop:
