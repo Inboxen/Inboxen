@@ -214,7 +214,6 @@ INSTALLED_APPS = (
     'django_otp.plugins.otp_totp',
     'elevate',
     'two_factor',
-    'watson',
 )
 
 ROOT_URLCONF = 'inboxen.urls'

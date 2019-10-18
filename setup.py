@@ -48,7 +48,6 @@ setup(
         "django-sendfile2",
         "django-elevate",
         "django-two-factor-auth>=1.5.0",
-        "django-watson>=1.2.0",
         "factory-boy",
         "lxml",
         # make sure django-phonenumbers uses the smaller package

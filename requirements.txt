@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements.txt inboxen/data/requirements.in
 #
--e git+https://github.com/etianen/django-watson@500a410f38d2e8053f0a2e0ac850522211a3b206#egg=django-watson
 -e .
 amqp==2.4.2
 babel==2.7.0              # via django-phonenumber-field

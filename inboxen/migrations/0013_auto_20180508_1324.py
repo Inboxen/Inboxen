@@ -6,9 +6,7 @@ from django.db import migrations
 
 
 def rebuild_watson(apps, schema_editor):
-    # migration made into a no-op because the buildwatson command won't be able
-    # to see new fields. buildwatson can be called manually after migrating if
-    # needed
+    # this does nothing as we no longer user watson
     pass
 
 
@@ -16,7 +14,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('inboxen', '0013_remove_userprofile_pool_amount'),
-        ('watson', '0001_initial'),
     ]
 
     operations = [
