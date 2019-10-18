@@ -2,6 +2,16 @@
 
 ## Releases
 
+### Deploy for 2019-10-18
+
+* Restore `update_last_login signal` in preparation for future work (#444)
+* Prevent attachments from over-expanding (#458)
+* Include source maps for JS and CSS assets (#462)
+* Remove redundant lambda functions
+* Move add inbox button (#467)
+* Simplify `find_bodies` code (#465)
+* Implement new search view (#412)
+
 ### Deploy for 2019-08-06
 
 * Remove WebAssets, we now use GruntJS to build static assets (#447)
