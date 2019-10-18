@@ -215,7 +215,7 @@ class SearchViewTestCase(InboxenTestCase):
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.url = urls.reverse("user-home-search", kwargs={"q": "cheddär"})
-        self.key = create_search_cache_key(self.user.id, "cheddär", models.Inbox._meta.label, None, None)
+        self.key = create_search_cache_key(self.user.id, "cheddär", "home", None, None)
 
         if not login:
             raise Exception("Could not log in")
@@ -240,7 +240,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    @mock.patch("inboxen.views.home.search_home_page.apply_async")
     def test_get_task_run(self, task_mock):
         task_mock.return_value.id = "abc"
         task_mock.return_value.get.side_effect = exceptions.TimeoutError
@@ -251,8 +251,12 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertEqual(task_mock.call_count, 1)
         self.assertEqual(task_mock.return_value.get.call_count, 1)
 
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Inbox"],
-                                                    "kwargs": {"before": None}}))
+        self.assertEqual(task_mock.call_args, ((), {"kwargs": {
+            "user_id": self.user.id,
+            "search_term": u"cheddär",
+            "before": None,
+            "after": None,
+        }}))
         self.assertEqual(response.context["waiting"], True)
         self.assertNotIn("has_next", response.context)
         self.assertNotIn("has_previous", response.context)
@@ -260,7 +264,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertNotIn("first", response.context)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    @mock.patch("inboxen.views.home.search_home_page.apply_async")
     def test_get_cached_result(self, task_mock):
         inbox = factories.InboxFactory(user=self.user)
 
@@ -304,7 +308,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertNotIn("last", response.context)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    @mock.patch("inboxen.views.home.search_home_page.apply_async")
     def test_get_with_after_param(self, task_mock):
         task_mock.return_value.id = "abc"
         task_mock.return_value.get.side_effect = exceptions.TimeoutError
@@ -315,8 +319,12 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertEqual(task_mock.call_count, 1)
         self.assertEqual(task_mock.return_value.get.call_count, 1)
 
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Inbox"],
-                                                    "kwargs": {"after": "blahblah"}}))
+        self.assertEqual(task_mock.call_args, ((), {"kwargs": {
+            "user_id": self.user.id,
+            "search_term": u"cheddär",
+            "before": None,
+            "after": "blahblah",
+        }}))
         self.assertEqual(response.context["waiting"], True)
         self.assertNotIn("has_next", response.context)
         self.assertNotIn("has_previous", response.context)
@@ -324,7 +332,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertNotIn("first", response.context)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    @mock.patch("inboxen.views.home.search_home_page.apply_async")
     def test_get_with_before_param(self, task_mock):
         task_mock.return_value.id = "abc"
         task_mock.return_value.get.side_effect = exceptions.TimeoutError
@@ -335,8 +343,12 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertEqual(task_mock.call_count, 1)
         self.assertEqual(task_mock.return_value.get.call_count, 1)
 
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Inbox"],
-                                                    "kwargs": {"before": "blahblah"}}))
+        self.assertEqual(task_mock.call_args, ((), {"kwargs": {
+            "user_id": self.user.id,
+            "search_term": u"cheddär",
+            "before": "blahblah",
+            "after": None,
+        }}))
         self.assertEqual(response.context["waiting"], True)
         self.assertNotIn("has_next", response.context)
         self.assertNotIn("has_previous", response.context)
@@ -344,7 +356,7 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertNotIn("first", response.context)
 
     @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
-    @mock.patch("inboxen.search.views.tasks.search.apply_async")
+    @mock.patch("inboxen.views.home.search_home_page.apply_async")
     def test_get_with_before_and_after_param(self, task_mock):
         task_mock.return_value.id = "abc"
         task_mock.return_value.get.side_effect = exceptions.TimeoutError
@@ -355,9 +367,12 @@ class SearchViewTestCase(InboxenTestCase):
         self.assertEqual(task_mock.call_count, 1)
         self.assertEqual(task_mock.return_value.get.call_count, 1)
 
-        # before param should be ignored, task will raise an error otherwise
-        self.assertEqual(task_mock.call_args, ((), {"args": [self.user.id, u"cheddär", "inboxen.Inbox"],
-                                                    "kwargs": {"after": "blahblah"}}))
+        self.assertEqual(task_mock.call_args, ((), {"kwargs": {
+            "user_id": self.user.id,
+            "search_term": u"cheddär",
+            "before": "bluhbluh",
+            "after": "blahblah",
+        }}))
         self.assertEqual(response.context["waiting"], True)
         self.assertNotIn("has_next", response.context)
         self.assertNotIn("has_previous", response.context)
@@ -373,6 +388,19 @@ class SearchViewTestCase(InboxenTestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["waiting"], True)
+
+        self.assertEqual(result_mock.call_count, 1)
+        self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.AsyncResult")
+    def test_task_errored(self, result_mock):
+        cache.set(self.key, {"task": "blahblahblah"})
+        result_mock.return_value.get.side_effect = Exception
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["waiting"], False)
 
         self.assertEqual(result_mock.call_count, 1)
         self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))

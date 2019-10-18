@@ -81,3 +81,15 @@ class SearchApiViewTestCase(InboxenTestCase):
 
         self.assertEqual(result_mock.call_count, 1)
         self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=False)
+    @mock.patch("inboxen.search.views.AsyncResult")
+    def test_search_task_error(self, result_mock):
+        result_mock.return_value.get.side_effect = Exception
+        cache.cache.set(self.key, {"task": "blahblahblah"})
+
+        response = self.client.head(self.url)
+        self.assertEqual(response.status_code, 400)
+
+        self.assertEqual(result_mock.call_count, 1)
+        self.assertEqual(result_mock.call_args, (("blahblahblah",), {}))
