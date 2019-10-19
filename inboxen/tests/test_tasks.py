@@ -186,33 +186,58 @@ class DeleteTestCase(InboxenTestCase):
         # test with an empty list
         tasks.delete_inboxen_item.chunks([], 500)()
 
-    def test_batch_delete_items(self):
+    @mock.patch("inboxen.tasks._create_task_queryset")
+    def test_batch_delete_items_calls_create_task_queryset(self, mock_qs):
+        tasks.batch_delete_items("email", args=[12, 14])
+        self.assertEqual(mock_qs.call_count, 1)
+        self.assertEqual(mock_qs.call_args, (("email", [12, 14], None, None, None), {}))
+
+        tasks.batch_delete_items("email", kwargs={"a": "b"})
+        self.assertEqual(mock_qs.call_count, 2)
+        self.assertEqual(mock_qs.call_args, (("email", None, {"a": "b"}, None, None), {}))
+
+        tasks.batch_delete_items("email", args=[1, 2], kwargs={"a": "b"}, skip_items=2, limit_items=8)
+        self.assertEqual(mock_qs.call_count, 3)
+        self.assertEqual(mock_qs.call_args, (("email", [1, 2], {"a": "b"}, 2, 8), {}))
+
+        with mock.patch("inboxen.tasks.delete_inboxen_item") as mock_delete_task:
+            result = tasks.batch_delete_items("email")
+            self.assertEqual(mock_delete_task.chunks.call_count, 0)
+            self.assertEqual(result, None)
+
+            mock_qs.return_value.iterator.return_value = [mock.Mock(pk=1), mock.Mock(pk=2)]
+            result = tasks.batch_delete_items("email")
+            self.assertEqual(mock_delete_task.chunks.call_count, 1)
+            self.assertEqual(mock_delete_task.chunks.call_args, ((([("email", 1), ("email", 2)]), 500), {}))
+            self.assertNotEqual(result, None)
+
+    @mock.patch("inboxen.tasks._create_task_queryset")
+    def test_batch_mark_as_deleted(self, mock_qs):
+        tasks.batch_mark_as_deleted("email")
+        self.assertEqual(mock_qs.call_count, 1)
+        self.assertEqual(mock_qs.call_args, (("email", None, None, None, None), {}))
+        self.assertEqual(mock_qs.return_value.update.call_count, 1)
+        self.assertEqual(mock_qs.return_value.update.call_args, ((), {"deleted": True}))
+
+    def test_create_task_queryset(self):
+        factories.EmailFactory.create_batch(5)
+        emails = list(models.Email.objects.values_list("pk", flat=True))
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False})
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails)
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, skip_items=2)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[2:])
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, limit_items=3)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[:3])
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, skip_items=1, limit_items=2)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[1:][:2])
+
+    def test_create_task_queryset_exception(self):
         with self.assertRaises(Exception):
-            tasks.batch_delete_items("email")
-
-        mock_qs = mock.Mock()
-        mock_qs.filter.return_value.iterator.return_value = []
-        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
-            tasks.batch_delete_items("email", args=[12, 14])
-            self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((12, 14), {}))
-
-        mock_qs = mock.Mock()
-        mock_qs.filter.return_value.iterator.return_value = []
-        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
-            tasks.batch_delete_items("email", kwargs={"a": "b"})
-            self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
-
-        mock_qs = mock.Mock()
-        mock_qs.filter.return_value.iterator.return_value = [mock.Mock(pk=i) for i in range(12)]
-        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs), \
-                mock.patch("inboxen.tasks.delete_inboxen_item.chunks") as chunk_mock:
-            tasks.batch_delete_items("email", kwargs={"a": "b"}, skip_items=2, limit_items=6)
-            self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
-
-            self.assertEqual([i[1] for i in chunk_mock.call_args[0][0]], list(range(2, 8)))
+            tasks._create_task_queryset("email")
 
 
 class AutoDeleteEmailsTaskTestCase(InboxenTestCase):

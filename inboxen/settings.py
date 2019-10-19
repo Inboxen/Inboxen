@@ -39,6 +39,10 @@ INBOX_CHOICES = string.ascii_lowercase
 # email has to be before it will be considered for delition
 INBOX_AUTO_DELETE_TIME = 30
 
+# Pagination
+INBOX_PAGE_SIZE = 25
+HOME_PAGE_SIZE = 25
+
 ##
 # To override the following settings, create a separate settings module.
 # Import this module, override what you need to and set the environment
