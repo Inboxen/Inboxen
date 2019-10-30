@@ -218,7 +218,8 @@ def _create_task_queryset(model, args=None, kwargs=None, skip_items=None, limit_
 def batch_mark_as_deleted(model, args=None, kwargs=None, skip_items=None, limit_items=None):
     """Marks emails as deleted, but don't actually delete them"""
     items = _create_task_queryset(model, args, kwargs, skip_items, limit_items)
-    items.update(deleted=True)
+    # cannot slice and update at the same time, so we subquery
+    items.model.objects.filter(pk__in=items).update(deleted=True)
 
 
 @app.task(rate_limit="1/m")
@@ -279,7 +280,7 @@ def calculate_quota(batch_number=500):
 
 
 @app.task
-def calculate_user_quota(user_id):
+def calculate_user_quota(user_id, batch_number=500):
     if not settings.PER_USER_EMAIL_QUOTA:
         return
 
@@ -294,5 +295,15 @@ def calculate_user_quota(user_id):
     profile.save(update_fields=["quota_percent_usage"])
 
     if profile.quota_options == profile.DELETE_MAIL and email_count > settings.PER_USER_EMAIL_QUOTA:
-        batch_delete_items.delay("email", kwargs={"important": False, "inbox__user_id": user_id},
-                                 skip_items=settings.PER_USER_EMAIL_QUOTA)
+        batch_mark_as_deleted("email", kwargs={"important": False, "inbox__user_id": user_id}, skip_items=settings.PER_USER_EMAIL_QUOTA)
+
+        # flag task for all affected inboxes
+        inbox_list = models.Inbox.objects.filter(user_id=user_id, email__deleted=True).distinct()
+        items = [(user_id, inbox.pk) for inbox in inbox_list.iterator()]
+        items = inbox_new_flag.chunks(items, batch_number).group()
+        task_group_skew(items, step=batch_number/10.0)
+        items.apply_async()
+
+        inbox_new_flag.apply_async(args=(user_id,))
+
+        batch_delete_items.delay("email", kwargs={"deleted": True, "inbox__user_id": user_id})

@@ -212,12 +212,18 @@ class DeleteTestCase(InboxenTestCase):
             self.assertNotEqual(result, None)
 
     @mock.patch("inboxen.tasks._create_task_queryset")
-    def test_batch_mark_as_deleted(self, mock_qs):
+    def test_batch_mark_as_deleted_calls_update(self, mock_qs):
+        # TOOD? fix this mess and just generate some objects to test against
         tasks.batch_mark_as_deleted("email")
         self.assertEqual(mock_qs.call_count, 1)
         self.assertEqual(mock_qs.call_args, (("email", None, None, None, None), {}))
-        self.assertEqual(mock_qs.return_value.update.call_count, 1)
-        self.assertEqual(mock_qs.return_value.update.call_args, ((), {"deleted": True}))
+        self.assertEqual(mock_qs.return_value.model.objects.filter.call_args, ((), {"pk__in": mock_qs.return_value}))
+        self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_count, 1)
+        self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_args, ((), {"deleted": True}))
+
+    def test_batch_mark_as_deleted_does_subquery(self):
+        # this would error if it tries to do a limit and an update
+        tasks.batch_mark_as_deleted("email", kwargs={"pk": 12}, skip_items=1, limit_items=2)
 
     def test_create_task_queryset(self):
         factories.EmailFactory.create_batch(5)
@@ -329,21 +335,41 @@ class CalculateQuotaTaskTestCase(InboxenTestCase):
         factories.EmailFactory.create_batch(user2_email_count, inbox__user=user2)
         factories.EmailFactory.create_batch(other_users_email_count)
 
+        models.Email.objects.update(seen=True)
+        models.Inbox.objects.update(new=True)
+        user1.inboxenprofile.unified_has_new_messages = True
+        user1.inboxenprofile.save()
+        user2.inboxenprofile.unified_has_new_messages = True
+        user2.inboxenprofile.save()
+
         tasks.calculate_quota.delay()
 
+        user1.inboxenprofile.refresh_from_db()
+        user2.inboxenprofile.refresh_from_db()
         self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user1.inboxenprofile.unified_has_new_messages, True)
         self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
+        self.assertEqual(user2.inboxenprofile.unified_has_new_messages, True)
         self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count)
         self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
+        # flags only get changed if there was deleting
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(), user1_email_count + user2_email_count + other_users_email_count)
 
         # now enable deleting
         models.UserProfile.objects.update(quota_options=models.UserProfile.DELETE_MAIL)
         tasks.calculate_quota.delay()
 
+        user1.inboxenprofile.refresh_from_db()
+        user2.inboxenprofile.refresh_from_db()
         self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user1.inboxenprofile.unified_has_new_messages, False)
         self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
+        self.assertEqual(user2.inboxenprofile.unified_has_new_messages, True)
         self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count - 1)
         self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
+        self.assertEqual(models.Inbox.objects.count(), user1_email_count + user2_email_count + other_users_email_count)
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(),
+                         user1_email_count + user2_email_count + other_users_email_count - 1)
 
     def test_user_deleted(self):
         # check that calculate_user_quota can cope with a deleted user
