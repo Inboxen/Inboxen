@@ -98,8 +98,7 @@ class InboxEditForm(forms.ModelForm):
         clear_inbox = data.pop("clear_inbox", False)
 
         if clear_inbox:
-            emails = self.instance.email_set.all()
-            emails.update(deleted=True)
+            tasks.batch_mark_as_deleted("email", kwargs={"inbox_id": self.instance.id})
             chain(
                 tasks.inbox_new_flag.si(self.instance.user_id, self.instance.id),
                 tasks.batch_delete_items.si("email", kwargs={'inbox_id': self.instance.id, "deleted": True}),

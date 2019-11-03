@@ -28,7 +28,7 @@ from inboxen import models
 from inboxen.search.tasks import search_single_inbox, search_unified_inbox
 from inboxen.search.utils import create_search_cache_key
 from inboxen.search.views import SearchMixin
-from inboxen.tasks import deal_with_flags, delete_inboxen_item
+from inboxen.tasks import delete_inboxen_item, set_emails_to_seen
 from inboxen.utils.tasks import task_group_skew
 
 __all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
@@ -134,7 +134,7 @@ class InboxView(LoginRequiredMixin, SearchMixin, generic.ListView):
         if inbox is not None:
             inbox = inbox.id
 
-        deal_with_flags.delay(object_id_list, self.request.user.id, inbox)
+        set_emails_to_seen.delay(object_id_list, self.request.user.id, inbox)
         return context
 
 

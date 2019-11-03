@@ -149,10 +149,10 @@ class FlagTestCase(InboxenTestCase):
         self.emails.extend(factories.EmailFactory.create_batch(10, inbox=self.inboxes[1]))
 
     def test_flags_from_unified(self):
-        tasks.deal_with_flags.delay([email.id for email in self.emails], user_id=self.user.id)
+        tasks.set_emails_to_seen.delay([email.id for email in self.emails], user_id=self.user.id)
 
     def test_flags_from_single_inbox(self):
-        tasks.deal_with_flags.delay(
+        tasks.set_emails_to_seen.delay(
             [email.id for email in self.emails],
             user_id=self.user.id,
             inbox_id=self.inboxes[0].id,
@@ -263,14 +263,14 @@ class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
         now_mock.return_value = datetime.utcnow()
         tasks.auto_delete_emails()
 
-        self.assertEqual(mark_task_mock.call_count, 1)
-        self.assertEqual(mark_task_mock.call_args, (
+        self.assertEqual(mark_task_mock.si.call_count, 1)
+        self.assertEqual(mark_task_mock.si.call_args, (
             ("email",),
             {"kwargs": {"inbox__user__inboxenprofile__auto_delete": True, "important": False,
                         "received_date__lt": now_mock.return_value - timedelta(days=30)}},
         ))
-        self.assertEqual(delete_task_mock.delay.call_count, 1)
-        self.assertEqual(delete_task_mock.delay.call_args, (
+        self.assertEqual(delete_task_mock.si.call_count, 1)
+        self.assertEqual(delete_task_mock.si.call_args, (
             ("email",),
             {"kwargs": {"deleted": True}},
         ))

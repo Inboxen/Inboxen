@@ -22,6 +22,7 @@ from importlib import import_module
 import gc
 import logging
 
+from celery import chain
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -134,7 +135,7 @@ def inbox_new_flag(user_id, inbox_id=None):
     emails = emails.filter(inbox__exclude_from_unified=False)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
-    emails = list(emails.values_list("id", flat=True)[:settings.INBOX_PAGE_SIZE])
+    emails = emails.values_list("id", flat=True)[:settings.INBOX_PAGE_SIZE]
     email_count = models.Email.objects.filter(id__in=emails, seen=False).count()
 
     if email_count > 0:
@@ -151,23 +152,37 @@ def inbox_new_flag(user_id, inbox_id=None):
 
 
 @app.task(ignore_result=True)
-def deal_with_flags(email_id_list, user_id, inbox_id=None):
+def set_emails_to_seen(email_id_list, user_id, inbox_id=None):
     """Set seen flags on a list of email IDs and then send off tasks to update
     "new" flags on affected Inbox objects
     """
-    with transaction.atomic():
-        # update seen flags
-        models.Email.objects.viewable(user_id).filter(id__in=email_id_list).update(seen=True)
+    models.Email.objects.viewable(user_id).filter(id__in=email_id_list).update(seen=True)
 
+    kwargs = {"email__id__in": email_id_list, "user_id": user_id}
     if inbox_id is None:
-        # grab affected inboxes
-        inbox_list = models.Inbox.objects.viewable(user_id).filter(email__id__in=email_id_list)
-        inbox_list = inbox_list.distinct()
+        kwargs["id"] = inbox_id
 
-        for inbox in inbox_list:
-            inbox_new_flag.delay(user_id, inbox.id)
-    else:
-        # we only need to update
+    batch_set_new_flags.delay(user_id=user_id, kwargs=kwargs)
+
+
+@app.task(ignore_result=True)
+def batch_set_new_flags(user_id=None, args=None, kwargs=None, batch_number=500):
+    inbox_list = _create_task_queryset("inbox", args=args, kwargs=kwargs).distinct()
+    inboxes = []
+    users = set()
+    for inbox in inbox_list.iterator():
+        inboxes.append((inbox.user_id, inbox.pk))
+        users.add((inbox.user_id,))
+
+    inbox_tasks = inbox_new_flag.chunks(inboxes, batch_number).group()
+    task_group_skew(inbox_tasks, step=batch_number/10.0)
+    inbox_tasks.apply_async()
+
+    if user_id is None and users:
+        user_tasks = inbox_new_flag.chunks(users, batch_number).group()
+        task_group_skew(user_tasks, step=batch_number/10.0)
+        user_tasks.apply_async()
+    elif user_id is not None:
         inbox_new_flag.delay(user_id)
 
 
@@ -257,28 +272,15 @@ def clean_orphan_models():
 
 @app.task(rate_limit="1/h")
 def auto_delete_emails(batch_number=500):
-    batch_mark_as_deleted("email", kwargs={
-        "inbox__user__inboxenprofile__auto_delete": True,
-        "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
-        "important": False,
-    })
-
-    inbox_list = models.Inbox.objects.filter(email__deleted=True).distinct()
-    inboxes = []
-    users = set()
-    for inbox in inbox_list.iterator():
-        inboxes.append((inbox.user_id, inbox.pk))
-        users.add((inbox.user_id,))
-
-    inbox_tasks = inbox_new_flag.chunks(inboxes, batch_number).group()
-    task_group_skew(inbox_tasks, step=batch_number/10.0)
-    inbox_tasks.apply_async()
-
-    user_tasks = inbox_new_flag.chunks(users, batch_number).group()
-    task_group_skew(user_tasks, step=batch_number/10.0)
-    user_tasks.apply_async()
-
-    batch_delete_items.delay("email", kwargs={"deleted": True})
+    chain(
+        batch_mark_as_deleted.si("email", kwargs={
+            "inbox__user__inboxenprofile__auto_delete": True,
+            "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
+            "important": False,
+        }),
+        batch_set_new_flags.si(kwargs={"email__deleted": True}),
+        batch_delete_items.si("email", kwargs={"deleted": True}),
+    ).apply_async()
 
 
 @app.task(rate_limit="1/h")
@@ -312,16 +314,9 @@ def calculate_user_quota(user_id, batch_number=500):
     profile.save(update_fields=["quota_percent_usage"])
 
     if profile.quota_options == profile.DELETE_MAIL and email_count > settings.PER_USER_EMAIL_QUOTA:
-        batch_mark_as_deleted("email", kwargs={"important": False, "inbox__user_id": user_id},
-                              skip_items=settings.PER_USER_EMAIL_QUOTA)
-
-        # flag task for all affected inboxes
-        inbox_list = models.Inbox.objects.filter(user_id=user_id, email__deleted=True).distinct()
-        items = [(user_id, inbox.pk) for inbox in inbox_list.iterator()]
-        items = inbox_new_flag.chunks(items, batch_number).group()
-        task_group_skew(items, step=batch_number/10.0)
-        items.apply_async()
-
-        inbox_new_flag.apply_async(args=(user_id,))
-
-        batch_delete_items.delay("email", kwargs={"deleted": True, "inbox__user_id": user_id})
+        chain(
+            batch_mark_as_deleted.si("email", kwargs={"important": False, "inbox__user_id": user_id},
+                                     skip_items=settings.PER_USER_EMAIL_QUOTA),
+            batch_set_new_flags.si(user_id=user_id, kwargs={"email__deleted": True}),
+            batch_delete_items.si("email", kwargs={"deleted": True, "inbox__user_id": user_id}),
+        ).apply_async()
