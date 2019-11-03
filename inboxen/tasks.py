@@ -256,12 +256,29 @@ def clean_orphan_models():
 
 
 @app.task(rate_limit="1/h")
-def auto_delete_emails():
-    batch_delete_items.delay("email", kwargs={
+def auto_delete_emails(batch_number=500):
+    batch_mark_as_deleted("email", kwargs={
         "inbox__user__inboxenprofile__auto_delete": True,
         "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
         "important": False,
     })
+
+    inbox_list = models.Inbox.objects.filter(email__deleted=True).distinct()
+    inboxes = []
+    users = set()
+    for inbox in inbox_list.iterator():
+        inboxes.append((inbox.user_id, inbox.pk))
+        users.add((inbox.user_id,))
+
+    inbox_tasks = inbox_new_flag.chunks(inboxes, batch_number).group()
+    task_group_skew(inbox_tasks, step=batch_number/10.0)
+    inbox_tasks.apply_async()
+
+    user_tasks = inbox_new_flag.chunks(users, batch_number).group()
+    task_group_skew(user_tasks, step=batch_number/10.0)
+    user_tasks.apply_async()
+
+    batch_delete_items.delay("email", kwargs={"deleted": True})
 
 
 @app.task(rate_limit="1/h")
@@ -295,7 +312,8 @@ def calculate_user_quota(user_id, batch_number=500):
     profile.save(update_fields=["quota_percent_usage"])
 
     if profile.quota_options == profile.DELETE_MAIL and email_count > settings.PER_USER_EMAIL_QUOTA:
-        batch_mark_as_deleted("email", kwargs={"important": False, "inbox__user_id": user_id}, skip_items=settings.PER_USER_EMAIL_QUOTA)
+        batch_mark_as_deleted("email", kwargs={"important": False, "inbox__user_id": user_id},
+                              skip_items=settings.PER_USER_EMAIL_QUOTA)
 
         # flag task for all affected inboxes
         inbox_list = models.Inbox.objects.filter(user_id=user_id, email__deleted=True).distinct()

@@ -219,7 +219,8 @@ class DeleteTestCase(InboxenTestCase):
         self.assertEqual(mock_qs.call_args, (("email", None, None, None, None), {}))
         self.assertEqual(mock_qs.return_value.model.objects.filter.call_args, ((), {"pk__in": mock_qs.return_value}))
         self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_count, 1)
-        self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_args, ((), {"deleted": True}))
+        self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_args,
+                         ((), {"deleted": True}))
 
     def test_batch_mark_as_deleted_does_subquery(self):
         # this would error if it tries to do a limit and an update
@@ -255,17 +256,23 @@ class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
         tasks.auto_delete_emails.delay()
         self.assertEqual(models.Email.objects.count(), 5)
 
+    @mock.patch("inboxen.tasks.batch_mark_as_deleted")
     @mock.patch("inboxen.tasks.batch_delete_items")
     @mock.patch("inboxen.tasks.timezone.now")
-    def test_batch_delete_call(self, now_mock, task_mock):
+    def test_batch_delete_call(self, now_mock, delete_task_mock, mark_task_mock):
         now_mock.return_value = datetime.utcnow()
         tasks.auto_delete_emails()
 
-        self.assertEqual(task_mock.delay.call_count, 1)
-        self.assertEqual(task_mock.delay.call_args, (
+        self.assertEqual(mark_task_mock.call_count, 1)
+        self.assertEqual(mark_task_mock.call_args, (
             ("email",),
             {"kwargs": {"inbox__user__inboxenprofile__auto_delete": True, "important": False,
                         "received_date__lt": now_mock.return_value - timedelta(days=30)}},
+        ))
+        self.assertEqual(delete_task_mock.delay.call_count, 1)
+        self.assertEqual(delete_task_mock.delay.call_args, (
+            ("email",),
+            {"kwargs": {"deleted": True}},
         ))
 
     def test_task(self):
@@ -353,7 +360,8 @@ class CalculateQuotaTaskTestCase(InboxenTestCase):
         self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count)
         self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
         # flags only get changed if there was deleting
-        self.assertEqual(models.Inbox.objects.filter(new=True).count(), user1_email_count + user2_email_count + other_users_email_count)
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(),
+                         user1_email_count + user2_email_count + other_users_email_count)
 
         # now enable deleting
         models.UserProfile.objects.update(quota_options=models.UserProfile.DELETE_MAIL)
