@@ -19,6 +19,7 @@
 
 import random
 
+from celery import chain
 from django import forms
 from django.contrib import messages
 from django.utils.translation import ugettext as _
@@ -97,9 +98,11 @@ class InboxEditForm(forms.ModelForm):
         clear_inbox = data.pop("clear_inbox", False)
 
         if clear_inbox:
-            emails = self.instance.email_set.all()
-            emails.update(deleted=True)
-            tasks.batch_delete_items.delay("email", kwargs={'inbox__id': self.instance.id})
+            tasks.batch_mark_as_deleted("email", kwargs={"inbox_id": self.instance.id})
+            chain(
+                tasks.inbox_new_flag.si(self.instance.user_id, self.instance.id),
+                tasks.batch_delete_items.si("email", kwargs={'inbox_id': self.instance.id, "deleted": True}),
+            ).apply_async()
             warn_msg = _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox,
                                                                             self.instance.domain.domain)
             messages.warning(self.request, warn_msg)

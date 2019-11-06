@@ -22,6 +22,7 @@ from importlib import import_module
 import gc
 import logging
 
+from celery import chain
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -130,14 +131,14 @@ def clean_expired_session():
 @app.task(ignore_result=True)
 @transaction.atomic()
 def inbox_new_flag(user_id, inbox_id=None):
-    emails = models.Email.objects.order_by("-received_date")
-    emails = emails.filter(inbox__user__id=user_id, inbox__exclude_from_unified=False)
+    emails = models.Email.objects.order_by("-received_date").viewable(user_id)
+    emails = emails.filter(inbox__exclude_from_unified=False)
     if inbox_id is not None:
         emails = emails.filter(inbox__id=inbox_id)
-    emails = list(emails.values_list("id", flat=True)[:100])  # number of emails on page
-    emails = models.Email.objects.filter(id__in=emails, seen=False)
+    emails = emails.values_list("id", flat=True)[:settings.INBOX_PAGE_SIZE]
+    email_count = models.Email.objects.filter(id__in=emails, seen=False).count()
 
-    if emails.count() > 0:
+    if email_count > 0:
         # if some emails haven't been seen yet, we have nothing else to do
         return
     elif inbox_id is None:
@@ -151,23 +152,37 @@ def inbox_new_flag(user_id, inbox_id=None):
 
 
 @app.task(ignore_result=True)
-def deal_with_flags(email_id_list, user_id, inbox_id=None):
+def set_emails_to_seen(email_id_list, user_id, inbox_id=None):
     """Set seen flags on a list of email IDs and then send off tasks to update
     "new" flags on affected Inbox objects
     """
-    with transaction.atomic():
-        # update seen flags
-        models.Email.objects.filter(id__in=email_id_list).update(seen=True)
+    models.Email.objects.viewable(user_id).filter(id__in=email_id_list).update(seen=True)
 
+    kwargs = {"email__id__in": email_id_list, "user_id": user_id}
     if inbox_id is None:
-        # grab affected inboxes
-        inbox_list = models.Inbox.objects.filter(user__id=user_id, email__id__in=email_id_list)
-        inbox_list = inbox_list.distinct()
+        kwargs["id"] = inbox_id
 
-        for inbox in inbox_list:
-            inbox_new_flag.delay(user_id, inbox.id)
-    else:
-        # we only need to update
+    batch_set_new_flags.delay(user_id=user_id, kwargs=kwargs)
+
+
+@app.task(ignore_result=True)
+def batch_set_new_flags(user_id=None, args=None, kwargs=None, batch_number=500):
+    inbox_list = _create_task_queryset("inbox", args=args, kwargs=kwargs).distinct()
+    inboxes = []
+    users = set()
+    for inbox in inbox_list.iterator():
+        inboxes.append((inbox.user_id, inbox.pk))
+        users.add((inbox.user_id,))
+
+    inbox_tasks = inbox_new_flag.chunks(inboxes, batch_number).group()
+    task_group_skew(inbox_tasks, step=batch_number/10.0)
+    inbox_tasks.apply_async()
+
+    if user_id is None and users:
+        user_tasks = inbox_new_flag.chunks(users, batch_number).group()
+        task_group_skew(user_tasks, step=batch_number/10.0)
+        user_tasks.apply_async()
+    elif user_id is not None:
         inbox_new_flag.delay(user_id)
 
 
@@ -194,6 +209,34 @@ def delete_inboxen_item(model, item_pk):
         pass
 
 
+def _create_task_queryset(model, args=None, kwargs=None, skip_items=None, limit_items=None):
+    _model = apps.get_app_config("inboxen").get_model(model)
+
+    if args is None and kwargs is None:
+        raise Exception("You need to specify some filter options!")
+    elif args is None:
+        args = []
+    elif kwargs is None:
+        kwargs = {}
+
+    items = _model.objects.only('pk').filter(*args, **kwargs)
+    if skip_items is not None:
+        items = items[skip_items:]
+    if limit_items is not None:
+        items = items[:limit_items]
+
+    return items
+
+
+@app.task()
+@transaction.atomic()
+def batch_mark_as_deleted(model, args=None, kwargs=None, skip_items=None, limit_items=None):
+    """Marks emails as deleted, but don't actually delete them"""
+    items = _create_task_queryset(model, args, kwargs, skip_items, limit_items)
+    # cannot slice and update at the same time, so we subquery
+    items.model.objects.filter(pk__in=items).update(deleted=True)
+
+
 @app.task(rate_limit="1/m")
 @transaction.atomic()
 def batch_delete_items(model, args=None, kwargs=None, skip_items=None, limit_items=None, batch_number=500):
@@ -207,27 +250,12 @@ def batch_delete_items(model, args=None, kwargs=None, skip_items=None, limit_ite
     * args and kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
-    _model = apps.get_app_config("inboxen").get_model(model)
-
-    if args is None and kwargs is None:
-        raise Exception("You need to specify some filter options!")
-    elif args is None:
-        args = []
-    elif kwargs is None:
-        kwargs = {}
-
-    items = _model.objects.only('pk').filter(*args, **kwargs)
+    items = _create_task_queryset(model, args, kwargs, skip_items, limit_items)
     items = [(model, item.pk) for item in items.iterator()]
-    if skip_items is not None:
-        items = items[skip_items:]
-    if limit_items is not None:
-        items = items[:limit_items]
-    if len(items) == 0:
-        return
-
-    items = delete_inboxen_item.chunks(items, batch_number).group()
-    task_group_skew(items, step=batch_number/10.0)
-    items.apply_async()
+    if len(items) > 0:
+        items = delete_inboxen_item.chunks(items, batch_number).group()
+        task_group_skew(items, step=batch_number/10.0)
+        return items.apply_async()
 
 
 @app.task(rate_limit="1/h")
@@ -243,12 +271,16 @@ def clean_orphan_models():
 
 
 @app.task(rate_limit="1/h")
-def auto_delete_emails():
-    batch_delete_items.delay("email", kwargs={
-        "inbox__user__inboxenprofile__auto_delete": True,
-        "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
-        "important": False,
-    })
+def auto_delete_emails(batch_number=500):
+    chain(
+        batch_mark_as_deleted.si("email", kwargs={
+            "inbox__user__inboxenprofile__auto_delete": True,
+            "received_date__lt": timezone.now() - timedelta(days=settings.INBOX_AUTO_DELETE_TIME),
+            "important": False,
+        }),
+        batch_set_new_flags.si(kwargs={"email__deleted": True}),
+        batch_delete_items.si("email", kwargs={"deleted": True}),
+    ).apply_async()
 
 
 @app.task(rate_limit="1/h")
@@ -267,7 +299,7 @@ def calculate_quota(batch_number=500):
 
 
 @app.task
-def calculate_user_quota(user_id):
+def calculate_user_quota(user_id, batch_number=500):
     if not settings.PER_USER_EMAIL_QUOTA:
         return
 
@@ -282,5 +314,9 @@ def calculate_user_quota(user_id):
     profile.save(update_fields=["quota_percent_usage"])
 
     if profile.quota_options == profile.DELETE_MAIL and email_count > settings.PER_USER_EMAIL_QUOTA:
-        batch_delete_items.delay("email", kwargs={"important": False, "inbox__user_id": user_id},
-                                 skip_items=settings.PER_USER_EMAIL_QUOTA)
+        chain(
+            batch_mark_as_deleted.si("email", kwargs={"important": False, "inbox__user_id": user_id},
+                                     skip_items=settings.PER_USER_EMAIL_QUOTA),
+            batch_set_new_flags.si(user_id=user_id, kwargs={"email__deleted": True}),
+            batch_delete_items.si("email", kwargs={"deleted": True, "inbox__user_id": user_id}),
+        ).apply_async()

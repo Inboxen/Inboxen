@@ -18,6 +18,7 @@
 ##
 
 
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
 from django.views import generic
@@ -34,7 +35,7 @@ class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
     """ The user's home which lists the inboxes """
     allow_empty = True
     model = models.Inbox
-    paginate_by = 25
+    paginate_by = settings.HOME_PAGE_SIZE
     template_name = "inboxen/home.html"
 
     def get_queryset(self):

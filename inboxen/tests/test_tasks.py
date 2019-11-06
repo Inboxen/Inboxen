@@ -149,10 +149,10 @@ class FlagTestCase(InboxenTestCase):
         self.emails.extend(factories.EmailFactory.create_batch(10, inbox=self.inboxes[1]))
 
     def test_flags_from_unified(self):
-        tasks.deal_with_flags.delay([email.id for email in self.emails], user_id=self.user.id)
+        tasks.set_emails_to_seen.delay([email.id for email in self.emails], user_id=self.user.id)
 
     def test_flags_from_single_inbox(self):
-        tasks.deal_with_flags.delay(
+        tasks.set_emails_to_seen.delay(
             [email.id for email in self.emails],
             user_id=self.user.id,
             inbox_id=self.inboxes[0].id,
@@ -186,33 +186,65 @@ class DeleteTestCase(InboxenTestCase):
         # test with an empty list
         tasks.delete_inboxen_item.chunks([], 500)()
 
-    def test_batch_delete_items(self):
+    @mock.patch("inboxen.tasks._create_task_queryset")
+    def test_batch_delete_items_calls_create_task_queryset(self, mock_qs):
+        tasks.batch_delete_items("email", args=[12, 14])
+        self.assertEqual(mock_qs.call_count, 1)
+        self.assertEqual(mock_qs.call_args, (("email", [12, 14], None, None, None), {}))
+
+        tasks.batch_delete_items("email", kwargs={"a": "b"})
+        self.assertEqual(mock_qs.call_count, 2)
+        self.assertEqual(mock_qs.call_args, (("email", None, {"a": "b"}, None, None), {}))
+
+        tasks.batch_delete_items("email", args=[1, 2], kwargs={"a": "b"}, skip_items=2, limit_items=8)
+        self.assertEqual(mock_qs.call_count, 3)
+        self.assertEqual(mock_qs.call_args, (("email", [1, 2], {"a": "b"}, 2, 8), {}))
+
+        with mock.patch("inboxen.tasks.delete_inboxen_item") as mock_delete_task:
+            result = tasks.batch_delete_items("email")
+            self.assertEqual(mock_delete_task.chunks.call_count, 0)
+            self.assertEqual(result, None)
+
+            mock_qs.return_value.iterator.return_value = [mock.Mock(pk=1), mock.Mock(pk=2)]
+            result = tasks.batch_delete_items("email")
+            self.assertEqual(mock_delete_task.chunks.call_count, 1)
+            self.assertEqual(mock_delete_task.chunks.call_args, ((([("email", 1), ("email", 2)]), 500), {}))
+            self.assertNotEqual(result, None)
+
+    @mock.patch("inboxen.tasks._create_task_queryset")
+    def test_batch_mark_as_deleted_calls_update(self, mock_qs):
+        # TOOD? fix this mess and just generate some objects to test against
+        tasks.batch_mark_as_deleted("email")
+        self.assertEqual(mock_qs.call_count, 1)
+        self.assertEqual(mock_qs.call_args, (("email", None, None, None, None), {}))
+        self.assertEqual(mock_qs.return_value.model.objects.filter.call_args, ((), {"pk__in": mock_qs.return_value}))
+        self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_count, 1)
+        self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_args,
+                         ((), {"deleted": True}))
+
+    def test_batch_mark_as_deleted_does_subquery(self):
+        # this would error if it tries to do a limit and an update
+        tasks.batch_mark_as_deleted("email", kwargs={"pk": 12}, skip_items=1, limit_items=2)
+
+    def test_create_task_queryset(self):
+        factories.EmailFactory.create_batch(5)
+        emails = list(models.Email.objects.values_list("pk", flat=True))
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False})
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails)
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, skip_items=2)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[2:])
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, limit_items=3)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[:3])
+
+        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, skip_items=1, limit_items=2)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[1:][:2])
+
+    def test_create_task_queryset_exception(self):
         with self.assertRaises(Exception):
-            tasks.batch_delete_items("email")
-
-        mock_qs = mock.Mock()
-        mock_qs.filter.return_value.iterator.return_value = []
-        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
-            tasks.batch_delete_items("email", args=[12, 14])
-            self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((12, 14), {}))
-
-        mock_qs = mock.Mock()
-        mock_qs.filter.return_value.iterator.return_value = []
-        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs):
-            tasks.batch_delete_items("email", kwargs={"a": "b"})
-            self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
-
-        mock_qs = mock.Mock()
-        mock_qs.filter.return_value.iterator.return_value = [mock.Mock(pk=i) for i in range(12)]
-        with mock.patch("inboxen.tasks.models.Email.objects.only", return_value=mock_qs), \
-                mock.patch("inboxen.tasks.delete_inboxen_item.chunks") as chunk_mock:
-            tasks.batch_delete_items("email", kwargs={"a": "b"}, skip_items=2, limit_items=6)
-            self.assertTrue(mock_qs.filter.called)
-            self.assertEqual(mock_qs.filter.call_args, ((), {"a": "b"}))
-
-            self.assertEqual([i[1] for i in chunk_mock.call_args[0][0]], list(range(2, 8)))
+            tasks._create_task_queryset("email")
 
 
 class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
@@ -224,17 +256,23 @@ class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
         tasks.auto_delete_emails.delay()
         self.assertEqual(models.Email.objects.count(), 5)
 
+    @mock.patch("inboxen.tasks.batch_mark_as_deleted")
     @mock.patch("inboxen.tasks.batch_delete_items")
     @mock.patch("inboxen.tasks.timezone.now")
-    def test_batch_delete_call(self, now_mock, task_mock):
+    def test_batch_delete_call(self, now_mock, delete_task_mock, mark_task_mock):
         now_mock.return_value = datetime.utcnow()
         tasks.auto_delete_emails()
 
-        self.assertEqual(task_mock.delay.call_count, 1)
-        self.assertEqual(task_mock.delay.call_args, (
+        self.assertEqual(mark_task_mock.si.call_count, 1)
+        self.assertEqual(mark_task_mock.si.call_args, (
             ("email",),
             {"kwargs": {"inbox__user__inboxenprofile__auto_delete": True, "important": False,
                         "received_date__lt": now_mock.return_value - timedelta(days=30)}},
+        ))
+        self.assertEqual(delete_task_mock.si.call_count, 1)
+        self.assertEqual(delete_task_mock.si.call_args, (
+            ("email",),
+            {"kwargs": {"deleted": True}},
         ))
 
     def test_task(self):
@@ -304,21 +342,42 @@ class CalculateQuotaTaskTestCase(InboxenTestCase):
         factories.EmailFactory.create_batch(user2_email_count, inbox__user=user2)
         factories.EmailFactory.create_batch(other_users_email_count)
 
+        models.Email.objects.update(seen=True)
+        models.Inbox.objects.update(new=True)
+        user1.inboxenprofile.unified_has_new_messages = True
+        user1.inboxenprofile.save()
+        user2.inboxenprofile.unified_has_new_messages = True
+        user2.inboxenprofile.save()
+
         tasks.calculate_quota.delay()
 
+        user1.inboxenprofile.refresh_from_db()
+        user2.inboxenprofile.refresh_from_db()
         self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user1.inboxenprofile.unified_has_new_messages, True)
         self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
+        self.assertEqual(user2.inboxenprofile.unified_has_new_messages, True)
         self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count)
         self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
+        # flags only get changed if there was deleting
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(),
+                         user1_email_count + user2_email_count + other_users_email_count)
 
         # now enable deleting
         models.UserProfile.objects.update(quota_options=models.UserProfile.DELETE_MAIL)
         tasks.calculate_quota.delay()
 
+        user1.inboxenprofile.refresh_from_db()
+        user2.inboxenprofile.refresh_from_db()
         self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user1.inboxenprofile.unified_has_new_messages, False)
         self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
+        self.assertEqual(user2.inboxenprofile.unified_has_new_messages, True)
         self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count - 1)
         self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
+        self.assertEqual(models.Inbox.objects.count(), user1_email_count + user2_email_count + other_users_email_count)
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(),
+                         user1_email_count + user2_email_count + other_users_email_count - 1)
 
     def test_user_deleted(self):
         # check that calculate_user_quota can cope with a deleted user

@@ -381,6 +381,24 @@ class InboxEditTestCase(InboxenTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    @mock.patch("inboxen.forms.inbox.chain")
+    def test_empty_inbox(self, chain_mock=None):
+        response = self.client.post(self.get_url(), {"clear_inbox": "1"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(chain_mock.call_count, 1)
+        self.assertEqual(chain_mock.return_value.apply_async.call_count, 1)
+
+        flag_task = chain_mock.call_args[0][0]
+        self.assertEqual(flag_task.args, (self.user.id, self.inbox.id))
+        self.assertEqual(flag_task.kwargs, {})
+
+        batch_delete_task = chain_mock.call_args[0][1]
+        self.assertEqual(batch_delete_task.args, ("email",))
+        self.assertEqual(batch_delete_task.kwargs, {"kwargs": {
+            "inbox_id": self.inbox.id,
+            "deleted": True,
+        }})
+
 
 class InboxInlineEditTestCase(InboxenTestCase):
     """Test the inline version of the inbox edit page"""
@@ -424,6 +442,24 @@ class InboxInlineEditTestCase(InboxenTestCase):
         url = urls.reverse("form-inbox-edit", kwargs={"inbox": "test", "domain": "example.com"})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+    @mock.patch("inboxen.forms.inbox.chain")
+    def test_empty_inbox(self, chain_mock=None):
+        response = self.client.post(self.get_url(), {"clear_inbox": "1"})
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(chain_mock.call_count, 1)
+        self.assertEqual(chain_mock.return_value.apply_async.call_count, 1)
+
+        flag_task = chain_mock.call_args[0][0]
+        self.assertEqual(flag_task.args, (self.user.id, self.inbox.id))
+        self.assertEqual(flag_task.kwargs, {})
+
+        batch_delete_task = chain_mock.call_args[0][1]
+        self.assertEqual(batch_delete_task.args, ("email",))
+        self.assertEqual(batch_delete_task.kwargs, {"kwargs": {
+            "inbox_id": self.inbox.id,
+            "deleted": True,
+        }})
 
 
 class InboxEmailEditTestCase(InboxenTestCase):
