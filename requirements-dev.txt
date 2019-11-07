@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements-dev.txt requirements-dev.in
 #
--e .
+-e file:.#egg=inboxen
 amqp==2.4.2
 babel==2.7.0              # via django-phonenumber-field
 billiard==3.5.0.5         # via celery
@@ -74,4 +74,4 @@ virtualenv==16.7.5        # via tox
 zipp==0.6.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.4.0        # via markdown, python-daemon
+# setuptools==41.6.0        # via markdown, python-daemon
