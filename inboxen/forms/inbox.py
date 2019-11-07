@@ -101,6 +101,7 @@ class InboxEditForm(forms.ModelForm):
             tasks.batch_mark_as_deleted("email", kwargs={"inbox_id": self.instance.id})
             chain(
                 tasks.inbox_new_flag.si(self.instance.user_id, self.instance.id),
+                tasks.inbox_new_flag.si(self.instance.user_id),
                 tasks.batch_delete_items.si("email", kwargs={'inbox_id': self.instance.id, "deleted": True}),
             ).apply_async()
             warn_msg = _("All emails in {0}@{1} are being deleted.").format(self.instance.inbox,
