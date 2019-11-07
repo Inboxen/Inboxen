@@ -54,23 +54,22 @@ def forward_to_admins(message, local=None, domain=None):
 @route(r"(inbox)@(domain)", inbox=INBOX_REGEX, domain=r".+")
 @stateless
 @nolocking
-@transaction.atomic()
 def process_message(message, inbox=None, domain=None):
     try:
-        inbox = Inbox.objects.filter(inbox=inbox, domain__domain=domain)
-        inbox = inbox.select_related("user", "user__inboxenprofile").receiving()
-        inbox = inbox.get()
+        with transaction.atomic():
+            inbox = Inbox.objects.filter(inbox=inbox, domain__domain=domain)
+            inbox = inbox.select_related("user", "user__inboxenprofile").receiving()
+            inbox = inbox.get()
 
-        make_email(message, inbox)
+            make_email(message, inbox)
 
-        inbox.new = True
-        inbox.save(update_fields=["new"])
+            inbox.new = True
+            inbox.save(update_fields=["new"])
 
-        if not inbox.exclude_from_unified:
-            profile = inbox.user.inboxenprofile
-            profile.unified_has_new_messages = True
-            profile.save(update_fields=["unified_has_new_messages"])
-
+            if not inbox.exclude_from_unified:
+                profile = inbox.user.inboxenprofile
+                profile.unified_has_new_messages = True
+                profile.save(update_fields=["unified_has_new_messages"])
     except DatabaseError as e:
         log.exception("DB error: %s", e)
         raise SMTPError(451, "Error processing message, try again later.")

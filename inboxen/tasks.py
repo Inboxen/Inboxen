@@ -198,13 +198,13 @@ def force_garbage_collection():
 
 
 @app.task(rate_limit=500)
-@transaction.atomic()
 def delete_inboxen_item(model, item_pk):
     _model = apps.get_app_config("inboxen").get_model(model)
 
     try:
-        item = _model.objects.only('pk').get(pk=item_pk)
-        item.delete()
+        with transaction.atomic():
+            item = _model.objects.only('pk').get(pk=item_pk)
+            item.delete()
     except (IntegrityError, _model.DoesNotExist):
         pass
 
