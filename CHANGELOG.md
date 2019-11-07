@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Deploy for 2019-11-07
+
+* Remove Watson completely and remove unused table (#412)
+* Reset inbox flags when deleting emails (#391)
+* Remove sed commands from update-py-requirements Make rule
+
 ### Deploy for 2019-10-18
 
 * Restore `update_last_login signal` in preparation for future work (#444)
