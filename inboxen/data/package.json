@@ -16,13 +16,13 @@
         "jasmine": "^3.5.0",
         "jasmine-core": "^3.5.0",
         "jquery": "^3.4.1",
-        "jshint": "^2.10.2",
-        "karma": "^4.3.0",
+        "jshint": "^2.10.3",
+        "karma": "^4.4.1",
         "karma-chrome-launcher": "^2.2.0",
         "karma-coverage": "^1.1.2",
         "karma-firefox-launcher": "^1.2.0",
         "karma-jasmine": "^2.0.1",
-        "sass": "^1.23.0",
-        "uglify-js": "^3.6.0"
+        "sass": "^1.23.3",
+        "uglify-js": "^3.6.8"
     }
 }
