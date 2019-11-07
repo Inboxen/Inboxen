@@ -388,11 +388,15 @@ class InboxEditTestCase(InboxenTestCase):
         self.assertEqual(chain_mock.call_count, 1)
         self.assertEqual(chain_mock.return_value.apply_async.call_count, 1)
 
-        flag_task = chain_mock.call_args[0][0]
-        self.assertEqual(flag_task.args, (self.user.id, self.inbox.id))
-        self.assertEqual(flag_task.kwargs, {})
+        inbox_flag_task = chain_mock.call_args[0][0]
+        self.assertEqual(inbox_flag_task.args, (self.user.id, self.inbox.id))
+        self.assertEqual(inbox_flag_task.kwargs, {})
 
-        batch_delete_task = chain_mock.call_args[0][1]
+        unified_flag_task = chain_mock.call_args[0][1]
+        self.assertEqual(unified_flag_task.args, (self.user.id,))
+        self.assertEqual(unified_flag_task.kwargs, {})
+
+        batch_delete_task = chain_mock.call_args[0][2]
         self.assertEqual(batch_delete_task.args, ("email",))
         self.assertEqual(batch_delete_task.kwargs, {"kwargs": {
             "inbox_id": self.inbox.id,
@@ -450,11 +454,15 @@ class InboxInlineEditTestCase(InboxenTestCase):
         self.assertEqual(chain_mock.call_count, 1)
         self.assertEqual(chain_mock.return_value.apply_async.call_count, 1)
 
-        flag_task = chain_mock.call_args[0][0]
-        self.assertEqual(flag_task.args, (self.user.id, self.inbox.id))
-        self.assertEqual(flag_task.kwargs, {})
+        inbox_flag_task = chain_mock.call_args[0][0]
+        self.assertEqual(inbox_flag_task.args, (self.user.id, self.inbox.id))
+        self.assertEqual(inbox_flag_task.kwargs, {})
 
-        batch_delete_task = chain_mock.call_args[0][1]
+        unified_flag_task = chain_mock.call_args[0][1]
+        self.assertEqual(unified_flag_task.args, (self.user.id,))
+        self.assertEqual(unified_flag_task.kwargs, {})
+
+        batch_delete_task = chain_mock.call_args[0][2]
         self.assertEqual(batch_delete_task.args, ("email",))
         self.assertEqual(batch_delete_task.kwargs, {"kwargs": {
             "inbox_id": self.inbox.id,
