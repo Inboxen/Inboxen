@@ -49,8 +49,6 @@ update-requirements: update-py-requirements update-js-requirements
 
 .PHONY: update-py-requirements
 update-py-requirements:
-	# pip-compile turns "-e ." into "-e file:///full/path/", which makes the
-	# output file useless on other machines - we use sed to reverse this
 	pip-compile -U -o requirements.txt inboxen/data/requirements.in
 	pip-compile -U -o requirements-dev.txt requirements-dev.in
 	pip-compile -U -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
