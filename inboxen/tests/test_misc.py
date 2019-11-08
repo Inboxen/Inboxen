@@ -208,6 +208,21 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         self.middleware.process_request(request)
         self.assertEqual(request.session.session_key, session_key)
 
+    def test_last_login(self):
+        user = factories.UserFactory()
+        request = MockRequest(user)
+
+        # no change, so no last_login
+        self.middleware.process_request(request)
+        user.refresh_from_db()
+        self.assertEqual(user.last_login, None)
+
+        # session is cycled
+        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.25)
+        self.middleware.process_request(request)
+        user.refresh_from_db()
+        self.assertNotEqual(user.last_login, None)
+
     def test_with_anon(self):
         user = AnonymousUser()
         request = MockRequest(user)

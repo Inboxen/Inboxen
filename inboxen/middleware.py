@@ -19,6 +19,7 @@
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.signals import user_logged_in
 from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.translation import ugettext as _
@@ -49,6 +50,11 @@ class ExtendSessionMiddleware(MiddlewareMixin):
                 request.session.cycle_key()
                 request.session.set_expiry(settings.SESSION_COOKIE_AGE)
                 request.session.modified = True
+                user_logged_in.send(
+                    sender=request.user.__class__,
+                    request=request,
+                    user=request.user,
+                )
 
 
 class MakeXSSFilterChromeSafeMiddleware(MiddlewareMixin):
