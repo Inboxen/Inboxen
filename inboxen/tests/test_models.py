@@ -219,6 +219,21 @@ class ModelTestCase(InboxenTestCase):
         self.assertEqual(inboxes[0].last_activity, now)
         self.assertEqual(inboxes[1].last_activity, now - datetime.timedelta(1))
 
+    def test_last_activity_deleted_mail(self):
+        now = timezone.now()
+
+        email = factories.EmailFactory(received_date=now, deleted=True)
+        email.inbox.created = now - datetime.timedelta(2)
+        email.inbox.save()
+
+        inbox = factories.InboxFactory()
+        inbox.created = now - datetime.timedelta(1)
+        inbox.save()
+
+        inboxes = list(models.Inbox.objects.all().add_last_activity().order_by("-last_activity"))
+        self.assertEqual(inboxes[0].last_activity, now - datetime.timedelta(1))
+        self.assertEqual(inboxes[1].last_activity, now - datetime.timedelta(2))
+
     def test_header_create(self):
         name = "X-Hello"
         data = "Hewwo"
