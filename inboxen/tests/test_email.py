@@ -628,6 +628,16 @@ class DownloadTestCase(InboxenTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_anonymous(self):
+        response = self.client.get(settings.LOGOUT_URL, follow=True)
+        url = urls.reverse("download-email-view", kwargs={"email": self.email.eid,
+                                                          "inbox": self.email.inbox.inbox,
+                                                          "domain": self.email.inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertRedirects(response,
+                             "{}?next={}".format(settings.LOGIN_URL, url),
+                             fetch_redirect_response=False)
+
     def test_download(self):
         url = urls.reverse("download-email-view", kwargs={"email": self.email.eid,
                                                           "inbox": self.email.inbox.inbox,

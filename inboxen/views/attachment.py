@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013 Jessica Tallon & Matthew Molyneaux
+#    Copyright (C) 2013, 2019 Jessica Tallon & Matthew Molyneaux
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,7 @@
 
 import re
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponse
 from django.views import generic
@@ -72,6 +73,7 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         return response
 
 
+@login_required
 def download_email(request, inbox=None, domain=None, email=None):
     if single_email_ratelimit.counter_full(request):
         raise Http404
