@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Deploy for 2019-11-11
+
+* Filter out deleted emails when calculating `Inbox.last_activity` (#484)
+* Fire user login signal when cycling session keys (#444)
+* Add missing decorator to download email view (#488)
+
 ### Deploy for 2019-11-07
 
 * Remove Watson completely and remove unused table (#412)
