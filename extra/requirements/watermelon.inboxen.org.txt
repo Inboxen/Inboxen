@@ -10,7 +10,7 @@ babel==2.7.0              # via django-phonenumber-field
 billiard==3.5.0.5         # via celery
 cachetools==3.1.1         # via premailer
 celery==4.1.1
-certifi==2019.9.11        # via requests
+certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests, salmon-mail
 click==7.0                # via pip-tools
 configobj==5.0.6
@@ -22,19 +22,19 @@ django-csp==3.5
 django-cursor-pagination==0.1.4
 django-elevate==1.0.1
 django-extensions==2.2.5
-django-formtools==2.1     # via django-two-factor-auth
+django-formtools==2.2     # via django-two-factor-auth
 django-js-asset==1.2.2    # via django-mptt
 django-mptt==0.10.0
-django-otp==0.7.3         # via django-two-factor-auth
+django-otp==0.7.4         # via django-two-factor-auth
 django-phonenumber-field==1.3.0  # via django-two-factor-auth
 django-ratelimit-backend==2.0
 django-sendfile2==0.4.3
 django-two-factor-auth==1.9.1
-django==2.2.7             # via django-annoying, django-bootstrap-form, django-csp, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-ratelimit-backend, django-sendfile2, django-two-factor-auth
+django==2.2.8             # via django-annoying, django-bootstrap-form, django-csp, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-ratelimit-backend, django-sendfile2, django-two-factor-auth
 dnspython==1.16.0         # via salmon-mail
 docutils==0.15.2          # via python-daemon
 factory-boy==2.12.0
-faker==2.0.3              # via factory-boy
+faker==3.0.0              # via factory-boy
 idna==2.8                 # via requests
 kombu==4.5.0
 lmtpd==6.0.0              # via salmon-mail
@@ -42,9 +42,9 @@ lockfile==0.12.2          # via python-daemon
 lxml==4.2.6
 markdown==3.1.1
 nodeenv==1.3.3
-phonenumberslite==8.10.22  # via django-phonenumber-field
+phonenumberslite==8.11.0  # via django-phonenumber-field
 pillow==6.2.1
-pip-tools==4.2.0
+pip-tools==4.3.0
 premailer==3.6.1
 progress==1.5
 psycopg2==2.8.4
@@ -58,8 +58,8 @@ salmon-mail==3.1.1
 six==1.13.0               # via configobj, django-extensions, django-otp, django-sendfile2, faker, pip-tools, python-dateutil, qrcode, salmon-mail
 sqlparse==0.3.0           # via django
 text-unidecode==1.3       # via faker
-urllib3==1.25.6           # via requests
+urllib3==1.25.7           # via requests
 vine==1.3.0               # via amqp
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.6.0        # via markdown, python-daemon
+# setuptools==42.0.2        # via markdown, python-daemon
