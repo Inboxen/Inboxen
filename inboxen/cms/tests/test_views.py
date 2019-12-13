@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.contrib.contenttypes.models import ContentType
 from django.http import Http404
 from django.urls import reverse
 
@@ -239,6 +240,29 @@ class EditPageTestCase(InboxenTestCase):
 
         response = views.edit_page(request, page_pk=page.pk)
         self.assertEqual(response.status_code, 200)
+
+    def test_has_preview(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        base_page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
+        ct = ContentType.objects.get(model="helppage", app_label="cms")
+        page = models.HelpPage.objects.create(parent=base_page, title="FAQ", body="* hello\n* hi\n", content_type=ct)
+
+        response = views.edit_page(request, page_pk=page.pk)
+        self.assertEqual(response.status_code, 200)
+        response.render()
+        self.assertInHTML("<div class=\"panel-heading\">Preview</div>", response.content.decode(), count=1)
+        self.assertInHTML("<ul><li>hello</li><li>hi</li></ul>", response.content.decode(), count=1)
+
+    def test_has_no_preview(self):
+        request = MockRequest(self.user, has_otp=True, has_sudo=True)
+        base_page = models.HelpBasePage.objects.filter(parent__isnull=False).get()
+        ct = ContentType.objects.get(model="helppage", app_label="cms")
+        page = models.HelpPage.objects.create(parent=base_page, title="FAQ", body="", content_type=ct)
+
+        response = views.edit_page(request, page_pk=page.pk)
+        self.assertEqual(response.status_code, 200)
+        response.render()
+        self.assertInHTML("<div class=\"panel-heading\">Preview</div>", response.content.decode(), count=0)
 
     def test_edit_page_post(self):
         request = MockRequest(self.user, has_otp=True, has_sudo=True)

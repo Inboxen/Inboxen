@@ -22,3 +22,9 @@ from django.forms.widgets import Textarea
 
 class RichTextInput(Textarea):
     template_name = 'cms/forms/widgets/rich_text.html'
+
+    def format_value(self, value):
+        if value:
+            return value
+        else:
+            return None
