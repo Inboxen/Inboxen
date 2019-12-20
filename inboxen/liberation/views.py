@@ -21,7 +21,7 @@ from django import http
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views import generic
 from django_sendfile import sendfile
 

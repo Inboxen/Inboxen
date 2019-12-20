@@ -18,7 +18,7 @@
 ##
 
 from django import template
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 
 from inboxen.utils.flags import create_render_bitfield_template_tag
 
@@ -27,35 +27,35 @@ register = template.Library()
 
 FLAGS_TO_TAGS = {
     "new": {
-        "title": ugettext_lazy("New messages"),
-        "str": ugettext_lazy("New"),
+        "title": gettext_lazy("New messages"),
+        "str": gettext_lazy("New"),
         "class": "label-primary",
     },
     "seen": {
-        "title": ugettext_lazy("New message"),
-        "str": ugettext_lazy("New"),
+        "title": gettext_lazy("New message"),
+        "str": gettext_lazy("New"),
         "class": "label-primary",
         "inverse": True,
     },
     "read": {
-        "title": ugettext_lazy("Unread message"),
-        "str": ugettext_lazy("Unread"),
+        "title": gettext_lazy("Unread message"),
+        "str": gettext_lazy("Unread"),
         "class": "label-info",
         "inverse": True,
     },
     "important": {
-        "title": ugettext_lazy("Message has been marked as important"),
-        "str": ugettext_lazy("Important"),
+        "title": gettext_lazy("Message has been marked as important"),
+        "str": gettext_lazy("Important"),
         "class": "label-danger",
     },
     "pinned": {
-        "title": ugettext_lazy("Inbox has been pinned"),
-        "str": ugettext_lazy("Pinned"),
+        "title": gettext_lazy("Inbox has been pinned"),
+        "str": gettext_lazy("Pinned"),
         "class": "label-warning",
     },
     "disabled": {
-        "title": ugettext_lazy("Inbox has been disabled"),
-        "str": ugettext_lazy("Disabled"),
+        "title": gettext_lazy("Inbox has been disabled"),
+        "str": gettext_lazy("Disabled"),
         "class": "label-default",
         "singleton": True,
     },

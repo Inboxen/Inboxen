@@ -22,7 +22,7 @@ from celery.result import AsyncResult
 from django import http
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models import Case, When
+from django.db.models import Case, IntegerField, When
 from django.utils.functional import cached_property
 from django.views.decorators.http import require_http_methods
 
@@ -72,7 +72,8 @@ class SearchMixin:
     def get_search_queryset(self):
         if len(self.results.get("results", [])) > 0:
             qs = self.model.objects.filter(id__in=self.results["results"])
-            qs = qs.order_by(Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(self.results["results"])]))
+            qs = qs.order_by(Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(self.results["results"])],
+                             output_field=IntegerField()))
         else:
             qs = self.model.objects.none()
 

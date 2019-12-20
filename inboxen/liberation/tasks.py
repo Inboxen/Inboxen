@@ -34,7 +34,7 @@ from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
 from django.utils import safestring, timezone
 from django.utils.crypto import get_random_string
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from inboxen import tasks
 from inboxen.async_messages import message_user

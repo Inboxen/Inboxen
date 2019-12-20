@@ -22,9 +22,9 @@ from django.conf import urls
 from inboxen.blog import views
 
 urlpatterns = [
-    urls.url(r'^post/(?P<slug>[-\w]+)/$', views.BlogDetailView.as_view(), name='blog-post'),
-    urls.url(r'^feed/atom/$', views.AtomFeed(), name='blog-feed-atom'),
-    urls.url(r'^feed/(rss/)?$', views.RssFeed(), name='blog-feed-rss'),
-    urls.url(r'^(?P<page>\d*)/$', views.BlogListView.as_view(), name='blog'),
-    urls.url(r'^$', views.BlogListView.as_view(), name='blog'),
+    urls.re_path(r'^post/(?P<slug>[-\w]+)/$', views.BlogDetailView.as_view(), name='blog-post'),
+    urls.re_path(r'^feed/atom/$', views.AtomFeed(), name='blog-feed-atom'),
+    urls.re_path(r'^feed/(rss/)?$', views.RssFeed(), name='blog-feed-rss'),
+    urls.re_path(r'^(?P<page>\d*)/$', views.BlogListView.as_view(), name='blog'),
+    urls.re_path(r'^$', views.BlogListView.as_view(), name='blog'),
 ]

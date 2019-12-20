@@ -37,11 +37,12 @@ class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
     template_name = "inboxen/home.html"
 
     def get_queryset(self):
-        if self.query == "":
-            qs = self.model.objects.order_by("-pinned", "disabled", "-last_activity")
-        else:
+        qs = self.model.objects.all()
+        if self.query != "":
             qs = self.get_search_queryset()
         qs = qs.viewable(self.request.user).add_last_activity().select_related("domain")
+        if self.query == "":
+            qs = qs.order_by("-pinned", "disabled", "-last_activity")
         return qs
 
     def post(self, *args, **kwargs):

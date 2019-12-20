@@ -22,8 +22,8 @@ from django.conf import urls
 from inboxen.blog import views
 
 urlpatterns = [
-    urls.url(r'^$', views.blog_admin_index, name='index'),
-    urls.url(r'^create/$', views.blog_admin_create, name='create'),
-    urls.url(r'^edit/(?P<blog_pk>\d+)/$', views.blog_admin_edit, name='edit'),
-    urls.url(r'^delete/(?P<blog_pk>\d+)/$', views.blog_admin_delete, name='delete'),
+    urls.re_path(r'^$', views.blog_admin_index, name='index'),
+    urls.re_path(r'^create/$', views.blog_admin_create, name='create'),
+    urls.re_path(r'^edit/(?P<blog_pk>\d+)/$', views.blog_admin_edit, name='edit'),
+    urls.re_path(r'^delete/(?P<blog_pk>\d+)/$', views.blog_admin_delete, name='delete'),
 ]

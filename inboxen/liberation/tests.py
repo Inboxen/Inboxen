@@ -128,7 +128,8 @@ class LiberateTestCase(InboxenTestCase):
 
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
-        open(result_path, "w").write("a test")
+        with open(result_path, "w") as result:
+            result.write("a test")
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir,
                                               "storage_type": "0", "compression_type": "0"})
 
@@ -148,8 +149,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
 
     def test_liberate_fetch_info_no_result(self):
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
-        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
-        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+        with open(os.path.join(self.mail_dir, "profile.json")) as profile_file:
+            profile_data = json.load(profile_file)
+        with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
+            inbox_data = json.load(inbox_file)
 
         self.assertEqual(inbox_data, {})
         self.assertEqual(profile_data, {
@@ -171,8 +174,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
         results = [None for i in range(6)]
 
         tasks.liberate_fetch_info(results, {"user": self.user.id, "path": self.mail_dir})
-        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
-        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+        with open(os.path.join(self.mail_dir, "profile.json")) as profile_file:
+            profile_data = json.load(profile_file)
+        with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
+            inbox_data = json.load(inbox_file)
 
         self.assertEqual(inbox_data, {
             str(box): {
@@ -208,8 +213,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
         self.user.groups.add(group)
 
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
-        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
-        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+        with open(os.path.join(self.mail_dir, "profile.json")) as profile_file:
+            profile_data = json.load(profile_file)
+        with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
+            inbox_data = json.load(inbox_file)
 
         self.assertEqual(inbox_data, {})
         self.assertEqual(profile_data, {
@@ -233,8 +240,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
         profile.save()
 
         tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
-        profile_data = json.load(open(os.path.join(self.mail_dir, "profile.json")))
-        inbox_data = json.load(open(os.path.join(self.mail_dir, "inbox.json")))
+        with open(os.path.join(self.mail_dir, "profile.json")) as profile_file:
+            profile_data = json.load(profile_file)
+        with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
+            inbox_data = json.load(inbox_file)
 
         self.assertEqual(inbox_data, {})
         self.assertEqual(profile_data, {
@@ -272,7 +281,8 @@ class LiberateNewUserTestCase(InboxenTestCase):
 
     def test_liberation_finish(self):
         result_path = os.path.join(self.mail_dir, "result")
-        open(result_path, "w").write("a test")
+        with open(result_path, "w") as result_file:
+            result_file.write("a test")
         tasks.liberation_finish(result_path, {"user": self.user.id, "path": self.mail_dir,
                                               "storage_type": "0", "compression_type": "0"})
 
@@ -330,9 +340,8 @@ class LiberationDownloadViewTestCase(InboxenTestCase):
 
             self.assertEqual(os.path.join(self.tmp_dir, "test.txt"), self.user.liberation.path)
 
-            file_obj = open(self.user.liberation.path, "wb")
-            file_obj.write(b"hello\n")
-            file_obj.close()
+            with open(self.user.liberation.path, "wb") as file_obj:
+                file_obj.write(b"hello\n")
 
             response = self.client.get(reverse("user-liberate-get"))
             self.assertEqual(response.status_code, 200)

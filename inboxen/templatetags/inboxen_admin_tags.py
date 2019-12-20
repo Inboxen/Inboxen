@@ -18,7 +18,7 @@
 ##
 
 from django import template
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 
 from inboxen.utils.flags import create_render_bool_template_tag
 
@@ -27,13 +27,13 @@ register = template.Library()
 
 DOMAIN_TO_TAGS = {
     True: {
-        "title": ugettext_lazy("Domain enabled"),
-        "str": ugettext_lazy("Enabled"),
+        "title": gettext_lazy("Domain enabled"),
+        "str": gettext_lazy("Enabled"),
         "class": "label-primary",
     },
     False: {
-        "title": ugettext_lazy("Domain disabled"),
-        "str": ugettext_lazy("Disabled"),
+        "title": gettext_lazy("Domain disabled"),
+        "str": gettext_lazy("Disabled"),
         "class": "label-default",
     },
 }

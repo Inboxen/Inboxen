@@ -1,2 +1,4 @@
 -e file:.#egg=inboxen
+-e git+https://github.com/photocrowd/django-cursor-pagination.git@f8aa41ff7c515511fccb79e33fb2ac22cb7af765#egg=django_cursor_pagination
+-e git+https://github.com/moggers87/django-elevate.git@ba129cd309e604cdfedcaca011daf18c932ff23#egg=django-elevate
 pip-tools

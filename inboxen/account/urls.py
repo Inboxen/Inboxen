@@ -25,35 +25,35 @@ from inboxen.account.decorators import anonymous_required
 from inboxen.account.views import delete, otp, register, settings, suspended
 
 urlpatterns = [
-    urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
-    urls.url(r'^security/password$', settings.PasswordChangeView.as_view(), name='user-password'),
-    urls.url(r'^security/sudo/$', settings.InboxenElevateView.as_view(), name='user-sudo'),
-    urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
-    urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
-    urls.url(r'^security/backup/download/$', otp.backup_download_view, name='user-twofactor-backup-download'),
-    urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
-    urls.url(r'^security/qrcode/$', otp.qrcode_view, name='user-twofactor-qrcode'),
+    urls.re_path(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
+    urls.re_path(r'^security/password$', settings.PasswordChangeView.as_view(), name='user-password'),
+    urls.re_path(r'^security/sudo/$', settings.InboxenElevateView.as_view(), name='user-sudo'),
+    urls.re_path(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
+    urls.re_path(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
+    urls.re_path(r'^security/backup/download/$', otp.backup_download_view, name='user-twofactor-backup-download'),
+    urls.re_path(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
+    urls.re_path(r'^security/qrcode/$', otp.qrcode_view, name='user-twofactor-qrcode'),
 
-    urls.url(r'^delete/$', delete.AccountDeletionView.as_view(), name='user-delete'),
-    urls.url(r'^username/$', settings.UsernameChangeView.as_view(), name='user-username'),
-    urls.url(r'^login/$', otp.login, name='user-login'),
-    urls.url(r'^logout/$', settings.LogoutView.as_view(), name='user-logout'),
+    urls.re_path(r'^delete/$', delete.AccountDeletionView.as_view(), name='user-delete'),
+    urls.re_path(r'^username/$', settings.UsernameChangeView.as_view(), name='user-username'),
+    urls.re_path(r'^login/$', otp.login, name='user-login'),
+    urls.re_path(r'^logout/$', settings.LogoutView.as_view(), name='user-logout'),
 
-    urls.url(r'^returned/$', suspended.returned_user, name='user-returned'),
+    urls.re_path(r'^returned/$', suspended.returned_user, name='user-returned'),
 
     # liberation app
-    urls.url(r'^liberate/', urls.include("inboxen.liberation.urls")),
+    urls.re_path(r'^liberate/', urls.include("inboxen.liberation.urls")),
 ]
 
 if dj_settings.ENABLE_REGISTRATION:
     urlpatterns += [
-        urls.url(r'^register/status/$',
-                 anonymous_required(TemplateView.as_view(template_name='account/register/software-status.html')),
-                 name='user-status'),
-        urls.url(r'^register/success/$',
-                 anonymous_required(TemplateView.as_view(template_name='account/register/success.html')),
-                 name='user-success'),
-        urls.url(r'^register/$',
-                 anonymous_required(register.UserRegistrationView.as_view()),
-                 name='user-registration'),
+        urls.re_path(r'^register/status/$',
+                     anonymous_required(TemplateView.as_view(template_name='account/register/software-status.html')),
+                     name='user-status'),
+        urls.re_path(r'^register/success/$',
+                     anonymous_required(TemplateView.as_view(template_name='account/register/success.html')),
+                     name='user-success'),
+        urls.re_path(r'^register/$',
+                     anonymous_required(register.UserRegistrationView.as_view()),
+                     name='user-registration'),
     ]
