@@ -57,7 +57,7 @@ setup(
         "progress",
         "psycopg2",
         "pytz",
-        "salmon-mail",
+        "salmon-mail>=3.2.0",
     ],
     extras_require={
         "docs": [
