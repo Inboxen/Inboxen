@@ -53,6 +53,12 @@ update-py-requirements:
 	pip-compile -U -o requirements-dev.txt requirements-dev.in
 	pip-compile -U -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
 
+.PHONY: new-py-requirements
+new-py-requirements:
+	pip-compile -o requirements.txt inboxen/data/requirements.in
+	pip-compile -o requirements-dev.txt requirements-dev.in
+	pip-compile -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
+
 .PHONY: update-js-requirements
 update-js-requirements:
 	npm update
