@@ -21,7 +21,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from inboxen.models import Email
 
@@ -35,7 +35,8 @@ def returned_user(request):
     request.session[settings.USER_SUSPENDED_SESSION_KEY] = False
     context = {"emails_deleted": emails_deleted}
     redirect_to = request.GET.get("next")
-    if is_safe_url(redirect_to, allowed_hosts=[request.get_host()], require_https=request.is_secure()):
+    if url_has_allowed_host_and_scheme(redirect_to, allowed_hosts=[request.get_host()],
+                                       require_https=request.is_secure()):
         context["next"] = redirect_to
     else:
         context["next"] = reverse("user-home")

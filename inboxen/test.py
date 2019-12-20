@@ -49,7 +49,7 @@ class MockRequest(HttpRequest):
         else:
             self.user = user
 
-        session = SessionMiddleware()
+        session = SessionMiddleware(lambda x: x)
         self.session = session.SessionStore(session_id)
         self._messages = SessionStorage(self)
         self.META = {"REMOTE_ADDR": "127.0.0.1"}

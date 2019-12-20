@@ -21,7 +21,7 @@ from django import forms
 from django.contrib import messages
 from django.http import Http404
 from django.template.response import TemplateResponse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django_otp.decorators import otp_required
 from elevate.decorators import elevate_required

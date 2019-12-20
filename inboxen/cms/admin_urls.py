@@ -22,14 +22,14 @@ from django.conf import urls
 from inboxen.cms import views
 
 urlpatterns = [
-    urls.url(r'^$', views.index, name='index'),
-    urls.url(r'^(?P<page_pk>\d+)/$', views.index, name='index'),
-    urls.url(r'^choose_new_page/(?P<parent_pk>\d+)/$', views.choose_page_type, name='choose-page-type'),
-    urls.url(r'^create_page/(?P<model>[A-Za-z]+)/(?P<parent_pk>\d+)/$', views.create_page, name='create-page'),
-    urls.url(r'^edit_page/(?P<page_pk>\d+)/$', views.edit_page, name='edit-page'),
-    urls.url(r'^delete_page/(?P<page_pk>\d+)/$', views.delete_page, name='delete-page'),
+    urls.re_path(r'^$', views.index, name='index'),
+    urls.re_path(r'^(?P<page_pk>\d+)/$', views.index, name='index'),
+    urls.re_path(r'^choose_new_page/(?P<parent_pk>\d+)/$', views.choose_page_type, name='choose-page-type'),
+    urls.re_path(r'^create_page/(?P<model>[A-Za-z]+)/(?P<parent_pk>\d+)/$', views.create_page, name='create-page'),
+    urls.re_path(r'^edit_page/(?P<page_pk>\d+)/$', views.edit_page, name='edit-page'),
+    urls.re_path(r'^delete_page/(?P<page_pk>\d+)/$', views.delete_page, name='delete-page'),
 
-    urls.url(r'^blog/', urls.include(("inboxen.blog.admin_urls", "blog"), namespace="blog")),
-    urls.url(r'^questions/', urls.include(("inboxen.tickets.admin_urls", "tickets"), namespace="tickets")),
-    urls.url(r'^domains/', urls.include(("inboxen.admin_urls.domains", "inboxen"), namespace="domains")),
+    urls.re_path(r'^blog/', urls.include(("inboxen.blog.admin_urls", "blog"), namespace="blog")),
+    urls.re_path(r'^questions/', urls.include(("inboxen.tickets.admin_urls", "tickets"), namespace="tickets")),
+    urls.re_path(r'^domains/', urls.include(("inboxen.admin_urls.domains", "inboxen"), namespace="domains")),
 ]

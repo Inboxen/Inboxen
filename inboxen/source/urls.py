@@ -22,7 +22,7 @@ from django.conf import urls
 from inboxen.source import views
 
 urlpatterns = [
-    urls.url(
+    urls.re_path(
         r'^$',
         views.index,
         name='source-index',

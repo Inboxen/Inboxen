@@ -1,0 +1,15 @@
+[tool.vendoring]
+destination = "inboxen/_vendor/"
+requirements = "inboxen/_vendor/vendor.txt"
+namespace = "inboxen._vendor"
+
+protected-files = ["__init__.py", "README.md", "vendor.txt"]
+patches-dir = ""
+
+[tool.vendoring.transformations]
+substitute = []
+drop = []
+
+[tool.vendoring.typing-stubs]
+[tool.vendoring.license.fallback-urls]
+[tool.vendoring.license.directories]

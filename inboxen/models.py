@@ -26,7 +26,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from mptt.models import MPTTModel, TreeForeignKey
 
 from inboxen import validators

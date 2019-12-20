@@ -18,7 +18,7 @@
 ##
 
 from django import template
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 
 from inboxen.tickets.models import Question
 from inboxen.utils.flags import create_render_bool_template_tag
@@ -31,22 +31,22 @@ STATUS = {k: v for k, v in Question.STATUS_CHOICES}
 
 STATUS_TO_TAGS = {
     Question.NEW: {
-        "title": ugettext_lazy("New question"),
+        "title": gettext_lazy("New question"),
         "str": STATUS[Question.NEW],
         "class": "label-primary",
     },
     Question.IN_PROGRESS: {
-        "title": ugettext_lazy("In progress"),
+        "title": gettext_lazy("In progress"),
         "str": STATUS[Question.IN_PROGRESS],
         "class": "label-info",
     },
     Question.NEED_INFO: {
-        "title": ugettext_lazy("Need more info from user"),
+        "title": gettext_lazy("Need more info from user"),
         "str": STATUS[Question.NEED_INFO],
         "class": "label-warning",
     },
     Question.RESOLVED: {
-        "title": ugettext_lazy("Resolved question"),
+        "title": gettext_lazy("Resolved question"),
         "str": STATUS[Question.RESOLVED],
         "class": "label-default",
     },

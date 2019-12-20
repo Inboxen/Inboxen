@@ -19,9 +19,10 @@
 
 import base64
 
-from cursor_pagination import CursorPaginator
 from django.conf import settings
 from django.core.cache import cache
+
+from inboxen._vendor.cursor_pagination import CursorPaginator
 
 SEARCH_VERSION = 1  # bump this any time you change how the cache key words
 

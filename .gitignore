@@ -26,7 +26,7 @@ docs/_build
 /local-reqs.in
 /local.mk
 
-*.py[cod]
+*.py[codi]
 *.sw?
 *~
 

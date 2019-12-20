@@ -8,6 +8,8 @@
     # via -r extra/requirements/../../inboxen/data/requirements.in
 amqp==2.6.1
     # via kombu
+asgiref==3.3.1
+    # via django
 billiard==3.6.4.0
     # via celery
 cachetools==4.2.1
@@ -38,8 +40,6 @@ django-celery-results==2.0.1
     # via inboxen
 django-csp==3.7
     # via inboxen
-django-cursor-pagination==0.1.4
-    # via inboxen
 django-elevate==2.0.0
     # via inboxen
 django-extensions==3.1.1
@@ -60,7 +60,7 @@ django-sendfile2==0.6.0
     # via inboxen
 django-two-factor-auth==1.13.1
     # via inboxen
-django==2.2.19
+django==3.1.7
     # via
     #   django-annoying
     #   django-bootstrap-form
@@ -74,7 +74,7 @@ django==2.2.19
     #   inboxen
 dnspython==2.1.0
     # via salmon-mail
-docutils==0.16
+docutils==0.17
     # via python-daemon
 factory-boy==3.2.0
     # via inboxen
@@ -109,7 +109,7 @@ pep517==0.10.0
     # via pip-tools
 phonenumberslite==8.12.20
     # via inboxen
-pillow==8.1.2
+pillow==8.2.0
     # via inboxen
 pip-tools==6.0.1
     # via -r extra/requirements/../../inboxen/data/requirements.in

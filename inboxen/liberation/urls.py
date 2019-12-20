@@ -22,6 +22,6 @@ from django.conf import urls
 from inboxen.liberation import views
 
 urlpatterns = [
-    urls.url(r'^$', views.LiberationView.as_view(), name='user-liberate'),
-    urls.url(r'^download$', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
+    urls.re_path(r'^$', views.LiberationView.as_view(), name='user-liberate'),
+    urls.re_path(r'^download$', views.LiberationDownloadView.as_view(), name='user-liberate-get'),
 ]

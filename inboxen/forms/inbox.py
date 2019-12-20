@@ -22,7 +22,7 @@ import random
 from celery import chain
 from django import forms
 from django.contrib import messages
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from inboxen import models, tasks
 from inboxen.account.tasks import disown_inbox

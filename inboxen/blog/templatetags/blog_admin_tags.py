@@ -18,7 +18,7 @@
 ##
 
 from django import template
-from django.utils.translation import ugettext_lazy
+from django.utils.translation import gettext_lazy
 
 from inboxen.utils.flags import create_render_bool_template_tag
 
@@ -27,13 +27,13 @@ register = template.Library()
 
 DRAFT_TO_TAGS = {
     True: {
-        "title": ugettext_lazy("Draft post"),
-        "str": ugettext_lazy("Draft"),
+        "title": gettext_lazy("Draft post"),
+        "str": gettext_lazy("Draft"),
         "class": "label-primary",
     },
     False: {
-        "title": ugettext_lazy("Live post"),
-        "str": ugettext_lazy("Live"),
+        "title": gettext_lazy("Live post"),
+        "str": gettext_lazy("Live"),
         "class": "label-default",
     },
 }

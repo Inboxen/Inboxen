@@ -22,5 +22,5 @@ from django.conf import urls
 from inboxen.cms import views
 
 urlpatterns = [
-    urls.url(r'^((?:[\w\-]+/)*)$', views.page, name='cms-index'),
+    urls.re_path(r'^((?:[\w\-]+/)*)$', views.page, name='cms-index'),
 ]

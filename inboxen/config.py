@@ -53,14 +53,16 @@ else:
     raise exceptions.ImproperlyConfigured("You must provide a inboxen.config file")
 
 yaml_parser = YAML(typ="safe")
-default_values = yaml_parser.load(open(os.path.join(BASE_DIR, "inboxen", "config_defaults.yaml")))
+with open(os.path.join(BASE_DIR, "inboxen", "config_defaults.yaml")) as defaults_file:
+    default_values = yaml_parser.load(defaults_file)
 
 if CONFIG_PATH:
-    config_file = yaml_parser.load(open(CONFIG_PATH))
+    with open(CONFIG_PATH) as config_file:
+        config_obj = yaml_parser.load(config_file)
 else:
-    config_file = None
+    config_obj = None
 
-config = setdefault_deep(config_file, default_values)
+config = setdefault_deep(config_obj, default_values)
 
 try:
     SECRET_KEY = config["secret_key"]

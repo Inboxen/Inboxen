@@ -24,7 +24,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
 from django.core import exceptions
 from django.forms.widgets import RadioSelect
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from elevate.forms import ElevateForm
 
 from inboxen import models, validators
