@@ -167,7 +167,7 @@ LIBERATION_PATH = os.path.join(os.getcwd(), config["tasks"]["liberation"]["path"
 LIBERATION_PATH = LIBERATION_PATH.rstrip("/")
 
 # Which method should be used to accelerate liberation data downloads
-SENDFILE_BACKEND = "sendfile.backends.{}".format(config["tasks"]["liberation"]["sendfile_method"])
+SENDFILE_BACKEND = "django_sendfile.backends.{}".format(config["tasks"]["liberation"]["sendfile_method"])
 
 # Databases!
 DATABASES = {

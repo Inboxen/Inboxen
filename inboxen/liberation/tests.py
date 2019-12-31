@@ -319,10 +319,10 @@ class LiberationDownloadViewTestCase(InboxenTestCase):
 
     def test_default_backend(self):
         module = import_module(settings.SENDFILE_BACKEND)
-        self.assertTrue(hasattr(module, "sendfile"))  # function that django-senfile
+        self.assertTrue(hasattr(module, "sendfile"))  # function that django-sendfile
         self.assertTrue(hasattr(module.sendfile, "__call__"))  # callable
 
-    @override_settings(SENDFILE_BACKEND="sendfile.backends.xsendfile")
+    @override_settings(SENDFILE_BACKEND="django_sendfile.backends.xsendfile")
     def test_sendfile(self):
         with override_settings(LIBERATION_PATH=self.tmp_dir):
             self.user.liberation.path = "test.txt"

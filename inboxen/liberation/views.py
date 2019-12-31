@@ -23,7 +23,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.views import generic
-from sendfile import sendfile
+from django_sendfile import sendfile
 
 from inboxen.liberation import forms
 from inboxen.liberation.tasks import TAR_TYPES
