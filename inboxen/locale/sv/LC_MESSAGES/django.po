@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-12 11:21+0000\n"
+"POT-Creation-Date: 2019-12-31 21:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: inboxen/forms/inbox.py:59
+#: inboxen/forms/inbox.py:60
 msgid "Slow down! You're creating inboxes too quickly."
 msgstr ""
 
-#: inboxen/forms/inbox.py:71
+#: inboxen/forms/inbox.py:72
 #, python-brace-format
 msgid "{0}@{1} has been created."
 msgstr ""
 
-#: inboxen/forms/inbox.py:77
+#: inboxen/forms/inbox.py:78
 msgid "Empty Inbox"
 msgstr ""
 
-#: inboxen/forms/inbox.py:78
+#: inboxen/forms/inbox.py:79
 msgid "Delete all emails in this Inbox. Cannot be undone."
 msgstr ""
 
-#: inboxen/forms/inbox.py:93
+#: inboxen/forms/inbox.py:94
 msgid "Inbox cannot be disabled and pinned at the same time"
 msgstr ""
 
-#: inboxen/forms/inbox.py:103
+#: inboxen/forms/inbox.py:107
 #, python-brace-format
 msgid "All emails in {0}@{1} are being deleted."
 msgstr ""
 
-#: inboxen/forms/inbox.py:116
+#: inboxen/forms/inbox.py:120
 msgid "Yes, I'm sure!"
 msgstr ""
 
-#: inboxen/forms/inbox.py:117
+#: inboxen/forms/inbox.py:121
 msgid ""
 "Delete this Inbox. No one will be able to use it again and there is no undo "
 "button!"
 msgstr ""
 
-#: inboxen/forms/inbox.py:130
+#: inboxen/forms/inbox.py:134
 #, python-brace-format
 msgid "{0}@{1} has been deleted."
 msgstr ""
@@ -63,7 +63,7 @@ msgstr ""
 msgid "You need to provide a Domain object for an Inbox"
 msgstr ""
 
-#: inboxen/middleware.py:34
+#: inboxen/middleware.py:35
 msgid "Too many login attempts, further login attempts will be ignored."
 msgstr ""
 
@@ -148,7 +148,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: inboxen/settings.py:228
+#: inboxen/settings.py:234
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
@@ -365,7 +365,7 @@ msgstr ""
 #: inboxen/templates/inboxen/home.html:35
 #: inboxen/templates/inboxen/includes/email_line.html:16
 #: inboxen/templates/inboxen/includes/email_line.html:17
-#: inboxen/views/inbox/inbox.py:162
+#: inboxen/views/inbox/inbox.py:165
 msgid "Inbox"
 msgstr ""
 
@@ -853,6 +853,6 @@ msgstr ""
 msgid "Bad Request"
 msgstr ""
 
-#: inboxen/views/inbox/inbox.py:186
+#: inboxen/views/inbox/inbox.py:208
 msgid "No Inbox found matching the query."
 msgstr ""
