@@ -41,7 +41,7 @@ lmtpd==6.1.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.2.6
 markdown==3.2
-nodeenv==1.3.5
+nodeenv==1.3.3
 phonenumberslite==8.11.3
 pillow==7.0.0
 pip-tools==4.4.1
