@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Deploy for 2020-02-15
+
+* Update various dependencies
+* Fix admin page previews
+
 ### Deploy for 2019-11-11
 
 * Filter out deleted emails when calculating `Inbox.last_activity` (#484)
