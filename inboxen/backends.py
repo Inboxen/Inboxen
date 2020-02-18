@@ -42,8 +42,8 @@ class CaseInsensitiveMixin(object):
 
 
 class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
-    minutes = settings.LOGIN_ATTEMPT_COOLOFF
-    requests = settings.LOGIN_ATTEMPT_LIMIT
+    minutes = settings.LOGIN_ATTEMPT_WINDOW
+    requests = settings.LOGIN_ATTEMPT_COUNT
 
     def get_ip(self, request):
         return strip_ip(request.META["REMOTE_ADDR"])

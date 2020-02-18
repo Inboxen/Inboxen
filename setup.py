@@ -36,7 +36,6 @@ setup(
         "Django>=2.2,<2.3",
         "Markdown",
         "celery>=4.4,<4.5",
-        "configobj",
         "django-annoying",
         "django-bootstrap-form",
         "django-celery-results",
@@ -58,6 +57,7 @@ setup(
         "progress",
         "psycopg2",
         "pytz",
+        "ruamel.yaml",
         "salmon-mail>=3.2.0",
     ],
     extras_require={

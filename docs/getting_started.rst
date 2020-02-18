@@ -76,17 +76,17 @@ Let's get started!
    $ . env/bin/activate
    (env) $ pip install -r requirements.txt
    (env) $ npm install
-   (env) $ touch settings.ini
+   (env) $ touch inboxen.config
 
-At this point we should add some basic configuration. Open ``settings.ini``
+At this point we should add some basic configuration. Open ``inboxen.config``
 with your favourite text editor and add the following:
 
-.. code-block:: ini
+.. code-block:: yaml
 
    [general]
    # some_random_string should be replaced by an actual random string, it is
-   used for various cryptographic functions and should be kept secret
-   secret_key = some_random_string
+   # used for various cryptographic functions and should be kept secret
+   secret_key: some_random_string
 
 Now we've got some configuration, let's finish the setup:
 
@@ -134,7 +134,7 @@ file called ``local-reqs.in`` and add the following:
 
 .. note::
 
-    You'll have to enable Memcache in your ``settings.ini`` file before using
+    You'll have to enable Memcache in your ``inboxen.config`` file before using
     it. The same applies to using a different Celery broker.
 
 Always pin your dependencies!

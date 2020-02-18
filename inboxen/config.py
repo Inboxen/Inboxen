@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2015, 2020 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -21,137 +21,121 @@ import os
 import warnings
 
 from django.core import exceptions
-import configobj
-import validate
+from ruamel.yaml import YAML
+
+from inboxen.utils.misc import setdefault_deep
 
 ##
-# Most configuration can be done via settings.ini
+# Most configuration can be done via inboxen.config
 #
 # The file is searched for in the follow way:
 # 1. The environment variable "INBOXEN_CONFIG", which contains an absolute path
-# 2. ~/.config/inboxen/settings.ini
-# 3. settings.ini in the root of the git repo (i.e. the same directory as "manage.py")
+# 2. ~/.config/inboxen/inboxen.config
+# 3. inboxen.config in the current working directory
+# 4. inboxen.config in the root of the git repo (i.e. the same directory as "manage.py")
 #
-# See inboxen/config_spec.ini for defaults, see below for comments
 ##
-
-# Shorthand for Django's default database backends
-cache_dict = {
-    "database": "django.core.cache.backends.db.DatabaseCache",
-    "dummy": "django.core.cache.backends.dummy.DummyCache",
-    "file": "django.core.cache.backends.filebased.FileBasedCache",
-    "localmem": "django.core.cache.backends.locmem.LocMemCache",
-    "memcached": "django.core.cache.backends.memcached.PyLibMCCache",
-}
-
-is_testing = int(os.getenv('INBOXEN_TESTING', '0')) > 0
+is_testing = int(os.getenv("INBOXEN_TESTING", "0")) > 0
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 if is_testing:
     CONFIG_PATH = ""
-elif os.path.exists(os.getenv('INBOX_CONFIG', '')):
-    CONFIG_PATH = os.getenv('INBOX_CONFIG')
-elif os.path.exists(os.path.expanduser("~/.config/inboxen/settings.ini")):
-    CONFIG_PATH = os.path.expanduser("~/.config/inboxen/settings.ini")
-elif os.path.exists(os.path.join(os.getcwd(), "settings.ini")):
-    CONFIG_PATH = os.path.join(os.getcwd(), "settings.ini")
-elif os.path.exists(os.path.join(BASE_DIR, "settings.ini")):
-    CONFIG_PATH = os.path.join(BASE_DIR, "settings.ini")
+elif os.path.exists(os.getenv("INBOX_CONFIG", "")):
+    CONFIG_PATH = os.getenv("INBOX_CONFIG")
+elif os.path.exists(os.path.expanduser("~/.config/inboxen/inboxen.config")):
+    CONFIG_PATH = os.path.expanduser("~/.config/inboxen/inboxen.config")
+elif os.path.exists(os.path.join(os.getcwd(), "inboxen.config")):
+    CONFIG_PATH = os.path.join(os.getcwd(), "inboxen.config")
+elif os.path.exists(os.path.join(BASE_DIR, "inboxen.config")):
+    CONFIG_PATH = os.path.join(BASE_DIR, "inboxen.config")
 else:
-    raise exceptions.ImproperlyConfigured("You must provide a settings.ini file")
+    raise exceptions.ImproperlyConfigured("You must provide a inboxen.config file")
 
-config_spec = os.path.join(BASE_DIR, "inboxen/config_spec.ini")
+yaml_parser = YAML(typ="safe")
+default_values = yaml_parser.load(open(os.path.join(BASE_DIR, "inboxen", "config_defaults.yaml")))
 
-config = configobj.ConfigObj(CONFIG_PATH, configspec=config_spec)
-config.validate(validate.Validator())
+if CONFIG_PATH:
+    config_file = yaml_parser.load(open(CONFIG_PATH))
+else:
+    config_file = None
 
-# TODO: These could be merged into a custom validator
+config = setdefault_deep(config_file, default_values)
+
 try:
-    SECRET_KEY = config["general"]["secret_key"]
+    SECRET_KEY = config["secret_key"]
 except KeyError:
     if is_testing:
-        warnings.warn("You haven't set 'secret_key' in your settings.ini", ImportWarning)
+        warnings.warn("You haven't set 'secret_key' in your inboxen.config", ImportWarning)
     else:
-        raise exceptions.ImproperlyConfigured("You must set 'secret_key' in your settings.ini")
-
-admin_names = config["general"]["admin_names"]
-admin_emails = config["general"]["admin_emails"]
-
-if isinstance(admin_names, str):
-    admin_names = [admin_names]
-
-if isinstance(admin_emails, str):
-    admin_emails = [admin_emails]
-
-if len(admin_names) != len(admin_emails):
-    raise exceptions.ImproperlyConfigured("You must have the same number of admin_names as admin_emails settings.ini")
+        raise exceptions.ImproperlyConfigured("You must set 'secret_key' in your inboxen.config")
 
 # Admins (and managers)
-ADMINS = list(zip(admin_names, admin_emails))
+ADMINS = config["admins"]
 
 # List of hosts allowed
-ALLOWED_HOSTS = config["general"]["allowed_hosts"]
+ALLOWED_HOSTS = config["allowed_hosts"]
 
 # Enable debugging - DO NOT USE IN PRODUCTION
-DEBUG = config["general"]["debug"]
+DEBUG = config["debug"]
 
 # Allow new users to register
-ENABLE_REGISTRATION = config["general"]["enable_registration"]
-
-# Allow admins to edit users
-ENABLE_USER_EDITING = config["general"]["enable_user_editing"]
-
-# Cooloff time, in minutes, for failed logins
-LOGIN_ATTEMPT_COOLOFF = config["general"]["login_attempt_cooloff"]
-
-# Maximum number of unsuccessful login attempts
-LOGIN_ATTEMPT_LIMIT = config["general"]["login_attempt_limit"]
-
-# Cooloff time, in minutes, for registrations
-REGISTER_LIMIT_WINDOW = config["general"]["register_limit_window"]
-
-# Maximum number of registrations
-REGISTER_LIMIT_COUNT = config["general"]["register_limit_count"]
-
-# Cooloff time, in minutes, for registrations
-SINGLE_EMAIL_LIMIT_WINDOW = config["general"]["single_email_limit_window"]
-
-# Maximum number of registrations
-SINGLE_EMAIL_LIMIT_COUNT = config["general"]["single_email_limit_count"]
+ENABLE_REGISTRATION = config["enable_registration"]
 
 # Language code, e.g. en-gb
-LANGUAGE_CODE = config["general"]["language_code"]
+LANGUAGE_CODE = config["language_code"]
 
 # Where `manage.py collectstatic` puts static files
-STATIC_ROOT = os.path.join(os.getcwd(), config["general"]["static_root"])
+STATIC_ROOT = os.path.join(os.getcwd(), config["static_root"])
 
 # Media files get uploaded to this dir
-MEDIA_ROOT = os.path.join(os.getcwd(), config["general"]["media_root"])
+MEDIA_ROOT = os.path.join(os.getcwd(), config["media_root"])
 
 # Email the server uses when sending emails
-SERVER_EMAIL = config["general"]["server_email"]
+SERVER_EMAIL = config["server_email"]
 
 # Site name used in page titles
-SITE_NAME = config["general"]["site_name"]
+SITE_NAME = config["site_name"]
 
 # Link to source code
-SOURCE_LINK = config["general"]["source_link"]
+SOURCE_LINK = config["source_link"]
 
 # Time zone
-TIME_ZONE = config["general"]["time_zone"]
+TIME_ZONE = config["time_zone"]
 
 # Per user email quota
-PER_USER_EMAIL_QUOTA = config["general"]["per_user_email_quota"]
+PER_USER_EMAIL_QUOTA = config["per_user_email_quota"]
 
 # Length of the local part (bit before the @) of autogenerated inbox addresses
-INBOX_LENGTH = config["inbox"]["inbox_length"]
+INBOX_LENGTH = config["inbox_length"]
+
+# Ratelimit #
+
+# Cooloff time, in minutes, for failed logins
+LOGIN_ATTEMPT_WINDOW = config["ratelimits"]["login"]["window"]
+
+# Maximum number of unsuccessful login attempts
+LOGIN_ATTEMPT_COUNT = config["ratelimits"]["login"]["count"]
+
+# Cooloff time, in minutes, for registrations
+REGISTER_LIMIT_WINDOW = config["ratelimits"]["register"]["window"]
+
+# Maximum number of registrations
+REGISTER_LIMIT_COUNT = config["ratelimits"]["register"]["count"]
+
+# Cooloff time, in minutes, for downloading a single email
+SINGLE_EMAIL_LIMIT_WINDOW = config["ratelimits"]["single_email"]["window"]
+
+# Maximum number of downloads of single emails
+SINGLE_EMAIL_LIMIT_COUNT = config["ratelimits"]["single_email"]["count"]
 
 # Cooloff time, in minutes, for inbox creation
-INBOX_LIMIT_WINDOW = config["inbox"]["inbox_limit_window"]
+INBOX_LIMIT_WINDOW = config["ratelimits"]["inbox"]["window"]
 
 # Maximum number of inboxes creations within limit window
-INBOX_LIMIT_COUNT = config["inbox"]["inbox_limit_count"]
+INBOX_LIMIT_COUNT = config["ratelimits"]["inbox"]["count"]
+
+# Tasks #
 
 # Where Celery looks for new tasks and stores results
 CELERY_BROKER_URL = config["tasks"]["broker_url"]
@@ -166,8 +150,8 @@ CELERY_TASK_ALWAYS_EAGER = config["tasks"]["always_eager"]
 LIBERATION_PATH = os.path.join(os.getcwd(), config["tasks"]["liberation"]["path"])
 LIBERATION_PATH = LIBERATION_PATH.rstrip("/")
 
-# Which method should be used to accelerate liberation data downloads
-SENDFILE_BACKEND = "django_sendfile.backends.{}".format(config["tasks"]["liberation"]["sendfile_method"])
+# Which backend should be used to accelerate liberation data downloads
+SENDFILE_BACKEND = config["tasks"]["liberation"]["sendfile_backend"]
 
 # Databases!
 DATABASES = {
@@ -181,11 +165,10 @@ DATABASES = {
     }
 }
 
-
 # Caches!
 CACHES = {
     'default': {
-        'BACKEND': cache_dict[config["cache"]["backend"]],
+        'BACKEND': config["cache"]["backend"],
         'TIMEOUT': config["cache"]["timeout"],
     }
 }

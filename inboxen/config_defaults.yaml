@@ -1,0 +1,43 @@
+admins: []
+allowed_hosts: []
+cache:
+  backend: "django.core.cache.backends.db.DatabaseCache"
+  location: ""
+  timeout: 300
+database:
+    host: ""
+    name: "inboxen"
+    password: ""
+    port: ""
+    user: ""
+debug: false
+enable_registration: false
+inbox_length: 6
+language_code: "en-gb"
+media_root: "media_content"
+per_user_email_quota: 0
+ratelimits:
+    inbox:
+        count: 100
+        window: 1440
+    login:
+        count: 5
+        window: 60
+    register:
+        count: 5
+        window: 30
+    single_email:
+        count: 100
+        window: 60
+server_email: "django@localhost"
+site_name: "LazyAdmin.com's Inboxen"
+source_link: "https://github.com/Inboxen/Inboxen"
+static_root: "static_content"
+tasks:
+    always_eager: false
+    broker_url: "amqp://guest:guest@localhost:5672//"
+    concurrency: 3
+    liberation:
+        path: "liberation_store"
+        sendfile_backend: "django_sendfile.backends.simple"
+time_zone: "UTC"
