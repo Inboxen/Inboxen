@@ -43,8 +43,7 @@ setup(
         "django-cursor-pagination",
         "django-extensions",
         "django-mptt",
-        # latest django-two-factor does not support django-otp>= 0.8.0
-        "django-otp<0.8.0",
+        "django-otp",
         "django-ratelimit-backend",
         "django-sendfile2",
         "django-elevate",
