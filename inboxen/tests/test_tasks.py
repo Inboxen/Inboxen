@@ -136,27 +136,64 @@ class CleanSessionsTestCase(InboxenTestCase):
 
 class FlagTestCase(InboxenTestCase):
     """Test flag tasks"""
-    # only testing that it doesn't raise an exception atm
-    # TODO: actually test
     def setUp(self):
         super(FlagTestCase, self).setUp()
         self.user = factories.UserFactory()
+        profile = self.user.inboxenprofile
+        profile.unified_has_new_messages = True
+        profile.save()
         self.inboxes = [
-            factories.InboxFactory(user=self.user),
+            factories.InboxFactory(user=self.user, new=False),
             factories.InboxFactory(user=self.user, new=True),
         ]
-        self.emails = factories.EmailFactory.create_batch(10, inbox=self.inboxes[0])
-        self.emails.extend(factories.EmailFactory.create_batch(10, inbox=self.inboxes[1]))
+        self.emails = factories.EmailFactory.create_batch(10, inbox=self.inboxes[0], seen=False)
+        self.emails.extend(factories.EmailFactory.create_batch(10, inbox=self.inboxes[1], seen=False))
 
     def test_flags_from_unified(self):
         tasks.set_emails_to_seen.delay([email.id for email in self.emails], user_id=self.user.id)
+        self.assertEqual(models.Email.objects.filter(seen=False).count(), 0)
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(), 0)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.unified_has_new_messages, False)
+
+        # run it again, nothing should change
+        tasks.set_emails_to_seen.delay([email.id for email in self.emails], user_id=self.user.id)
+        self.assertEqual(models.Email.objects.filter(seen=False).count(), 0)
+        self.assertEqual(models.Inbox.objects.filter(new=True).count(), 0)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.unified_has_new_messages, False)
 
     def test_flags_from_single_inbox(self):
+        self.inboxes[0].new = True
+        self.inboxes[0].save()
         tasks.set_emails_to_seen.delay(
-            [email.id for email in self.emails],
+            [email.id for email in self.emails if email.inbox_id == self.inboxes[0].id],
             user_id=self.user.id,
             inbox_id=self.inboxes[0].id,
         )
+        self.assertEqual(models.Email.objects.filter(inbox=self.inboxes[0], seen=False).count(), 0)
+        self.inboxes[0].refresh_from_db()
+        self.assertEqual(self.inboxes[0].new, False)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.unified_has_new_messages, True)
+        # the other inbox hasn't been touched either
+        self.inboxes[1].refresh_from_db()
+        self.assertEqual(self.inboxes[1].new, True)
+
+        # run it again, nothing should change
+        tasks.set_emails_to_seen.delay(
+            [email.id for email in self.emails if email.inbox_id == self.inboxes[0].id],
+            user_id=self.user.id,
+            inbox_id=self.inboxes[0].id,
+        )
+        self.assertEqual(models.Email.objects.filter(inbox=self.inboxes[0], seen=False).count(), 0)
+        self.inboxes[0].refresh_from_db()
+        self.assertEqual(self.inboxes[0].new, False)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.inboxenprofile.unified_has_new_messages, True)
+        # the other inbox hasn't been touched either
+        self.inboxes[1].refresh_from_db()
+        self.assertEqual(self.inboxes[1].new, True)
 
 
 class DeleteTestCase(InboxenTestCase):

@@ -159,7 +159,7 @@ def set_emails_to_seen(email_id_list, user_id, inbox_id=None):
     models.Email.objects.viewable(user_id).filter(id__in=email_id_list).update(seen=True)
 
     kwargs = {"email__id__in": email_id_list, "user_id": user_id}
-    if inbox_id is None:
+    if inbox_id is not None:
         kwargs["id"] = inbox_id
 
     batch_set_new_flags.delay(user_id=user_id, kwargs=kwargs)
