@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-31 21:59+0000\n"
+"POT-Creation-Date: 2020-03-31 15:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,7 +63,7 @@ msgstr ""
 msgid "You need to provide a Domain object for an Inbox"
 msgstr ""
 
-#: inboxen/middleware.py:35
+#: inboxen/middleware.py:38
 msgid "Too many login attempts, further login attempts will be ignored."
 msgstr ""
 
@@ -148,7 +148,7 @@ msgid ""
 "    "
 msgstr ""
 
-#: inboxen/settings.py:234
+#: inboxen/settings.py:233
 msgid "You are now logged out. Have a nice day!"
 msgstr ""
 
