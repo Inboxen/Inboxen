@@ -21,7 +21,7 @@ django-bootstrap-form==3.4  # via inboxen
 django-csp==3.6           # via inboxen
 django-cursor-pagination==0.1.4  # via inboxen
 django-elevate==1.0.1     # via inboxen
-django-extensions==2.2.8  # via inboxen
+django-extensions==2.2.9  # via inboxen
 django-formtools==2.2     # via django-two-factor-auth
 django-js-asset==1.2.2    # via django-mptt
 django-mptt==0.11.0       # via inboxen
@@ -41,7 +41,7 @@ lmtpd==6.1.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.5.0               # via inboxen, premailer
 markdown==3.2.1           # via inboxen
-phonenumberslite==8.11.5  # via inboxen
+phonenumberslite==8.12.1  # via inboxen
 pillow==7.0.0             # via inboxen
 pip-tools==4.5.1          # via -r inboxen/data/requirements.in
 premailer==3.6.1          # via inboxen
