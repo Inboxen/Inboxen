@@ -104,6 +104,7 @@ class RouterTestCase(InboxenTestCase):
 
     def test_flag_setting(self):
         user = factories.UserFactory()
+        user.inboxenprofile
         inbox = factories.InboxFactory(user=user)
 
         with mock.patch("inboxen.router.app.server.make_email") as mock_make_email:
@@ -170,6 +171,7 @@ class RouterTestCase(InboxenTestCase):
 
     def test_routes_deliver_to_inbox(self):
         user = factories.UserFactory()
+        user.inboxenprofile
         inbox = factories.InboxFactory(user=user)
         Router.load(['inboxen.router.app.server'])
 

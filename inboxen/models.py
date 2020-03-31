@@ -83,6 +83,7 @@ class UserProfile(models.Model):
         verbose_name=_("What happens once your email quota is reached?"),
     )
     quota_percent_usage = models.PositiveSmallIntegerField(default=0)
+    receiving_emails = models.BooleanField(default=True)
 
     def get_bools_for_labels(self):
         yield ("new", self.unified_has_new_messages)
