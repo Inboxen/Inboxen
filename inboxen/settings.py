@@ -109,7 +109,6 @@ LANGUAGE_CODE = "en-gb"
 
 LANGUAGES = (
     ("en-gb", "English"),
-    ("sv", "Svenska"),
 )
 
 # required for makemessages --all to work correctly, otherwise Django looks in
