@@ -40,7 +40,7 @@ _log = logging.getLogger(__name__)
 class MockRequest(HttpRequest):
     """Mock up a request object"""
 
-    def __init__(self, user=None, session_id="12345678", has_otp=False, has_sudo=False):
+    def __init__(self, user=None, session_id=None, has_otp=False, has_sudo=False):
         super(MockRequest, self).__init__()
         self.method = "GET"
 

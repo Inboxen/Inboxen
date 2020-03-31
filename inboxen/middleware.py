@@ -17,15 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.signals import user_logged_in
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.translation import ugettext as _
 from ratelimitbackend.exceptions import RateLimitException
 
-SESSION_HALF_COOKIE_AGE = settings.SESSION_COOKIE_AGE / 2
+SESSION_HALF_COOKIE_AGE = timedelta(seconds=settings.SESSION_COOKIE_AGE / 2)
 
 
 class RateLimitMiddleware(MiddlewareMixin):
@@ -40,16 +43,14 @@ class ExtendSessionMiddleware(MiddlewareMixin):
     """Extends the expiry of sessions for logged in users"""
     def process_request(self, request):
         if request.user.is_authenticated:
-            if '_session_expiry' not in request.session:
-                # get_expiry_age() will return settings.SESSION_COOKIE_AGE if
-                # no custom expiry is set.
-                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-                request.session.modified = True
-            elif request.session.get_expiry_age() <= SESSION_HALF_COOKIE_AGE:
+            # this is ugly, but django doesn't make it easy
+            session_obj = request.session._get_session_from_db()
+            if session_obj is None:
+                return
+            cookie_time_left = session_obj.expire_date - timezone.now()
+            if cookie_time_left <= SESSION_HALF_COOKIE_AGE:
                 # cycle session key
                 request.session.cycle_key()
-                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-                request.session.modified = True
                 user_logged_in.send(
                     sender=request.user.__class__,
                     request=request,

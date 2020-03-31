@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.message import Message
 from importlib import reload
 from io import StringIO
@@ -35,6 +35,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import override_settings
 from django.test.client import RequestFactory
+from django.utils import timezone
 
 from inboxen.management.commands import feeder, url_stats
 from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeMiddleware
@@ -160,50 +161,53 @@ class IndexTestCase(InboxenTestCase):
 class ExtendSessionMiddlewareTestCase(InboxenTestCase):
     middleware = ExtendSessionMiddleware()
 
-    def test_get_set(self):
+    def test_cycle_session_expires_more_than_week_left(self):
         user = factories.UserFactory()
         request = MockRequest(user)
+        request.session.save(must_create=True)
 
-        # check that there is not a custom expiry set
-        self.assertNotIn('_session_expiry', request.session)
-
-        self.middleware.process_request(request)
-        self.assertTrue(request.session.modified)
-        self.assertIn('_session_expiry', request.session)
-
-        # custom expiry has been set, this time the session should not be
-        # modified
-        request.session.modified = False
-        self.middleware.process_request(request)
-        self.assertFalse(request.session.modified)
-        self.assertIn('_session_expiry', request.session)
-
-    def test_cycle_session(self):
-        user = factories.UserFactory()
-        request = MockRequest(user)
-
-        # session will expire in more than a week
-        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.75)
+        session_obj = request.session._get_session_from_db()
+        session_obj.expire_date = timezone.now() + timedelta(days=10)
+        session_obj.save()
         session_key = request.session.session_key
         self.middleware.process_request(request)
         self.assertEqual(request.session.session_key, session_key)
-        self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE * 0.75)
+        user.refresh_from_db()
+        self.assertEqual(user.last_login, None)
 
-        # session will expire in exactly a week
-        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.5)
+    def test_cycle_session_week_left(self):
+        user = factories.UserFactory()
+        request = MockRequest(user)
+        request.session.save(must_create=True)
+
+        session_obj = request.session._get_session_from_db()
+        session_obj.expire_date = timezone.now() + timedelta(days=8)
+        session_obj.save()
+        session_key = request.session.session_key
+        self.middleware.process_request(request)
+        self.assertEqual(request.session.session_key, session_key)
+        user.refresh_from_db()
+        self.assertEqual(user.last_login, None)
+
+    def test_cycle_session_less_than_week_left(self):
+        user = factories.UserFactory()
+        request = MockRequest(user)
+        request.session.save(must_create=True)
+
+        session_obj = request.session._get_session_from_db()
+        session_obj.expire_date = timezone.now() + timedelta(days=3)
+        session_obj.save()
         session_key = request.session.session_key
         self.middleware.process_request(request)
         self.assertNotEqual(request.session.session_key, session_key)
-        self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE)
+        user.refresh_from_db()
+        self.assertNotEqual(user.last_login, None)
 
-        # session will expire in less than a week
-        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.25)
-        session_key = request.session.session_key
-        self.middleware.process_request(request)
-        self.assertNotEqual(request.session.session_key, session_key)
-        self.assertEqual(request.session.get_expiry_age(), dj_settings.SESSION_COOKIE_AGE)
+    def test_cycle_session_no_cycle(self):
+        user = factories.UserFactory()
+        request = MockRequest(user)
+        request.session.save(must_create=True)
 
-        # no change in expiry, so session key should not change
         session_key = request.session.session_key
         self.middleware.process_request(request)
         self.assertEqual(request.session.session_key, session_key)
@@ -211,17 +215,12 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
     def test_last_login(self):
         user = factories.UserFactory()
         request = MockRequest(user)
+        request.session.save(must_create=True)
 
         # no change, so no last_login
         self.middleware.process_request(request)
         user.refresh_from_db()
         self.assertEqual(user.last_login, None)
-
-        # session is cycled
-        request.session.set_expiry(dj_settings.SESSION_COOKIE_AGE * 0.25)
-        self.middleware.process_request(request)
-        user.refresh_from_db()
-        self.assertNotEqual(user.last_login, None)
 
     def test_with_anon(self):
         user = AnonymousUser()
