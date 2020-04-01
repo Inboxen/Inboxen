@@ -17,8 +17,33 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.apps import apps
+
 
 def task_group_skew(group, step=1):
     """Work around for https://github.com/celery/celery/issues/4298"""
     group.tasks = list(group.tasks)
     group.skew(step=step)
+
+
+def create_queryset(model, app="inboxen", args=None, kwargs=None, skip_items=None, limit_items=None):
+    """Create queryset from parts that can be JSON serialised"""
+    if isinstance(model, str):
+        _model = apps.get_app_config(app).get_model(model)
+    else:
+        _model = model
+
+    if args is None and kwargs is None:
+        raise Exception("You need to specify some filter options!")
+    elif args is None:
+        args = []
+    elif kwargs is None:
+        kwargs = {}
+
+    items = _model.objects.only('pk').filter(*args, **kwargs)
+    if skip_items is not None:
+        items = items[skip_items:]
+    if limit_items is not None:
+        items = items[:limit_items]
+
+    return items

@@ -33,7 +33,7 @@ from django.utils import timezone
 
 from inboxen import models
 from inboxen.celery import app
-from inboxen.utils.tasks import task_group_skew
+from inboxen.utils.tasks import create_queryset, task_group_skew
 
 log = logging.getLogger(__name__)
 
@@ -167,7 +167,7 @@ def set_emails_to_seen(email_id_list, user_id, inbox_id=None):
 
 @app.task(ignore_result=True)
 def batch_set_new_flags(user_id=None, args=None, kwargs=None, batch_number=500):
-    inbox_list = _create_task_queryset("inbox", args=args, kwargs=kwargs).distinct()
+    inbox_list = create_queryset("inbox", args=args, kwargs=kwargs).distinct()
     inboxes = []
     users = set()
     for inbox in inbox_list.iterator():
@@ -209,30 +209,11 @@ def delete_inboxen_item(model, item_pk):
         pass
 
 
-def _create_task_queryset(model, args=None, kwargs=None, skip_items=None, limit_items=None):
-    _model = apps.get_app_config("inboxen").get_model(model)
-
-    if args is None and kwargs is None:
-        raise Exception("You need to specify some filter options!")
-    elif args is None:
-        args = []
-    elif kwargs is None:
-        kwargs = {}
-
-    items = _model.objects.only('pk').filter(*args, **kwargs)
-    if skip_items is not None:
-        items = items[skip_items:]
-    if limit_items is not None:
-        items = items[:limit_items]
-
-    return items
-
-
 @app.task()
 @transaction.atomic()
-def batch_mark_as_deleted(model, args=None, kwargs=None, skip_items=None, limit_items=None):
+def batch_mark_as_deleted(model, app="inboxen", args=None, kwargs=None, skip_items=None, limit_items=None):
     """Marks emails as deleted, but don't actually delete them"""
-    items = _create_task_queryset(model, args, kwargs, skip_items, limit_items)
+    items = create_queryset(model, args=args, kwargs=kwargs, skip_items=skip_items, limit_items=limit_items)
     # cannot slice and update at the same time, so we subquery
     items.model.objects.filter(pk__in=items).update(deleted=True)
 
@@ -250,7 +231,7 @@ def batch_delete_items(model, args=None, kwargs=None, skip_items=None, limit_ite
     * args and kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
     """
-    items = _create_task_queryset(model, args, kwargs, skip_items, limit_items)
+    items = create_queryset(model, args=args, kwargs=kwargs, skip_items=skip_items, limit_items=limit_items)
     items = [(model, item.pk) for item in items.iterator()]
     if len(items) > 0:
         items = delete_inboxen_item.chunks(items, batch_number).group()
