@@ -91,7 +91,17 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'inboxen.tasks.calculate_quota',
         'schedule': datetime.timedelta(hours=1),
     },
+    'ice': {
+        'task': 'inboxen.account.tasks.user_ice',
+        'schedule': datetime.timedelta(days=1),
+    },
 }
+
+USER_ICE_TASKS = (
+    (datetime.timedelta(days=90), datetime.timedelta(days=180), "inboxen.account.tasks.user_ice_disable_emails"),
+    (datetime.timedelta(days=180), datetime.timedelta(days=360), "inboxen.account.tasks.user_ice_delete_emails"),
+    (datetime.timedelta(days=360), None, "inboxen.account.tasks.user_ice_delete_user"),
+)
 
 ##
 # Django options

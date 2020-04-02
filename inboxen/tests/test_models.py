@@ -138,12 +138,14 @@ class ModelTestCase(InboxenTestCase):
             [models.UserProfile.REJECT_MAIL,
              models.UserProfile.DELETE_MAIL],  # quota options
             [99, 100, 101],  # quota percent
+            [True, False],  # receiving_emails
         )
         for args in itertools.product(*params):
             if args[3] is not None:
                 user = args[3]()
                 user.inboxenprofile.quota_options = args[4]
                 user.inboxenprofile.quota_percent_usage = args[5]
+                user.inboxenprofile.receiving_emails = args[6]
                 user.inboxenprofile.save()
             else:
                 user = None
@@ -151,14 +153,17 @@ class ModelTestCase(InboxenTestCase):
             factories.InboxFactory(domain__enabled=args[0], deleted=args[1], disabled=args[1], user=user)
 
         for inbox in models.Inbox.objects.receiving():
-            truth_values = [inbox.deleted, inbox.disabled, not inbox.domain.enabled,
-                            inbox.user is None or inbox.user.inboxenprofile.quota_percent_usage > 99]
-
-            self.assertFalse(any(truth_values), truth_values)
+            self.assertFalse(inbox.deleted)
+            self.assertFalse(inbox.disabled)
+            self.assertTrue(inbox.domain.enabled)
+            self.assertNotEqual(inbox.user, None)
+            self.assertEqual(inbox.user.inboxenprofile.quota_percent_usage, 99)
+            self.assertEqual(inbox.user.inboxenprofile.receiving_emails, True)
 
         for inbox in models.Inbox.objects.exclude(id__in=models.Inbox.objects.receiving()):
-            truth_values = [inbox.deleted, inbox.disabled, not inbox.domain.enabled,
-                            inbox.user is None or inbox.user.inboxenprofile.quota_percent_usage > 99]
+            truth_values = [inbox.deleted, inbox.disabled, not inbox.domain.enabled, inbox.user is None,
+                            inbox.user is not None and inbox.user.inboxenprofile.quota_percent_usage > 99,
+                            inbox.user is not None and not inbox.user.inboxenprofile.receiving_emails]
 
             self.assertTrue(any(truth_values), truth_values)
 

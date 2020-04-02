@@ -16,9 +16,12 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-from datetime import datetime
+
+from datetime import datetime, timedelta
+from unittest import mock
 
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from pytz import utc
 
 from inboxen import models
@@ -81,3 +84,104 @@ class DeleteTestCase(InboxenTestCase):
 
         with self.assertRaises(get_user_model().DoesNotExist):
             get_user_model().objects.get(id=1)
+
+
+class IceTestCase(InboxenTestCase):
+    @mock.patch("inboxen.account.tasks.timezone.now")
+    def test_main_function(self, now_mock):
+        now_mock.return_value = timezone.now()
+        new_dict = {k: mock.Mock() for k, v in tasks.app.tasks.items()}
+        with mock.patch.dict(tasks.app.tasks, new_dict, clear=True):
+            tasks.user_ice()
+        call_count_total = 0
+        for k, v in new_dict.items():
+            call_count_total += v.apply_async.call_count
+        self.assertEqual(call_count_total, 3)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_disable_emails"].apply_async.call_count, 1)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_disable_emails"].apply_async.call_args, ((), {
+            "kwargs": {"kwargs": {"last_login__range": (now_mock.return_value - timedelta(days=90),
+                                                        now_mock.return_value - timedelta(days=180))}},
+        }))
+
+        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_emails"].apply_async.call_count, 1)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_emails"].apply_async.call_args, ((), {
+            "kwargs": {"kwargs": {"last_login__range": (now_mock.return_value - timedelta(days=180),
+                                                        now_mock.return_value - timedelta(days=360))}},
+        }))
+
+        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_user"].apply_async.call_count, 1)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_user"].apply_async.call_args, ((), {
+            "kwargs": {"kwargs": {"last_login__lt": now_mock.return_value - timedelta(days=360)}},
+        }))
+
+    def test_smoke_test_nothing_to_be_done(self):
+        tasks.user_ice()
+
+    def test_smoke_test_with_data(self):
+        now = timezone.now()
+        user1 = factories.UserFactory(username="user1", last_login=now - timedelta(days=30))
+        user1.inboxenprofile
+        user1_email = factories.EmailFactory(inbox__user=user1)
+        user2 = factories.UserFactory(username="user2", last_login=now - timedelta(days=130))
+        user2.inboxenprofile
+        user2_email = factories.EmailFactory(inbox__user=user2)
+        user3 = factories.UserFactory(username="user3", last_login=now - timedelta(days=330))
+        user3.inboxenprofile
+        user3_email = factories.EmailFactory(inbox__user=user3)
+        user4 = factories.UserFactory(username="user4", last_login=now - timedelta(days=430))
+        user4.inboxenprofile
+        user4_email = factories.EmailFactory(inbox__user=user4)
+
+        tasks.user_ice()
+
+        user1.inboxenprofile.refresh_from_db()
+        self.assertEqual(user1.inboxenprofile.receiving_emails, True)
+        user1_email.refresh_from_db()
+
+        user2.inboxenprofile.refresh_from_db()
+        self.assertEqual(user2.inboxenprofile.receiving_emails, False)
+        user2_email.refresh_from_db()
+
+        user3.inboxenprofile.refresh_from_db()
+        # user3 hasn't had receiving_emails set to False because they should
+        # have had that done already
+        self.assertEqual(user3.inboxenprofile.receiving_emails, True)
+        with self.assertRaises(models.Email.DoesNotExist):
+            user3_email.refresh_from_db()
+
+        with self.assertRaises(models.UserProfile.DoesNotExist):
+            user4.inboxenprofile.refresh_from_db()
+        with self.assertRaises(models.Email.DoesNotExist):
+            user4_email.refresh_from_db()
+
+    def test_disable_emails(self):
+        user1 = factories.UserFactory(username="user1", last_login=timezone.now())
+        user1.inboxenprofile
+        user2 = factories.UserFactory(username="user2")
+        user2.inboxenprofile
+
+        tasks.user_ice_disable_emails(kwargs={"last_login__isnull": True})
+        # there should only be one, an exception will be raised otherwise
+        profile = models.UserProfile.objects.get(receiving_emails=False)
+        self.assertEqual(profile.user, user2)
+
+    @mock.patch("inboxen.account.tasks.delete_inboxen_item")
+    def test_delete_emails(self, delete_inboxen_item_mock):
+        user1 = factories.UserFactory(username="user1", last_login=timezone.now())
+        user2 = factories.UserFactory(username="user2")
+
+        factories.EmailFactory(inbox__user=user1)
+        user2_email = factories.EmailFactory(inbox__user=user2)
+
+        tasks.user_ice_delete_emails(kwargs={"last_login__isnull": True})
+        self.assertEqual(delete_inboxen_item_mock.chunks.call_count, 1)
+        self.assertEqual(delete_inboxen_item_mock.chunks.call_args, (([("email", user2_email.pk)], 500), {}))
+
+    @mock.patch("inboxen.account.tasks.delete_account")
+    def test_delete_user(self, delete_account_mock):
+        factories.UserFactory(username="user1", last_login=timezone.now())
+        user2 = factories.UserFactory(username="user2")
+
+        tasks.user_ice_delete_user(kwargs={"last_login__isnull": True})
+        self.assertEqual(delete_account_mock.chunks.call_count, 1)
+        self.assertEqual(delete_account_mock.chunks.call_args, (([(user2.pk,)], 500), {}))

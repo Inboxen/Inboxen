@@ -21,13 +21,16 @@ from datetime import datetime
 import logging
 
 from celery import chord
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.utils import timezone
 from pytz import utc
 
 from inboxen.celery import app
 from inboxen.models import Inbox
-from inboxen.tasks import batch_delete_items
+from inboxen.tasks import batch_delete_items, delete_inboxen_item
+from inboxen.utils.tasks import create_queryset, task_group_skew
 
 log = logging.getLogger(__name__)
 
@@ -94,3 +97,48 @@ def delete_account(user_id):
         delete.apply_async()
 
     log.info("Deletion tasks for %s sent off", user.username)
+
+
+@app.task
+def user_ice():
+    now = timezone.now()
+    for delta_start, delta_end, function in settings.USER_ICE_TASKS:
+        kwargs = {}
+        if delta_start is None:
+            kwargs["last_login__gt"] = now - delta_end
+        elif delta_end is None:
+            kwargs["last_login__lt"] = now - delta_start
+        else:
+            kwargs["last_login__range"] = (now - delta_end, now - delta_start)
+        task = app.tasks[function]
+        task.apply_async(kwargs={"kwargs": kwargs})
+
+
+@app.task
+def user_ice_disable_emails(kwargs, batch_number=500):
+    kwargs = {"user__%s" % k: v for k, v in kwargs.items()}
+    items = create_queryset("userprofile", kwargs=kwargs)
+    items.update(receiving_emails=False)
+
+
+@app.task
+def user_ice_delete_emails(kwargs, batch_number=500):
+    kwargs = {"inbox__user__%s" % k: v for k, v in kwargs.items()}
+    emails = create_queryset("email", kwargs=kwargs)
+    email_tasks = delete_inboxen_item.chunks([("email", i.pk,) for i in emails.iterator()], batch_number).group()
+    if len(email_tasks) == 0:
+        return
+
+    task_group_skew(email_tasks, step=batch_number/10.0)
+    email_tasks.delay()
+
+
+@app.task
+def user_ice_delete_user(kwargs, batch_number=500):
+    users = create_queryset(get_user_model(), kwargs=kwargs)
+    user_tasks = delete_account.chunks([(i.pk,) for i in users.iterator()], batch_number).group()
+    if len(user_tasks) == 0:
+        return
+
+    task_group_skew(user_tasks, step=batch_number/10.0)
+    user_tasks.delay()

@@ -23,6 +23,7 @@ import itertools
 
 from django.conf import settings
 from django.contrib.sessions.models import Session
+from django.db.models import Q
 from django.test import override_settings
 from django.utils import timezone
 
@@ -223,19 +224,22 @@ class DeleteTestCase(InboxenTestCase):
         # test with an empty list
         tasks.delete_inboxen_item.chunks([], 500)()
 
-    @mock.patch("inboxen.tasks._create_task_queryset")
-    def test_batch_delete_items_calls_create_task_queryset(self, mock_qs):
+    @mock.patch("inboxen.tasks.create_queryset")
+    def test_batch_delete_items_callscreate_queryset(self, mock_qs):
         tasks.batch_delete_items("email", args=[12, 14])
         self.assertEqual(mock_qs.call_count, 1)
-        self.assertEqual(mock_qs.call_args, (("email", [12, 14], None, None, None), {}))
+        self.assertEqual(mock_qs.call_args, (("email",), {
+            "args": [12, 14], "kwargs": None, "limit_items": None, "skip_items": None}))
 
         tasks.batch_delete_items("email", kwargs={"a": "b"})
         self.assertEqual(mock_qs.call_count, 2)
-        self.assertEqual(mock_qs.call_args, (("email", None, {"a": "b"}, None, None), {}))
+        self.assertEqual(mock_qs.call_args, (("email",), {
+            "args": None, "kwargs": {"a": "b"}, "limit_items": None, "skip_items": None}))
 
         tasks.batch_delete_items("email", args=[1, 2], kwargs={"a": "b"}, skip_items=2, limit_items=8)
         self.assertEqual(mock_qs.call_count, 3)
-        self.assertEqual(mock_qs.call_args, (("email", [1, 2], {"a": "b"}, 2, 8), {}))
+        self.assertEqual(mock_qs.call_args, (("email",), {
+            "args": [1, 2], "kwargs": {"a": "b"}, "skip_items": 2, "limit_items": 8}))
 
         with mock.patch("inboxen.tasks.delete_inboxen_item") as mock_delete_task:
             result = tasks.batch_delete_items("email")
@@ -248,12 +252,13 @@ class DeleteTestCase(InboxenTestCase):
             self.assertEqual(mock_delete_task.chunks.call_args, ((([("email", 1), ("email", 2)]), 500), {}))
             self.assertNotEqual(result, None)
 
-    @mock.patch("inboxen.tasks._create_task_queryset")
+    @mock.patch("inboxen.tasks.create_queryset")
     def test_batch_mark_as_deleted_calls_update(self, mock_qs):
         # TOOD? fix this mess and just generate some objects to test against
         tasks.batch_mark_as_deleted("email")
         self.assertEqual(mock_qs.call_count, 1)
-        self.assertEqual(mock_qs.call_args, (("email", None, None, None, None), {}))
+        self.assertEqual(mock_qs.call_args, (("email",), {
+            "args": None, "kwargs": None, "limit_items": None, "skip_items": None}))
         self.assertEqual(mock_qs.return_value.model.objects.filter.call_args, ((), {"pk__in": mock_qs.return_value}))
         self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_count, 1)
         self.assertEqual(mock_qs.return_value.model.objects.filter.return_value.update.call_args,
@@ -263,25 +268,35 @@ class DeleteTestCase(InboxenTestCase):
         # this would error if it tries to do a limit and an update
         tasks.batch_mark_as_deleted("email", kwargs={"pk": 12}, skip_items=1, limit_items=2)
 
-    def test_create_task_queryset(self):
+
+class CreateQuerySetTestCase(InboxenTestCase):
+    def setUp(self):
         factories.EmailFactory.create_batch(5)
-        emails = list(models.Email.objects.values_list("pk", flat=True))
+        self.emails = list(models.Email.objects.values_list("pk", flat=True))
 
-        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False})
-        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails)
+    def test_kwargs(self):
+        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False})
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails)
 
-        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, skip_items=2)
-        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[2:])
+    def test_args(self):
+        result_qs = tasks.create_queryset("email", args=(Q(pk__isnull=False),))
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails)
 
-        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, limit_items=3)
-        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[:3])
+    def test_skip_items(self):
+        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False}, skip_items=2)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails[2:])
 
-        result_qs = tasks._create_task_queryset("email", kwargs={"pk__isnull": False}, skip_items=1, limit_items=2)
-        self.assertEqual(list(result_qs.values_list("pk", flat=True)), emails[1:][:2])
+    def test_limit_items(self):
+        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False}, limit_items=3)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails[:3])
 
-    def test_create_task_queryset_exception(self):
+    def test_skip_and_limit_items(self):
+        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False}, skip_items=1, limit_items=2)
+        self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails[1:][:2])
+
+    def testcreate_queryset_exception(self):
         with self.assertRaises(Exception):
-            tasks._create_task_queryset("email")
+            tasks.create_queryset("email")
 
 
 class AutoDeleteEmailsTaskTestCase(InboxenTestCase):

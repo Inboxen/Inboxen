@@ -100,12 +100,15 @@ class InboxQuerySet(SearchQuerySet):
 
     def receiving(self):
         """Returns a QuerySet of Inboxes that can receive emails"""
-        qs = self.filter(domain__enabled=True, user__isnull=False)
-        return qs.exclude(
-            models.Q(deleted=True) |
-            models.Q(disabled=True) |
-            models.Q(user__inboxenprofile__quota_percent_usage__gte=100)
+        qs = self.filter(
+            domain__enabled=True,
+            user__isnull=False,
+            deleted=False,
+            disabled=False,
+            user__inboxenprofile__quota_percent_usage__lt=100,
+            user__inboxenprofile__receiving_emails=True,
         )
+        return qs
 
     def viewable(self, user):
         """Returns a QuerySet of Inboxes the user can view"""
