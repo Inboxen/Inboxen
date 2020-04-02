@@ -21,6 +21,7 @@ import datetime
 import os
 import string
 
+from celery.schedules import crontab
 from django import urls
 from django.contrib.messages import constants as message_constants
 from django.utils.translation import ugettext_lazy as _
@@ -70,30 +71,33 @@ CELERY_TASK_DEFAULT_QUEUE = 'default'
 CELERY_TASK_DEFAULT_EXCHANGE = 'default'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
+# use crontabs rather than timedeltas to give us control over how daily tasks
+# overlap. Avoid firing tasks on the hour
 CELERY_BEAT_SCHEDULE = {
     'statistics': {
         'task': 'inboxen.tasks.statistics',
-        'schedule': datetime.timedelta(days=1),
+        'schedule': crontab(minute=11, hour=0),
     },
     'cleanup': {
         'task': 'inboxen.tasks.clean_orphan_models',
-        'schedule': datetime.timedelta(days=1),
+        'schedule': crontab(minute=3, hour=1),
     },
     'sessions': {
         'task': 'inboxen.tasks.clean_expired_session',
-        'schedule': datetime.timedelta(days=1),
+        'schedule': crontab(minute=12, hour=2),
     },
     'auto-delete': {
         'task': 'inboxen.tasks.auto_delete_emails',
-        'schedule': datetime.timedelta(days=1),
+        'schedule': crontab(minute=7, hour=3),
     },
     'quota': {
         'task': 'inboxen.tasks.calculate_quota',
-        'schedule': datetime.timedelta(hours=1),
+        # hourly task done on the half-hourish to avoid stepping on daily tasks
+        'schedule': crontab(minute=32),
     },
     'ice': {
         'task': 'inboxen.account.tasks.user_ice',
-        'schedule': datetime.timedelta(days=1),
+        'schedule': crontab(minute=14, hour=4),
     },
 }
 
