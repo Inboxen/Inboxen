@@ -96,7 +96,7 @@ class IceTestCase(InboxenTestCase):
         call_count_total = 0
         for k, v in new_dict.items():
             call_count_total += v.apply_async.call_count
-        self.assertEqual(call_count_total, 3)
+        self.assertEqual(call_count_total, 4)
         self.assertEqual(new_dict["inboxen.account.tasks.user_ice_disable_emails"].apply_async.call_count, 1)
         self.assertEqual(new_dict["inboxen.account.tasks.user_ice_disable_emails"].apply_async.call_args, ((), {
             "kwargs": {"kwargs": {"last_login__range": (now_mock.return_value - timedelta(days=90),
@@ -113,24 +113,36 @@ class IceTestCase(InboxenTestCase):
         self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_user"].apply_async.call_args, ((), {
             "kwargs": {"kwargs": {"last_login__lt": now_mock.return_value - timedelta(days=360)}},
         }))
+        self.assertEqual(
+            new_dict["inboxen.account.tasks.user_ice_delete_user_never_logged_in"].apply_async.call_count,
+            1,
+        )
+        self.assertEqual(
+            new_dict["inboxen.account.tasks.user_ice_delete_user_never_logged_in"].apply_async.call_args, ((), {
+                "kwargs": {"kwargs": {"last_login__lt": now_mock.return_value - timedelta(days=30)}},
+            })
+        )
 
     def test_smoke_test_nothing_to_be_done(self):
         tasks.user_ice()
 
     def test_smoke_test_with_data(self):
         now = timezone.now()
-        user1 = factories.UserFactory(username="user1", last_login=now - timedelta(days=30))
+        user1 = factories.UserFactory(last_login=now - timedelta(days=30))
         user1.inboxenprofile
         user1_email = factories.EmailFactory(inbox__user=user1)
-        user2 = factories.UserFactory(username="user2", last_login=now - timedelta(days=130))
+        user2 = factories.UserFactory(last_login=now - timedelta(days=130))
         user2.inboxenprofile
         user2_email = factories.EmailFactory(inbox__user=user2)
-        user3 = factories.UserFactory(username="user3", last_login=now - timedelta(days=330))
+        user3 = factories.UserFactory(last_login=now - timedelta(days=330))
         user3.inboxenprofile
         user3_email = factories.EmailFactory(inbox__user=user3)
-        user4 = factories.UserFactory(username="user4", last_login=now - timedelta(days=430))
+        user4 = factories.UserFactory(last_login=now - timedelta(days=430))
         user4.inboxenprofile
         user4_email = factories.EmailFactory(inbox__user=user4)
+        user5 = factories.UserFactory(last_login=None, date_joined=now)
+        user6 = factories.UserFactory(last_login=None, date_joined=now - timedelta(days=40))
+        user7 = factories.UserFactory(last_login=now, date_joined=now - timedelta(days=40))
 
         tasks.user_ice()
 
@@ -154,10 +166,20 @@ class IceTestCase(InboxenTestCase):
         with self.assertRaises(models.Email.DoesNotExist):
             user4_email.refresh_from_db()
 
+        # user5 still exists
+        user5.refresh_from_db()
+
+        # user6 does not
+        with self.assertRaises(get_user_model().DoesNotExist):
+            user6.refresh_from_db()
+
+        # user7 still exists
+        user7.refresh_from_db()
+
     def test_disable_emails(self):
-        user1 = factories.UserFactory(username="user1", last_login=timezone.now())
+        user1 = factories.UserFactory(last_login=timezone.now())
         user1.inboxenprofile
-        user2 = factories.UserFactory(username="user2")
+        user2 = factories.UserFactory()
         user2.inboxenprofile
 
         tasks.user_ice_disable_emails(kwargs={"last_login__isnull": True})
@@ -167,8 +189,8 @@ class IceTestCase(InboxenTestCase):
 
     @mock.patch("inboxen.account.tasks.delete_inboxen_item")
     def test_delete_emails(self, delete_inboxen_item_mock):
-        user1 = factories.UserFactory(username="user1", last_login=timezone.now())
-        user2 = factories.UserFactory(username="user2")
+        user1 = factories.UserFactory(last_login=timezone.now())
+        user2 = factories.UserFactory()
 
         factories.EmailFactory(inbox__user=user1)
         user2_email = factories.EmailFactory(inbox__user=user2)
@@ -179,9 +201,20 @@ class IceTestCase(InboxenTestCase):
 
     @mock.patch("inboxen.account.tasks.delete_account")
     def test_delete_user(self, delete_account_mock):
-        factories.UserFactory(username="user1", last_login=timezone.now())
-        user2 = factories.UserFactory(username="user2")
+        factories.UserFactory(last_login=timezone.now())
+        user2 = factories.UserFactory()
 
         tasks.user_ice_delete_user(kwargs={"last_login__isnull": True})
+        self.assertEqual(delete_account_mock.chunks.call_count, 1)
+        self.assertEqual(delete_account_mock.chunks.call_args, (([(user2.pk,)], 500), {}))
+
+    @mock.patch("inboxen.account.tasks.delete_account")
+    def test_delete_never_logged_in_user(self, delete_account_mock):
+        now = timezone.now()
+        factories.UserFactory(date_joined=now - timedelta(days=40), last_login=now)
+        user2 = factories.UserFactory(date_joined=now - timedelta(days=40), last_login=None)
+        factories.UserFactory(date_joined=now, last_login=None)
+
+        tasks.user_ice_delete_user_never_logged_in(kwargs={"last_login__lt": now - timedelta(days=30)})
         self.assertEqual(delete_account_mock.chunks.call_count, 1)
         self.assertEqual(delete_account_mock.chunks.call_args, (([(user2.pk,)], 500), {}))

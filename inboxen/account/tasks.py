@@ -95,6 +95,8 @@ def delete_account(user_id):
     if len(inboxes):  # pull in all the data
         delete = chord([disown_inbox.s(inbox.id) for inbox in inboxes], finish_delete_user.s(user_id))
         delete.apply_async()
+    else:
+        finish_delete_user.apply_async(args=[None, user_id])
 
     log.info("Deletion tasks for %s sent off", user.username)
 
@@ -142,3 +144,10 @@ def user_ice_delete_user(kwargs, batch_number=500):
 
     task_group_skew(user_tasks, step=batch_number/10.0)
     user_tasks.delay()
+
+
+@app.task
+def user_ice_delete_user_never_logged_in(kwargs, batch_number=500):
+    kwargs = {k.replace("last_login", "date_joined"): v for k, v in kwargs.items()}
+    kwargs["last_login__isnull"] = True
+    user_ice_delete_user(kwargs, batch_number)
