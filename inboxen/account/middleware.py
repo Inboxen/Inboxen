@@ -1,5 +1,5 @@
 ##
-#    Copyright (C) 2013, 2014, 2015 Jessica Tallon & Matt Molyneaux
+#    Copyright (C) 2020 Jessica Tallon & Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,10 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings
-from django.contrib import messages
+from django.shortcuts import redirect
 
 
-def logout_message(sender, request, **kwargs):
-    msg = getattr(request, "_logout_message", settings.LOGOUT_MSG)
-    messages.add_message(request, messages.INFO, msg, fail_silently=True)
+class ReturningIcedUser:
+    """Displays a message to users who've had their accounts put on ice"""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        is_ajax = request.headers.get("x-requested-with")
+        receiving = request.user.inboxenprofile.receiving_emails if hasattr(request.user, "inboxenprofile") else True
+        if is_ajax or receiving:
+            return self.get_response(request)
+        else:
+            return redirect("user-returned")
