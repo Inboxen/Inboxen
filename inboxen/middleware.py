@@ -24,42 +24,54 @@ from django.contrib import messages
 from django.contrib.auth.signals import user_logged_in
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.utils.deprecation import MiddlewareMixin
 from django.utils.translation import ugettext as _
 from ratelimitbackend.exceptions import RateLimitException
 
 SESSION_HALF_COOKIE_AGE = timedelta(seconds=settings.SESSION_COOKIE_AGE / 2)
 
 
-class RateLimitMiddleware(MiddlewareMixin):
+class RateLimitMiddleware:
     """Handles exceptions thrown by rate-limited login attepmts."""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
     def process_exception(self, request, exception):
         if isinstance(exception, RateLimitException):
             messages.warning(request, _("Too many login attempts, further login attempts will be ignored."))
             return redirect("user-login")
 
 
-class ExtendSessionMiddleware(MiddlewareMixin):
+class ExtendSessionMiddleware:
     """Extends the expiry of sessions for logged in users"""
-    def process_request(self, request):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
         if request.user.is_authenticated:
             # this is ugly, but django doesn't make it easy
             session_obj = request.session._get_session_from_db()
-            if session_obj is None:
-                return
-            cookie_time_left = session_obj.expire_date - timezone.now()
-            if cookie_time_left <= SESSION_HALF_COOKIE_AGE:
-                # cycle session key
-                request.session.cycle_key()
-                user_logged_in.send(
-                    sender=request.user.__class__,
-                    request=request,
-                    user=request.user,
-                )
+            if session_obj is not None:
+                cookie_time_left = session_obj.expire_date - timezone.now()
+                if cookie_time_left <= SESSION_HALF_COOKIE_AGE:
+                    # cycle session key
+                    request.session.cycle_key()
+                    user_logged_in.send(
+                        sender=request.user.__class__,
+                        request=request,
+                        user=request.user,
+                    )
+        return self.get_response(request)
 
 
-class MakeXSSFilterChromeSafeMiddleware(MiddlewareMixin):
-    def process_response(self, request, response):
+class MakeXSSFilterChromeSafeMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
         # we have CSP and filter user input to protect against XSS, adding
         # X-XSS-Protection would be great as a defence in depth. However, there
         # are a few bugs in Chrome that can cause information to be leaked to
