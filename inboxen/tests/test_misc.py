@@ -159,7 +159,8 @@ class IndexTestCase(InboxenTestCase):
 
 
 class ExtendSessionMiddlewareTestCase(InboxenTestCase):
-    middleware = ExtendSessionMiddleware()
+    def setUp(self):
+        self.middleware = ExtendSessionMiddleware(lambda request: {"request": request})
 
     def test_cycle_session_expires_more_than_week_left(self):
         user = factories.UserFactory()
@@ -170,7 +171,7 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         session_obj.expire_date = timezone.now() + timedelta(days=10)
         session_obj.save()
         session_key = request.session.session_key
-        self.middleware.process_request(request)
+        self.middleware(request)
         self.assertEqual(request.session.session_key, session_key)
         user.refresh_from_db()
         self.assertEqual(user.last_login, None)
@@ -184,7 +185,7 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         session_obj.expire_date = timezone.now() + timedelta(days=8)
         session_obj.save()
         session_key = request.session.session_key
-        self.middleware.process_request(request)
+        self.middleware(request)
         self.assertEqual(request.session.session_key, session_key)
         user.refresh_from_db()
         self.assertEqual(user.last_login, None)
@@ -198,7 +199,7 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         session_obj.expire_date = timezone.now() + timedelta(days=3)
         session_obj.save()
         session_key = request.session.session_key
-        self.middleware.process_request(request)
+        self.middleware(request)
         self.assertNotEqual(request.session.session_key, session_key)
         user.refresh_from_db()
         self.assertNotEqual(user.last_login, None)
@@ -209,7 +210,7 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         request.session.save(must_create=True)
 
         session_key = request.session.session_key
-        self.middleware.process_request(request)
+        self.middleware(request)
         self.assertEqual(request.session.session_key, session_key)
 
     def test_last_login(self):
@@ -218,14 +219,14 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
         request.session.save(must_create=True)
 
         # no change, so no last_login
-        self.middleware.process_request(request)
+        self.middleware(request)
         user.refresh_from_db()
         self.assertEqual(user.last_login, None)
 
     def test_with_anon(self):
         user = AnonymousUser()
         request = MockRequest(user)
-        self.middleware.process_request(request)
+        self.middleware(request)
         self.assertFalse(request.session.modified)
 
 
@@ -527,19 +528,17 @@ class CSRFCheckedTestCase(InboxenTestCase):
 
 class MakeXSSFilterChromeSafeMiddlewareTestCase(InboxenTestCase):
     def test_middleware_before_security_middleware(self):
-        middleware = MakeXSSFilterChromeSafeMiddleware()
+        middleware = MakeXSSFilterChromeSafeMiddleware(lambda request: {"request": request})
         request = None  # ignored
-        response = {}  # "mock" header dict
 
-        response = middleware.process_response(request, response)
+        response = middleware(request)
         self.assertEqual(response["x-xss-protection"], "0")
 
     def test_middleware_after_security_middleware(self):
-        middleware = MakeXSSFilterChromeSafeMiddleware()
+        middleware = MakeXSSFilterChromeSafeMiddleware(lambda request: {"x-xss-protection": "1; mode=block"})
         request = None  # ignored
-        response = {"x-xss-protection": "1; mode=block"}  # "mock" header dict
 
-        response = middleware.process_response(request, response)
+        response = middleware(request)
         self.assertEqual(response["x-xss-protection"], "0")
 
     def test_response(self):
