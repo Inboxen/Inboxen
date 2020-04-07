@@ -24,7 +24,7 @@ import elevate.views
 
 from inboxen.account.decorators import anonymous_required
 from inboxen.account.forms import PlaceHolderSudoForm
-from inboxen.account.views import delete, otp, register, settings
+from inboxen.account.views import delete, iced, otp, register, settings
 
 urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
@@ -41,6 +41,8 @@ urlpatterns = [
     urls.url(r'^username/$', settings.UsernameChangeView.as_view(), name='user-username'),
     urls.url(r'^login/$', otp.login, name='user-login'),
     urls.url(r'^logout/$', settings.LogoutView.as_view(), name='user-logout'),
+
+    urls.url(r'^returned/$', iced.returned_user, name='user-returned'),
 
     # liberation app
     urls.url(r'^liberate/', urls.include("inboxen.liberation.urls")),

@@ -1,0 +1,26 @@
+{# Copyright (c) 2020 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends 'inboxen/base.html' %}
+{% load i18n inboxen_account bootstrap %}
+{% block content %}
+<div class="row">
+    <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                {% trans "Welcome back" %}
+            </div>
+            <div class="panel-body">
+                <p>{% trans "Looks like you've been away for a while, welcome back!" %}</p>
+                <p>{% trans "While you were away the following actions were taken" %}:</p>
+                <ul>
+                    <li>{% trans "Receiving emails was disabled. This has been re-enabled." %}</li>
+                {% if emails_deleted %}
+                    <li>{% trans "Your emails were deleted." %}</li>
+                {% endif %}
+                </ul>
+                <p>{% trans "These actions were taken to safe-guard your privacy." %}</p>
+                <a href="{{ next }}" class="btn btn-primary">{% trans "Continue" %}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

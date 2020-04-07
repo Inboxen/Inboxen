@@ -198,6 +198,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'elevate.middleware.ElevateMiddleware',
     'csp.middleware.CSPMiddleware',
+    'inboxen.account.middleware.ReturningIcedUser',
 )
 
 INSTALLED_APPS = (
