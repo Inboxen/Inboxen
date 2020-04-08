@@ -102,9 +102,9 @@ def delete_account(user_id):
 
 
 @app.task
-def user_ice():
+def user_suspended():
     now = timezone.now()
-    for delta_start, delta_end, function in settings.USER_ICE_TASKS:
+    for delta_start, delta_end, function in settings.USER_SUSPEND_TASKS:
         kwargs = {}
         if delta_start is None:
             kwargs["last_login__gt"] = now - delta_end
@@ -117,14 +117,14 @@ def user_ice():
 
 
 @app.task
-def user_ice_disable_emails(kwargs, batch_number=500):
+def user_suspended_disable_emails(kwargs, batch_number=500):
     kwargs = {"user__%s" % k: v for k, v in kwargs.items()}
     items = create_queryset("userprofile", kwargs=kwargs)
     items.update(receiving_emails=False)
 
 
 @app.task
-def user_ice_delete_emails(kwargs, batch_number=500):
+def user_suspended_delete_emails(kwargs, batch_number=500):
     kwargs = {"inbox__user__%s" % k: v for k, v in kwargs.items()}
     emails = create_queryset("email", kwargs=kwargs)
     email_tasks = delete_inboxen_item.chunks([("email", i.pk,) for i in emails.iterator()], batch_number).group()
@@ -136,7 +136,7 @@ def user_ice_delete_emails(kwargs, batch_number=500):
 
 
 @app.task
-def user_ice_delete_user(kwargs, batch_number=500):
+def user_suspended_delete_user(kwargs, batch_number=500):
     users = create_queryset(get_user_model(), kwargs=kwargs)
     user_tasks = delete_account.chunks([(i.pk,) for i in users.iterator()], batch_number).group()
     if len(user_tasks) == 0:
@@ -147,7 +147,7 @@ def user_ice_delete_user(kwargs, batch_number=500):
 
 
 @app.task
-def user_ice_delete_user_never_logged_in(kwargs, batch_number=500):
+def user_suspended_delete_user_never_logged_in(kwargs, batch_number=500):
     kwargs = {k.replace("last_login", "date_joined"): v for k, v in kwargs.items()}
     kwargs["last_login__isnull"] = True
-    user_ice_delete_user(kwargs, batch_number)
+    user_suspended_delete_user(kwargs, batch_number)

@@ -86,45 +86,45 @@ class DeleteTestCase(InboxenTestCase):
             get_user_model().objects.get(id=1)
 
 
-class IceTestCase(InboxenTestCase):
+class SuspendedTestCase(InboxenTestCase):
     @mock.patch("inboxen.account.tasks.timezone.now")
     def test_main_function(self, now_mock):
         now_mock.return_value = timezone.now()
         new_dict = {k: mock.Mock() for k, v in tasks.app.tasks.items()}
         with mock.patch.dict(tasks.app.tasks, new_dict, clear=True):
-            tasks.user_ice()
+            tasks.user_suspended()
         call_count_total = 0
         for k, v in new_dict.items():
             call_count_total += v.apply_async.call_count
         self.assertEqual(call_count_total, 4)
-        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_disable_emails"].apply_async.call_count, 1)
-        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_disable_emails"].apply_async.call_args, ((), {
+        self.assertEqual(new_dict["inboxen.account.tasks.user_suspended_disable_emails"].apply_async.call_count, 1)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_suspended_disable_emails"].apply_async.call_args, ((), {
             "kwargs": {"kwargs": {"last_login__range": (now_mock.return_value - timedelta(days=90),
                                                         now_mock.return_value - timedelta(days=180))}},
         }))
 
-        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_emails"].apply_async.call_count, 1)
-        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_emails"].apply_async.call_args, ((), {
+        self.assertEqual(new_dict["inboxen.account.tasks.user_suspended_delete_emails"].apply_async.call_count, 1)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_suspended_delete_emails"].apply_async.call_args, ((), {
             "kwargs": {"kwargs": {"last_login__range": (now_mock.return_value - timedelta(days=180),
                                                         now_mock.return_value - timedelta(days=360))}},
         }))
 
-        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_user"].apply_async.call_count, 1)
-        self.assertEqual(new_dict["inboxen.account.tasks.user_ice_delete_user"].apply_async.call_args, ((), {
+        self.assertEqual(new_dict["inboxen.account.tasks.user_suspended_delete_user"].apply_async.call_count, 1)
+        self.assertEqual(new_dict["inboxen.account.tasks.user_suspended_delete_user"].apply_async.call_args, ((), {
             "kwargs": {"kwargs": {"last_login__lt": now_mock.return_value - timedelta(days=360)}},
         }))
         self.assertEqual(
-            new_dict["inboxen.account.tasks.user_ice_delete_user_never_logged_in"].apply_async.call_count,
+            new_dict["inboxen.account.tasks.user_suspended_delete_user_never_logged_in"].apply_async.call_count,
             1,
         )
         self.assertEqual(
-            new_dict["inboxen.account.tasks.user_ice_delete_user_never_logged_in"].apply_async.call_args, ((), {
+            new_dict["inboxen.account.tasks.user_suspended_delete_user_never_logged_in"].apply_async.call_args, ((), {
                 "kwargs": {"kwargs": {"last_login__lt": now_mock.return_value - timedelta(days=30)}},
             })
         )
 
     def test_smoke_test_nothing_to_be_done(self):
-        tasks.user_ice()
+        tasks.user_suspended()
 
     def test_smoke_test_with_data(self):
         now = timezone.now()
@@ -144,7 +144,7 @@ class IceTestCase(InboxenTestCase):
         user6 = factories.UserFactory(last_login=None, date_joined=now - timedelta(days=40))
         user7 = factories.UserFactory(last_login=now, date_joined=now - timedelta(days=40))
 
-        tasks.user_ice()
+        tasks.user_suspended()
 
         user1.inboxenprofile.refresh_from_db()
         self.assertEqual(user1.inboxenprofile.receiving_emails, True)
@@ -182,7 +182,7 @@ class IceTestCase(InboxenTestCase):
         user2 = factories.UserFactory()
         user2.inboxenprofile
 
-        tasks.user_ice_disable_emails(kwargs={"last_login__isnull": True})
+        tasks.user_suspended_disable_emails(kwargs={"last_login__isnull": True})
         # there should only be one, an exception will be raised otherwise
         profile = models.UserProfile.objects.get(receiving_emails=False)
         self.assertEqual(profile.user, user2)
@@ -195,7 +195,7 @@ class IceTestCase(InboxenTestCase):
         factories.EmailFactory(inbox__user=user1)
         user2_email = factories.EmailFactory(inbox__user=user2)
 
-        tasks.user_ice_delete_emails(kwargs={"last_login__isnull": True})
+        tasks.user_suspended_delete_emails(kwargs={"last_login__isnull": True})
         self.assertEqual(delete_inboxen_item_mock.chunks.call_count, 1)
         self.assertEqual(delete_inboxen_item_mock.chunks.call_args, (([("email", user2_email.pk)], 500), {}))
 
@@ -204,7 +204,7 @@ class IceTestCase(InboxenTestCase):
         factories.UserFactory(last_login=timezone.now())
         user2 = factories.UserFactory()
 
-        tasks.user_ice_delete_user(kwargs={"last_login__isnull": True})
+        tasks.user_suspended_delete_user(kwargs={"last_login__isnull": True})
         self.assertEqual(delete_account_mock.chunks.call_count, 1)
         self.assertEqual(delete_account_mock.chunks.call_args, (([(user2.pk,)], 500), {}))
 
@@ -215,6 +215,6 @@ class IceTestCase(InboxenTestCase):
         user2 = factories.UserFactory(date_joined=now - timedelta(days=40), last_login=None)
         factories.UserFactory(date_joined=now, last_login=None)
 
-        tasks.user_ice_delete_user_never_logged_in(kwargs={"last_login__lt": now - timedelta(days=30)})
+        tasks.user_suspended_delete_user_never_logged_in(kwargs={"last_login__lt": now - timedelta(days=30)})
         self.assertEqual(delete_account_mock.chunks.call_count, 1)
         self.assertEqual(delete_account_mock.chunks.call_args, (([(user2.pk,)], 500), {}))
