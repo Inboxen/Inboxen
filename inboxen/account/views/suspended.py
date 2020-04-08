@@ -32,7 +32,7 @@ def returned_user(request):
     emails_deleted = not Email.objects.viewable(request.user.pk).exists()
     request.user.inboxenprofile.receiving_emails = True
     request.user.inboxenprofile.save()
-    request.session[settings.ICED_SESSION_KEY] = False
+    request.session[settings.USER_SUSPENDED_SESSION_KEY] = False
     context = {"emails_deleted": emails_deleted}
     redirect_to = request.GET.get("next")
     if is_safe_url(redirect_to, allowed_hosts=[request.get_host()], require_https=request.is_secure()):

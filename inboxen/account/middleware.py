@@ -21,7 +21,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 
 
-class ReturningIcedUser:
+class ReturningSuspendedUser:
     """Displays a message to users who've had their accounts put on ice"""
     def __init__(self, get_response):
         self.get_response = get_response
@@ -29,9 +29,9 @@ class ReturningIcedUser:
     def __call__(self, request):
         is_ajax = request.headers.get("x-requested-with")
         receiving = request.user.inboxenprofile.receiving_emails if hasattr(request.user, "inboxenprofile") else True
-        is_already_redirected = request.session.get(settings.ICED_SESSION_KEY, False)
+        is_already_redirected = request.session.get(settings.USER_SUSPENDED_SESSION_KEY, False)
         if is_ajax or receiving or is_already_redirected:
             return self.get_response(request)
         else:
-            request.session[settings.ICED_SESSION_KEY] = True
+            request.session[settings.USER_SUSPENDED_SESSION_KEY] = True
             return redirect("user-returned")

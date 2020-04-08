@@ -95,20 +95,20 @@ CELERY_BEAT_SCHEDULE = {
         # hourly task done on the half-hourish to avoid stepping on daily tasks
         'schedule': crontab(minute=32),
     },
-    'ice': {
-        'task': 'inboxen.account.tasks.user_ice',
+    'suspended': {
+        'task': 'inboxen.account.tasks.user_suspended',
         'schedule': crontab(minute=14, hour=4),
     },
 }
 
-USER_ICE_TASKS = (
-    (datetime.timedelta(days=90), datetime.timedelta(days=180), "inboxen.account.tasks.user_ice_disable_emails"),
-    (datetime.timedelta(days=180), datetime.timedelta(days=360), "inboxen.account.tasks.user_ice_delete_emails"),
-    (datetime.timedelta(days=360), None, "inboxen.account.tasks.user_ice_delete_user"),
-    (datetime.timedelta(days=30), None, "inboxen.account.tasks.user_ice_delete_user_never_logged_in"),
+USER_SUSPEND_TASKS = (
+    (datetime.timedelta(days=90), datetime.timedelta(days=180), "inboxen.account.tasks.user_suspended_disable_emails"),
+    (datetime.timedelta(days=180), datetime.timedelta(days=360), "inboxen.account.tasks.user_suspended_delete_emails"),
+    (datetime.timedelta(days=360), None, "inboxen.account.tasks.user_suspended_delete_user"),
+    (datetime.timedelta(days=30), None, "inboxen.account.tasks.user_suspended_delete_user_never_logged_in"),
 )
 
-ICED_SESSION_KEY = "inboxen-iced-user-redirected"
+USER_SUSPENDED_SESSION_KEY = "inboxen-suspended-user-redirected"
 
 ##
 # Django options
@@ -200,7 +200,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'elevate.middleware.ElevateMiddleware',
     'csp.middleware.CSPMiddleware',
-    'inboxen.account.middleware.ReturningIcedUser',
+    'inboxen.account.middleware.ReturningSuspendedUser',
 )
 
 INSTALLED_APPS = (

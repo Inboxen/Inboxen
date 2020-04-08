@@ -20,14 +20,14 @@
 from django.conf import settings
 from django.urls import reverse
 
-from inboxen.account.middleware import ReturningIcedUser
+from inboxen.account.middleware import ReturningSuspendedUser
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 
 
 class MiddlewareTestCase(InboxenTestCase):
     def setUp(self):
-        self.middleware = ReturningIcedUser(lambda request: {})
+        self.middleware = ReturningSuspendedUser(lambda request: {})
 
     def test_normal_user(self):
         user = factories.UserFactory()
@@ -55,11 +55,11 @@ class MiddlewareTestCase(InboxenTestCase):
         response = self.middleware(request)
         self.assertNotEqual(response, {})
         self.assertRedirects(response, reverse("user-returned"), fetch_redirect_response=False)
-        self.assertEqual(request.session[settings.ICED_SESSION_KEY], True)
+        self.assertEqual(request.session[settings.USER_SUSPENDED_SESSION_KEY], True)
 
         response = self.middleware(request)
         self.assertEqual(response, {})
-        self.assertEqual(request.session[settings.ICED_SESSION_KEY], True)
+        self.assertEqual(request.session[settings.USER_SUSPENDED_SESSION_KEY], True)
 
     def test_ajax_user(self):
         user = factories.UserFactory()
@@ -94,10 +94,10 @@ class ViewTestCase(InboxenTestCase):
 
     def test_set_things(self):
         self.user.inboxenprofile.receiving_emails = False
-        self.client.session[settings.ICED_SESSION_KEY] = True
+        self.client.session[settings.USER_SUSPENDED_SESSION_KEY] = True
 
         self.client.get(reverse("user-returned"))
-        self.assertEqual(self.client.session[settings.ICED_SESSION_KEY], False)
+        self.assertEqual(self.client.session[settings.USER_SUSPENDED_SESSION_KEY], False)
 
         self.user.inboxenprofile.refresh_from_db()
-        self.assertEqual(self.client.session[settings.ICED_SESSION_KEY], False)
+        self.assertEqual(self.client.session[settings.USER_SUSPENDED_SESSION_KEY], False)
