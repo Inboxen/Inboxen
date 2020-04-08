@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django.conf import settings
 from django.shortcuts import redirect
 
 
@@ -28,7 +29,9 @@ class ReturningIcedUser:
     def __call__(self, request):
         is_ajax = request.headers.get("x-requested-with")
         receiving = request.user.inboxenprofile.receiving_emails if hasattr(request.user, "inboxenprofile") else True
-        if is_ajax or receiving:
+        is_already_redirected = request.session.get(settings.ICED_SESSION_KEY, False)
+        if is_ajax or receiving or is_already_redirected:
             return self.get_response(request)
         else:
+            request.session[settings.ICED_SESSION_KEY] = True
             return redirect("user-returned")

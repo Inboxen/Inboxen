@@ -108,6 +108,8 @@ USER_ICE_TASKS = (
     (datetime.timedelta(days=30), None, "inboxen.account.tasks.user_ice_delete_user_never_logged_in"),
 )
 
+ICED_SESSION_KEY = "inboxen-iced-user-redirected"
+
 ##
 # Django options
 ##
