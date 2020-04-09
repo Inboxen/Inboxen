@@ -18,7 +18,7 @@
 ##
 
 from django.conf import settings
-from django.shortcuts import redirect
+from django.contrib.auth.views import redirect_to_login
 
 
 class ReturningSuspendedUser:
@@ -34,4 +34,4 @@ class ReturningSuspendedUser:
             return self.get_response(request)
         else:
             request.session[settings.USER_SUSPENDED_SESSION_KEY] = True
-            return redirect("user-returned")
+            return redirect_to_login(request.path, "user-returned", "next")
