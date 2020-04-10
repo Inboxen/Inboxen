@@ -56,7 +56,7 @@ HOME_PAGE_SIZE = 25
 
 # load custom kombu encoder
 CELERY_SEND_TASK_ERROR_EMAILS = True
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL  # noqa: F405
+CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -229,6 +229,7 @@ INSTALLED_APPS = (
 
     # third party
     'bootstrapform',
+    'django_celery_results',
     'django_extensions',
     'django_otp',
     'django_otp.plugins.otp_static',
