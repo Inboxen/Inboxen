@@ -2,6 +2,15 @@
 
 ## Releases
 
+### Deploy for 2020-04-12
+
+* Fix inbox flag calculation task (#497)
+* Fix session extending code (#489)
+* Users who have not logged after a certain amount of time will have their personal data removed from Inboxen (#444, #504, #505)
+* Switched scheduled tasks to a cron-style schedule (#502)
+* Stop using old MiddlewareMixin (#507)
+* Disabled Swedish translations now
+
 ### Deploy for 2020-02-15
 
 * Update various dependencies
