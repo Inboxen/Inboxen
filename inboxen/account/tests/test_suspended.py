@@ -36,25 +36,29 @@ class MiddlewareTestCase(InboxenTestCase):
         response = self.middleware(request)
         self.assertEqual(response, {})
 
-    def test_iced_user(self):
+    def test_suspended_user(self):
         user = factories.UserFactory()
         user.inboxenprofile.receiving_emails = False
         user.inboxenprofile.save()
         request = MockRequest(user)
+        request.path = "/blah/blah"
 
         response = self.middleware(request)
         self.assertNotEqual(response, {})
-        self.assertRedirects(response, reverse("user-returned"), fetch_redirect_response=False)
+        self.assertRedirects(response, "{}?next={}".format(reverse("user-returned"), "/blah/blah"),
+                             fetch_redirect_response=False)
 
-    def test_iced_user_has_session_variable_set(self):
+    def test_suspended_user_has_session_variable_set(self):
         user = factories.UserFactory()
         user.inboxenprofile.receiving_emails = False
         user.inboxenprofile.save()
         request = MockRequest(user)
+        request.path = "/nah/nah"
 
         response = self.middleware(request)
         self.assertNotEqual(response, {})
-        self.assertRedirects(response, reverse("user-returned"), fetch_redirect_response=False)
+        self.assertRedirects(response, "{}?next={}".format(reverse("user-returned"), "/nah/nah"),
+                             fetch_redirect_response=False)
         self.assertEqual(request.session[settings.USER_SUSPENDED_SESSION_KEY], True)
 
         response = self.middleware(request)

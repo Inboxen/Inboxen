@@ -21,7 +21,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.signals import user_logged_in
+from django.contrib.auth.models import update_last_login
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import ugettext as _
@@ -58,11 +58,7 @@ class ExtendSessionMiddleware:
                 if cookie_time_left <= SESSION_HALF_COOKIE_AGE:
                     # cycle session key
                     request.session.cycle_key()
-                    user_logged_in.send(
-                        sender=request.user.__class__,
-                        request=request,
-                        user=request.user,
-                    )
+                    update_last_login(None, request.user)
         return self.get_response(request)
 
 
