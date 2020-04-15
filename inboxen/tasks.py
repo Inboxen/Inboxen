@@ -167,7 +167,7 @@ def set_emails_to_seen(email_id_list, user_id, inbox_id=None):
 
 @app.task(ignore_result=True)
 def batch_set_new_flags(user_id=None, args=None, kwargs=None, batch_number=500):
-    inbox_list = create_queryset("inbox", args=args, kwargs=kwargs).distinct()
+    inbox_list = create_queryset("inbox", args=args, kwargs=kwargs).distinct().only("pk", "user_id")
     inboxes = []
     users = set()
     for inbox in inbox_list.iterator():
