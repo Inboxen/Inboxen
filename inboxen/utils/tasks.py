@@ -20,10 +20,10 @@
 from django.apps import apps
 
 
-def task_group_skew(group, step=1):
+def task_group_skew(group, start=1, stop=None, step=1):
     """Work around for https://github.com/celery/celery/issues/4298"""
     group.tasks = list(group.tasks)
-    group.skew(step=step)
+    group.skew(start=start, stop=stop, step=step)
 
 
 def create_queryset(model, app="inboxen", args=None, kwargs=None, skip_items=None, limit_items=None):
@@ -47,3 +47,21 @@ def create_queryset(model, app="inboxen", args=None, kwargs=None, skip_items=Non
         items = items[:limit_items]
 
     return items
+
+
+def chunk_queryset(queryset, chunk_size):
+    """Takes a QuerySet and returns lists of PKs in chunks"""
+    items = queryset.values_list("pk", flat=True).iterator()
+    pks = []
+    idx = 0
+    while True:
+        try:
+            pks.append(next(items))
+        except StopIteration:
+            if len(pks) > 0:
+                yield (chunk_size * idx, pks)
+            break
+        if len(pks) == chunk_size:
+            yield (idx, pks)
+            pks = []
+            idx += 1

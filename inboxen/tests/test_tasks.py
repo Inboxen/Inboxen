@@ -30,6 +30,7 @@ from django.utils import timezone
 from inboxen import models, tasks
 from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
+from inboxen.utils import tasks as task_utils
 
 
 class StatsTestCase(InboxenTestCase):
@@ -225,7 +226,8 @@ class DeleteTestCase(InboxenTestCase):
         tasks.delete_inboxen_item.chunks([], 500)()
 
     @mock.patch("inboxen.tasks.create_queryset")
-    def test_batch_delete_items_callscreate_queryset(self, mock_qs):
+    @mock.patch("inboxen.tasks.chunk_queryset")
+    def test_batch_delete_items_callscreate_queryset(self, mock_chunk, mock_qs):
         tasks.batch_delete_items("email", args=[12, 14])
         self.assertEqual(mock_qs.call_count, 1)
         self.assertEqual(mock_qs.call_args, (("email",), {
@@ -246,11 +248,10 @@ class DeleteTestCase(InboxenTestCase):
             self.assertEqual(mock_delete_task.chunks.call_count, 0)
             self.assertEqual(result, None)
 
-            mock_qs.return_value.iterator.return_value = [mock.Mock(pk=1), mock.Mock(pk=2)]
+            mock_chunk.return_value = [(0, [1, 2])]
             result = tasks.batch_delete_items("email")
             self.assertEqual(mock_delete_task.chunks.call_count, 1)
             self.assertEqual(mock_delete_task.chunks.call_args, ((([("email", 1), ("email", 2)]), 500), {}))
-            self.assertNotEqual(result, None)
 
     @mock.patch("inboxen.tasks.create_queryset")
     def test_batch_mark_as_deleted_calls_update(self, mock_qs):
@@ -275,28 +276,66 @@ class CreateQuerySetTestCase(InboxenTestCase):
         self.emails = list(models.Email.objects.values_list("pk", flat=True))
 
     def test_kwargs(self):
-        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False})
+        result_qs = task_utils.create_queryset("email", kwargs={"pk__isnull": False})
         self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails)
 
     def test_args(self):
-        result_qs = tasks.create_queryset("email", args=(Q(pk__isnull=False),))
+        result_qs = task_utils.create_queryset("email", args=(Q(pk__isnull=False),))
         self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails)
 
     def test_skip_items(self):
-        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False}, skip_items=2)
+        result_qs = task_utils.create_queryset("email", kwargs={"pk__isnull": False}, skip_items=2)
         self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails[2:])
 
     def test_limit_items(self):
-        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False}, limit_items=3)
+        result_qs = task_utils.create_queryset("email", kwargs={"pk__isnull": False}, limit_items=3)
         self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails[:3])
 
     def test_skip_and_limit_items(self):
-        result_qs = tasks.create_queryset("email", kwargs={"pk__isnull": False}, skip_items=1, limit_items=2)
+        result_qs = task_utils.create_queryset("email", kwargs={"pk__isnull": False}, skip_items=1, limit_items=2)
         self.assertEqual(list(result_qs.values_list("pk", flat=True)), self.emails[1:][:2])
 
     def testcreate_queryset_exception(self):
         with self.assertRaises(Exception):
-            tasks.create_queryset("email")
+            task_utils.create_queryset("email")
+
+
+class ChunkQuerySetTestCase(InboxenTestCase):
+    def setUp(self):
+        self.inboxes = factories.InboxFactory.create_batch(100)
+        self.inbox_pks = [i.pk for i in self.inboxes]
+        self.inbox_pks.sort()
+
+    def test_less_than_chunk_size(self):
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.all(), 1000)
+        result = [i for i in chunker]
+        self.assertEqual(result, [(0, self.inbox_pks)])
+
+    def test_at_chunk_size(self):
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.all(), 100)
+        result = [i for i in chunker]
+        self.assertEqual(result, [(0, self.inbox_pks)])
+
+    def test_over_chunk_size(self):
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.all(), 10)
+        result = [i for i in chunker]
+        self.assertEqual(result, [
+            (0, self.inbox_pks[:10]),
+            (1, self.inbox_pks[10:20]),
+            (2, self.inbox_pks[20:30]),
+            (3, self.inbox_pks[30:40]),
+            (4, self.inbox_pks[40:50]),
+            (5, self.inbox_pks[50:60]),
+            (6, self.inbox_pks[60:70]),
+            (7, self.inbox_pks[70:80]),
+            (8, self.inbox_pks[80:90]),
+            (9, self.inbox_pks[90:]),
+        ])
+
+    def test_empty(self):
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.none(), 100)
+        result = [i for i in chunker]
+        self.assertEqual(result, [])
 
 
 class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
@@ -374,10 +413,8 @@ class CalculateQuotaTaskTestCase(InboxenTestCase):
 
         with override_settings(PER_USER_EMAIL_QUOTA=10):
             # if there are no suers, skip skewing the group
-            task_mock.chunks.return_value.group.return_value = []
             tasks.calculate_quota.delay()
-            self.assertEqual(task_mock.chunks.call_count, 1)
-            self.assertEqual(task_mock.chunks.return_value.group.call_count, 1)
+            self.assertEqual(task_mock.chunks.call_count, 0)
             self.assertEqual(skew_mock.call_count, 0)
 
     @override_settings(PER_USER_EMAIL_QUOTA=10)
