@@ -30,7 +30,7 @@ from pytz import utc
 from inboxen.celery import app
 from inboxen.models import Inbox
 from inboxen.tasks import batch_delete_items, delete_inboxen_item
-from inboxen.utils.tasks import create_queryset, task_group_skew
+from inboxen.utils.tasks import chunk_queryset, create_queryset, task_group_skew
 
 log = logging.getLogger(__name__)
 
@@ -117,37 +117,33 @@ def user_suspended():
 
 
 @app.task
-def user_suspended_disable_emails(kwargs, batch_number=500):
+def user_suspended_disable_emails(kwargs):
     kwargs = {"user__%s" % k: v for k, v in kwargs.items()}
     items = create_queryset("userprofile", kwargs=kwargs)
     items.update(receiving_emails=False)
 
 
 @app.task
-def user_suspended_delete_emails(kwargs, batch_number=500):
+def user_suspended_delete_emails(kwargs, batch_number=500, chunk_size=10000, delay=20):
     kwargs = {"inbox__user__%s" % k: v for k, v in kwargs.items()}
     emails = create_queryset("email", kwargs=kwargs)
-    email_tasks = delete_inboxen_item.chunks([("email", i.pk,) for i in emails.iterator()], batch_number).group()
-    if len(email_tasks) == 0:
-        return
-
-    task_group_skew(email_tasks, step=batch_number/10.0)
-    email_tasks.delay()
+    for idx, chunk in chunk_queryset(emails, chunk_size):
+        email_tasks = delete_inboxen_item.chunks([("email", i) for i in chunk], batch_number).group()
+        task_group_skew(email_tasks, start=(idx + 1) * delay, step=delay)
+        email_tasks.delay()
 
 
 @app.task
-def user_suspended_delete_user(kwargs, batch_number=500):
+def user_suspended_delete_user(kwargs, batch_number=500, chunk_size=10000, delay=20):
     users = create_queryset(get_user_model(), kwargs=kwargs)
-    user_tasks = delete_account.chunks([(i.pk,) for i in users.iterator()], batch_number).group()
-    if len(user_tasks) == 0:
-        return
-
-    task_group_skew(user_tasks, step=batch_number/10.0)
-    user_tasks.delay()
+    for idx, chunk in chunk_queryset(users, chunk_size):
+        user_tasks = delete_account.chunks([(i,) for i in chunk], batch_number).group()
+        task_group_skew(user_tasks, start=idx + 1, step=delay)
+        user_tasks.delay()
 
 
 @app.task
-def user_suspended_delete_user_never_logged_in(kwargs, batch_number=500):
+def user_suspended_delete_user_never_logged_in(kwargs, batch_number=500, chunk_size=10000, delay=20):
     kwargs = {k.replace("last_login", "date_joined"): v for k, v in kwargs.items()}
     kwargs["last_login__isnull"] = True
-    user_suspended_delete_user(kwargs, batch_number)
+    user_suspended_delete_user(kwargs, batch_number, chunk_size, delay)

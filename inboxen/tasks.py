@@ -33,7 +33,7 @@ from django.utils import timezone
 
 from inboxen import models
 from inboxen.celery import app
-from inboxen.utils.tasks import create_queryset, task_group_skew
+from inboxen.utils.tasks import chunk_queryset, create_queryset, task_group_skew
 
 log = logging.getLogger(__name__)
 
@@ -167,12 +167,12 @@ def set_emails_to_seen(email_id_list, user_id, inbox_id=None):
 
 @app.task(ignore_result=True)
 def batch_set_new_flags(user_id=None, args=None, kwargs=None, batch_number=500):
-    inbox_list = create_queryset("inbox", args=args, kwargs=kwargs).distinct()
+    inbox_list = create_queryset("inbox", args=args, kwargs=kwargs).distinct().values_list("pk", "user_id")
     inboxes = []
     users = set()
-    for inbox in inbox_list.iterator():
-        inboxes.append((inbox.user_id, inbox.pk))
-        users.add((inbox.user_id,))
+    for inbox, user in inbox_list.iterator():
+        inboxes.append((user, inbox))
+        users.add((user,))
 
     inbox_tasks = inbox_new_flag.chunks(inboxes, batch_number).group()
     task_group_skew(inbox_tasks, step=batch_number/10.0)
@@ -220,7 +220,8 @@ def batch_mark_as_deleted(model, app="inboxen", args=None, kwargs=None, skip_ite
 
 @app.task(rate_limit="1/m")
 @transaction.atomic()
-def batch_delete_items(model, args=None, kwargs=None, skip_items=None, limit_items=None, batch_number=500):
+def batch_delete_items(model, args=None, kwargs=None, skip_items=None,
+                       limit_items=None, batch_number=500, chunk_size=10000, delay=20):
     """If something goes wrong and you've got a lot of orphaned entries in the
     database, then this is the task you want.
 
@@ -230,13 +231,14 @@ def batch_delete_items(model, args=None, kwargs=None, skip_items=None, limit_ite
     * model is a string
     * args and kwargs should be obvious
     * batch_number is the number of delete tasks that get sent off in one go
+    * chunk_size is the number of PKs that are loaded into memory at once
+    * delay is the number of seconds between each batch of delete tasks
     """
     items = create_queryset(model, args=args, kwargs=kwargs, skip_items=skip_items, limit_items=limit_items)
-    items = [(model, item.pk) for item in items.iterator()]
-    if len(items) > 0:
-        items = delete_inboxen_item.chunks(items, batch_number).group()
-        task_group_skew(items, step=batch_number/10.0)
-        return items.apply_async()
+    for idx, chunk in chunk_queryset(items, chunk_size):
+        items = delete_inboxen_item.chunks([(model, i) for i in chunk], batch_number).group()
+        task_group_skew(items, start=(idx + 1) * delay, step=delay)
+        items.apply_async()
 
 
 @app.task(rate_limit="1/h")
@@ -252,7 +254,7 @@ def clean_orphan_models():
 
 
 @app.task(rate_limit="1/h")
-def auto_delete_emails(batch_number=500):
+def auto_delete_emails():
     chain(
         batch_mark_as_deleted.si("email", kwargs={
             "inbox__user__inboxenprofile__auto_delete": True,
@@ -265,22 +267,20 @@ def auto_delete_emails(batch_number=500):
 
 
 @app.task(rate_limit="1/h")
-def calculate_quota(batch_number=500):
+def calculate_quota(batch_number=500, chunk_size=10000, delay=20):
     if not settings.PER_USER_EMAIL_QUOTA:
         return
 
-    users = get_user_model().objects.only("pk")
+    users = get_user_model().objects.all()
 
-    user_tasks = calculate_user_quota.chunks([(i.pk,) for i in users.iterator()], batch_number).group()
-    if len(user_tasks) == 0:
-        return
-
-    task_group_skew(user_tasks, step=batch_number/10.0)
-    user_tasks.delay()
+    for idx, chunk in chunk_queryset(users, chunk_size):
+        user_tasks = calculate_user_quota.chunks([(i,) for i in chunk], batch_number).group()
+        task_group_skew(user_tasks, start=(idx + 1) * delay, step=delay)
+        user_tasks.delay()
 
 
 @app.task
-def calculate_user_quota(user_id, batch_number=500):
+def calculate_user_quota(user_id):
     if not settings.PER_USER_EMAIL_QUOTA:
         return
 
