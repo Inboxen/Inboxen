@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Deploy for 2020-04-21
+
+* Fix memory issues when deleting a large number of objects (#513)
+
 ### Deploy for 2020-04-12
 
 * Fix inbox flag calculation task (#497)
