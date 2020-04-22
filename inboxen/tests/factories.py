@@ -108,21 +108,3 @@ class HeaderFactory(factory.django.DjangoModelFactory):
     name = factory.fuzzy.FuzzyText()
     part = factory.SubFactory(PartListFactory)
     ordinal = factory.Sequence(int)
-
-
-class FullEmailFactory(EmailFactory):
-    """Create a full fleshed out Email object, with a plain text body and some
-    headers. It should also produce a search entry
-    """
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):
-        email = super(FullEmailFactory, cls)._create(model_class, *args, **kwargs)
-        body = BodyFactory(data="This mail body is searchable")
-        part = PartListFactory(email=email, body=body)
-        HeaderFactory(part=part, name="From")
-        HeaderFactory(part=part, name="Subject")
-        HeaderFactory(part=part, name="Content-Type", data="text/plain; charset=\"ascii\"")
-        email.update_search()
-        email.save()
-
-        return email
