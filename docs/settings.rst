@@ -29,58 +29,63 @@ The Inboxen settings file can be located in several places on a system, it will
 use the first one it finds. Inboxen looks for the files in this order:
 
 1. The path specified in the environment variable: ``INBOXEN_CONFIG``
-2. ~/.config/inboxen/settings.ini
-3. settings.ini (inside the base directory of the Inboxen project)
+2. ~/.config/inboxen/inboxen.config
+3. inboxen.config in the current working directory
+4. inboxen.config inside the base directory of the Inboxen project
 
 If you're familiar with Django and would like to use your own settings module,
 you can set ``DJANGO_SETTINGS_MODULE`` in the usual way [1]_.
 
+Example configuration
+=====================
+
+This also contains the default values for all configuration values.
+
+.. literalinclude:: ../inboxen/config_defaults.yaml
+    :language: yaml
 
 Minimum Development Configuration
 =================================
 
 To hit the ground running, the minimum you need to setup a development instance
-is::
+is:
 
-    [general]
-    secret_key = something-secret
-    debug = true
+.. code-block:: yaml
+
+    secret_key: something-secret
+    debug: true
 
 Options
 =======
 
-general
--------
-
 secret_key
-^^^^^^^^^^
+----------
 This is used as the global salt for cryptographic signing throughout Inboxen.
 This is security sensitive and should be generated using a random number
 generator. It's strongly suggested you use at least 50 characters of numbers,
 both case characters and symbols from a high entropy source.
 
-admin_names & admin_email
-^^^^^^^^^^^^^^^^^^^^^^^^^
-These are a list of names and emails of the admins. Both lists must be the same
-length and must be in the same order. If I were to have two admins for example,
-both lists would have to be two items long::
+admins
+------
 
-    [general]
-    admin_names = Bill, Ted
-    admin_emails = bill@example.org, ted@example.org
+This should be pairs of values denoting the name and email address of your admins, like so:
 
-This is used whenever Inboxen needs to notify administrators. E.g. when there's
-an error.
+.. code-block:: yaml
+
+    admins:
+      - - Me
+        - me@example.com
+      - - You
+        - you@example.com
 
 allowed_hosts
-^^^^^^^^^^^^^
+-------------
 This is a list of domains and/or IPs that Django will serve Inboxen on. There is
 support for wildcards, the syntax of which can be found in the `Django
 documentation <https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts>`_.
 
 debug
-^^^^^
-*Default value: False*
+-----
 
 Enabling this puts Inboxen into debug mode, this should never be used in a production
 environment as it exposes the state of some calls in Inboxen including the settings file.
@@ -88,57 +93,21 @@ This should be used when developing on Inboxen as it allows for tracebacks to be
 instead of emailed and disables ``allowed_hosts`` checking.
 
 enable_registration
-^^^^^^^^^^^^^^^^^^^
-*Default value: False*
+-------------------
 
 A boolean flag which controls if the Inboxen instance permits registration, if disabled the
 site will not allow new users to be created through the public facing site and disables the
 links to the registration page.
 
-login_attempt_cooloff
-^^^^^^^^^^^^^^^^^^^^^
-*Default value: 10*
-
-This is the time in minutes that the user is prevented from trying to login
-after a number of failed login attempts. The value should be an integer
-measured in minutes.
-
-login_attempt_limit
-^^^^^^^^^^^^^^^^^^^
-*Default value: 5*
-
-This is the number of times people can attempt to login before receiving a cool
-down (the amount of time for the cool down is dictated by
-``login_attempt_cooloff``).
-
-register_limit_window
-^^^^^^^^^^^^^^^^^^^^^
-*Default value: 1440*
-
-Window of time in minutes that the register rate-limit will use to calculate if
-have been too many registrations from one IP address. For example, if
-``register_limit_window`` is 60 and ``register_limit_count`` is 5, then there
-will be limited to 5 registrations every hour.
-
-
-register_limit_count
-^^^^^^^^^^^^^^^^^^^^
-*Default value: 100*
-
-Maximum number of registrations from a single IP address over
-``register_limit_window`` minutes.
-
 language_code
-^^^^^^^^^^^^^
-*Default value: en-gb*
+-------------
 
 This specifies the language code that is used as a fallback when one can't be detected by
 Django's locale middleware (or if the middleware is disabled). This should be set to a
 standard language ID format [2]_.
 
 static_root
-^^^^^^^^^^^
-*Default value: static_content*
+-----------
 
 This specifies where the directory is for serving static files. Django will use this
 directory to place static files when using::
@@ -146,88 +115,86 @@ directory to place static files when using::
     python manage.py collectstatic
 
 meida_root
-^^^^^^^^^^^
-*Default value: media_content*
+-----------
 
 This specifies where the directory is for uploading media via the CMS. It should
 be writable by the Django app.
 
 server_email
-^^^^^^^^^^^^
-*Default value: django@localhost*
+------------
 
 The email the server uses when sending emails.
 
 site_name
-^^^^^^^^^
-*Default value: LazyAdmin.com's Inboxen*
+---------
 
 The name of the site as displayed in page titles.
 
 source_link
-^^^^^^^^^^^
-*Default value: https://github.com/Inboxen/Inboxen*
+-----------
 
 The link to the source code for the current instance. If you change any
 code in Inboxen this must be shared back under the terms of the AGPL v3,
 you should populate this with the link to the source code.
 
 time_zone
-^^^^^^^^^
-*Default value: UTC*
+---------
 
 The timezone used for the site, this is used for example when storing dates
 in the database.
 
 per_user_email_quota
-^^^^^^^^^^^^^^^^^^^^
-*Default value: 0*
+--------------------
 
 If not ``0``, this is the maximum number of emails a user can have before they
 need to delete some. This deletion can be done automatically if the user
 prefers.
 
-Inbox
------
+ratelimits
+----------
 
-inbox_length
+Rate limits control various parts of Inboxen. Each rate limit section has a
+window (the timeframe a rate limit should be considering) and a count (the
+maximum number of times whatever that rate limit is protecting can happen with
+a window).
+
+The following rate limits are available:
+
+inbox
+^^^^^
+
+Controls how often a single user can create an inbox. Useful to prevent someone
+from exhausting all available inboxes.
+
+login
+^^^^^
+
+Controls how often a user can try to login. This slows down password guessing
+attempts, but can block users who genuinely can't remember their passwords.
+
+register
+^^^^^^^^
+
+Controls how often a given IP can register a new account. Prevents
+circumventing of the inbox ratelimit.
+
+single_email
 ^^^^^^^^^^^^
-*Default value: 5*
 
-The number of characters of the local portion of the email, For example, in the
-email "pineapple@inboxen.org" the local portion is "pineapple" and the length
-would be 9 characters.
+Controls how often a user can download a single email. This is quite an intense
+workload for the server, so it is ratelimited to prevent the instance becoming
+overloaded.
 
-inbox_limit_window
-^^^^^^^^^^^^^^^^^^
-*Default value: 1440*
-
-Window of time in minutes that the inbox rate-limit will use to calculate if a
-user is creating too many inboxes. For example, if ``inbox_limit_window`` is 60
-and ``inbox_limit_count`` is 5, then a user will be limited to creating 5
-inboxes every hour.
-
-
-inbox_limit_count
-^^^^^^^^^^^^^^^^^
-*Default value: 100*
-
-Maximum number of inboxes can be created by a single user over
-``inbox_limit_window`` minutes.
-
-
-Tasks
+tasks
 -----
 
 broker_url
 ^^^^^^^^^^
-*Default value: amqp://guest:guest@localhost:5672//*
 
 The URL that celery will look at to find tasks and to store results.
 
 concurrency
 ^^^^^^^^^^^
-*Default value: 3*
 
 The number of celery processes to start
 
@@ -239,18 +206,17 @@ ____
 Specifies the path where to store the liberation data. This needs to be kept
 secure as it will contain user data.
 
-sendfile_method
-_______________
-*Default value: simple*
+sendfile_backend
+________________
 
-Which method should be used to accelerate liberation data downloads.
+Which method should be used to accelerate liberation data downloads. This
+should be a dotted path to the django_sendfile2 backend you wish to use.
 
 database
 --------
 
 name
 ^^^^
-*Default value: inboxen*
 
 The name of the database.
 
@@ -275,27 +241,11 @@ Cache
 
 backend
 ^^^^^^^
-*Default value: file*
 
-This is the caching backend for Inboxen, this could be one of a number of
-supported backends:
-
-+------------+-----------------------------------------+
-| Backend    | Description                             |
-+============+=========================================+
-| database   | Uses your configured database           |
-+------------+-----------------------------------------+
-| file       | Uses the file system                    |
-+------------+-----------------------------------------+
-| memcached  | Uses Memcache                           |
-+------------+-----------------------------------------+
-
-N.B: You will need to install "pylibmc" if you want to use the ``memcached``
-     backend.
+The dotted path of the cache module you'd like to use.
 
 timeout
 ^^^^^^^
-*Default value: 300*
 
 The number of seconds before a cache entry is considered stale.
 
@@ -304,6 +254,6 @@ location
 This is either the host and port for the ``memcached`` backend or the path of
 the cache directory.
 
-.. [0] https://docs.djangoproject.com/en/1.8/ref/settings/#secret-key
-.. [1] https://docs.djangoproject.com/en/1.8/topics/settings/#envvar-DJANGO_SETTINGS_MODULE
-.. [2] https://docs.djangoproject.com/en/1.8/topics/i18n/#term-language-code
+.. [0] https://docs.djangoproject.com/en/2.2/ref/settings/#secret-key
+.. [1] https://docs.djangoproject.com/en/2.2/topics/settings/#envvar-DJANGO_SETTINGS_MODULE
+.. [2] https://docs.djangoproject.com/en/2.2/topics/i18n/#term-language-code

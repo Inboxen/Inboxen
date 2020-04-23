@@ -31,7 +31,7 @@ from django.utils.encoding import smart_bytes
 from django.utils.translation import ugettext as _
 
 from inboxen.search.models import SearchQuerySet
-from inboxen.utils import is_reserved
+from inboxen.utils.inbox import is_reserved
 
 
 class HashedQuerySet(QuerySet):

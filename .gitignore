@@ -15,6 +15,7 @@ docs/_build
 /docs/logs
 /docs/run
 /settings.ini
+/inboxen.config
 /static_content
 /media_content
 /node_modules

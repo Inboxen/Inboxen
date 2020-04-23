@@ -19,7 +19,7 @@
 
 from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
 
-from inboxen.utils import generate_maintenance_page
+from inboxen.utils.static import generate_maintenance_page
 
 
 class InboxenStaticFilesStorage(ManifestStaticFilesStorage):

@@ -42,7 +42,10 @@ from inboxen.middleware import ExtendSessionMiddleware, MakeXSSFilterChromeSafeM
 from inboxen.models import Domain
 from inboxen.test import InboxenTestCase, MockRequest, SecureClient
 from inboxen.tests import factories
-from inboxen.utils import ip, is_reserved, ratelimit
+from inboxen.utils import inbox as inbox_utils
+from inboxen.utils import ip
+from inboxen.utils import misc as misc_utils
+from inboxen.utils import ratelimit
 from inboxen.validators import ProhibitNullCharactersValidator
 from inboxen.views.error import ErrorView
 
@@ -232,8 +235,8 @@ class ExtendSessionMiddlewareTestCase(InboxenTestCase):
 
 class UtilsTestCase(InboxenTestCase):
     def test_reserved(self):
-        self.assertTrue(is_reserved("root"))
-        self.assertFalse(is_reserved("root1"))
+        self.assertTrue(inbox_utils.is_reserved("root"))
+        self.assertFalse(inbox_utils.is_reserved("root1"))
 
 
 class FeederCommandTest(InboxenTestCase):
@@ -667,3 +670,28 @@ class RateLimitTestCase(InboxenTestCase):
 
         self.assertEqual(len(cache._cache), 1)
         self.assertEqual(cache.get(self.make_key(request, now_mock())), self.limit_count + 1)
+
+
+class SetDefaultDeepTestCase(InboxenTestCase):
+    def generate_default(self):
+        return {"hi": 1, "blob": False, "around": [1, 3, 3], "about": {"hello": 2, "service": 3}}
+
+    def test_no_config(self):
+        cfg = misc_utils.setdefault_deep(None, self.generate_default())
+        self.assertEqual(cfg, self.generate_default())
+
+    def test_empty_config(self):
+        cfg = misc_utils.setdefault_deep({}, self.generate_default())
+        self.assertEqual(cfg, self.generate_default())
+
+    def test_override(self):
+        cfg = misc_utils.setdefault_deep({"about": {"hello": 13}, "around": ["no"], "bye": 2, "hi": 3},
+                                         self.generate_default())
+
+        new_cfg = self.generate_default()
+        new_cfg["about"]["hello"] = 13
+        new_cfg["around"] = ["no"]
+        new_cfg["bye"] = 2
+        new_cfg["hi"] = 3
+
+        self.assertEqual(cfg, new_cfg)

@@ -26,7 +26,7 @@ from salmon.server import Relay, SMTPError
 
 from inboxen.models import Inbox
 from inboxen.router.app.helpers import make_email
-from inboxen.utils import RESERVED_LOCAL_PARTS_REGEX
+from inboxen.utils.inbox import RESERVED_LOCAL_PARTS_REGEX
 
 # we want to match *something*, but not something consumed by forward_to_admins
 INBOX_REGEX = r"(?!^({})@).+".format(RESERVED_LOCAL_PARTS_REGEX)
