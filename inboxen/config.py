@@ -173,14 +173,7 @@ CACHES = {
     }
 }
 
-if config["cache"]["backend"] == "file":
-    if config["cache"]["location"] == "":
-        # sane default for minimum configuration
-        CACHES["default"]["LOCATION"] = os.path.join(os.getcwd(), "inboxen_cache")
-    else:
-        CACHES["default"]["LOCATION"] = os.path.join(os.getcwd(), config["cache"]["location"])
-else:
-    CACHES["default"]["LOCATION"] = config["cache"]["location"]
+CACHES["default"]["LOCATION"] = config["cache"]["location"]
 
 # populate __all__
 __all__ = [item for item in dir() if item.isupper()]

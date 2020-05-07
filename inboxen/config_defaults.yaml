@@ -1,8 +1,8 @@
 admins: []
 allowed_hosts: []
 cache:
-  backend: "django.core.cache.backends.db.DatabaseCache"
-  location: ""
+  backend: "django.core.cache.backends.filebased.FileBasedCache"
+  location: "inboxen_cache"
   timeout: 300
 database:
     host: ""
