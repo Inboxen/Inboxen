@@ -116,6 +116,10 @@ module.exports = function(grunt) {
             firefoxDebug: {
                 singleRun: false,
                 browsers: ["Firefox"]
+            },
+            debug: {
+                singleRun: false,
+                browsers: []
             }
         },
         jshint: {
