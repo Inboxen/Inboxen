@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Deploy for 2020-06-09
+
+* Display works on next/prev buttons (#512)
+* Configuration is now done via a YAML file (#494)
+
 ### Deploy for 2020-04-21
 
 * Fix memory issues when deleting a large number of objects (#513)
