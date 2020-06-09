@@ -37,6 +37,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import override_settings
 from django.urls import reverse
+from django.utils import timezone
 from salmon import mail
 
 from inboxen import models
@@ -526,3 +527,19 @@ def check_uu(msg, data):
     assert payload == data, "Decoded payload does not match input data"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
+
+
+class LiberationFormTestCase(InboxenTestCase):
+    def setUp(self):
+        self.form_data = {"storage_type": "0", "compression_type": "0"}
+        self.user = factories.UserFactory()
+
+    def test_form_time_invalid(self):
+        self.user.liberation.started = self.user.liberation.last_finished = timezone.now()
+        form = LiberationForm(user=self.user, data=self.form_data)
+        self.assertFalse(form.is_valid())
+
+    def test_form_time_valid(self):
+        self.user.liberation.started = self.user.liberation.last_finished = None
+        form = LiberationForm(user=self.user, data=self.form_data)
+        self.assertTrue(form.is_valid())

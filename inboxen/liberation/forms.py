@@ -18,6 +18,7 @@
 ##
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -27,7 +28,7 @@ from inboxen.liberation.tasks import liberate as data_liberate
 
 class LiberationForm(forms.ModelForm):
     class Meta:
-        model = models.Inbox
+        model = models.Liberation
         fields = []
 
     STORAGE_TYPES = (
@@ -53,20 +54,25 @@ class LiberationForm(forms.ModelForm):
                 "compression_type": 0,
             }
 
-        return super(LiberationForm, self).__init__(initial=initial, *args, **kwargs)
+        super().__init__(initial=initial, *args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.user.liberation.can_request_another:
+            raise ValidationError("You cannot request another archive so soon!")
+        return cleaned_data
 
     def save(self):
         lib_status = self.user.liberation
-        if not lib_status.running:
-            lib_status.running = True
-            lib_status.started = timezone.now()
+        lib_status.running = True
+        lib_status.started = timezone.now()
 
-            result = data_liberate.apply_async(
-                kwargs={"user_id": self.user.id, "options": self.cleaned_data},
-                countdown=10
-            )
+        result = data_liberate.apply_async(
+            kwargs={"user_id": self.user.id, "options": self.cleaned_data},
+            countdown=10
+        )
 
-            lib_status.async_result = result.id
-            lib_status.save()
+        lib_status.async_result = result.id
+        lib_status.save()
 
         return self.user

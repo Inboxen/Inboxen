@@ -17,6 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from datetime import timedelta
 import os.path
 import re
 
@@ -24,6 +25,7 @@ from annoying.fields import AutoOneToOneField, JSONField
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
+from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
@@ -121,16 +123,28 @@ class Liberation(models.Model):
     running = models.BooleanField(default=False)
     errored = models.BooleanField(default=False)
 
-    def get_path(self):
+    TIME_BETWEEN = timedelta(days=7)
+
+    @property
+    def path(self):
         if self._path is None:
             return None
         return os.path.join(settings.SENDFILE_ROOT, self._path)
 
-    def set_path(self, path):
+    @path.setter
+    def path(self, path):
         assert path[0] != "/", "path should be relative, not absolute"
         self._path = os.path.join(settings.SENDFILE_ROOT, path)
 
-    path = property(get_path, set_path)
+    @property
+    def can_request_another(self):
+        if self.running:
+            return False
+        elif self.started is None or self.last_finished is None:
+            return True
+
+        now = timezone.now()
+        return now - self.started > self.TIME_BETWEEN and now - self.last_finished > self.TIME_BETWEEN
 
     def __str__(self):
         return u"Liberation for %s" % self.user
