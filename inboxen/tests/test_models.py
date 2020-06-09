@@ -185,6 +185,14 @@ class ModelTestCase(InboxenTestCase):
         count = models.Inbox.objects.viewable(user).count()
         self.assertEqual(count, 2)
 
+    def test_inbox_disowned(self):
+        factories.InboxFactory(user=factories.UserFactory())
+        disowned = factories.InboxFactory(user=None)
+
+        qs = models.Inbox.objects.disowned()
+        self.assertEqual(len(qs), 1)
+        self.assertEqual(qs[0].id, disowned.id)
+
     def test_email_viewable(self):
         user = factories.UserFactory()
         other_user = factories.UserFactory(username="lalna")

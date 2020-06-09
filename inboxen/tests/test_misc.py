@@ -403,6 +403,24 @@ class CreateDomainCommandTestCase(InboxenTestCase):
             call_command("createdomain", "localhost1")
 
 
+class DisownedCommandTestCase(InboxenTestCase):
+    def setUp(self):
+        user = factories.UserFactory()
+        self.owned_inboxes = factories.InboxFactory.create_batch(3, user=user)
+        self.disowned_inboxes = factories.InboxFactory.create_batch(3, user=None)
+
+    def test_without_args(self):
+        stdout = StringIO()
+        call_command("disowned", stdout=stdout)
+        self.assertEqual(stdout.getvalue(), "".join(["{}\n".format(i) for i in self.disowned_inboxes]))
+
+    def test_postfix(self):
+        stdout = StringIO()
+        call_command("disowned", "--postfix", stdout=stdout)
+        self.assertEqual(stdout.getvalue(), "".join(["{}\t501 5.1.1 Address no longer in use\n".format(i)
+                                                     for i in self.disowned_inboxes]))
+
+
 class ErrorViewTestCase(InboxenTestCase):
     def test_view(self):
         view_func = ErrorView.as_view(

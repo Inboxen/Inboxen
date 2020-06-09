@@ -115,6 +115,9 @@ class InboxQuerySet(SearchQuerySet):
         qs = self.filter(user=user)
         return qs.exclude(deleted=True)
 
+    def disowned(self):
+        return self.filter(user__isnull=True)
+
     def add_last_activity(self):
         """Annotates `last_activity` onto each Inbox and then orders by that column"""
         qs = self.annotate(last_activity=Coalesce(Max("email__received_date",
