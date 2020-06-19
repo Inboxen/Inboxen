@@ -147,8 +147,8 @@ CELERY_WORKER_CONCURRENCY = config["tasks"]["concurrency"]
 CELERY_TASK_ALWAYS_EAGER = config["tasks"]["always_eager"]
 
 # Path where liberation data is stored
-LIBERATION_PATH = os.path.join(os.getcwd(), config["tasks"]["liberation"]["path"])
-LIBERATION_PATH = LIBERATION_PATH.rstrip("/")
+SENDFILE_ROOT = os.path.join(os.getcwd(), config["tasks"]["liberation"]["path"])
+SENDFILE_ROOT = SENDFILE_ROOT.rstrip("/")
 
 # Which backend should be used to accelerate liberation data downloads
 SENDFILE_BACKEND = config["tasks"]["liberation"]["sendfile_backend"]

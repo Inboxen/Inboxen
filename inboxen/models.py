@@ -108,7 +108,7 @@ class Liberation(models.Model):
     """Liberation data
 
     `async_result` is the UUID of Celery result object, which may or may not be valid
-    `_path` is relative to settings.LIBERATION_PATH
+    `_path` is relative to settings.SENDFILE_ROOT
     """
     user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE)
     content_type = models.PositiveSmallIntegerField(default=0)
@@ -124,11 +124,11 @@ class Liberation(models.Model):
     def get_path(self):
         if self._path is None:
             return None
-        return os.path.join(settings.LIBERATION_PATH, self._path)
+        return os.path.join(settings.SENDFILE_ROOT, self._path)
 
     def set_path(self, path):
         assert path[0] != "/", "path should be relative, not absolute"
-        self._path = os.path.join(settings.LIBERATION_PATH, path)
+        self._path = os.path.join(settings.SENDFILE_ROOT, path)
 
     path = property(get_path, set_path)
 
