@@ -72,7 +72,7 @@ class LiberateTestCase(InboxenTestCase):
 
     def test_liberate(self):
         """Run through all combinations of compressions and mailbox formats"""
-        with override_settings(LIBERATION_PATH=self.tmp_dir):
+        with override_settings(SENDFILE_ROOT=self.tmp_dir):
             for storage, compression in itertools.product(LiberationForm.STORAGE_TYPES,
                                                           LiberationForm.COMPRESSION_TYPES):
                 form_data = {"storage_type": str(storage[0]), "compression_type": str(compression[0])}
@@ -265,7 +265,7 @@ class LiberateNewUserTestCase(InboxenTestCase):
         shutil.rmtree(self.mail_dir, ignore_errors=True)
 
     def test_liberate(self):
-        with override_settings(LIBERATION_PATH=self.tmp_dir):
+        with override_settings(SENDFILE_ROOT=self.tmp_dir):
             form = LiberationForm(self.user, data={"storage_type": 0, "compression_type": 0})
             self.assertTrue(form.is_valid())
             form.save()
@@ -324,7 +324,7 @@ class LiberationDownloadViewTestCase(InboxenTestCase):
 
     @override_settings(SENDFILE_BACKEND="django_sendfile.backends.xsendfile")
     def test_sendfile(self):
-        with override_settings(LIBERATION_PATH=self.tmp_dir):
+        with override_settings(SENDFILE_ROOT=self.tmp_dir):
             self.user.liberation.path = "test.txt"
             self.user.liberation.save()
 

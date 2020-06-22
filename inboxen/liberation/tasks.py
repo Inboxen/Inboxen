@@ -65,7 +65,7 @@ def liberate(user_id, options):
     username = user.username + rstr
     username = username.encode("utf-8")
     basename = "%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(username).hexdigest()[:50])
-    path = os.path.join(settings.LIBERATION_PATH, basename)
+    path = os.path.join(settings.SENDFILE_ROOT, basename)
     tarname = "%s.%s" % (basename, tar_type["ext"])
 
     # Is this safe enough?
@@ -218,7 +218,7 @@ def liberate_tarball(result, options):
     """ Tar up and delete the dir """
 
     tar_type = TAR_TYPES[options.get('compression_type', '0')]
-    tar_name = os.path.join(settings.LIBERATION_PATH, options["tarname"])
+    tar_name = os.path.join(settings.SENDFILE_ROOT, options["tarname"])
 
     try:
         tar = tarfile.open(tar_name, tar_type['writer'])
