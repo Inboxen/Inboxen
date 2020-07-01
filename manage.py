@@ -1,1 +1,1 @@
-inboxen/data/manage.py
+inboxen/bin/manage.py

@@ -69,4 +69,7 @@ setup(
             "pylibmc",
         ],
     },
+    entry_points={
+        "console_scripts": ['inboxen = inboxen.bin.manage:main'],
+    },
 )
