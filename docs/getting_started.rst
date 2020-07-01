@@ -123,7 +123,7 @@ file called ``local-reqs.in`` and add the following:
 .. code-block:: text
 
    -r requirements.txt
-   -e .[cache-memcache]
+   pylibmc
 
 .. note::
 
