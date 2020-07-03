@@ -1,8 +1,6 @@
+graft inboxen
 include LICENSE
 include versioneer.py
-exclude __pycache__
-exclude *.pyc
-exclude *.pyo
 
-graft inboxen
-
+global-exclude __pycache__
+global-exclude *.py[co]

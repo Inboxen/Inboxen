@@ -8,7 +8,7 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link href="{% static "website.css" %}" rel="stylesheet" type="text/css" />
+        <link href="{% static "compiled/website.css" %}" rel="stylesheet" type="text/css" />
         {% block header %}{% endblock %}
     </head>
     <body>
@@ -77,7 +77,7 @@
             </div>
         {% endblock %}
         </div>
-        <script src="{% static "website.min.js" %}"></script>
+        <script src="{% static "compiled/website.min.js" %}"></script>
         {% block extra_js %}{% endblock %}
     </body>
 </html>

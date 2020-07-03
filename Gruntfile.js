@@ -5,12 +5,13 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
         dirs: {
             build: "frontend/build",
-            thirdparty: "node_modules",
-            js: "frontend/js",
             css: "frontend/css",
+            js: "frontend/js",
+            static: "inboxen/static/compiled",
+            thirdparty: "node_modules",
         },
         clean: {
-            build: ["<%= dirs.build %>"],
+            build: ["<%= dirs.build %>", "<%= dirs.static %>"],
         },
         copy: {
             fonts: {
@@ -18,12 +19,12 @@ module.exports = function(grunt) {
                 nonull: true,
                 flatten: true,
                 src: "<%= dirs.thirdparty %>/font-awesome/fonts/*",
-                dest: "<%= dirs.build %>/compiled/fonts/"
+                dest: "<%= dirs.static %>/fonts/",
             }
         },
         concat: {
             options: {
-                sourceMap: true
+                sourceMap: true,
             },
             website: {
                 src: [
@@ -63,11 +64,11 @@ module.exports = function(grunt) {
             },
             website: {
                 src: ["<%= dirs.build %>/src/website.js"],
-                dest: "<%= dirs.build %>/compiled/website.min.js"
+                dest: "<%= dirs.static %>/website.min.js"
             },
             stats: {
                 src: ["<%= dirs.build %>/src/stats.js"],
-                dest: "<%= dirs.build %>/compiled/stats.min.js"
+                dest: "<%= dirs.static %>/stats.min.js"
             }
         },
         sass: {
@@ -81,7 +82,7 @@ module.exports = function(grunt) {
             },
             publicCss: {
                 src: ["<%= dirs.css %>/inboxen.scss"],
-                dest: "<%= dirs.build %>/compiled/website.css"
+                dest: "<%= dirs.static %>/website.css"
             }
         },
         karma: {
