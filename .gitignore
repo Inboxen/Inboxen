@@ -2,23 +2,24 @@
 docs/_build
 
 # inboxen specific
+/celery.log
 /celerybeat-schedule
 /celerybeat.pid
 /celeryd.pid
-/celery.log
+/docs/logs
+/docs/run
 /env
 /env3
+/inboxen.config
+/inboxen/static/compiled
 /inboxen_cache
 /liberation_store
 /logs
-/run
-/docs/logs
-/docs/run
-/settings.ini
-/inboxen.config
-/static_content
 /media_content
 /node_modules
+/run
+/settings.ini
+/static_content
 
 # local requirements
 /local-reqs.txt
