@@ -16,7 +16,6 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
-
 from collections import OrderedDict
 import hashlib
 
@@ -141,7 +140,7 @@ class EmailQuerySet(SearchQuerySet):
 
 class HeaderQuerySet(HashedQuerySet):
     def create(self, name=None, data=None, ordinal=None, hashed=None, **kwargs):
-        from inboxen.models import HeaderName, HeaderData
+        from inboxen.models import HeaderData, HeaderName
 
         # remove null "bytes"
         data = data.replace("\x00", "")
