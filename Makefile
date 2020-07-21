@@ -62,6 +62,7 @@ new-py-requirements:
 .PHONY: update-js-requirements
 update-js-requirements:
 	npm update
+	npm audit fix
 
 ##
 # Static assets
