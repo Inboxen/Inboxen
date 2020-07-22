@@ -312,12 +312,12 @@ class ChunkQuerySetTestCase(InboxenTestCase):
         self.assertEqual(result, [(0, self.inbox_pks)])
 
     def test_at_chunk_size(self):
-        chunker = task_utils.chunk_queryset(models.Inbox.objects.all(), 100)
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.all().order_by("pk"), 100)
         result = [i for i in chunker]
         self.assertEqual(result, [(0, self.inbox_pks)])
 
     def test_over_chunk_size(self):
-        chunker = task_utils.chunk_queryset(models.Inbox.objects.all(), 10)
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.all().order_by("pk"), 10)
         result = [i for i in chunker]
         self.assertEqual(result, [
             (0, self.inbox_pks[:10]),
