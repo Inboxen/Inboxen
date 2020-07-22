@@ -115,14 +115,14 @@ class LoginTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         for i in range(100):
             response = self.client.post(dj_settings.LOGIN_URL, params)
-
-        # check we got rejected on bad password
-        self.assertEqual(response.status_code, 302)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.context["form"].is_valid(), False)
 
         # check we still get rejected even with a good password
         params["auth-password"] = "123456"
         response = self.client.post(dj_settings.LOGIN_URL, params)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["form"].is_valid(), False)
 
         response = self.client.get(urls.reverse("user-home"))
         self.assertEqual(response.status_code, 302)

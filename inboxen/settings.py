@@ -151,7 +151,7 @@ STATICFILES_STORAGE = 'inboxen.storage.InboxenStaticFilesStorage'
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 AUTHENTICATION_BACKENDS = (
-    'inboxen.backends.RateLimitWithSettings',
+    'inboxen.account.backends.RateLimitWithSettings',
 )
 
 TEMPLATES = [{
@@ -190,7 +190,6 @@ MIDDLEWARE = (
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'inboxen.async_messages.middleware.AsyncMiddleware',
-    'inboxen.middleware.RateLimitMiddleware',
     'inboxen.middleware.ExtendSessionMiddleware',
     'inboxen.middleware.MakeXSSFilterChromeSafeMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -247,6 +246,7 @@ LOGIN_REDIRECT_URL = urls.reverse_lazy("user-home")
 
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")
 
+LOGIN_LIMIT_CACHE_PREFIX = "inboxen-login-"
 REGISTER_LIMIT_CACHE_PREFIX = "inboxen-register-"
 INBOX_LIMIT_CACHE_PREFIX = "inboxen-inbox-"
 SINGLE_EMAIL_LIMIT_CACHE_PREFIX = "inboxen-single-email-"

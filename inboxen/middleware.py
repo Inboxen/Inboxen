@@ -20,28 +20,10 @@
 from datetime import timedelta
 
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.auth.models import update_last_login
-from django.shortcuts import redirect
 from django.utils import timezone
-from django.utils.translation import ugettext as _
-from ratelimitbackend.exceptions import RateLimitException
 
 SESSION_HALF_COOKIE_AGE = timedelta(seconds=settings.SESSION_COOKIE_AGE / 2)
-
-
-class RateLimitMiddleware:
-    """Handles exceptions thrown by rate-limited login attepmts."""
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        return self.get_response(request)
-
-    def process_exception(self, request, exception):
-        if isinstance(exception, RateLimitException):
-            messages.warning(request, _("Too many login attempts, further login attempts will be ignored."))
-            return redirect("user-login")
 
 
 class ExtendSessionMiddleware:

@@ -40,12 +40,12 @@ class UserRegistrationView(generic.CreateView):
         return super(UserRegistrationView, self).dispatch(request=request, *args, **kwargs)
 
     def post(self, *args, **kwargs):
-        if utils.register_counter_full(self.request):
+        if utils.register_ratelimit.counter_full(self.request):
             messages.warning(self.request, _("Too many signups, further attempts will be ignored."))
             return HttpResponseRedirect(reverse_lazy("user-registration"))
 
         return super(UserRegistrationView, self).post(*args, **kwargs)
 
     def form_valid(self, form):
-        utils.register_counter_increase(self.request)
+        utils.register_ratelimit.counter_increase(self.request)
         return super(UserRegistrationView, self).form_valid(form)

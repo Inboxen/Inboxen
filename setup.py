@@ -45,7 +45,6 @@ setup(
         "django-extensions",
         "django-mptt",
         "django-otp",
-        "django-ratelimit-backend",
         "django-sendfile2",
         "django-two-factor-auth>=1.5.0",
         "factory-boy",

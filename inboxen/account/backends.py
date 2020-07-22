@@ -17,16 +17,16 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
-from ratelimitbackend.backends import RateLimitMixin
+from django.utils.translation import ugettext as _
 
-from inboxen.utils.ip import strip_ip
+from inboxen.account.utils import login_ratelimit
 
 
-class CaseInsensitiveMixin(object):
-    def authenticate(self, username=None, password=None, **kwargs):
+class CaseInsensitiveMixin:
+    def authenticate(self, request, username=None, password=None, **kwargs):
         # we're also case insensitive
         user_model = get_user_model()
         username_field = user_model.USERNAME_FIELD
@@ -41,9 +41,18 @@ class CaseInsensitiveMixin(object):
             user_model().set_password(password)
 
 
-class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
-    minutes = settings.LOGIN_ATTEMPT_WINDOW
-    requests = settings.LOGIN_ATTEMPT_COUNT
+class RateLimitMixin:
+    def authenticate(self, request, *args, **kwargs):
+        if login_ratelimit.counter_full(request):
+            messages.warning(request, _("Too many login attempts, further login attempts will be ignored."))
+            return
 
-    def get_ip(self, request):
-        return strip_ip(request.META["REMOTE_ADDR"])
+        user = super().authenticate(request, *args, **kwargs)
+
+        if user is None:
+            login_ratelimit.counter_increase(request)
+        return user
+
+
+class RateLimitWithSettings(RateLimitMixin, CaseInsensitiveMixin, ModelBackend):
+    pass
