@@ -61,12 +61,12 @@ class RegisterRateLimitTestCase(InboxenTestCase):
         request.META["REMOTE_ADDR"] = "127.0.0.1"
 
         for i in range(settings.REGISTER_LIMIT_COUNT - 1):
-            key = utils.make_key(request, now - timedelta(minutes=i * 2))
+            key = utils.make_register_key(request, now - timedelta(minutes=i * 2))
             cache.cache.set(key, 1)
 
         request.META["REMOTE_ADDR"] = "127.0.0.2"
         for i in range(settings.REGISTER_LIMIT_COUNT - 1):
-            key = utils.make_key(request, now - timedelta(minutes=i * 2))
+            key = utils.make_register_key(request, now - timedelta(minutes=i * 2))
             cache.cache.set(key, 1)
 
         login_data = {"username": "myuser", "password1": "qwerty123456", "password2": "qwerty123456"}
@@ -88,7 +88,7 @@ class RegisterRateLimitUtilsTestCase(InboxenTestCase):
         request = MockRequest()
         request.META["REMOTE_ADDR"] = "127.0.0.1"
 
-        utils.register_counter_full(request)
+        utils.register_ratelimit.counter_full(request)
 
         self.assertEqual(len(cache.cache._cache), 0)
 
@@ -100,57 +100,59 @@ class RegisterRateLimitUtilsTestCase(InboxenTestCase):
         request.META["REMOTE_ADDR"] = "127.0.0.1"
 
         for i in range(settings.REGISTER_LIMIT_COUNT):
-            utils.register_counter_increase(request)
+            utils.register_ratelimit.counter_increase(request)
 
         self.assertEqual(len(cache.cache._cache), 1)
-        self.assertEqual(cache.cache.get(utils.make_key(request, now_mock())), settings.REGISTER_LIMIT_COUNT)
+        self.assertEqual(cache.cache.get(utils.make_register_key(request, now_mock())),
+                         settings.REGISTER_LIMIT_COUNT)
 
-        utils.register_counter_full(request)
+        utils.register_ratelimit.counter_full(request)
 
         self.assertEqual(len(cache.cache._cache), 1)
-        self.assertEqual(cache.cache.get(utils.make_key(request, now_mock())), settings.REGISTER_LIMIT_COUNT + 1)
+        self.assertEqual(cache.cache.get(utils.make_register_key(request, now_mock())),
+                         settings.REGISTER_LIMIT_COUNT + 1)
 
-    def test_make_key_ipv4(self):
+    def test_make_register_key_ipv4(self):
         now = timezone.now()
         now.replace(second=15)
         request = MockRequest()
         request.META["REMOTE_ADDR"] = "127.0.0.1"
 
-        key1 = utils.make_key(request, now)
+        key1 = utils.make_register_key(request, now)
 
         # IPv4 addresses are one per host
         request.META["REMOTE_ADDR"] = "127.0.0.2"
-        key2 = utils.make_key(request, now)
+        key2 = utils.make_register_key(request, now)
 
         self.assertNotEqual(key1, key2)
 
         # seconds don't matter
         now.replace(second=45)
-        key3 = utils.make_key(request, now)
+        key3 = utils.make_register_key(request, now)
 
         self.assertEqual(key2, key3)
 
-    def test_make_key_ipv6(self):
+    def test_make_register_key_ipv6(self):
         now = timezone.now()
         now.replace(second=15)
         request = MockRequest()
         request.META["REMOTE_ADDR"] = "2001:ba8:1f1:f315:216:5eff:fe00:379"
 
-        key1 = utils.make_key(request, now)
+        key1 = utils.make_register_key(request, now)
 
         # a /64 addresses is one per host
         request.META["REMOTE_ADDR"] = "2001:ba8:1f1:f315:216:5eff:fe00:380"
-        key2 = utils.make_key(request, now)
+        key2 = utils.make_register_key(request, now)
 
         self.assertEqual(key1, key2)
 
         request.META["REMOTE_ADDR"] = "2001:ba8:1f1:f311:216:5eff:fe00:380"
-        key3 = utils.make_key(request, now)
+        key3 = utils.make_register_key(request, now)
 
         self.assertNotEqual(key2, key3)
 
         # seconds don't matter
         now.replace(second=45)
-        key4 = utils.make_key(request, now)
+        key4 = utils.make_register_key(request, now)
 
         self.assertEqual(key3, key4)

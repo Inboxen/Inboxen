@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.messages import constants
 
 from inboxen.async_messages import message_user, message_users, messages
-from inboxen.test import InboxenTestCase
+from inboxen.test import InboxenTestCase, MockRequest
 
 
 class MiddlewareTests(InboxenTestCase):
@@ -10,7 +10,7 @@ class MiddlewareTests(InboxenTestCase):
     def setUp(self):
         username, password = 'david', 'password'
         self.user = User.objects.create_user(username, "django-async@test.com", password)
-        self.client.login(username=username, password=password)
+        self.client.login(username=username, password=password, request=MockRequest(self.user))
 
     def test_message_appears_for_user(self):
         message_user(self.user, "Hello")
@@ -46,7 +46,7 @@ class TestMessagesApi(InboxenTestCase):
     def setUp(self):
         username, password = 'david', 'password'
         self.user = User.objects.create_user(username, "django-async@test.com", password)
-        self.client.login(username=username, password=password)
+        self.client.login(username=username, password=password, request=MockRequest(self.user))
 
     def assertMessageOk(self, level):
         response = self.client.get('/')

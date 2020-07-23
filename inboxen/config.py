@@ -112,10 +112,10 @@ INBOX_LENGTH = config["inbox_length"]
 # Ratelimit #
 
 # Cooloff time, in minutes, for failed logins
-LOGIN_ATTEMPT_WINDOW = config["ratelimits"]["login"]["window"]
+LOGIN_LIMIT_WINDOW = config["ratelimits"]["login"]["window"]
 
 # Maximum number of unsuccessful login attempts
-LOGIN_ATTEMPT_COUNT = config["ratelimits"]["login"]["count"]
+LOGIN_LIMIT_COUNT = config["ratelimits"]["login"]["count"]
 
 # Cooloff time, in minutes, for registrations
 REGISTER_LIMIT_WINDOW = config["ratelimits"]["register"]["window"]

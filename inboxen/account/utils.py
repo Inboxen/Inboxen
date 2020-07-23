@@ -27,7 +27,7 @@ from inboxen.utils import ip, ratelimit
 logger = logging.getLogger(__name__)
 
 
-def make_key(request, dt):
+def make_register_key(request, dt):
     key = "{}{}-{}".format(
         settings.REGISTER_LIMIT_CACHE_PREFIX,
         ip.strip_ip(request.META["REMOTE_ADDR"]),
@@ -38,17 +38,36 @@ def make_key(request, dt):
     return key
 
 
-def full_callback(request):
+def full_register_callback(request):
     logger.warning("Registration rate-limit reached: IP %s", request.META["REMOTE_ADDR"])
 
 
 register_ratelimit = ratelimit.RateLimit(
-    make_key,
-    full_callback,
+    make_register_key,
+    full_register_callback,
     settings.REGISTER_LIMIT_WINDOW,
     settings.REGISTER_LIMIT_COUNT,
 )
 
 
-register_counter_full = register_ratelimit.counter_full
-register_counter_increase = register_ratelimit.counter_increase
+def make_login_key(request, dt):
+    key = "{}{}-{}".format(
+        settings.LOGIN_LIMIT_CACHE_PREFIX,
+        ip.strip_ip(request.META["REMOTE_ADDR"]),
+        dt.strftime("%Y%m%d%H%M"),
+    )
+
+    key = urllib.parse.quote(key.encode("utf-8"))
+    return key
+
+
+def full_login_callback(request):
+    logger.warning("Login rate-limit reached: IP %s", request.META["REMOTE_ADDR"])
+
+
+login_ratelimit = ratelimit.RateLimit(
+    make_login_key,
+    full_login_callback,
+    settings.LOGIN_LIMIT_WINDOW,
+    settings.LOGIN_LIMIT_COUNT,
+)
