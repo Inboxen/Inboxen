@@ -19,25 +19,29 @@
 
 import ipaddress
 
-IPV4_HOST_CLASS = 32
-IPV6_HOST_CLASS = 64
+IPV4_HOST_PREFIX = 32
+IPV6_HOST_PREFIX = 64
 
 
-def strip_ip(ip, ipv4_host_class=IPV4_HOST_CLASS, ipv6_host_class=IPV6_HOST_CLASS):
+def strip_ip(ip_addr, ipv4_host_prefix=IPV4_HOST_PREFIX, ipv6_host_prefix=IPV6_HOST_PREFIX):
     """Strip an IP address back to the largest routable part
 
     For IPv4, this is the full 32 bits. For IPv6 this is the first 64 bits.
     """
-    ip = ipaddress.ip_address(str(ip))
+    ip = ipaddress.ip_address(ip_addr)
+    prefix_len = ip.max_prefixlen
 
     if isinstance(ip, ipaddress.IPv4Address):
-        netmask = ip.max_prefixlen - ipv4_host_class
+        remove_bits = prefix_len - ipv4_host_prefix
     elif isinstance(ip, ipaddress.IPv6Address):
-        netmask = ip.max_prefixlen - ipv6_host_class
+        remove_bits = prefix_len - ipv6_host_prefix
     else:
-        raise ValueError("Not an IPv4 and IPv6 address")
+        raise ValueError("Not an IPv4 or IPv6 address")
 
-    prefix = int(ip) & ~((1 << netmask) - 1)
-    prefix = ipaddress.ip_address(prefix)
+    # the netmask should be a series of 1s for the bits we want to
+    # keep followed by 0s for the bits we don't
+    netmask = 2**prefix_len - 2**remove_bits
+    prefix = int(ip) & netmask
+    prefix = ip.__class__(prefix)
 
     return str(prefix)
