@@ -630,18 +630,20 @@ class IpUtilsTestCase(InboxenTestCase):
     def test_ipv4(self):
         filled_ip_addr = "255.255.255.255"
         for i in range(33):
-            netmask = (2**32 - 2**i)
+            with self.subTest(i=i):
+                netmask = (2**32 - 2**i)
 
-            expected_address = ipaddress.ip_address(netmask)
-            self.assertEqual(ip.strip_ip(filled_ip_addr, ipv4_host_class=32 - i), str(expected_address))
+                expected_address = ipaddress.IPv4Address(netmask)
+                self.assertEqual(ip.strip_ip(filled_ip_addr, ipv4_host_prefix=32 - i), str(expected_address))
 
     def test_ipv6(self):
         filled_ip_addr = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
         for i in range(129):
-            netmask = 2**128 - 2**i
+            with self.subTest(i=i):
+                netmask = 2**128 - 2**i
 
-            expected_address = ipaddress.ip_address(netmask)
-            self.assertEqual(ip.strip_ip(filled_ip_addr, ipv6_host_class=128 - i), str(expected_address))
+                expected_address = ipaddress.IPv6Address(netmask)
+                self.assertEqual(ip.strip_ip(filled_ip_addr, ipv6_host_prefix=128 - i), str(expected_address))
 
 
 class RateLimitTestCase(InboxenTestCase):
