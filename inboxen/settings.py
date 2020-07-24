@@ -342,10 +342,6 @@ LOGGING = {
             'handlers': ['console', 'mail_admins'],
             'level': log_level,
         },
-        'ratelimitbackend': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
     },
 }
 

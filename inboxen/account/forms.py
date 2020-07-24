@@ -21,12 +21,11 @@ from django import forms
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, UserCreationForm
 from django.core import exceptions
 from django.forms.widgets import RadioSelect
 from django.utils.translation import ugettext as _
 from elevate.forms import ElevateForm
-from ratelimitbackend.forms import AuthenticationForm
 
 from inboxen import models, validators
 from inboxen.account import fields
