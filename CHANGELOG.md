@@ -2,6 +2,13 @@
 
 ## Releases
 
+### Deploy for 2020-07-27
+
+* Remove `django-ratelimit-backend` and use our own ratelimit code (#526)
+* New management command: disowned
+* Grunt now puts static files into `inboxen/static`, allowing Inboxen to be used as a proper Python package
+* Security updates for django-twofactor-auth and django-sendfile2
+
 ### Deploy for 2020-06-09
 
 * Display works on next/prev buttons (#512)
