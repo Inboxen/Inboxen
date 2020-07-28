@@ -2,6 +2,8 @@
 #	Inboxen.org specific tasks
 ##
 
+TODAY := $(shell date "+%Y-%m-%dT%H-%M-%S" -u)
+
 .PHONY: setup-node
 setup-node:
 	nodeenv -p -n 8.16.0 --with-npm
@@ -41,3 +43,9 @@ dev-deploy:
 	-$(MAKE) celery-stop salmon-stop
 	git describe --dirty
 	$(MAKE) common-deploy
+
+
+.PHONY: make-deploy
+make-deploy:
+	extra/scripts/release-prep.sh $(TODAY)
+	git push origin deploy-$(TODAY)
