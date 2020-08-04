@@ -6,7 +6,7 @@
 
 {% block headline %}{{ headline }}{% endblock %}
 
-{% block breadcumbs %}
+{% block breadcrumbs %}
     <ul id="{{ inbox }}@{{ domain }}" class="breadcrumb">
         <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
         {% if inbox %}
@@ -35,8 +35,8 @@
 {% endif %}
 <form id="inboxen-search-box" class="form" action="{{ search_url }}">
     <div class="input-group">
-        <label class="sr-only">Search Emails</label>
-        <input type="text" class="form-control" name="q" value="{{ query }}">
+        <label for="search" class="sr-only">Search Emails</label>
+        <input id="search" type="text" class="form-control" name="q" value="{{ query }}">
         <span class="input-group-btn">
             <button class="btn btn-default">Search</button>
         </span>
@@ -75,20 +75,23 @@
     {% else %}
         {% url 'unified-inbox' as inbox_url %}
     {% endif %}
-
-    <ul class="pager">
-        {% if page_obj.has_previous %}
-            <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">
-                <span aria-hidden="true">&laquo;</span> {% trans "Previous" %}
-            </a></li>
-        {% endif %}
-
-        {% if page_obj.has_next %}
-            <li class="next"><a href="{{ inbox_url }}{{ page_obj.next_page_number }}/">
-                {% trans "Next" %} <span aria-hidden="true">&raquo;</span>
-            </a></li>
-        {% endif %}
-    </ul>
+    {% if page_obj.has_previous or page_obj.has_next %}
+    <nav aria-labelledby="inbox-pager">
+        <h2 id="inbox-pager">{% trans "Email list navigation" %}</h2>
+        <ul class="pager">
+            {% if page_obj.has_previous %}
+                <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">
+                    <span aria-hidden="true">&laquo;</span> {% trans "Previous" %}
+                </a></li>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <li class="next"><a href="{{ inbox_url }}{{ page_obj.next_page_number }}/">
+                    {% trans "Next" %} <span aria-hidden="true">&raquo;</span>
+                </a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 {% else %}
     {% include "search/includes/status.html" %}
 {% endif %}

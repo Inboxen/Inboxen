@@ -16,17 +16,22 @@
     {% include "blog/includes/post.html" with post=post %}
 {% endfor %}
 
-<ul class="pager">
-    {% if page_obj.has_previous %}
-        <li class="previous"><a href="{% url 'blog' page=page_obj.previous_page_number %}">
-            <span aria-hidden="true">&laquo;</span> {% trans "Previous" %}
-        </a></li>
-    {% endif %}
-    {% if page_obj.has_next %}
-        <li class="next"><a href="{% url 'blog' page=page_obj.next_page_number %}">
-            {% trans "Next" %} <span aria-hidden="true">&raquo;</span>
-        </a></li>
-    {% endif %}
-</ul>
+{% if page_obj.has_previous or page_obj.has_next %}
+<nav aria-labelledby="blog-pager">
+    <h2 id="blog-pager">{% trans "Blog navigation" %}</h2>
+    <ul class="pager">
+        {% if page_obj.has_previous %}
+            <li class="previous"><a href="{% url 'blog' page=page_obj.previous_page_number %}">
+                <span aria-hidden="true">&laquo;</span> {% trans "Previous" %}
+            </a></li>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <li class="next"><a href="{% url 'blog' page=page_obj.next_page_number %}">
+                {% trans "Next" %} <span aria-hidden="true">&raquo;</span>
+            </a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
 
 {% endblock %}

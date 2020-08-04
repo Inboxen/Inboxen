@@ -4,7 +4,7 @@
 
 {% block headline %}{% blocktrans with subject=form.instance.subject %}Deleting {{ subject }}{% endblocktrans %}{% endblock %}
 
-{% block breadcumbs %}
+{% block breadcrumbs %}
 <ul class="breadcrumb">
     <li><a href="{% url "admin:blog:index" %}">{% trans "Blog" %}</a></li>
     <li>{% blocktrans with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}</li>

@@ -25,7 +25,5 @@
             </form>
         </div>
     </span>
-    <a class="clickable" href="{% url 'single-inbox' inbox=inbox domain=domain %}">
-        <div class="inbox-description {{ col4 }}">{{ desc|default:"&nbsp;" }}</div>
-    </a>
+    <span class="clickable"><div class="inbox-description {{ col4 }}">{{ desc|default:"<i>No description</i>" }}</div></span>
 </div>
