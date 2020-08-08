@@ -307,7 +307,7 @@ class ChunkQuerySetTestCase(InboxenTestCase):
         self.inbox_pks.sort()
 
     def test_less_than_chunk_size(self):
-        chunker = task_utils.chunk_queryset(models.Inbox.objects.all(), 1000)
+        chunker = task_utils.chunk_queryset(models.Inbox.objects.all().order_by("pk"), 1000)
         result = [i for i in chunker]
         self.assertEqual(result, [(0, self.inbox_pks)])
 
