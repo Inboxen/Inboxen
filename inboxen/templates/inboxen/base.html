@@ -66,6 +66,7 @@
         <ul>
             <li><a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a></li>
             <li><a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a></li>
+        </ul>
     {% endblock %}</footer>
     <script src="{% static "compiled/website.min.js" %}"></script>
     {% block extra_js %}{% endblock %}
