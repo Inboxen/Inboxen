@@ -2,20 +2,21 @@
 {% load i18n staticfiles %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
-    <head>
-        {% include "inboxen/includes/favicons.html" %}
-        <title>{% block headline %}{% endblock %} - {{ settings.SITE_NAME }}</title>
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    {% include "inboxen/includes/favicons.html" %}
+    <title>{% block headline %}{% endblock %} - {{ settings.SITE_NAME }}</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link href="{% static "compiled/website.css" %}" rel="stylesheet" type="text/css" />
-        {% block header %}{% endblock %}
-    </head>
-    <body>
-        <span class="sr-only">
-            {% if messages %}<a href="#alertmessages">{% trans "Skip to alerts" %}</a>{% endif %}
-            <a href="#contentstart">{% trans "Skip to content" %}</a>
-        </span>
+    <link href="{% static "compiled/website.css" %}" rel="stylesheet" type="text/css" />
+    {% block header %}{% endblock %}
+</head>
+<body>
+    <span class="sr-only">
+        {% if messages %}<a href="#alertmessages">{% trans "Skip to alerts" %}</a>{% endif %}
+        <a href="#contentstart">{% trans "Skip to content" %}</a>
+    </span>
+    <header>
         <div id="navbar-container" class="navbar navbar-default">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -30,7 +31,7 @@
                     <span class="icon-bar" aira-hidden="true"></span>
                 </label>
                 {% block navbar %}
-                <div class="collapse navbar-collapse">
+                <nav class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'user-settings' %}">{% trans "Account" %}</a></li>
@@ -46,38 +47,27 @@
                             <li><a href="{% url 'cms-index' '' %}">{% trans "Help" %}</a></li>
                         {% endif %}
                     </ul>
-                </div>
+                </nav>
                 {% endblock %}
             </div>
         </div>
         <div class="container-fluid">
-            {% block breadcumbs %}
-            {% endblock %}
-            <div id="alertmessages">
-            {% for message in messages %}
+            {% block breadcrumbs %}{% endblock %}
+            <div id="alertmessages">{% for message in messages %}
                 <div class="alert alert-{{ message.tags }}" role="alert">
                     {{ message }}
-                </div>
-            {% endfor %}
-            {% block extra-messages %}
-            {% endblock %}
-            </div>
-            <div id="contentstart">
-                {% block content %}
-                {% endblock %}
+                </div>{% endfor %}
+            {% block extra-messages %}{% endblock %}
             </div>
         </div>
-        <div id="footer">
-        {% block footer %}
-            <div class="container">
-                <p class="text-muted text-center">
-                <a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a> |
-                <a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a>
-                </p>
-            </div>
-        {% endblock %}
-        </div>
-        <script src="{% static "compiled/website.min.js" %}"></script>
-        {% block extra_js %}{% endblock %}
-    </body>
+    </header>
+    <main id="contentstart" class="container-fluid">{% block content %}{% endblock %} </main>
+    <footer id="footer">{% block footer %}
+        <ul>
+            <li><a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a></li>
+            <li><a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a></li>
+    {% endblock %}</footer>
+    <script src="{% static "compiled/website.min.js" %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
 </html>

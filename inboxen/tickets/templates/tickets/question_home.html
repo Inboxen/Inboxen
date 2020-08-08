@@ -4,7 +4,7 @@
 
 {% block headline %}{% trans "Tickets" %}{% endblock %}
 
-{% block breadcumbs %}
+{% block breadcrumbs %}
     <ul class="breadcrumb">
         {% for pg in request.page.get_ancestors %}
             {% if not pg.is_root %}<li><a href="{{ pg.url }}">{{ pg.title }}</a></li>{% endif %}

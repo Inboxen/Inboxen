@@ -3,17 +3,17 @@
 {% load i18n %}
 
 {% block navbar %}
-<div class="collapse navbar-collapse">
+<nav class="collapse navbar-collapse">
     <ul class="nav navbar-nav">
         <li><a href="{% url "admin:index" %}">{% trans "CMS" %}</a></li>
         <li><a href="{% url "admin:blog:index" %}">{% trans "Blog" %}</a></li>
         <li><a href="{% url "admin:domains:index" %}">{% trans "Domains" %}</a></li>
         <li><a href="{% url "admin:tickets:index" %}">{% trans "Questions" %}</a></li>
     </ul>
-</div>
+</nav>
 {% endblock %}
 
-{% block breadcumbs %}
+{% block breadcrumbs %}
 {% endblock %}
 
 {% block content %}

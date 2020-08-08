@@ -4,7 +4,7 @@
 
 {% block headline %}{% blocktrans with domain=domain.domain %}Editing {{ domain }}{% endblocktrans %}{% endblock %}
 
-{% block breadcumbs %}
+{% block breadcrumbs %}
 <ul class="breadcrumb">
     <li><a href="{% url "admin:domains:index" %}">{% trans "Domains" %}</a></li>
     <li class="active">{% trans "Create" %}</li>

@@ -6,7 +6,7 @@
 
 {% block headline %}{% trans "Home" %}{% endblock %}
 
-{% block breadcumbs %}
+{% block breadcrumbs %}
     <ul class="breadcrumb">
         {% if query %}
         <li><a href="{% url 'user-home' %}">{% blocktrans %}{{ user }}'s Home{% endblocktrans %}</a></li>
@@ -20,8 +20,8 @@
 {% block content %}
 <form id="inboxen-search-box" class="form" action="{% url "user-home-search" %}">
     <div class="input-group">
-        <label class="sr-only">Search Inboxes</label>
-        <input type="text" class="form-control" name="q" value="{{ query }}">
+        <label for="search" class="sr-only">Search Inboxes</label>
+        <input id="search" type="text" class="form-control" name="q" value="{{ query }}">
         <span class="input-group-btn">
             <button class="btn btn-default">Search</button>
         </span>
@@ -49,9 +49,7 @@
                 <div class="{{ col2 }}">&nbsp;</div>
                 <div class="{{ col3 }}">&nbsp;</div>
             </span>
-            <a class="clickable" href="{% url 'unified-inbox' %}">
-                <div class="{{ col4 }}">&nbsp;</div>
-            </a>
+            <span class="clickable"><div class="{{ col4 }}">&nbsp;</div></span>
         </div>
         {% endif %}
         {% for inbox in page_obj.object_list %}
@@ -67,19 +65,23 @@
         {% endfor %}
     </div>
     {% endwith %}
-    <ul class="pager">
-        {% if page_obj.has_previous %}
-            <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
-                <span aria-hidden="true">&laquo;</span> {% trans "Previous" %}
-            </a></li>
-        {% endif %}
-
-        {% if page_obj.has_next %}
-            <li class="next"><a href="{% url 'user-home' page=page_obj.next_page_number %}">
-                {% trans "Next" %} <span aria-hidden="true">&raquo;</span>
-            </a></li>
-        {% endif %}
-    </ul>
+    {% if page_obj.has_previous or page_obj.has_next %}
+    <nav aria-labelledby="home-pager">
+        <h2 id="home-pager">{% trans "Inbox list navigation" %}</h2>
+        <ul class="pager">
+            {% if page_obj.has_previous %}
+                <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
+                    <span aria-hidden="true">&laquo;</span> {% trans "Previous" %}
+                </a></li>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <li class="next"><a href="{% url 'user-home' page=page_obj.next_page_number %}">
+                    {% trans "Next" %} <span aria-hidden="true">&raquo;</span>
+                </a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 {% else %}
     {% include "search/includes/status.html" %}
 {% endif %}
