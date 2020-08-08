@@ -23,6 +23,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from elevate.mixins import ElevateMixin
 from elevate.views import ElevateView
+from two_factor.utils import default_device
 
 from inboxen.account import forms
 
@@ -41,6 +42,18 @@ class GeneralSettingsView(LoginRequiredMixin, generic.FormView):
     def form_valid(self, form, *args, **kwargs):
         form.save()
         return super(GeneralSettingsView, self).form_valid(form=form, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        try:
+            backup_tokens = self.request.user.staticdevice_set.all()[0].token_set.count()
+        except Exception:
+            backup_tokens = 0
+
+        data["backup_tokens"] = backup_tokens
+        data["default_device"] = default_device(self.request.user)
+
+        return data
 
 
 class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
@@ -62,7 +75,7 @@ class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
 
 class PasswordChangeView(auth_views.PasswordChangeView):  # PasswordChangeView already checks loggedin-ness
     form_class = forms.PlaceHolderPasswordChangeForm
-    success_url = reverse_lazy('user-security')
+    success_url = reverse_lazy('user-settings')
     template_name = 'account/password.html'
 
 

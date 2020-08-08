@@ -1,12 +1,8 @@
 {# Copyright (c) 2016 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'account/index.html' %}
-{% load i18n inboxen_account bootstrap %}
+{% load i18n bootstrap %}
 
 {% block headline %}{% trans "Confirm password" %}{% endblock %}
-
-{% block navigation %}
-    {% account_menu 'sudo' %}
-{% endblock %}
 
 {% block form-header %}
     <div class="panel-heading">{% blocktrans %}
