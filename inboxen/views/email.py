@@ -27,7 +27,6 @@ from django.views import generic
 from inboxen import models
 from inboxen.utils.email import find_bodies, render_body
 
-
 _log = logging.getLogger(__name__)
 
 

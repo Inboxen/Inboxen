@@ -1,12 +1,8 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'account/index.html' %}
-{% load i18n inboxen_account inboxen_time bootstrap %}
+{% load i18n inboxen_time bootstrap %}
 
 {% block headline %}{% trans "Liberate your data" %}{% endblock %}
-
-{% block navigation %}
-    {% account_menu 'user-liberate' %}
-{% endblock %}
 
 {% block form %}
 {% if object.running %}

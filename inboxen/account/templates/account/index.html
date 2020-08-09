@@ -1,53 +1,96 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
-{% load i18n inboxen_account bootstrap %}
+{% load i18n bootstrap %}
 
 {% block headline %}{% trans "Settings" %}{% endblock %}
 
 {% block content %}
-    {% block navigation %}
-        {% account_menu 'user-settings' %}
-    {% endblock %}
-    <br />
-    <div class="row">
-        <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
-            <div class="panel panel-default">
-                {% block form-header %}{% endblock %}
+<div class="row">
+<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+<div class="panel panel-default">
+{% block form-header %}{% endblock %}
+<div class="panel-body">
+{% block form %}
+<div class="panel panel-default">
+    <div class="panel-body inbox-btn-group">
+        <a class="btn btn-primary" href="{% url 'user-username' %}">{% trans "Change username" %}</a>
+        <a class="btn btn-primary" href="{% url 'user-password' %}">{%trans "Change password" %}</a>
+        <a class="btn btn-primary" href="{% url 'user-liberate' %}">{%trans "Liberate your data" %}</a>
+        <a class="btn btn-danger" href="{% url 'user-delete' %}">{%trans "Delete account" %}</a>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <form action="{% url 'user-settings' %}" class="form" method="POST">
+            {% csrf_token %}
+            {{ form.prefered_domain|bootstrap }}
+            {{ form.display_images|bootstrap }}
+            {{ form.prefer_html_email|bootstrap }}
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    {% trans "Danger Area" %}
+                </div>
                 <div class="panel-body">
-                {% block form %}
-                    <form action="{% url 'user-settings' %}" class="form" method="POST">
-                        {% csrf_token %}
-                        {{ form.prefered_domain|bootstrap }}
-                        {{ form.display_images|bootstrap }}
-                        {{ form.prefer_html_email|bootstrap }}
-                        <div class="panel panel-danger">
-                            <div class="panel-heading">
-                                {% trans "Danger Area" %}
-                            </div>
-                            <div class="panel-body">
-                                {{ form.auto_delete|bootstrap }}
-                                {% if form.quota_options %}
-                                    <hr>
-                                    <div class="progress">
-                                        <div class="progress-bar width-{{ form.instance.quota_percent_usage }}"
-                                             role="progressbar"
-                                             aria-valuenow="{{ form.instance.quota_percent_usage }}"
-                                             aria-valuemin="0"
-                                             aria-valuemax="100"
-                                        >{{ form.instance.quota_percent_usage }}%</div>
-                                    </div>
-                                    {{ form.quota_options|bootstrap }}
-                                {% endif %}
-                            </div>
+                    {{ form.auto_delete|bootstrap }}
+                    {% if form.quota_options %}
+                        <hr>
+                        <div class="progress">
+                            <div class="progress-bar width-{{ form.instance.quota_percent_usage }}"
+                                 role="progressbar"
+                                 aria-valuenow="{{ form.instance.quota_percent_usage }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                            >{{ form.instance.quota_percent_usage }}%</div>
                         </div>
-                        <button class="btn btn-primary">{% trans "Save" %}</button>
-                    </form>
-                    <hr>
-                    <p>{% blocktrans with name=request.user.username %}You can change your username here. You current username is <b>{{ name }}</b>.{% endblocktrans %}</p>
-                    <p><a class="btn btn-primary" href="{% url 'user-username' %}">{% trans "Change username" %}</a></p>
-                {% endblock %}
+                        {{ form.quota_options|bootstrap }}
+                    {% endif %}
                 </div>
             </div>
-        </div>
+            <button class="btn btn-primary">{% trans "Save" %}</button>
+        </form>
     </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {% trans "Two factor authentication" %}
+    </div>
+    <div class="panel-body">{% if default_device %}
+    <p>{% trans "Tokens will be generated by your token generator." %}</p>
+    <p>{% blocktrans %}
+        If you wish to disable two factor authentication on this account, click
+        the button below.
+    {% endblocktrans %}</p>
+    <p><a class="btn btn-danger" href="{% url 'user-twofactor-disable' %}">
+        {% trans "Disable Two Factor Authentication" %}</a></p>
+    <hr>
+    <p>
+        {% trans "If you don't have you device with you, you can access your account using backup tokens." %}
+        <p>{% if backup_tokens %}
+            {% blocktrans count counter=backup_tokens %}
+                You have only one backup token remaining.
+            {% plural %}
+                You have {{ counter }} backup tokens remaining.
+            {% endblocktrans %}
+        {% else %}
+            {% trans "You do not have any backup tokens" %}
+        {% endif %}</p>
+    </p>
+    <p>
+        <a href="{% url 'user-twofactor-backup' %}" class="btn btn-primary">{% trans "Backup Tokens" %}</a>
+    </p>
+{% else %}
+    <p>{% blocktrans %}
+        Two-factor authentication is not enabled for your account. Enable
+        two-factor authentication for enhanced account security.
+    {% endblocktrans %}</p>
+    <p><a href="{% url 'user-twofactor-setup' %}" class="btn btn-primary">
+        {% trans "Enable Two-Factor Authentication" %}
+    </a></p>
+    {% endif %}</div>
+</div>
+{% endblock %}
+</div>
+</div>
+</div>
+</div>
 {% endblock %}

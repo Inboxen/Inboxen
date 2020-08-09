@@ -1,12 +1,8 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'account/index.html' %}
-{% load two_factor i18n inboxen_account bootstrap %}
+{% load two_factor i18n bootstrap %}
 
 {% block headline %}{% trans "Backup Tokens" %}{% endblock %}
-
-{% block navigation %}
-    {% account_menu 'user-security' %}
-{% endblock %}
 
 {% block form %}
 <p>{% blocktrans %}
@@ -27,7 +23,7 @@
     {% csrf_token %}
     {{ form|bootstrap }}
     {% if device and device.token_set.count > 0 %}
-        <a href="{% url 'user-security'%}" class="btn btn-primary">{% trans "Done" %}</a>
+        <a href="{% url 'user-settings'%}" class="btn btn-primary">{% trans "Done" %}</a>
         <button class="btn btn-warning" type="submit">{% trans "Regenerate Tokens" %}</button>
     {% else %}
         <button class="btn btn-primary" type="submit">{% trans "Generate Tokens" %}</button>

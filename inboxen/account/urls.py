@@ -33,7 +33,6 @@ urlpatterns = [
     urls.url(r'^security/backup/download/$', otp.backup_download_view, name='user-twofactor-backup-download'),
     urls.url(r'^security/disable/$', otp.disable_view, name='user-twofactor-disable'),
     urls.url(r'^security/qrcode/$', otp.qrcode_view, name='user-twofactor-qrcode'),
-    urls.url(r'^security/$', otp.twofactor_view, name='user-security'),
 
     urls.url(r'^delete/$', delete.AccountDeletionView.as_view(), name='user-delete'),
     urls.url(r'^username/$', settings.UsernameChangeView.as_view(), name='user-username'),

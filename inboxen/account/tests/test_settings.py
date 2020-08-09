@@ -267,7 +267,7 @@ class PasswordChangeTestCase(InboxenTestCase):
         response = self.client.post(self.get_url(), params)
         self.user.refresh_from_db()
 
-        self.assertRedirects(response, urls.reverse("user-security"), fetch_redirect_response=False)
+        self.assertRedirects(response, urls.reverse("user-settings"), fetch_redirect_response=False)
         self.assertNotEqual(self.user.password, old_password_hash)
 
     def test_post_bad(self):
