@@ -282,3 +282,42 @@ class PasswordChangeTestCase(InboxenTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.user.password, old_password_hash)
+
+
+class SudoTestCase(InboxenTestCase):
+    def setUp(self):
+        super().setUp()
+        self.user = factories.UserFactory()
+
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+        self.sudo_protected_url = urls.reverse("user-delete")
+        self.sudo_url = urls.reverse("user-sudo")
+
+    def test_good_password(self):
+        response = self.client.get(self.sudo_protected_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "{}?next={}".format(self.sudo_url, self.sudo_protected_url))
+
+        response = self.client.post(response["Location"], {"password": "123456"})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], self.sudo_protected_url)
+
+        response = self.client.get(self.sudo_protected_url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_bad_password(self):
+        response = self.client.get(self.sudo_protected_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "{}?next={}".format(self.sudo_url, self.sudo_protected_url))
+
+        response = self.client.post(response["Location"], {"password": "qwerty"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["form"].is_valid(), False)
+
+        response = self.client.get(self.sudo_protected_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "{}?next={}".format(self.sudo_url, self.sudo_protected_url))
