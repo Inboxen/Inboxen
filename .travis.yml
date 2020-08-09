@@ -59,9 +59,4 @@ matrix:
 install: if [[ $TOX_ENV ]]; then pip install tox; elif [[ $GRUNT_TASK ]]; then npm install; fi
 script: if [[ $TOX_ENV ]]; then tox -e $TOX_ENV; elif [[ $GRUNT_TASK ]]; then npx grunt $GRUNT_TASK; fi
 
-notifications:
-    irc:
-        channels:
-            - "ircs://irc.megworld.co.uk:9000#inboxen"
-        use_notice: true
 sudo: false
