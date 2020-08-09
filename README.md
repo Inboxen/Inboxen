@@ -6,6 +6,8 @@ Inboxen
 
 This is the complete system with everything you need to set up Inboxen.
 
+The current maintainer of this repo is [Matt Molyneaux](https://github.com/moggers87)
+
 GPG keys
 --------
 
@@ -15,6 +17,16 @@ GPG keys used by Inboxen developers to sign releases:
 Matt Molyneaux <moggers87@moggers87.co.uk>
     19F5 A8DC C917 FD00 E859   02F4 878B 5A2A 1D47 C084
 ```
+
+Security
+--------
+
+If you find a security issue with Inboxen, email <security@moggers87.co.uk>. If
+you wish to send an encrypted report, then please use key id `0x878B5A2A1D47C084`
+
+Once reported, all security vulnerabilities will be acted on immediately and a
+fix with full disclosure will go out to everyone at the same time.
+
 Developing
 ----------
 
