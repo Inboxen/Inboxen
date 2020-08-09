@@ -26,8 +26,6 @@ from elevate.views import ElevateView
 
 from inboxen.account import forms
 
-__all__ = ["GeneralSettingsView", "UsernameChangeView", "PasswordChangeView", "LogoutView"]
-
 
 class GeneralSettingsView(LoginRequiredMixin, generic.FormView):
     """General settings view"""

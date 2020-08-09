@@ -25,8 +25,6 @@ from django.views import generic
 from inboxen.forms import inbox as inbox_forms
 from inboxen.models import Inbox
 
-__all__ = ["InboxEditView", "FormInboxEditView", "InboxDisownView"]
-
 
 class InboxEditView(LoginRequiredMixin, generic.UpdateView):
     form_class = inbox_forms.InboxEditForm

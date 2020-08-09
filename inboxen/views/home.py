@@ -28,8 +28,6 @@ from inboxen.search.tasks import search_home_page
 from inboxen.search.utils import create_search_cache_key
 from inboxen.search.views import SearchMixin
 
-__all__ = ["UserHomeView", "FormHomeView"]
-
 
 class UserHomeView(LoginRequiredMixin, SearchMixin, generic.ListView):
     """ The user's home which lists the inboxes """

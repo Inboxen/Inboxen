@@ -28,8 +28,6 @@ from inboxen.utils.ratelimit import single_email_ratelimit
 
 HEADER_CLEAN = re.compile(r'\s+')
 
-__all__ = ["AttachmentDownloadView", "download_email"]
-
 
 class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
     def get_object(self):

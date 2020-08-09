@@ -22,8 +22,6 @@ import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-__all__ = ["EntropyValidation", "CharClassValidation"]
-
 
 class EntropyValidation(object):
     """Guess the entropy of a string"""

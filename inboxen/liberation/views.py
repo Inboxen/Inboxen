@@ -28,8 +28,6 @@ from django_sendfile import sendfile
 from inboxen.liberation import forms
 from inboxen.liberation.tasks import TAR_TYPES
 
-__all__ = ["LiberationView", "LiberationDownloadView"]
-
 
 class LiberationView(LoginRequiredMixin, generic.UpdateView):
     form_class = forms.LiberationForm

@@ -31,8 +31,6 @@ from inboxen.search.views import SearchMixin
 from inboxen.tasks import delete_inboxen_item, set_emails_to_seen
 from inboxen.utils.tasks import task_group_skew
 
-__all__ = ["FormInboxView", "UnifiedInboxView", "SingleInboxView"]
-
 
 class InboxView(LoginRequiredMixin, SearchMixin, generic.ListView):
     """Base class for Inbox views"""

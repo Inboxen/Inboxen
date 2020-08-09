@@ -24,8 +24,6 @@ from elevate.mixins import ElevateMixin
 
 from inboxen.account import forms
 
-__all__ = ["AccountDeletionView"]
-
 
 class AccountDeletionView(LoginRequiredMixin, ElevateMixin, generic.FormView):
     """ View to delete an account """

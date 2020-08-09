@@ -28,8 +28,6 @@ from inboxen import models, tasks
 from inboxen.account.tasks import disown_inbox
 from inboxen.utils.ratelimit import inbox_ratelimit
 
-__all__ = ["InboxAddForm", "InboxEditForm", "InboxDisownForm"]
-
 
 class InboxAddForm(forms.ModelForm):
     def __init__(self, request, initial=None, *args, **kwargs):

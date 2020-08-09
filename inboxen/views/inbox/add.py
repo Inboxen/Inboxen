@@ -24,8 +24,6 @@ from django.views import generic
 from inboxen.forms import inbox as inbox_forms
 from inboxen.models import Inbox
 
-__all__ = ["InboxAddView", "FormInboxAddView"]
-
 
 class InboxAddView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy('user-home')
