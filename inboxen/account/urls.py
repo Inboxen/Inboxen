@@ -20,16 +20,14 @@
 from django.conf import settings as dj_settings
 from django.conf import urls
 from django.views.generic import TemplateView
-import elevate.views
 
 from inboxen.account.decorators import anonymous_required
-from inboxen.account.forms import PlaceHolderSudoForm
 from inboxen.account.views import delete, otp, register, settings, suspended
 
 urlpatterns = [
     urls.url(r'^$', settings.GeneralSettingsView.as_view(), name='user-settings'),
     urls.url(r'^security/password$', settings.PasswordChangeView.as_view(), name='user-password'),
-    urls.url(r'^security/sudo/$', elevate.views.elevate, {'form_class': PlaceHolderSudoForm}, name='user-sudo'),
+    urls.url(r'^security/sudo/$', settings.InboxenElevateView.as_view(), name='user-sudo'),
     urls.url(r'^security/setup/$', otp.setup_view, name='user-twofactor-setup'),
     urls.url(r'^security/backup/$', otp.backup_view, name='user-twofactor-backup'),
     urls.url(r'^security/backup/download/$', otp.backup_download_view, name='user-twofactor-backup-download'),

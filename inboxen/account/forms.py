@@ -32,11 +32,6 @@ from inboxen.account import fields
 from inboxen.account.tasks import delete_account
 from inboxen.forms.mixins import PlaceHolderMixin
 
-__all__ = [
-    "DeleteAccountForm", "PlaceHolderAuthenticationForm", "PlaceHolderPasswordChangeForm",
-    "PlaceHolderUserCreationForm", "SettingsForm", "UsernameChangeForm",
-]
-
 
 class DeleteAccountForm(forms.Form):
     username = forms.CharField(
@@ -84,7 +79,11 @@ class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
 
 
 class PlaceHolderSudoForm(PlaceHolderMixin, ElevateForm):
-    pass
+    def clean_password(self):
+        username = self.user.get_username()
+        if auth.authenticate(username=username, password=self.data['password'], request=self.request):
+            return self.data['password']
+        raise forms.ValidationError(_('Incorrect password'))
 
 
 class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):

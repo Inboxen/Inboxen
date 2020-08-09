@@ -22,6 +22,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
 from elevate.mixins import ElevateMixin
+from elevate.views import ElevateView
 
 from inboxen.account import forms
 
@@ -69,3 +70,11 @@ class PasswordChangeView(auth_views.PasswordChangeView):  # PasswordChangeView a
 
 class LogoutView(auth_views.LogoutView):
     next_page = "/"
+
+
+class InboxenElevateView(ElevateView):
+    form_class = forms.PlaceHolderSudoForm
+
+    def handle_elevate(self, request, redirect_to, context):
+        context['form'].request = request
+        return super().handle_elevate(request, redirect_to, context)
