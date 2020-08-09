@@ -241,7 +241,6 @@ SEARCH_TIMEOUT = 60 * 30  # 30 minutes
 SEARCH_PAGE_SIZE = 25
 
 LOGIN_URL = urls.reverse_lazy("user-login")
-LOGOUT_URL = urls.reverse_lazy("user-logout")
 LOGIN_REDIRECT_URL = urls.reverse_lazy("user-home")
 
 LOGOUT_MSG = _("You are now logged out. Have a nice day!")

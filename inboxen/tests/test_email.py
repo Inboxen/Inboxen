@@ -629,7 +629,7 @@ class DownloadTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_anonymous(self):
-        response = self.client.get(settings.LOGOUT_URL, follow=True)
+        response = self.client.get(urls.reverse("user-logout"), follow=True)
         url = urls.reverse("download-email-view", kwargs={"email": self.email.eid,
                                                           "inbox": self.email.inbox.inbox,
                                                           "domain": self.email.inbox.domain.domain})

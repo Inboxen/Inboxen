@@ -79,7 +79,7 @@ class LoginTestCase(InboxenTestCase):
         login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
         self.assertEqual(login, True)
 
-        response = self.client.get(dj_settings.LOGOUT_URL, follow=True)
+        response = self.client.get(urls.reverse("user-logout"), follow=True)
         self.assertIn("You are now logged out. Have a nice day!", str(response.content))
 
     def test_last_login(self):
