@@ -1,9 +1,7 @@
-# Changelog
-
-## Releases
+# Releases
 
 Deploy for 2020-08-14T22-38-11
-==============================
+------------------------------
 
 - Fix numerous accessibility issues (#175)
 - Fix crash in django-elevate due to our auth backend (#526)
