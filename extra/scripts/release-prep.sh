@@ -26,12 +26,14 @@ EOF
 vim $tmpfile
 
 printf "\n%s\n" "$(cat $tmpfile | sed '/^#/d')" > $changelog
-if [[ $changelog = *[^[:space:]]* ]]; then
+if ! grep -q '[^[:space:]]' < "$changelog"; then
     echo "Empty changelog, aborting"
     exit 1
 fi
 sed -i -e "/Releases/r $changelog" CHANGELOG.md
 
+git add CHANGELOG.md
+git commit -m "Update changelog"
 git tag -as -F $changelog deploy-$today
 
 rm $tmpfile $changelog
