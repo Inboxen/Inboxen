@@ -2,6 +2,16 @@
 
 ## Releases
 
+Deploy for 2020-08-14T22-38-11
+==============================
+
+- Fix numerous accessibility issues (#175)
+- Fix crash in django-elevate due to our auth backend (#526)
+- Rework settings page to remove nav-pills (#533)
+- Fix clash with setting LOGOUT_URL (#529)
+- Prevent Celery 4.4.7 from being installed, it breaks tasks
+- Update to factory-boy 3
+
 ### Deploy for 2020-07-27
 
 * Remove `django-ratelimit-backend` and use our own ratelimit code (#526)
