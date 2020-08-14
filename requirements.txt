@@ -9,7 +9,7 @@ amqp==2.6.1               # via kombu
 babel==2.8.0              # via django-phonenumber-field
 billiard==3.6.3.0         # via celery
 cachetools==4.1.1         # via premailer
-celery==4.4.7             # via django-celery-results, inboxen
+celery==4.4.6             # via django-celery-results, inboxen
 certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests, salmon-mail
 click==7.1.2              # via pip-tools, salmon-mail
@@ -18,10 +18,10 @@ cssutils==1.0.2           # via premailer
 django-annoying==0.10.6   # via inboxen
 django-bootstrap-form==3.4  # via inboxen
 django-celery-results==1.2.1  # via inboxen
-django-csp==3.6           # via inboxen
+django-csp==3.7           # via inboxen
 django-cursor-pagination==0.1.4  # via inboxen
 django-elevate==1.0.1     # via inboxen
-django-extensions==3.0.4  # via inboxen
+django-extensions==3.0.5  # via inboxen
 django-formtools==2.2     # via django-two-factor-auth
 django-js-asset==1.2.2    # via django-mptt
 django-mptt==0.11.0       # via inboxen
@@ -34,6 +34,7 @@ dnspython==2.0.0          # via salmon-mail
 docutils==0.16            # via python-daemon
 factory-boy==2.12.0       # via inboxen
 faker==4.1.1              # via factory-boy
+future==0.18.2            # via celery
 idna==2.10                # via requests
 importlib-metadata==1.7.0  # via kombu, markdown
 kombu==4.6.11             # via celery

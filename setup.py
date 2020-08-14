@@ -35,7 +35,7 @@ setup(
     install_requires=[
         "Django>=2.2,<2.3",
         "Markdown",
-        "celery>=4.4,<4.5",
+        "celery<5,!=4.4.7",
         "django-annoying",
         "django-bootstrap-form",
         "django-celery-results",
@@ -47,7 +47,7 @@ setup(
         "django-otp",
         "django-sendfile2",
         "django-two-factor-auth>=1.5.0",
-        "factory-boy",
+        "factory-boy<3",
         "lxml",
         # make sure django-phonenumbers uses the smaller package
         "phonenumberslite",
