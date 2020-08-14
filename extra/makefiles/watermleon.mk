@@ -10,12 +10,12 @@ setup-node:
 
 .PHONY: install-watermelon-py-deps
 install-watermelon-py-deps:
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
+	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
 	pip-sync extra/requirements/watermelon.inboxen.org.txt || pip install -r extra/requirements/watermelon.inboxen.org.txt
 
 .PHONY: install-watermelon-deps
 install-watermelon-deps: install-watermelon-py-deps install-js-deps
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
+	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
 
 # common deployment stuff
 .PHONY: common-deploy
@@ -30,17 +30,17 @@ common-deploy:
 
 .PHONY: deploy-%
 deploy-%:
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
+	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
 	git fetch --prune
 	git verify-tag $@
-	-$(MAKE) celery-stop salmon-stop
+	$(MAKE) celery-stop salmon-stop
 	git checkout $@
 	$(MAKE) common-deploy
 
 .PHONY: dev-deploy
 dev-deploy:
-	echo "Warning: this command is very specific to inboxen.org. It will be removed in the near future."
-	-$(MAKE) celery-stop salmon-stop
+	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
+	$(MAKE) celery-stop salmon-stop
 	git describe --dirty
 	$(MAKE) common-deploy
 

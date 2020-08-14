@@ -80,8 +80,12 @@ static:
 
 .PHONY: celery-stop
 celery-stop:
-	kill `cat run/worker.pid`
-	kill `cat run/beat.pid`
+	-kill `cat run/worker.pid`
+	-kill `cat run/beat.pid`
+	sleep 1
+	test ! -f run/worker.pid || $(error Celery worker appears to be still running)
+	test ! -f run/beat.pid || $(error "Celery beat appears to be still running)
+
 
 .PHONY: celery-start
 celery-start:
@@ -90,7 +94,9 @@ celery-start:
 
 .PHONY: salmon-stop
 salmon-stop:
-	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid run/router.pid
+	-SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid run/router.pid
+	sleep 1
+	test ! -f run/router.pid || $(errorSalmon appears to be still running)
 
 .PHONY: salmon-start
 salmon-start:
