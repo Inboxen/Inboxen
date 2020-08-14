@@ -16,6 +16,8 @@ Deploy for $today
 # List changes here to add them to the tag and changelog
 # Lines starting with a '#' will be ignored
 #
+# Saving this file as empty will abort release
+#
 # Changes since $lasttag
 #
 $changes
@@ -24,6 +26,10 @@ EOF
 vim $tmpfile
 
 printf "\n%s\n" "$(cat $tmpfile | sed '/^#/d')" > $changelog
+if [[ $changelog = *[^[:space:]]* ]]; then
+    echo "Empty changelog, aborting"
+    exit 1
+fi
 sed -i -e "/Releases/r $changelog" CHANGELOG.md
 
 git tag -as -F $changelog deploy-$today
