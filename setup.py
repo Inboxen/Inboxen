@@ -47,7 +47,7 @@ setup(
         "django-otp",
         "django-sendfile2",
         "django-two-factor-auth>=1.5.0",
-        "factory-boy<3",
+        "factory-boy>=3.0",
         "lxml",
         # make sure django-phonenumbers uses the smaller package
         "phonenumberslite",
