@@ -53,7 +53,6 @@ setup(
         # make sure django-phonenumbers uses the smaller package
         "phonenumberslite",
         "pillow",
-        "premailer",
         "progress",
         "psycopg2",
         "pytz",

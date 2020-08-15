@@ -14,29 +14,19 @@ asgiref==3.3.4
     # via django
 billiard==3.6.4.0
     # via celery
-cachetools==4.2.2
-    # via premailer
 celery==4.4.6
     # via
     #   django-celery-results
     #   inboxen
-certifi==2020.12.5
-    # via requests
 chardet==4.0.0
-    # via
-    #   requests
-    #   salmon-mail
-click==8.0.0
+    # via salmon-mail
+click==8.0.1
     # via
     #   pip-tools
     #   salmon-mail
 coverage==5.5
     # via -r requirements-dev.in
-cssselect==1.1.0
-    # via premailer
-cssutils==2.2.0
-    # via premailer
-distlib==0.3.1
+distlib==0.3.2
     # via virtualenv
 django-annoying==0.10.6
     # via inboxen
@@ -48,7 +38,7 @@ django-csp==3.7
     # via inboxen
 django-debug-toolbar==3.2.1
     # via -r requirements-dev.in
-django-elevate==2.0.1
+django-elevate==2.0.2
     # via inboxen
 django-extensions==3.1.3
     # via inboxen
@@ -58,17 +48,17 @@ django-js-asset==1.2.2
     # via django-mptt
 django-mptt==0.12.0
     # via inboxen
-django-otp==1.0.5
+django-otp==1.0.6
     # via
     #   django-two-factor-auth
     #   inboxen
-django-phonenumber-field==5.1.0
+django-phonenumber-field==5.2.0
     # via django-two-factor-auth
 django-sendfile2==0.6.0
     # via inboxen
 django-two-factor-auth==1.13.1
     # via inboxen
-django==3.2.3
+django==3.2.4
     # via
     #   django-annoying
     #   django-bootstrap-form
@@ -88,7 +78,7 @@ docutils==0.17.1
     # via python-daemon
 factory-boy==3.2.0
     # via inboxen
-faker==8.1.4
+faker==8.5.1
     # via factory-boy
 filelock==3.0.12
     # via
@@ -96,18 +86,16 @@ filelock==3.0.12
     #   virtualenv
 future==0.18.2
     # via celery
-idna==2.10
-    # via requests
-importlib-metadata==4.0.1
+importlib-metadata==4.5.0
     # via
-    #   cssutils
+    #   click
     #   kombu
     #   markdown
     #   pep517
     #   pluggy
     #   tox
     #   virtualenv
-importlib-resources==5.1.3
+importlib-resources==5.1.4
     # via virtualenv
 isort==5.8.0
     # via -r requirements-dev.in
@@ -118,16 +106,14 @@ lmtpd==6.2.0
 lockfile==0.12.2
     # via python-daemon
 lxml==4.6.3
-    # via
-    #   inboxen
-    #   premailer
+    # via inboxen
 markdown==3.3.4
     # via inboxen
 packaging==20.9
     # via tox
 pep517==0.10.0
     # via pip-tools
-phonenumberslite==8.12.23
+phonenumberslite==8.12.24
     # via inboxen
 pillow==8.2.0
     # via inboxen
@@ -135,8 +121,6 @@ pip-tools==6.1.0
     # via -r inboxen/data/requirements.in
 pluggy==0.13.1
     # via tox
-premailer==3.8.0
-    # via inboxen
 progress==1.5
     # via inboxen
 psycopg2==2.8.6
@@ -156,11 +140,9 @@ pytz==2021.1
     #   inboxen
 qrcode==6.1
     # via django-two-factor-auth
-requests==2.25.1
-    # via premailer
 ruamel.yaml.clib==0.2.2
     # via ruamel.yaml
-ruamel.yaml==0.17.4
+ruamel.yaml==0.17.7
     # via inboxen
 salmon-mail==3.2.0
     # via inboxen
@@ -188,13 +170,11 @@ typing-extensions==3.10.0.0
     # via
     #   asgiref
     #   importlib-metadata
-urllib3==1.26.4
-    # via requests
 vine==1.3.0
     # via
     #   amqp
     #   celery
-virtualenv==20.4.6
+virtualenv==20.4.7
     # via tox
 zipp==3.4.1
     # via

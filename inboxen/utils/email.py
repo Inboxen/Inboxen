@@ -32,7 +32,6 @@ from django.utils.translation import gettext as _
 from lxml import etree
 from lxml import html as lxml_html
 from lxml.html.clean import Cleaner
-from premailer.premailer import Premailer
 
 from inboxen.redirect import proxy_url
 
@@ -93,42 +92,8 @@ HTML_ALLOW_TAGS = [
     "ul",
 ]
 
-HTML_CONVERT_TO_DIV_TAGS = [
-    "article",
-    "body",
-    "footer",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "header",
-    "main",
-    "section",
-]
-
 
 _log = logging.getLogger(__name__)
-
-
-class InboxenPremailer(Premailer):
-    def _load_external(self, url):
-        """Don't load external resources"""
-        return ""
-
-
-class DivDropHtmlElement(lxml_html.HtmlElement):
-    def drop_tag(self):
-        self.tag = "div"
-
-
-inboxen_parser = lxml_html.HTMLParser()
-
-# Only use our custom element class on tags we wish to preserve
-inboxen_parser.set_element_class_lookup(lxml_html.HtmlElementClassLookup(
-    classes={tag: DivDropHtmlElement for tag in HTML_CONVERT_TO_DIV_TAGS},
-))
 
 
 def unicode_damnit(data, charset="utf-8", errors="replace"):
@@ -151,7 +116,7 @@ def _clean_html_body(request, email, body, charset):
 
     Doesn't catch LXML errors
     """
-    html_tree = lxml_html.fromstring(body, parser=inboxen_parser)
+    html_tree = lxml_html.fromstring(body, parser=lxml_html.HTMLParser())
 
     # if the HTML doc says its a different encoding, use that
     for meta_tag in html_tree.xpath("/html/head/meta"):
@@ -166,15 +131,6 @@ def _clean_html_body(request, email, body, charset):
         elif "charset" in meta_tag.attrib:
             charset = meta_tag.attrib["charset"]
             break
-
-    try:
-        # check there's a body for premailer
-        if html_tree.find("body") is not None:
-            html_tree = InboxenPremailer(html_tree).transform()
-    except Exception as exc:
-        # Yeah, a pretty wide catch, but Premailer likes to throw up everything and anything
-        messages.info(request, _("Part of this message could not be parsed - it may not display correctly"))
-        _log.warning("Failed to render CSS for %s: %s", email["eid"], exc)
 
     # Mail Pile uses this, give back if you come up with something better
     cleaner = Cleaner(
