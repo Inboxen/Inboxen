@@ -74,8 +74,7 @@ Let's get started!
    $ cd Inboxen
    $ virtualenv-3 env
    $ . env/bin/activate
-   (env) $ pip install -r requirements.txt
-   (env) $ npm install
+   (env) $ make
    (env) $ touch inboxen.config
 
 At this point we should add some basic configuration. Open ``inboxen.config``

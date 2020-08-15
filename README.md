@@ -5,7 +5,7 @@ Inboxen
 [![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg)](http://codecov.io/github/Inboxen/Inboxen)
 [![Documentation Status](https://readthedocs.org/projects/inboxen/badge/?version=latest)](https://inboxen.readthedocs.io/en/latest/?badge=latest)
 
-This is the complete system with everything you need to set up Inboxen.
+This is the main codebase behind Inboxen.
 
 The current maintainer of this repo is [Matt Molyneaux](https://github.com/moggers87)
 
@@ -100,27 +100,6 @@ You can connect to it on <http://localhost:8000/>.
 
 With `debug=true`, you'll have the Django Debug Toolbar enabled and you can
 find the Inboxen styleguide at <http://localhost:8000/styleguide>
-
-### Pinned Dependencies
-
-Inboxen uses `pip-tools` to help manage its dependencies. The direct
-requirements of Inboxen are kept in `requirements.in` and then we use the
-following command to pin the entire dependency graph:
-
-```
-pip-compile --upgrade --output-file requirements.txt requirements.in
-```
-
-The resulting `requirements.txt` can be installed to a clean virtualenv with
-`pip` to get the exact package versions that Inboxen uses in production. You
-can also use the `pip-sync` (which comes with `pip-tools`) to update an
-existing virtualenv as well as remove packages that are no longer required.
-
-The same principal applies to `requirements-dev.txt`/`requirements-dev.txt` and
-any files found in `extras/requirements`.
-
-If for any reason you wish to bypass pinning dependencies, `requirements.in`
-and `requirements-dev.in` are in the format expected by `pip`.
 
 Committing and Branching
 ------------------------
