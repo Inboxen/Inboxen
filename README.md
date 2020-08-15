@@ -4,7 +4,7 @@ Inboxen
 [![Build Status](https://travis-ci.org/Inboxen/Inboxen.svg?branch=master)](https://travis-ci.org/Inboxen/Inboxen)
 [![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg?branch=master)](http://codecov.io/github/Inboxen/Inboxen?branch=master)
 
-This is the complete system with everything you need to set up Inboxen.
+This is the main codebase behind Inboxen.
 
 The current maintainer of this repo is [Matt Molyneaux](https://github.com/moggers87)
 

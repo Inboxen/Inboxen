@@ -29,9 +29,9 @@ The Inboxen settings file can be located in several places on a system, it will
 use the first one it finds. Inboxen looks for the files in this order:
 
 1. The path specified in the environment variable: ``INBOXEN_CONFIG``
-2. ~/.config/inboxen/inboxen.config
-3. inboxen.config in the current working directory
-4. inboxen.config inside the base directory of the Inboxen project
+2. inboxen.config in the current working directory
+3. ~/.config/inboxen/inboxen.config
+4. /etc/inboxen/inboxen.config
 
 If you're familiar with Django and would like to use your own settings module,
 you can set ``DJANGO_SETTINGS_MODULE`` in the usual way [1]_.

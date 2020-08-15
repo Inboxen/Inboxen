@@ -30,9 +30,9 @@ from inboxen.utils.misc import setdefault_deep
 #
 # The file is searched for in the follow way:
 # 1. The environment variable "INBOXEN_CONFIG", which contains an absolute path
-# 2. ~/.config/inboxen/inboxen.config
-# 3. inboxen.config in the current working directory
-# 4. inboxen.config in the root of the git repo (i.e. the same directory as "manage.py")
+# 2. inboxen.config in the current working directory
+# 3. ~/.config/inboxen/inboxen.config
+# 4. /etc/inboxen/inboxen.config
 #
 ##
 is_testing = int(os.getenv("INBOXEN_TESTING", "0")) > 0
@@ -43,12 +43,12 @@ if is_testing:
     CONFIG_PATH = ""
 elif os.path.exists(os.getenv("INBOX_CONFIG", "")):
     CONFIG_PATH = os.getenv("INBOX_CONFIG")
-elif os.path.exists(os.path.expanduser("~/.config/inboxen/inboxen.config")):
-    CONFIG_PATH = os.path.expanduser("~/.config/inboxen/inboxen.config")
 elif os.path.exists(os.path.join(os.getcwd(), "inboxen.config")):
     CONFIG_PATH = os.path.join(os.getcwd(), "inboxen.config")
-elif os.path.exists(os.path.join(BASE_DIR, "inboxen.config")):
-    CONFIG_PATH = os.path.join(BASE_DIR, "inboxen.config")
+elif os.path.exists(os.path.expanduser("~/.config/inboxen/inboxen.config")):
+    CONFIG_PATH = os.path.expanduser("~/.config/inboxen/inboxen.config")
+elif os.path.exists("/etc/inboxen/inboxen.config"):
+    CONFIG_PATH = "/etc/inboxen/inboxen.config"
 else:
     raise exceptions.ImproperlyConfigured("You must provide a inboxen.config file")
 

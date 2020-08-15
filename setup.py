@@ -17,19 +17,29 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from setuptools import find_packages, setup
+import os
 
+from setuptools import find_packages, setup
 import versioneer
+
+
+this_directory = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 
 setup(
     name="inboxen",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     author="Inboxen.org",
+    author_email="support@inboxen.org",
     description="An email privacy tool",
     url="https://inboxen.org",
     download_url="https://github.com/Inboxen/Inboxen",
     license="AGPLv3",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
