@@ -1,3 +1,5 @@
+PID_FOLDER := /var/run/inboxen
+
 ##
 # Dev
 ##
@@ -80,29 +82,29 @@ static:
 
 .PHONY: celery-stop
 celery-stop:
-	-kill `cat run/worker.pid`
-	-kill `cat run/beat.pid`
-	sleep 1
-	test ! -f run/worker.pid
-	test ! -f run/beat.pid
+	-kill `cat $(PID_FOLDER)/worker.pid`
+	-kill `cat $(PID_FOLDER)/beat.pid`
+	sleep 5
+	test ! -f $(PID_FOLDER)/worker.pid
+	test ! -f $(PID_FOLDER)/beat.pid
 
 
 .PHONY: celery-start
 celery-start:
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn --events --detach -Ofair -f logs/celery-worker.log --pidfile run/worker.pid
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warn --detach -f logs/celery-beat.log --pidfile run/beat.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn --events --detach -Ofair -f logs/celery-worker.log --pidfile $(PID_FOLDER)/worker.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warn --detach -f logs/celery-beat.log --pidfile $(PID_FOLDER)/beat.pid
 
 .PHONY: salmon-stop
 salmon-stop:
-	-SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid run/router.pid
-	sleep 1
-	test ! -f run/router.pid
+	-SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid $(PID_FOLDER)/router.pid
+	sleep 5
+	test ! -f $(PID_FOLDER)/router.pid
 
 .PHONY: salmon-start
 salmon-start:
-	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid run/router.pid --boot inboxen.router.config.boot
+	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid $(PID_FOLDER)/router.pid --boot inboxen.router.config.boot
 	sleep 5
-	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon status --pid run/router.pid
+	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon status --pid $(PID_FOLDER)/router.pid
 
 ##
 # Includes
