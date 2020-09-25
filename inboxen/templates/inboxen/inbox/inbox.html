@@ -77,7 +77,7 @@
     {% endif %}
     {% if page_obj.has_previous or page_obj.has_next %}
     <nav aria-labelledby="inbox-pager">
-        <h2 id="inbox-pager">{% trans "Email list navigation" %}</h2>
+        <h2 id="inbox-pager" class="sr-only">{% trans "Email list navigation" %}</h2>
         <ul class="pager">
             {% if page_obj.has_previous %}
                 <li class="previous"><a href="{{ inbox_url }}{{ page_obj.previous_page_number }}/">

@@ -67,7 +67,7 @@
     {% endwith %}
     {% if page_obj.has_previous or page_obj.has_next %}
     <nav aria-labelledby="home-pager">
-        <h2 id="home-pager">{% trans "Inbox list navigation" %}</h2>
+        <h2 id="home-pager" class="sr-only">{% trans "Inbox list navigation" %}</h2>
         <ul class="pager">
             {% if page_obj.has_previous %}
                 <li class="previous"><a href="{% url 'user-home' page=page_obj.previous_page_number %}">
