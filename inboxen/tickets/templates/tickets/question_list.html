@@ -18,7 +18,7 @@
 {% include "tickets/includes/question_list.html" with questions=page_obj %}
 {% if page_obj.has_previous or page_obj.has_next %}
 <nav aria-labelledby="question-pager">
-    <h2 id="question-pager">{% trans "Question list navigation" %}</h2>
+    <h2 id="question-pager" class="sr-only">{% trans "Question list navigation" %}</h2>
     <ul class="pager">
         {% if page_obj.has_previous %}
             <li class="previous"><a href="{% app_url 'tickets-list' status=status page=page_obj.previous_page_number %}">

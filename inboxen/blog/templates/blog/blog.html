@@ -18,7 +18,7 @@
 
 {% if page_obj.has_previous or page_obj.has_next %}
 <nav aria-labelledby="blog-pager">
-    <h2 id="blog-pager">{% trans "Blog navigation" %}</h2>
+    <h2 id="blog-pager" class="sr-only">{% trans "Blog navigation" %}</h2>
     <ul class="pager">
         {% if page_obj.has_previous %}
             <li class="previous"><a href="{% url 'blog' page=page_obj.previous_page_number %}">
