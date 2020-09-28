@@ -1,5 +1,11 @@
 # Releases
 
+Deploy for 2020-09-28T20-38-01
+------------------------------
+
+* Make pagination headings only visible to screenreaders (#542)
+* Move PID files to /var/run/inboxen
+
 Deploy for 2020-08-14T22-38-11
 ------------------------------
 
