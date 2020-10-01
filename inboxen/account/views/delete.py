@@ -19,12 +19,15 @@
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import generic
+from django_otp.decorators import otp_required
 from elevate.mixins import ElevateMixin
 
 from inboxen.account import forms
 
 
+@method_decorator(otp_required(if_configured=True), name="dispatch")
 class AccountDeletionView(LoginRequiredMixin, ElevateMixin, generic.FormView):
     """ View to delete an account """
 
