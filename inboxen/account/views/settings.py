@@ -20,7 +20,9 @@
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import generic
+from django_otp.decorators import otp_required
 from elevate.mixins import ElevateMixin
 from elevate.views import ElevateView
 from two_factor.utils import default_device
@@ -56,6 +58,7 @@ class GeneralSettingsView(LoginRequiredMixin, generic.FormView):
         return data
 
 
+@method_decorator(otp_required(if_configured=True), name="dispatch")
 class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
     """Allow users to change their username"""
     form_class = forms.UsernameChangeForm
@@ -73,6 +76,7 @@ class UsernameChangeView(LoginRequiredMixin, ElevateMixin, generic.FormView):
         return super(UsernameChangeView, self).form_valid(form=form, *args, **kwargs)
 
 
+@method_decorator(otp_required(if_configured=True), name="dispatch")
 class PasswordChangeView(auth_views.PasswordChangeView):  # PasswordChangeView already checks loggedin-ness
     form_class = forms.PlaceHolderPasswordChangeForm
     success_url = reverse_lazy('user-settings')
