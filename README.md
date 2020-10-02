@@ -18,7 +18,7 @@ Matt Molyneaux <moggers87@moggers87.co.uk>
     19F5 A8DC C917 FD00 E859   02F4 878B 5A2A 1D47 C084
 ```
 
-Security
+Our Security
 --------
 
 If you find a security issue with Inboxen, email <security@moggers87.co.uk>. If
