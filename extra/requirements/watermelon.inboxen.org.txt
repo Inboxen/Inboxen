@@ -32,8 +32,8 @@ django-two-factor-auth==1.12.1  # via inboxen
 django==2.2.16            # via django-annoying, django-bootstrap-form, django-csp, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-sendfile2, django-two-factor-auth, inboxen
 dnspython==2.0.0          # via salmon-mail
 docutils==0.16            # via python-daemon
-factory-boy==3.0.1        # via inboxen
-faker==4.1.3              # via factory-boy
+factory-boy==3.1.0        # via inboxen
+faker==4.9.0              # via factory-boy
 future==0.18.2            # via celery
 idna==2.10                # via requests
 importlib-metadata==2.0.0  # via kombu, markdown
@@ -41,9 +41,9 @@ kombu==4.6.11             # via celery
 lmtpd==6.2.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
 lxml==4.2.6               # via -r extra/requirements/watermelon.inboxen.org.in, inboxen, premailer
-markdown==3.2.2           # via inboxen
+markdown==3.3             # via inboxen
 nodeenv==1.3.3            # via -r extra/requirements/watermelon.inboxen.org.in
-phonenumberslite==8.12.9  # via inboxen
+phonenumberslite==8.12.10  # via inboxen
 pillow==7.2.0             # via inboxen
 pip-tools==5.3.1          # via -r extra/requirements/../../inboxen/data/requirements.in
 premailer==3.7.0          # via inboxen
@@ -59,11 +59,11 @@ ruamel.yaml.clib==0.2.2   # via ruamel.yaml
 ruamel.yaml==0.16.12      # via inboxen
 salmon-mail==3.2.0        # via inboxen
 six==1.15.0               # via django-annoying, pip-tools, python-dateutil, qrcode, salmon-mail
-sqlparse==0.3.1           # via django
+sqlparse==0.4.1           # via django
 text-unidecode==1.3       # via faker
 urllib3==1.25.10          # via requests
 vine==1.3.0               # via amqp, celery
-zipp==3.2.0               # via importlib-metadata
+zipp==3.3.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
