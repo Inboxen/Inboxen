@@ -1,5 +1,10 @@
 # Releases
 
+Deploy for 2020-10-10T00-21-00
+------------------------------
+
+- Enforce two factor auth for users who have otp devices available (#544)
+
 Deploy for 2020-09-28T20-38-01
 ------------------------------
 
