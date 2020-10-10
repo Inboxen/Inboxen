@@ -293,7 +293,7 @@ class RenderBodyTestCase(InboxenTestCase):
 
     def test_bad_html(self):
         original = "<p class='hide'>Hi</p>\n\n<sometag> </>"
-        expected = "<div><p>Hi</p>\n\n<p> &gt;</p></div>"
+        expected = "<div><p>Hi</p>\n\n<p></p></div>"
         obj = MockModel(original)
         self.assertHtmlEqual(obj.render_body(), expected)
 
