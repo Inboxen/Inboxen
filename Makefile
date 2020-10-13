@@ -52,9 +52,10 @@ release: install-deps
 	[[ -z `git status --porcelain` ]] || (echo "git repo is dirty, commit your changes first!"; exit 1)
 	_scripts/release-prep.sh
 	$(MAKE) static
-	python setup.py sdist
-	twine check dist/*
-	twine upload dist/*
+	# maybe in the future
+	#python setup.py sdist
+	#twine check dist/*
+	#twine upload dist/*
 
 .PHONY: version
 version:
