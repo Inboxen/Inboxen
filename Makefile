@@ -55,3 +55,7 @@ release: install-deps
 	python setup.py sdist
 	twine check dist/*
 	twine upload dist/*
+
+.PHONY: version
+version:
+	git describe --dirty
