@@ -40,7 +40,8 @@ setup(
         "django-bootstrap-form",
         "django-celery-results",
         "django-csp>3.0",
-        "django-cursor-pagination",
+        # vendored until 0.1.5 has been released
+        #"django-cursor-pagination",
         "django-elevate",
         "django-extensions",
         "django-mptt",
