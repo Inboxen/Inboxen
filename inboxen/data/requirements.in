@@ -1,3 +1,2 @@
 -e file:.#egg=inboxen
--e git+https://github.com/moggers87/django-elevate.git@ba129cd309e604cdfedcaca011daf18c932ff23#egg=django-elevate
 pip-tools
