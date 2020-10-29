@@ -41,7 +41,7 @@ setup(
         "django-celery-results",
         "django-csp>3.0",
         # vendored until 0.1.5 has been released
-        #"django-cursor-pagination",
+        # "django-cursor-pagination",
         "django-elevate",
         "django-extensions",
         "django-mptt",
