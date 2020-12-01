@@ -43,7 +43,7 @@ from inboxen import models
 from inboxen.liberation import tasks
 from inboxen.liberation.forms import LiberationForm
 from inboxen.liberation.utils import INBOXEN_ENCODING_ERROR_HEADER_NAME, make_message
-from inboxen.router.app.helpers import make_email
+from inboxen.router.utils import make_email
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (EXAMPLE_ALT, EXAMPLE_DIGEST, EXAMPLE_MISSING_CTE,

@@ -1,0 +1,43 @@
+##
+#    Copyright (C) 2020 Jessica Tallon & Matthew Molyneaux
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+from django.http import HttpResponse
+
+from inboxen.celery import app
+from inboxen.monitor.models import Check
+
+
+def celery(request):
+    try:
+        # ping the workers before checking if they're running tasks
+        response = app.control.broadcast("ping")
+    except Exception:
+        return HttpResponse(status=500)
+    if response is None:
+        return HttpResponse(status=502)
+
+    if Check.objects.check_ok(Check.CELERY):
+        return HttpResponse()
+    else:
+        return HttpResponse(status=404)
+
+
+def salmon(request):
+    if Check.objects.check_ok(Check.SALMON):
+        return HttpResponse()
+    else:
+        return HttpResponse(status=404)

@@ -25,7 +25,7 @@ from salmon.routing import nolocking, route, stateless
 from salmon.server import Relay, SMTPError
 
 from inboxen.models import Inbox
-from inboxen.router.app.helpers import make_email
+from inboxen.router.utils import email_received_check, make_email
 from inboxen.utils.inbox import RESERVED_LOCAL_PARTS_REGEX
 
 # we want to match *something*, but not something consumed by forward_to_admins
@@ -38,6 +38,7 @@ log = logging.getLogger(__name__)
 @route(r"(local)@(domain)", local=RESERVED_LOCAL_PARTS_REGEX, domain=r".+")
 @stateless
 @nolocking
+@email_received_check
 def forward_to_admins(message, local=None, domain=None):
     if message.is_bounce():
         # log and swallow the message
@@ -54,6 +55,7 @@ def forward_to_admins(message, local=None, domain=None):
 @route(r"(inbox)@(domain)", inbox=INBOX_REGEX, domain=r".+")
 @stateless
 @nolocking
+@email_received_check
 def process_message(message, inbox=None, domain=None):
     try:
         with transaction.atomic():

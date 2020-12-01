@@ -30,7 +30,7 @@ from django.utils import timezone
 from salmon import mail
 
 from inboxen import models
-from inboxen.router.app.helpers import make_email
+from inboxen.router.utils import make_email
 from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (BAD_HTTP_EQUIV_BODY, BADLY_ENCODED_BODY, BODILESS_BODY, BODY,

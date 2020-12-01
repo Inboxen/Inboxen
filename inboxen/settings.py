@@ -29,6 +29,12 @@ from kombu.common import Broadcast, Exchange, Queue
 
 from inboxen.config import *  # noqa
 
+##
+# To override the following settings, create a separate settings module.
+# Import this module, override what you need to and set the environment
+# variable DJANGO_SETTINGS_MODULE to your module. See Django docs for details
+##
+
 # Hash used to store uniqueness of certain models
 # if you change this, you'll need to do a datamigration to change the rest
 COLUMN_HASHER = "sha1"
@@ -45,12 +51,6 @@ INBOX_PAGE_SIZE = 25
 HOME_PAGE_SIZE = 25
 
 ##
-# To override the following settings, create a separate settings module.
-# Import this module, override what you need to and set the environment
-# variable DJANGO_SETTINGS_MODULE to your module. See Django docs for details
-##
-
-##
 # Celery options
 ##
 
@@ -60,6 +60,7 @@ CELERY_RESULT_BACKEND = "django-db"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"max_retries": 3}
 
 CELERY_TASK_QUEUES = (
     Queue('default', Exchange('default'), routing_key='default'),
@@ -92,14 +93,19 @@ CELERY_BEAT_SCHEDULE = {
     },
     'quota': {
         'task': 'inboxen.tasks.calculate_quota',
-        # hourly task done on the half-hourish to avoid stepping on daily tasks
         'schedule': crontab(minute=32),
     },
     'suspended': {
         'task': 'inboxen.account.tasks.user_suspended',
         'schedule': crontab(minute=14, hour=4),
     },
+    'monitor': {
+        'task': 'inboxen.monitor.tasks.check_tasks',
+        'schedule': crontab(minute=56, hour="*/3"),
+    },
 }
+
+SALMON_CHECK_WINDOW = datetime.timedelta(hours=3)
 
 USER_SUSPEND_TASKS = (
     (datetime.timedelta(days=90), datetime.timedelta(days=180), "inboxen.account.tasks.user_suspended_disable_emails"),
@@ -216,11 +222,12 @@ INSTALLED_APPS = (
     'inboxen.blog',
     'inboxen.cms',
     'inboxen.liberation',
+    'inboxen.monitor',
     'inboxen.redirect',
     'inboxen.router',
+    'inboxen.search',
     'inboxen.source',
     'inboxen.tickets',
-    'inboxen.search',
 
     # third party
     'bootstrapform',

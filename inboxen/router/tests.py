@@ -28,8 +28,9 @@ from salmon.routing import Router
 from salmon.server import SMTPError
 
 from inboxen import models
-from inboxen.router.app.helpers import make_email
-from inboxen.router.app.server import forward_to_admins, process_message
+from inboxen.monitor.models import Check
+from inboxen.router import utils as router_utils
+from inboxen.router.server import forward_to_admins, process_message
 from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
 
@@ -86,30 +87,37 @@ class RouterTestCase(InboxenTestCase):
         shutil.rmtree("logs", ignore_errors=True)
         shutil.rmtree("run", ignore_errors=True)
 
+        # reset last email check
+        router_utils.LAST_EMAIL_RECEIVED = None
+
     def test_config_import(self):
         """Very simple test to verify we can import settings module"""
-        self.assertNotIn("inboxen.router.app.server", Router.HANDLERS)
+        self.assertNotIn("inboxen.router.server", Router.HANDLERS)
         from inboxen.router.config import boot  # noqa
-        self.assertIn("inboxen.router.app.server", Router.HANDLERS)
+        self.assertIn("inboxen.router.server", Router.HANDLERS)
 
-    def test_exceptions(self):
+    def test_hard_reject(self):
         with self.assertRaises(SMTPError) as error:
             process_message(None, None, None)
         self.assertEqual(error.exception.code, 550)
+        self.assertEqual(Check.objects.count(), 0)
 
+    def test_soft_reject(self):
         with self.assertRaises(SMTPError) as error, \
                 mock.patch.object(models.Inbox.objects, "filter", side_effect=DatabaseError):
             process_message(None, None, None)
         self.assertEqual(error.exception.code, 451)
+        self.assertEqual(Check.objects.count(), 0)
 
     def test_flag_setting(self):
         user = factories.UserFactory()
         user.inboxenprofile
         inbox = factories.InboxFactory(user=user)
 
-        with mock.patch("inboxen.router.app.server.make_email") as mock_make_email:
+        with mock.patch("inboxen.router.server.make_email") as mock_make_email:
             process_message(None, inbox.inbox, inbox.domain.domain)
         self.assertTrue(mock_make_email.called)
+        self.assertEqual(Check.objects.count(), 1)
 
         user = get_user_model().objects.get(id=user.id)
         profile = user.inboxenprofile
@@ -118,6 +126,8 @@ class RouterTestCase(InboxenTestCase):
         self.assertTrue(inbox.new)
         self.assertTrue(profile.unified_has_new_messages)
 
+        # reset last email check
+        router_utils.LAST_EMAIL_RECEIVED = None
         # reset some bools
         inbox.new = False
         inbox.exclude_from_unified = True
@@ -125,9 +135,10 @@ class RouterTestCase(InboxenTestCase):
         profile.unified_has_new_messages = False
         profile.save(update_fields=["unified_has_new_messages"])
 
-        with mock.patch("inboxen.router.app.server.make_email") as mock_make_email:
+        with mock.patch("inboxen.router.server.make_email") as mock_make_email:
             process_message(None, inbox.inbox, inbox.domain.domain)
         self.assertTrue(mock_make_email.called)
+        self.assertEqual(Check.objects.count(), 2)
 
         user = get_user_model().objects.get(id=user.id)
         profile = user.inboxenprofile
@@ -140,7 +151,7 @@ class RouterTestCase(InboxenTestCase):
         inbox = factories.InboxFactory()
         message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
 
-        make_email(message, inbox)
+        router_utils.make_email(message, inbox)
         self.assertEqual(models.Email.objects.count(), 1)
         self.assertEqual(models.PartList.objects.count(), 6)
 
@@ -154,11 +165,12 @@ class RouterTestCase(InboxenTestCase):
 
     @override_settings(ADMINS=(("admin", "root@localhost"),))
     def test_forwarding(self):
-        with mock.patch("inboxen.router.app.server.Relay") as relay_mock:
+        with mock.patch("inboxen.router.server.Relay") as relay_mock:
             deliver_mock = relay_mock.return_value.deliver
             message = MailRequest("", "", "", "")
             forward_to_admins(message, "user", "example.com")
 
+            self.assertEqual(Check.objects.count(), 1)
             self.assertEqual(deliver_mock.call_count, 1)
             self.assertEqual(deliver_mock.call_args[0], (message,))
             self.assertEqual(deliver_mock.call_args[1], {"To": ["root@localhost"], "From": "django@localhost"})
@@ -168,50 +180,54 @@ class RouterTestCase(InboxenTestCase):
                 forward_to_admins(message, "user", "example.com")
 
                 self.assertEqual(deliver_mock.call_count, 0)
+                self.assertEqual(Check.objects.count(), 1)
 
     def test_routes_deliver_to_inbox(self):
         user = factories.UserFactory()
         user.inboxenprofile
         inbox = factories.InboxFactory(user=user)
-        Router.load(['inboxen.router.app.server'])
+        Router.load(['inboxen.router.server'])
 
-        with mock.patch("inboxen.router.app.server.Relay") as relay_mock, \
-                mock.patch("inboxen.router.app.server.make_email") as mock_make_email:
+        with mock.patch("inboxen.router.server.Relay") as relay_mock, \
+                mock.patch("inboxen.router.server.make_email") as mock_make_email:
             deliver_mock = mock.Mock()
             relay_mock.return_value.deliver = deliver_mock
             message = MailRequest("locahost", "test@localhost", str(inbox), TEST_MSG)
             Router.deliver(message)
 
+            self.assertEqual(Check.objects.count(), 1)
             self.assertEqual(mock_make_email.call_count, 1)
             self.assertEqual(relay_mock.call_count, 0)
             self.assertEqual(deliver_mock.call_count, 0)
 
     def test_routes_deliver_to_admin(self):
-        Router.load(['inboxen.router.app.server'])
+        Router.load(['inboxen.router.server'])
 
-        with mock.patch("inboxen.router.app.server.Relay") as relay_mock, \
-                mock.patch("inboxen.router.app.server.make_email") as mock_make_email:
+        with mock.patch("inboxen.router.server.Relay") as relay_mock, \
+                mock.patch("inboxen.router.server.make_email") as mock_make_email:
             deliver_mock = mock.Mock()
             relay_mock.return_value.deliver = deliver_mock
             message = MailRequest("locahost", "test@localhost", "root@localhost", TEST_MSG)
             Router.deliver(message)
 
+            self.assertEqual(Check.objects.count(), 1)
             self.assertEqual(mock_make_email.call_count, 0)
             self.assertEqual(relay_mock.call_count, 1)
             self.assertEqual(deliver_mock.call_count, 1)
             self.assertEqual(message, deliver_mock.call_args[0][0])
 
     def test_routes_deliver_to_not_existing_address(self):
-        Router.load(['inboxen.router.app.server'])
+        Router.load(['inboxen.router.server'])
 
         message = MailRequest("locahost", "test@localhost", "root1@localhost", TEST_MSG)
         with self.assertRaises(SMTPError) as excp:
             Router.deliver(message)
         self.assertEqual(excp.exception.code, 550)
         self.assertEqual(excp.exception.message, "No such address")
+        self.assertEqual(Check.objects.count(), 0)
 
     def test_routes_deliver_to_admin_raise_smtperror_on_other_errors(self):
-        Router.load(['inboxen.router.app.server'])
+        Router.load(['inboxen.router.server'])
 
         with mock.patch("salmon.server.smtplib.SMTP") as smtp_mock:
             smtp_mock.return_value.sendmail.side_effect = Exception()
@@ -221,3 +237,18 @@ class RouterTestCase(InboxenTestCase):
                 Router.deliver(message)
             self.assertEqual(excp.exception.code, 450)
             self.assertEqual(excp.exception.message, "Error while forwarding admin message %s" % id(message))
+            self.assertEqual(Check.objects.count(), 0)
+
+    def test_email_received_check(self):
+        func = router_utils.email_received_check(lambda x: x)
+        self.assertEqual(Check.objects.count(), 0)
+        func(None)
+        self.assertEqual(Check.objects.count(), 1)
+        func(None)
+        self.assertEqual(Check.objects.count(), 1)
+
+    def test_email_received_check_skips_exception(self):
+        func = router_utils.email_received_check(lambda x: x[1])
+        with self.assertRaises(TypeError):
+            func(None)
+        self.assertEqual(Check.objects.count(), 0)

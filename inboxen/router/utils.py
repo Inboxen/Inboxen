@@ -1,5 +1,5 @@
 ##
-#    Copyright 2013. 2015 Jessica Tallon, Matt Molyneaux
+#    Copyright 2013. 2015, 2020 Jessica Tallon, Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -17,13 +17,18 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from functools import wraps
 import logging
 
+from django.conf import settings
 from django.utils import timezone
 
 from inboxen.models import Body, Email, Header, PartList
+from inboxen.monitor.models import Check
 
 log = logging.getLogger(__name__)
+
+LAST_EMAIL_RECEIVED = None
 
 
 def make_email(message, inbox):
@@ -78,3 +83,21 @@ def encode_body(part):
         data = b''
 
     return data
+
+
+def email_received_check(func):
+    """
+    Creates a Check object if and only if the handler has not errored and a
+    check hasn't been done within SALMON_CHECK_WINDOW
+    """
+    @wraps(func)
+    def inner(message, *args, **kwargs):
+        # this is ugly and i don't like it, but it's the best i could come up with
+        global LAST_EMAIL_RECEIVED
+        state = func(message, *args, **kwargs)
+        now = timezone.now()
+        if LAST_EMAIL_RECEIVED is None or LAST_EMAIL_RECEIVED < now - settings.SALMON_CHECK_WINDOW:
+            LAST_EMAIL_RECEIVED = now
+            Check.objects.create_check(Check.SALMON)
+        return state
+    return inner
