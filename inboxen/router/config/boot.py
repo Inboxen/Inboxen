@@ -49,7 +49,7 @@ elif dj_settings.SALMON_SERVER["type"] == "smtp":
     settings.receiver = SMTPReceiver(dj_settings.SALMON_SERVER['host'],
                                      dj_settings.SALMON_SERVER['port'])
 
-Router.load(['inboxen.router.app.server'])
+Router.load(['inboxen.router.server'])
 Router.RELOAD = False
 Router.LOG_EXCEPTIONS = True
 Router.UNDELIVERABLE_QUEUE = queue.Queue("run/undeliverable")

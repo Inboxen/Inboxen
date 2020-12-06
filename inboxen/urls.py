@@ -91,6 +91,7 @@ urlpatterns = [
     urls.url(r'^help/', urls.include("inboxen.cms.urls")),
     urls.url(r'^admin/', urls.include(("inboxen.cms.admin_urls", "cms"), namespace="admin")),
     urls.url(r'^user/', urls.include(("inboxen.search.urls", "search"), namespace="search")),
+    urls.url(r'^monitor', urls.include(("inboxen.monitor.urls", "monitor"), namespace="monitor")),
 ]
 
 if settings.DEBUG:
