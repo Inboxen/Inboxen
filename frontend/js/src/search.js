@@ -18,14 +18,17 @@
                 } else if (http.status == 201) {
                     // done!
                     clearInterval(timer);
+                    // TODO: string needs translation
                     $refreshNote.html("Loading results…");
                     location.reload(true);
                 } else if (http.status == 400) {
                     clearInterval(timer);
+                    // TODO: string needs translation
                     $searchInfo.html("The search timed out. Please try again.");
                     console.error("Server says there is no such search");
                 } else {
                     clearInterval(timer);
+                    // TODO: string needs translation
                     $searchInfo.html("Something went wrong while searching. Please try again later.");
                     $searchInfo.addClass("alert alert-warning");
                     console.error("Unexpected response code");
