@@ -7,18 +7,23 @@
     'use strict';
 
     var statsUrl, $userCanvas, $inboxCanvas, $emailCanvas;
-    var colour1, colour2, fill1, fill2;
+    var colour1, colour2, colour3;
+    var point1, point2, point3;
     var chartOpts;
+
+    var templateOptions = "<canvas aria-label='graph' role='img'></canvas>";
 
     colour1 = "rgb(217, 83, 79)";
     colour2 = "rgb(51, 122, 183)";
-    fill1 = "rgba(217, 83, 79, 0.75)";
-    fill2 = "rgba(51, 122, 183, 0.75)";
+    colour3 = "rgb(70, 198, 122)";
+    point1 = "circle";
+    point2 = "triangle";
+    point3 = "rect";
 
     statsUrl = $("#stats-chart").data("url");
-    $userCanvas = $("<canvas></canvas>");
-    $inboxCanvas = $("<canvas></canvas>");
-    $emailCanvas = $("<canvas></canvas>");
+    $userCanvas = $(templateOptions);
+    $inboxCanvas = $(templateOptions);
+    $emailCanvas = $(templateOptions);
 
     chartOpts = {
         responsive: true,
@@ -35,10 +40,21 @@
         },
         elements: {
             line: {
+                fill: false,
+                borderWidth: 5,
                 tension: 0
+            },
+            point: {
+                borderWidth: 5,
+                radius: 5
             }
         },
         legend: {
+            labels: {
+                usePointStyle: true,
+                fontSize: 14,
+                fontColor: "rgb(51, 51, 51)"
+            },
             reverse: true
         },
         animation: {
@@ -48,6 +64,10 @@
             animationDuration: 0, // duration of animations when hovering an item
         },
         responsiveAnimationDuration: 0, // animation duration after a resize
+    };
+
+    Chart.Legend.prototype.afterFit = function() {
+        this.height = this.height + 14;
     };
 
     $.get(statsUrl, function(data) {
@@ -71,16 +91,25 @@
                 labels: fakeLabels,
                 datasets: [
                     {
-                        label: "Users with inboxes",
-                        backgroundColor: fill2,
-                        borderColor: colour2,
-                        data: data.active_users,
+                        label: "With inboxes",
+                        backgroundColor: colour3,
+                        borderColor: colour3,
+                        data: data.users.with_inboxes,
+                        pointStyle: point3,
                     },
                     {
-                        label: "Users",
-                        backgroundColor: fill1,
+                        label: "Active",
+                        backgroundColor: colour2,
+                        borderColor: colour2,
+                        data: data.users.active,
+                        pointStyle: point2,
+                    },
+                    {
+                        label: "Total",
+                        backgroundColor: colour1,
                         borderColor: colour1,
-                        data: data.users,
+                        data: data.users.total,
+                        pointStyle: point1,
                     }
                 ]
             },
@@ -94,16 +123,25 @@
                 labels: fakeLabels,
                 datasets: [
                     {
-                        label: "Inboxes with emails",
-                        backgroundColor: fill2,
-                        borderColor: colour2,
-                        data: data.active_inboxes,
+                        label: "Disowned",
+                        backgroundColor: colour3,
+                        borderColor: colour3,
+                        data: data.inboxes.disowned,
+                        pointStyle: point3,
                     },
                     {
-                        label: "Inboxes",
-                        backgroundColor: fill1,
+                        label: "With emails",
+                        backgroundColor: colour2,
+                        borderColor: colour2,
+                        data: data.inboxes.active,
+                        pointStyle: point2,
+                    },
+                    {
+                        label: "Total",
+                        backgroundColor: colour1,
                         borderColor: colour1,
-                        data: data.inboxes,
+                        data: data.inboxes.total,
+                        pointStyle: point1,
                     }
                 ]
             },
@@ -117,16 +155,18 @@
                 labels: fakeLabels,
                 datasets: [
                     {
-                        label: "Emails read",
-                        backgroundColor: fill2,
+                        label: "Read",
+                        backgroundColor: colour2,
                         borderColor: colour2,
-                        data: data.read_emails,
+                        data: data.emails.read,
+                        pointStyle: point2,
                     },
                     {
-                        label: "Emails",
-                        backgroundColor: fill1,
+                        label: "Total",
+                        backgroundColor: colour1,
                         borderColor: colour1,
-                        data: data.emails,
+                        data: data.emails.total,
+                        pointStyle: point1,
                     }
                 ]
             },

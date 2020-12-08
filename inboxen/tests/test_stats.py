@@ -47,7 +47,7 @@ class StatsViewTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/json")
         data = json.loads(response.content)
-        expected_keys = ["dates", "users", "inboxes", "emails", "now", "read_emails", "active_users", "active_inboxes"]
+        expected_keys = ["dates", "users", "inboxes", "emails", "now"]
         self.assertCountEqual(data.keys(), expected_keys)
 
     def test_recent_missing_points(self):
@@ -71,17 +71,14 @@ class StatsViewTestCase(InboxenTestCase):
         # remove "now" - it will be current time
         del data["now"]
 
-        self.assertCountEqual(
-            data.items(),
-            (
-                ("dates", [format_date(stat1.date), format_date(stat2.date)]),
-                ("inboxes", [13, None]),
-                ("users", [12, 12]),
-                ("emails", [14, 14]),
-                ("read_emails", [None, None]),
-                ("active_users", [None, None]),
-                ("active_inboxes", [None, None]),
-            )
+        self.assertDictEqual(
+            data,
+            {
+                "dates": [format_date(stat1.date), format_date(stat2.date)],
+                "inboxes": {"total": [13, 0], "active": [0, 0], "disowned": [0, 0]},
+                "users": {"total": [12, 12], "active": [0, 0], "with_inboxes": [0, 0]},
+                "emails": {"total": [14, 14], "read": [0, 0]},
+            }
         )
 
     def test_csp(self):

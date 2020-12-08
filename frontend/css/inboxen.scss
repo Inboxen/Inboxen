@@ -57,9 +57,6 @@ $btn-font-weight: bold;
 
 $profile-margin: 10px;
 $honeydew-button-size: 1em;
-// width is relative to viewport size, so add in some slack to account for
-// gutters, etc.
-$chart-width: 90vw;
 // button padding
 $button-margin: 5px;
 
@@ -386,23 +383,7 @@ a.soon {
 
 .chart {
     position: relative;
-    width: $chart-width;
-    height: 250px !important;
-
-    @media (min-width: $screen-md-min) {
-        width: $chart-width / 3;
-    }
-}
-
-.line-legend {
-    list-style: none;
-
-    .line-legend-icon {
-        display: inline-block;
-        width: 14px;
-        height: 14px;
-        margin-right: 5px;
-    }
+    height: max(250px, 50vh) !important;
 }
 
 .profile-image {
