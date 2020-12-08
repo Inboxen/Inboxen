@@ -47,6 +47,7 @@
 
 (function($) {
     'use strict';
+    // TODO: string needs translation
     // alert close buttons, but only when JS is enabled
     var button = '<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button>';
     $("div[role=alert]").each(function() {

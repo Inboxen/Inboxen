@@ -6,6 +6,7 @@
 (function($){
     'use strict';
 
+    // TODO: string needs translation
     var pinned_label = '<span class="label label-warning" title="Inbox has been pinned">Pinned</span>';
 
     function togglePinned($row) {
@@ -46,6 +47,7 @@
                     }
                 } else {
                     var $messageBlock = $("#alertmessages");
+                    // TODO: string needs translation
                     var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
@@ -101,12 +103,14 @@
             if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
                 $inbox_row.addClass("inbox-disabled");
                 $inbox_row.find(".inbox-flags").empty();
+                // TODO: string needs translation
                 $inbox_row.find(".inbox-flags").append("<div class=\"inline-block__wrapper\"><span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span></div>");
             } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
                 $inbox_row.removeClass("inbox-disabled");
                 $inbox_row.find(".inbox-flags").empty();
             } else if (is_pinned && !is_disabled && $inbox_row.find("span.label-warning").length === 0) {
-               $inbox_row.find(".inbox-flags").append('<div class=\"inline-block__wrapper\"><span class="label label-warning" title="Inbox has been pinned">Pinned</span></div>');
+                // TODO: string needs translation
+                $inbox_row.find(".inbox-flags").append('<div class=\"inline-block__wrapper\"><span class="label label-warning" title="Inbox has been pinned">Pinned</span></div>');
             } else if (!is_pinned && !is_disabled) {
                 $inbox_row.find("span.label-warning").remove();
             }
@@ -119,6 +123,7 @@
                 $row.remove();
             });
         } else {
+            // TODO: string needs translation
             $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
             console.log("Form for " + inboxSelector + " failed to POST (" + xhr.status + ")");
         }
@@ -135,6 +140,7 @@
                     $this.$form.parents(".inbox-edit-form-row").remove();
                 }.bind(null, $this));
             } else {
+                // TODO: string needs translation
                 $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
                 console.log("Form failed to POST (" + xhr.status + ")");
             }
@@ -154,6 +160,7 @@
                     $("#inbox-add-form").remove();
                 });
             } else {
+                // TODO: string needs translation
                 $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
                 console.log("Form failed to POST (" + xhr.status + ")");
             }

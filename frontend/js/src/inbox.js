@@ -6,6 +6,7 @@
 (function($) {
     'use strict';
 
+    // TODO: string needs translation
     var important_label = '<span class="label label-danger" title="Message has been marked as important">Important</span>';
 
     function toggleImportant($row) {
@@ -76,6 +77,7 @@
                     }
                 } else {
                     var $messageBlock = $("#alertmessages");
+                    // TODO: string needs translation
                     var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
                     $messageBlock.append(message);
                 }
