@@ -125,7 +125,7 @@ module.exports = function(grunt) {
         },
         jshint: {
             options: {jshintrc: true},
-            all: ["."]
+            all: ["<%= dirs.js %>"]
         }
     });
 
