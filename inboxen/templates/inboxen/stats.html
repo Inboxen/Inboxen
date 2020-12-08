@@ -11,7 +11,7 @@
 {% block content %}
 {% if object %}
 <div id="stats-chart" class="row" data-url="{% url "stats_recent" %}">
-    <div class="col-xs-12 col-md-4">
+    <div class="col-xs-12">
         <table class="table table-bordered">
             <colgroup>
                 <col class="col-xs-2">
@@ -22,25 +22,20 @@
             </tr>
             <tr><td colspan="2"><div id="users-chart" class="chart"></div></td></tr>
             <tr>
-                <th>{% trans "User count" %}</th>
-                <td>
-                    {{ object.users.count|intcomma }}
-                    <i>({% blocktrans with with_inboxes=object.users.with_inboxes|intcomma %}With inboxes: {{ with_inboxes }}{% endblocktrans %})</i>
-                </td>
+                <th>{% trans "Total" %}</th>
+                <td>{{ object.users.count|intcomma }}</td>
             </tr>
             <tr>
-                <th>{% trans "New users today" %}</th>
-                <td>{{ object.users.new|intcomma }}</td>
+                <th>{% trans "With inboxes" %}</th>
+                <td>{{ object.users.with_inboxes|intcomma }}</td>
             </tr>
-            {% if object.users.oldest_user %}
             <tr>
-                <th>{% trans "Oldest user account" %}</th>
-                <td>{{ object.users.oldest_user_joined }}</td>
+                <th>{% trans "Active users" %}</th>
+                <td>{{ object.users.active }}</td>
             </tr>
-            {% endif %}
         </table>
     </div>
-    <div class="col-xs-12 col-md-4">
+    <div class="col-xs-12">
         <table class="table table-bordered">
             <colgroup>
                 <col class="col-xs-2">
@@ -51,19 +46,19 @@
             </tr>
             <tr><td colspan="2"><div id="inboxes-chart" class="chart"></div></td></tr>
             <tr>
-                <th>{% trans "Total number of inboxes" %}</th>
+                <th>{% trans "Total" %}</th>
                 <td>
-                    {{ object.inboxes.inbox_count__sum|intcomma }}
-                    <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma with_emails=object.inboxes.with_emails|intcomma %}Total possible: {{ total_possible }}, With emails: {{ with_emails }}{% endblocktrans %})</i>
+                    {{ object.inboxes.total|intcomma }}
+                    <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
                 </td>
             </tr>
             <tr>
-                <th>{% trans "Number of disowned inboxes" %}</th>
-                <td>{{ object.inboxes.disowned|intcomma }}</td>
+                <th>{% trans "With emails" %}</th>
+                <td>{{ object.inboxes.with_emails|intcomma }}</td>
             </tr>
             <tr>
-                <th>{% trans "Average number of inboxes per user" %}</th>
-                <td>{{ object.inboxes.inbox_count__avg|floatformat:2 }}</td>
+                <th>{% trans "Disowned inboxes" %}</th>
+                <td>{{ object.inboxes.disowned|intcomma }}</td>
             </tr>
             <tr>
                 <th>{% trans "Highest number of inboxes for one user" %}</th>
@@ -71,7 +66,7 @@
             </tr>
         </table>
     </div>
-    <div class="col-xs-12 col-md-4">
+    <div class="col-xs-12">
         <table class="table table-bordered">
             <colgroup>
                 <col class="col-xs-2">
@@ -82,23 +77,20 @@
             </tr>
             <tr><td colspan="2"><div id="emails-chart" class="chart"></div></td></tr>
             <tr>
-                <th>{% trans "Total number of emails" %}</th>
-                <td>
-                    {{ object.emails.email_count__sum|intcomma }}
-                    <i>({% blocktrans with emails_read=object.emails.emails_read|intcomma %}Emails read: {{ emails_read }}{% endblocktrans %})</i>
-                </td>
+                <th>{% trans "Total" %}</th>
+                <td>{{ object.emails.email_count__sum|intcomma }}</td>
             </tr>
             <tr>
-                <th>{% trans "Average number of emails per inbox" %}</th>
-                <td>{{ object.emails.email_count__avg|floatformat:2 }}</td>
+                <th>{% trans "Read" %}</th>
+                <td>{{ object.emails.emails_read|intcomma }}</td>
             </tr>
             <tr>
                 <th>{% trans "Highest number of emails in one inbox" %}</th>
                 <td>{{ object.emails.email_count__max|intcomma }}</td>
             </tr>
             <tr>
-                <th>{% blocktrans with first_date=first_stat.date|date:"jS F Y" %}Total emails processed since {{ first_date }}{% endblocktrans %}</th>
-                <td>{{ object.emails.running_total|intcomma }}</td>
+                <th>{% trans "Total emails processed" %}</th>
+                <td>{% blocktrans with first_date=first_stat.date|date:"jS F Y" running_total=object.emails.running_total|intcomma %}{{ running_total }} since {{ first_date }}{% endblocktrans %}</td>
             </tr>
         </table>
     </div>

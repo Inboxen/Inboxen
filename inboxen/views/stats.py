@@ -36,34 +36,47 @@ def stats(request):
 
 
 def stats_recent(request):
-    objects = reversed(models.Statistic.objects.order_by("-date")[:90])
+    objects = reversed(models.Statistic.objects.order_by("-date")[:30])
     dates = []
-    users = []
-    active_users = []
-    inboxes = []
-    active_inboxes = []
-    emails = []
-    read_emails = []
+
+    users = {
+        "total": [],
+        "active": [],
+        "with_inboxes": [],
+    }
+
+    inboxes = {
+        "total": [],
+        "active": [],
+        "disowned": [],
+    }
+
+    emails = {
+        "total": [],
+        "read": [],
+    }
 
     for stat in objects:
         dates.append(stat.date)
 
-        users.append(stat.users.get("count"))
-        active_users.append(stat.users.get("with_inboxes"))
+        users["total"].append(stat.users.get("count", 0))
+        users["active"].append(stat.users.get("active", 0))
+        users["with_inboxes"].append(stat.users.get("with_inboxes", 0))
 
-        inboxes.append(stat.inboxes.get("inbox_count__sum"))
-        active_inboxes.append(stat.inboxes.get("with_emails"))
+        # we might not have a total number here, so let's calculate it
+        inbox_disowned = stat.inboxes.get("disowned", 0)
+        inbox_total = stat.inboxes.get("total", stat.inboxes.get("inbox_count__sum", 0) + inbox_disowned)
+        inboxes["total"].append(inbox_total)
+        inboxes["active"].append(stat.inboxes.get("with_emails", 0))
+        inboxes["disowned"].append(inbox_disowned)
 
-        emails.append(stat.emails.get("email_count__sum"))
-        read_emails.append(stat.emails.get("emails_read"))
+        emails["total"].append(stat.emails.get("email_count__sum", 0))
+        emails["read"].append(stat.emails.get("emails_read", 0))
 
     return JsonResponse({
         "dates": dates,
         "users": users,
-        "active_users": active_users,
         "inboxes": inboxes,
-        "active_inboxes": active_inboxes,
         "emails": emails,
-        "read_emails": read_emails,
         "now": timezone.now()
     })

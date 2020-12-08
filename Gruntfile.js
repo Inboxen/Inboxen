@@ -41,6 +41,7 @@ module.exports = function(grunt) {
             },
             stats: {
                 src: [
+                    "<%= dirs.thirdparty %>/patternomaly/dist/patternomaly.js",
                     "<%= dirs.thirdparty %>/chart.js/dist/Chart.js",
                     "<%= dirs.js %>/src/stats.js",
                 ],

@@ -65,6 +65,12 @@ def statistics():
             ),
             distinct=True,
         ), 0),
+        "active": Coalesce(Count(
+            Case(
+                When(inboxenprofile__receiving_emails=True, then=F("id")),
+            ),
+            distinct=True,
+        ), 0),
     }
 
     inbox_aggregate = {
@@ -98,6 +104,7 @@ def statistics():
 
     inboxes["with_emails"] = inbox_qs.exclude(email_count=0).count()
     inboxes["disowned"] = models.Inbox.objects.filter(user__isnull=True).count()
+    inboxes["total"] = models.Inbox.objects.count()
     emails["emails_read"] = models.Email.objects.filter(read=True).count()
 
     if last_stat:
