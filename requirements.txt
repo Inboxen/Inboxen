@@ -9,59 +9,56 @@ amqp==2.6.1               # via kombu
 babel==2.8.0              # via django-phonenumber-field
 billiard==3.6.3.0         # via celery
 cachetools==4.1.1         # via premailer
-celery==4.4.6             # via django-celery-results, inboxen
+celery==4.4.6             # via django-celery-results, sanitized-package
 certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests, salmon-mail
 click==7.1.2              # via pip-tools, salmon-mail
 cssselect==1.1.0          # via premailer
 cssutils==1.0.2           # via premailer
-django-annoying==0.10.6   # via inboxen
-django-bootstrap-form==3.4  # via inboxen
-django-celery-results==1.2.1  # via inboxen
-django-csp==3.7           # via inboxen
-django-cursor-pagination==0.1.4  # via inboxen
-django-elevate==1.0.1     # via inboxen
-django-extensions==3.0.9  # via inboxen
+django-annoying==0.10.6   # via sanitized-package
+django-bootstrap-form==3.4  # via sanitized-package
+django-celery-results==1.2.1  # via sanitized-package
+django-csp==3.7           # via sanitized-package
+django-cursor-pagination==0.1.4  # via sanitized-package
+django-elevate==1.0.1     # via sanitized-package
+django-extensions==3.0.9  # via sanitized-package
 django-formtools==2.2     # via django-two-factor-auth
 django-js-asset==1.2.2    # via django-mptt
-django-mptt==0.11.0       # via inboxen
-django-otp==1.0.1         # via django-two-factor-auth, inboxen
+django-mptt==0.11.0       # via sanitized-package
+django-otp==1.0.1         # via django-two-factor-auth, sanitized-package
 django-phonenumber-field==3.0.1  # via django-two-factor-auth
-django-sendfile2==0.6.0   # via inboxen
-django-two-factor-auth==1.13  # via inboxen
-django==2.2.16            # via django-annoying, django-bootstrap-form, django-csp, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-sendfile2, django-two-factor-auth, inboxen
+django-sendfile2==0.6.0   # via sanitized-package
+django-two-factor-auth==1.13  # via sanitized-package
+django==2.2.16            # via django-annoying, django-bootstrap-form, django-csp, django-formtools, django-mptt, django-otp, django-phonenumber-field, django-sendfile2, django-two-factor-auth, sanitized-package
 dnspython==2.0.0          # via salmon-mail
 docutils==0.16            # via python-daemon
-factory-boy==3.1.0        # via inboxen
+factory-boy==3.1.0        # via sanitized-package
 faker==4.14.0             # via factory-boy
 future==0.18.2            # via celery
 idna==2.10                # via requests
-importlib-metadata==2.0.0  # via kombu, markdown
 kombu==4.6.11             # via celery
 lmtpd==6.2.0              # via salmon-mail
 lockfile==0.12.2          # via python-daemon
-lxml==4.6.1               # via inboxen, premailer
-markdown==3.3.2           # via inboxen
-phonenumberslite==8.12.11  # via inboxen
-pillow==8.0.0             # via inboxen
+lxml==4.6.2               # via premailer, sanitized-package
+markdown==3.3.2           # via sanitized-package
+phonenumberslite==8.12.11  # via sanitized-package
+pillow==8.0.0             # via sanitized-package
 pip-tools==5.3.1          # via -r inboxen/data/requirements.in
-premailer==3.7.0          # via inboxen
-progress==1.5             # via inboxen
-psycopg2==2.8.6           # via inboxen
+premailer==3.7.0          # via sanitized-package
+progress==1.5             # via sanitized-package
+psycopg2==2.8.6           # via sanitized-package
 python-daemon==2.2.4      # via salmon-mail
 python-dateutil==2.8.1    # via faker
-pytz==2020.1              # via babel, celery, django, inboxen
+pytz==2020.1              # via babel, celery, django, sanitized-package
 qrcode==6.1               # via django-two-factor-auth
 requests==2.24.0          # via premailer
-ruamel.yaml.clib==0.2.2   # via ruamel.yaml
-ruamel.yaml==0.16.12      # via inboxen
-salmon-mail==3.2.0        # via inboxen
+ruamel-yaml==0.16.12      # via sanitized-package
+salmon-mail==3.2.0        # via sanitized-package
 six==1.15.0               # via django-annoying, pip-tools, python-dateutil, qrcode, salmon-mail
 sqlparse==0.4.1           # via django
 text-unidecode==1.3       # via faker
 urllib3==1.25.11          # via requests
 vine==1.3.0               # via amqp, celery
-zipp==3.3.1               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
