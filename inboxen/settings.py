@@ -269,7 +269,6 @@ SECURE_HSTS_PRELOAD = True
 
 # CSP settings
 CSP_REPORT_ONLY = False
-CSP_REPORT_URI = urls.reverse_lazy("csp_logger")
 CSP_DEFAULT_SRC = ("'none'",)
 
 CSP_CONNECT_SRC = ("'self'",)
@@ -388,6 +387,7 @@ if DEBUG:  # noqa: F405
     MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
+    CSP_REPORT_URI = urls.reverse_lazy("csp_logger")
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     SECURE_SSL_REDIRECT = False
