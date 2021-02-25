@@ -470,6 +470,22 @@ class StyleguideTestCase(InboxenTestCase):
         self.assertEqual(response.status_code, 404)
 
 
+class CSPTestCase(InboxenTestCase):
+    def tearDown(self):
+        # make sure URLConf is reset no matter what
+        urls.clear_url_caches()
+        reload_urlconf()
+
+    def test_csp_report_view(self):
+        with override_settings(DEBUG=True):
+            urls.clear_url_caches()
+            reload_urlconf()
+            url = urls.reverse("csp_logger")
+            response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+
+
 class ProhibitNullCharactersValidatorTestCase(InboxenTestCase):
     def test_null(self):
         validator = ProhibitNullCharactersValidator()
