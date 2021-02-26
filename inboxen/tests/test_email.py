@@ -117,8 +117,10 @@ class EmailViewTestCase(InboxenTestCase):
                          response.content.decode("utf-8"))
 
         # csp
-        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
-        self.assertIn("img-src 'self' https:;", response["content-security-policy"])
+        self.assertIn("style-src 'self' 'unsafe-inline'",
+                      [i.strip() for i in response["content-security-policy"].split(";")])
+        self.assertIn("img-src 'self' https:",
+                      [i.strip() for i in response["content-security-policy"].split(";")])
 
     def test_body_encoding_without_imgDisplay(self):
         self.user.inboxenprofile.display_images = models.UserProfile.ASK
@@ -141,9 +143,12 @@ class EmailViewTestCase(InboxenTestCase):
                          response.content.decode("utf-8"))
 
         # csp
-        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
-        self.assertIn("img-src 'self';", response["content-security-policy"])
-        self.assertNotIn("img-src 'self' https:;", response["content-security-policy"])
+        self.assertIn("style-src 'self' 'unsafe-inline'",
+                      [i.strip() for i in response["content-security-policy"].split(";")])
+        self.assertIn("img-src 'self'",
+                      [i.strip() for i in response["content-security-policy"].split(";")])
+        self.assertNotIn("img-src 'self' https:",
+                         [i.strip() for i in response["content-security-policy"].split(";")])
 
     def test_body_no_ask_images(self):
         self.user.inboxenprofile.display_images = models.UserProfile.NO_DISPLAY
@@ -166,9 +171,12 @@ class EmailViewTestCase(InboxenTestCase):
                          response.content.decode("utf-8"))
 
         # csp
-        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
-        self.assertIn("img-src 'self';", response["content-security-policy"])
-        self.assertNotIn("img-src 'self' https:;", response["content-security-policy"])
+        self.assertIn("style-src 'self' 'unsafe-inline'",
+                      [i.strip() for i in response["content-security-policy"].split(";")])
+        self.assertIn("img-src 'self'",
+                      [i.strip() for i in response["content-security-policy"].split(";")])
+        self.assertNotIn("img-src 'self' https:",
+                         [i.strip() for i in response["content-security-policy"].split(";")])
 
     def test_attachments_get(self):
         part = self.email.parts.get()

@@ -33,7 +33,6 @@ urls.handler500 = error.server_error
 
 urlpatterns = [
     urls.url(r'^$', index.Index.as_view(), name='index'),
-    urls.url(r'^_csp_report/$', error.csp_report, name='csp_logger'),
     urls.url(r'^manifest.json$', manifest.manifest, name='inboxen-manifest'),
 
     urls.url(r'^stats/$', stats.stats, name='stats'),
@@ -98,6 +97,7 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         urls.url(r'^styleguide$', styleguide.styleguide, name='inboxen-styleguide'),
+        urls.url(r'^_csp_report/$', error.csp_report, name='csp_logger'),
     ]
     try:
         import debug_toolbar  # NOQA
