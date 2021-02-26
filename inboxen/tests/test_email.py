@@ -511,10 +511,10 @@ class UtilityTestCase(InboxenTestCase):
 
     def test_body_tag_get_turned_to_div(self):
         email = {"display_images": True, "eid": "abc"}
-        expected_html = "".join([
-            """<div><div style="hi"><a href="/click/?url=https%3A//example.com" target="_blank" """,
-            """rel="noreferrer"></a></div></div>""",
-        ])
+        expected_html = (
+            """<div><div style="hi"><a href="/click/?url=https%3A//example.com" target="_blank" """
+            """rel="noreferrer"></a></div></div>"""
+        )
 
         text = """<html><body style="hi">{}</body></html>""".format(EMPTY_ANCHOR_TAG)
         returned_body = email_utils._clean_html_body(None, email, text, "ascii")
@@ -522,10 +522,10 @@ class UtilityTestCase(InboxenTestCase):
 
     def test_unknown_tag_get_dropped(self):
         email = {"display_images": True, "eid": "abc"}
-        expected_html = "".join([
-            """<div><div><a href="/click/?url=https%3A//example.com" target="_blank" """,
-            """rel="noreferrer"></a></div></div>""",
-        ])
+        expected_html = (
+            """<div><div><a href="/click/?url=https%3A//example.com" target="_blank" """
+            """rel="noreferrer"></a></div></div>"""
+        )
 
         text = """<html><body><details style="hi">{}</section></body></html>""".format(EMPTY_ANCHOR_TAG)
         returned_body = email_utils._clean_html_body(None, email, text, "ascii")
@@ -565,6 +565,15 @@ class UtilityTestCase(InboxenTestCase):
         text = "Växjö".encode("utf-8")
         self.assertEqual(email_utils.unicode_damnit(text, "utf-8"), u"Växjö")
         self.assertEqual(email_utils.unicode_damnit(text, "str"), u"V\ufffd\ufffdxj\ufffd\ufffd")
+
+    def test_sneaky_js(self):
+        # this test explicitly tests against CVE-2020-27783 using the same test data as LXML
+        email = {"display_images": True, "eid": "abc"}
+        expected_html = "<div></div>"
+
+        text = '<math><style><img src=x onerror=alert(1)></style></math>'
+        returned_body = email_utils._clean_html_body(None, email, text, "ascii")
+        self.assertEqual(returned_body, expected_html)
 
     def test_find_bodies_with_bad_mime_tree(self):
         email = factories.EmailFactory()
