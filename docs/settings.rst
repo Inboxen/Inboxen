@@ -137,6 +137,12 @@ The link to the source code for the current instance. If you change any
 code in Inboxen this must be shared back under the terms of the AGPL v3,
 you should populate this with the link to the source code.
 
+issue_link
+----------
+
+The link to the issue tracker. This link is displayed on error pages to
+encourage users to report problems.
+
 time_zone
 ---------
 

@@ -13,6 +13,7 @@ database:
 debug: false
 enable_registration: false
 inbox_length: 6
+issue_link: "https://github.com/Inboxen/Inboxen/issues"
 language_code: "en-gb"
 media_root: "media_content"
 per_user_email_quota: 0
