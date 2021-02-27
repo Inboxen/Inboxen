@@ -34,7 +34,7 @@ from inboxen.router.server import forward_to_admins, process_message
 from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
 
-TEST_MSG = """From: Test <test@localhost>
+TEST_MSG = b"""From: Test <test@localhost>
 To: no-reply@example.com
 Subject: This is a subject!
 MIME-Version: 1.0
@@ -63,9 +63,12 @@ Another inside part
 --secondInboxenTest--
 
 --inboxenTest
-Content-Type: text/plain
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
 
 Last part!
+
+Badly encoded too! =90
 
 --inboxenTest--
 """
@@ -74,7 +77,7 @@ BODIES = [
     b"",
     b"Hi,\n\nThis is a plain text message!\n",
     b"",
-    b"Last part!\n",
+    b"Last part!\n\nBadly encoded too! \xef\xbf\xbd\n",
     b"Inside part\n",
     b"Another inside part\n",
 ]
