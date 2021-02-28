@@ -1,9 +1,11 @@
 {# Copyright (c) 2015 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
 {% extends 'inboxen/base.html' %}
+{% load i18n %}
 
 {% block headline %}{{ headline }}{% endblock %}
 
 {% block content %}
     <h2>{{ headline }} <small>{{ error_code }}</small></h2>
     <p>{{ error_message }}</p>
+    <p>{% blocktrans with issue_link=settings.ISSUE_LINK %}If you believe this error is in error, please report it to us via {{ issue_link }}{% endblocktrans %}</p>
 {% endblock %}

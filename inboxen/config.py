@@ -100,6 +100,9 @@ SITE_NAME = config["site_name"]
 # Link to source code
 SOURCE_LINK = config["source_link"]
 
+# Link to issue tracker
+SOURCE_LINK = config["issue_link"]
+
 # Time zone
 TIME_ZONE = config["time_zone"]
 
