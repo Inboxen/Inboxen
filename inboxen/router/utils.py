@@ -1,5 +1,5 @@
 ##
-#    Copyright 2013. 2015, 2020 Jessica Tallon, Matt Molyneaux
+#    Copyright 2013, 2015, 2020 Jessica Tallon, Matt Molyneaux
 #
 #    This file is part of Inboxen.
 #
@@ -22,6 +22,7 @@ import logging
 
 from django.conf import settings
 from django.utils import timezone
+from salmon import encoding
 
 from inboxen.models import Body, Email, Header, PartList
 from inboxen.monitor.models import Check
@@ -61,7 +62,8 @@ def make_email(message, inbox):
 
         for header in part.keys():
             ordinal = part.keys().index(header)
-            Header.objects.create(name=header, data=part[header], ordinal=ordinal, part=part_item)
+            header_data = part[header]
+            Header.objects.create(name=header, data=header_data, ordinal=ordinal, part=part_item)
 
     email.update_search()
     email.save()
@@ -101,3 +103,12 @@ def email_received_check(func):
             Check.objects.create_check(Check.SALMON)
         return state
     return inner
+
+
+def set_salmon_encoding_error_policy():
+    old_func = encoding.guess_encoding_and_decode
+
+    def inboxen_guess_encoding_and_decode(original, data):
+        return old_func(original, data, "replace")
+
+    encoding.guess_encoding_and_decode = inboxen_guess_encoding_and_decode
