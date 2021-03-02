@@ -1,7 +1,7 @@
 Inboxen
 =======
 
-[![Build Status](https://travis-ci.org/Inboxen/Inboxen.svg?branch=master)](https://travis-ci.org/Inboxen/Inboxen)
+[![Tests](https://github.com/Inboxen/Inboxen/actions/workflows/tests.yml/badge.svg)](https://github.com/Inboxen/Inboxen/actions/workflows/tests.yml)
 [![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg?branch=master)](http://codecov.io/github/Inboxen/Inboxen?branch=master)
 
 This is the complete system with everything you need to set up Inboxen.
