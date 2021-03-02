@@ -37,6 +37,9 @@ tests-py-coverage: install-dev-deps
 	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
 	pip install coverage
 	coverage run --branch ./manage.py test
+	coverage report
+	coverage html
+	coverage xml
 
 .PHONY: tests-js
 tests-js: install-dev-deps

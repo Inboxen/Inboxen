@@ -5,9 +5,6 @@ import os
 os.environ['INBOXEN_TESTING'] = '1'
 from inboxen.settings import *  # noqa
 
-# build asserts if need be
-ASSETS_AUTO_BUILD = True
-
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache"
