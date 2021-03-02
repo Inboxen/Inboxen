@@ -2,11 +2,9 @@ name: Tests
 
 on:
   pull_request:
-    branches:
-      - master
+    branches: [ $default-branch ]
   push:
-    branches:
-      - master
+    branches: [ $default-branch ]
   schedule:
     - cron: '02 08 * * *'
 
