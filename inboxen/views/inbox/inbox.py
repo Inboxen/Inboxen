@@ -211,7 +211,7 @@ class SingleInboxView(InboxView):
     def get_context_data(self, *args, **kwargs):
         kwargs["headline"] = u"{0}@{1}".format(self.kwargs["inbox"], self.kwargs["domain"])
         context = super(SingleInboxView, self).get_context_data(*args, **kwargs)
-        context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"]})
+        context.update({"inbox": self.kwargs["inbox"], "domain": self.kwargs["domain"], "inbox_obj": self.inbox_obj})
 
         if self.inbox_obj.new:
             self.inbox_obj.new = False

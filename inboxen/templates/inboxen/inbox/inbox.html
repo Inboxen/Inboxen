@@ -14,7 +14,9 @@
             <li><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></li>
             <li class="active">{% blocktrans %}Search: {{ query }}{% endblocktrans %}</li>
             {% else %}
-            <li class="active">{{ inbox }}@{{ domain }}</li>
+            <li class="active">{{ inbox }}@{{ domain }}
+                {% if inbox_obj.description %}<i>({{ inbox_obj.description }})</i>{% endif %}
+            </li>
             {% endif %}
         {% else %}
             {% if query %}
