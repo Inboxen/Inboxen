@@ -84,8 +84,8 @@ class StatsViewTestCase(InboxenTestCase):
     def test_csp(self):
         # test a normal view
         response = self.client.get(reverse("index"))
-        self.assertIn("style-src 'self';", response["content-security-policy"])
+        self.assertIn("style-src 'self'", [i.strip() for i in response["content-security-policy"].split(";")])
 
         # stats view
         response = self.client.get(reverse("stats"))
-        self.assertIn("style-src 'self' 'unsafe-inline';", response["content-security-policy"])
+        self.assertIn("style-src 'self' 'unsafe-inline'", [i.strip() for i in response["content-security-policy"].split(";")])
