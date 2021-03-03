@@ -1,6 +1,6 @@
 /*!
  * Copyright (c) 2015-2016 Jessica Tallon & Matt Molyneaux
- * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/master/LICENSE)
+ * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/main/LICENSE)
  */
 
 (function($){

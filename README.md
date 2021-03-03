@@ -2,7 +2,7 @@ Inboxen
 =======
 
 [![Tests](https://github.com/Inboxen/Inboxen/actions/workflows/tests.yml/badge.svg)](https://github.com/Inboxen/Inboxen/actions/workflows/tests.yml)
-[![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg?branch=master)](http://codecov.io/github/Inboxen/Inboxen?branch=master)
+[![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg)](http://codecov.io/github/Inboxen/Inboxen)
 
 This is the complete system with everything you need to set up Inboxen.
 
@@ -127,7 +127,7 @@ Committing and Branching
 
 ### Branching
 
-All development happens in branches off of `master`. Each branch should have an
+All development happens in branches off of `main`. Each branch should have an
 associated issue - if there isn't one for what you're working on then create a
 new issue first!
 
@@ -139,14 +139,14 @@ Branch names should be of the format `<issue>-<description>` where:
 For example, `129-pin-inboxes` was the branch used for implementing the [pin
 inbox feature](https://github.com/Inboxen/Inboxen/issues/129)
 
-Finished branches are then merged into `master`. If there is someone available
+Finished branches are then merged into `main`. If there is someone available
 to review your branch, your branch should be reviewed and merged by them.
 Remember to add a note to CHANGELOG.md when merging!
 
 #### Hotfix branches
 
 Hotfixes should be branched from the latest deploy tag, and then be tagged
-themselves as a normal deployment before being merged back into `master`.
+themselves as a normal deployment before being merged back into `main`.
 
 ### Commit messages
 
@@ -163,5 +163,5 @@ fix #345
 touch #234
 ```
 
-If you are committing on `master , then make sure to end your commit message
-with "IN MASTER" so we know who to blame when stuff breaks.
+If you are committing on `main , then make sure to end your commit message
+with "AM MAIN" so we know who to blame when stuff breaks.
