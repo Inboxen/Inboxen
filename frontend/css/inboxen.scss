@@ -432,3 +432,7 @@ a.soon {
         width: $i * 1%;
     }
 }
+
+.inbox-description, ul.breadcrumb > li {
+    word-break: break-all;
+}
