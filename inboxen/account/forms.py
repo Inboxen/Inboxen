@@ -36,7 +36,7 @@ from inboxen.forms.mixins import PlaceHolderMixin
 class DeleteAccountForm(forms.Form):
     username = forms.CharField(
         label=_("Please type your username to confirm"),
-        widget=forms.TextInput(attrs={'placeholder': _('Username')}),
+        widget=forms.TextInput(attrs={'placeholder': _('Username'), 'autocomplete': 'off'}),
         required=False,
     )
 
@@ -75,7 +75,10 @@ class PlaceHolderAuthenticationForm(PlaceHolderMixin, AuthenticationForm):
 
 class PlaceHolderPasswordChangeForm(PlaceHolderMixin, PasswordChangeForm):
     """Same as auth.forms.PasswordChangeForm but adds a label as the placeholder in each field"""
-    new_password1 = fields.PasswordCheckField(label=_("New password"))
+    new_password1 = fields.PasswordCheckField(
+        label=_("New password"),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+    )
 
 
 class PlaceHolderSudoForm(PlaceHolderMixin, ElevateForm):
@@ -93,6 +96,7 @@ class PlaceHolderUserCreationForm(PlaceHolderMixin, UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(PlaceHolderUserCreationForm, self).__init__(*args, **kwargs)
         self.fields["username"].help_text = _("Letters, numbers, and the symbols @/./+/-/_ are allowed.")
+        self.fields["password1"].widget.attrs.update({"autocomplete": "off"})
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -136,6 +140,11 @@ class UsernameChangeForm(PlaceHolderMixin, forms.ModelForm):
         fields = ["username"]
         labels = {"username": _("New username")}
         help_texts = {"username": _("Letters, numbers, and the symbols @/./+/-/_ are allowed.")}
+
+    def __init__(self, *args, **kargs):
+        super().__init__(*args, **kargs)
+        self.fields["username"].widget.attrs.update({"autocomplete": "off"})
+        self.fields["username2"].widget.attrs.update({"autocomplete": "off"})
 
     def clean(self):
         super().clean()
