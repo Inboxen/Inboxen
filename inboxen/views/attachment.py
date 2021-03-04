@@ -15,7 +15,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from urllib.parse import quote_plus
 import re
+import unicodedata
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -44,7 +46,17 @@ class AttachmentDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
         disposition = ["attachment"]
 
         if self.object.filename:
-            disposition.append("filename=\"{0}\"".format(self.object.filename))
+            # taken django-sendfile2
+            # 0d92874bf43966d8e4836c2aba25009d8c1523ac
+            # django_sendfile/utils.py, lines 109 to 116
+            attachment_filename = self.object.filename
+            ascii_filename = unicodedata.normalize('NFKD', attachment_filename)
+            ascii_filename = ascii_filename.encode('ascii', 'ignore').decode()
+            disposition.append('filename="%s"' % ascii_filename)
+
+            if ascii_filename != attachment_filename:
+                quoted_filename = quote_plus(attachment_filename)
+                disposition.append('filename*=UTF-8\'\'%s' % quoted_filename)
 
         disposition = "; ".join(disposition)
         disposition = HEADER_CLEAN.sub(" ", disposition)

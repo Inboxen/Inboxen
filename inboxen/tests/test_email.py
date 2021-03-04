@@ -312,7 +312,8 @@ class BadEmailTestCase(InboxenTestCase):
         url = urls.reverse("email-attachment", kwargs={"attachmentid": part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("He l lo ß.jpg", response["Content-Disposition"])
+        self.assertEqual(response["Content-Disposition"],
+                         "attachment; filename=\"He l lo .jpg\"; filename*=UTF-8\'\'He%0A%0Dl%0Dlo%0A%C3%9F.jpg")
 
     def test_html_a(self):
         response = self.client.get(self.get_url())
@@ -450,14 +451,16 @@ class AttachmentTestCase(InboxenTestCase):
         url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+        self.assertEqual(response["Content-Disposition"],
+                         "attachment; filename=\"Vaxjo.jpg\"; filename*=UTF-8''V%C3%A4xj%C3%B6.jpg")
 
     def test_name_in_cd(self):
         factories.HeaderFactory(part=self.part, name="Content-Disposition", data="inline; filename=\"Växjö.jpg\"")
         url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response["Content-Disposition"], "attachment; filename=\"Växjö.jpg\"")
+        self.assertEqual(response["Content-Disposition"],
+                         "attachment; filename=\"Vaxjo.jpg\"; filename*=UTF-8''V%C3%A4xj%C3%B6.jpg")
 
     def test_body_is_in_response(self):
         url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
