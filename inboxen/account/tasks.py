@@ -30,6 +30,7 @@ from pytz import utc
 from inboxen.celery import app
 from inboxen.models import Inbox
 from inboxen.tasks import batch_delete_items, delete_inboxen_item
+from inboxen.tickets.models import Question, Response
 from inboxen.utils.tasks import chunk_queryset, create_queryset, task_group_skew
 
 log = logging.getLogger(__name__)
@@ -44,6 +45,41 @@ INBOX_RESET_FIELDS = [
     "user",
 ]
 
+QUESTION_RESET_FIELDS = [
+    "author",
+    "subject",
+    "body",
+]
+
+RESPONSE_RESET_FIELDS = [
+    "author",
+    "body",
+]
+
+
+def model_cleaner(instance, fields):
+    """Resets model fields to their defaults"""
+    for field_name in fields:
+        field = instance._meta.get_field(field_name)
+        setattr(instance, field_name, field.get_default())
+
+
+@app.task
+@transaction.atomic()
+def clean_questions(user_id):
+    for question in Question.objects.filter(author_id=user_id):
+        model_cleaner(question, QUESTION_RESET_FIELDS)
+        question.date = datetime.utcfromtimestamp(0).replace(tzinfo=utc)
+        question.save()
+
+
+@app.task
+@transaction.atomic()
+def clean_responses(user_id):
+    for response in Response.objects.filter(author_id=user_id):
+        model_cleaner(response, RESPONSE_RESET_FIELDS)
+        response.save()
+
 
 @app.task(rate_limit="10/m", default_retry_delay=5 * 60)  # 5 minutes
 @transaction.atomic()
@@ -57,9 +93,7 @@ def disown_inbox(inbox_id):
     batch_delete_items.delay("email", kwargs={'inbox__id': inbox.pk})
 
     # remove data from inbox
-    for field_name in INBOX_RESET_FIELDS:
-        field = Inbox._meta.get_field(field_name)
-        setattr(inbox, field_name, field.get_default())
+    model_cleaner(inbox, INBOX_RESET_FIELDS)
 
     inbox.deleted = True
     inbox.created = datetime.utcfromtimestamp(0).replace(tzinfo=utc)
@@ -92,11 +126,10 @@ def delete_account(user_id):
 
     # get ready to delete all inboxes
     inboxes = user.inbox_set.only('id')
-    if len(inboxes):  # pull in all the data
-        delete = chord([disown_inbox.s(inbox.id) for inbox in inboxes], finish_delete_user.s(user_id))
-        delete.apply_async()
-    else:
-        finish_delete_user.apply_async(args=[None, user_id])
+    inbox_tasks = [disown_inbox.s(inbox.id) for inbox in inboxes]
+    question_tasks = [clean_questions.s(user_id), clean_responses.s(user_id)]
+    delete_chord = chord(inbox_tasks + question_tasks, finish_delete_user.s(user_id))
+    delete_chord.apply_async()
 
     log.info("Deletion tasks for %s sent off", user.username)
 

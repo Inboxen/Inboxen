@@ -28,6 +28,8 @@ from inboxen import models
 from inboxen.account import tasks
 from inboxen.test import InboxenTestCase
 from inboxen.tests import factories
+from inboxen.tickets.models import Question, Response
+from inboxen.tickets.tests import QuestionFactory, ResponseFactory
 
 
 class DeleteTestCase(InboxenTestCase):
@@ -36,6 +38,8 @@ class DeleteTestCase(InboxenTestCase):
         self.user = factories.UserFactory()
 
     def test_delete_account(self):
+        question = QuestionFactory.create(author=self.user)
+        ResponseFactory.create(question=question, author=self.user)
         factories.EmailFactory.create_batch(10, inbox__user=self.user)
         tasks.delete_account.delay(user_id=self.user.id)
 
@@ -43,6 +47,26 @@ class DeleteTestCase(InboxenTestCase):
         self.assertEqual(models.Email.objects.count(), 0)
         self.assertEqual(models.Inbox.objects.filter(deleted=False).count(), 0)
         self.assertEqual(models.Inbox.objects.filter(user__isnull=False).count(), 0)
+        self.assertEqual(Question.objects.filter(author__isnull=False).count(), 0)
+        self.assertEqual(Response.objects.filter(author__isnull=False).count(), 0)
+
+    def test_clean_question(self):
+        question = QuestionFactory.create(author=self.user)
+        tasks.clean_questions.delay(user_id=self.user.id)
+
+        new_question = Question.objects.get(id=question.id)
+        self.assertEqual(new_question.author, None)
+        self.assertEqual(new_question.subject, "")
+        self.assertEqual(new_question.body, "")
+        self.assertNotEqual(question.date, new_question.date)
+
+    def test_clean_response(self):
+        response = ResponseFactory.create(author=self.user)
+        tasks.clean_responses.delay(user_id=self.user.id)
+
+        response.refresh_from_db()
+        self.assertEqual(response.author, None)
+        self.assertEqual(response.body, "")
 
     def test_disown_inbox(self):
         defaults = {field: models.Inbox._meta.get_field(field).get_default() for field in tasks.INBOX_RESET_FIELDS}
@@ -62,7 +86,7 @@ class DeleteTestCase(InboxenTestCase):
 
         new_inbox = models.Inbox.objects.get(id=inbox.id)
         self.assertEqual(new_inbox.created, datetime.utcfromtimestamp(0).replace(tzinfo=utc))
-        self.assertNotEqual(new_inbox.description, inbox.description)
+        self.assertNotEqual(new_inbox.description, "")
         self.assertTrue(new_inbox.deleted)
         self.assertEqual(new_inbox.user, None)
 
