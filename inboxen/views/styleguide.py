@@ -21,6 +21,7 @@ from datetime import timedelta
 from unittest import mock
 
 from django import forms
+from django.contrib.auth import get_user_model
 from django.contrib.messages.constants import DEFAULT_LEVELS
 from django.contrib.messages.utils import get_level_tags
 from django.template.response import TemplateResponse
@@ -28,6 +29,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET
 
 from inboxen.forms.inbox import InboxEditForm
+from inboxen.tickets.models import Question
 
 
 class Form(forms.Form):
@@ -87,11 +89,21 @@ def styleguide(request):
         mock.Mock(id=0, filename="a", content_type=None, get_children=[]),
     ]
 
+    question = Question(
+        id=0,
+        author=get_user_model()(username="user1"),
+        body="hello\n\n*beep!*",
+        subject="hello there",
+        date=now,
+        last_modified=now,
+    )
+
     context = {
-        "inboxes": inboxes,
-        "emails": emails,
         "attachments": attachments,
+        "emails": emails,
         "form": Form(),
+        "inboxes": inboxes,
         "message_types": [(k, get_level_tags()[v]) for k, v in DEFAULT_LEVELS.items() if k != 'DEBUG'],
+        "question": question,
     }
     return TemplateResponse(request, 'inboxen/styleguide.html', context)

@@ -97,6 +97,9 @@ SERVER_EMAIL = config["server_email"]
 # Site name used in page titles
 SITE_NAME = config["site_name"]
 
+# Site URL for use in admin emails
+SITE_URL = config["site_url"]
+
 # Link to source code
 SOURCE_LINK = config["source_link"]
 
