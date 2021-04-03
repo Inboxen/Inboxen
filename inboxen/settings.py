@@ -123,10 +123,15 @@ USER_SUSPENDED_SESSION_KEY = "inboxen-suspended-user-redirected"
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+# session age, 1 week
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
+SESSION_COOKIE_SECURE = True
 
 TEST_RUNNER = 'inboxen.test.InboxenTestRunner'
 
 TWO_FACTOR_PATCH_ADMIN = False
+TWO_FACTOR_REMEMBER_COOKIE_AGE = SESSION_COOKIE_AGE * 2
+TWO_FACTOR_REMEMBER_COOKIE_SECURE = True
 
 LANGUAGE_CODE = "en-gb"
 
@@ -260,7 +265,6 @@ SINGLE_EMAIL_LIMIT_CACHE_PREFIX = "inboxen-single-email-"
 X_FRAME_OPTIONS = "DENY"
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
 
 # HSTS
 SECURE_HSTS_SECONDS = 31536000
@@ -382,12 +386,13 @@ SALMON_LOGGING = {
 
 if DEBUG:  # noqa: F405
     # local dev made easy
-    INTERNAL_IPS = ["127.0.0.1"]
-    INSTALLED_APPS += ('debug_toolbar',)
-    MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
-    DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
     CSP_REPORT_ONLY = True
     CSP_REPORT_URI = urls.reverse_lazy("csp_logger")
     CSRF_COOKIE_SECURE = False
-    SESSION_COOKIE_SECURE = False
+    DEBUG_TOOLBAR_CONFIG = {"JQUERY_URL": None}
+    INSTALLED_APPS += ('debug_toolbar',)
+    INTERNAL_IPS = ["127.0.0.1"]
+    MIDDLEWARE += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
     SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    TWO_FACTOR_REMEMBER_COOKIE_SECURE = False
