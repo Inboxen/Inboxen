@@ -17,6 +17,9 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from unittest import mock
+
+from celery.exceptions import Retry
 from django import urls
 from django.core import mail
 from django.db.models import Max
@@ -233,11 +236,34 @@ class QuestionModelTestCase(InboxenTestCase):
         question.save()
 
         self.assertEqual(len(mail.outbox), 1)
+        email = mail.outbox[0].message()
+        parts = email.get_payload()
+        self.assertEqual(parts[0].get_content_type(), "text/plain")
+        self.assertIn(question.body, parts[0].get_payload())
+        self.assertEqual(parts[1].get_content_type(), "text/html")
+        self.assertIn(question.body, parts[1].get_payload())
+
+    def test_admins_only_emailed_once(self):
+        question = models.Question()
+        question.author = self.user
+        question.subject = "Hey"
+        question.body = "Sort it out!"
+        question.save()
 
         question2 = models.Question.objects.get(id=question.id)
         question2.save()
 
         self.assertEqual(len(mail.outbox), 1)
+
+    @mock.patch("inboxen.tickets.tasks.mail_admins")
+    def test_admins_email_failed(self, mail_mock):
+        mail_mock.side_effect = Exception
+        question = models.Question()
+        question.author = self.user
+        question.subject = "Hey"
+        question.body = "Sort it out!"
+        with self.assertRaises(Retry):
+            question.save()
 
     def test_last_activity(self):
         question = models.Question()

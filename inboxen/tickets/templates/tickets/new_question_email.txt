@@ -1,0 +1,11 @@
+Admins,
+
+{{ question.author }} has a question:
+
+Subject: {{ question.subject }}
+
+Link: {{ admin_url }}
+
+Message:
+
+{{ question.body }}

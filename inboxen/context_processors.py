@@ -35,5 +35,6 @@ def reduced_settings_context(request):
         "ENABLE_REGISTRATION": settings.ENABLE_REGISTRATION,
         "INBOXEN_COMMIT_ID": inboxen.__version__,
         "SOURCE_LINK": settings.SOURCE_LINK,
+        "SITE_URL": settings.SITE_URL,
     }
     return {"settings": reduced_settings}

@@ -80,9 +80,15 @@ This should be pairs of values denoting the name and email address of your admin
 
 allowed_hosts
 -------------
+
 This is a list of domains and/or IPs that Django will serve Inboxen on. There is
 support for wildcards, the syntax of which can be found in the `Django
-documentation <https://docs.djangoproject.com/en/1.8/ref/settings/#allowed-hosts>`_.
+documentation <https://docs.djangoproject.com/en/2.2/ref/settings/#allowed-hosts>`_.
+
+site_url
+--------
+
+This value is prefixed to all URLs that are used in contexts outside of webpages, i.e. admin email notifications
 
 debug
 -----

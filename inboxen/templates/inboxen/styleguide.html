@@ -220,5 +220,18 @@
                 <pre>Lorem ipsum dolor sit amet, consectetur adipiscing elit.  Fusce in tellus gravida, cursus velit at, semper nibh. Nullam gravida diam convallis ullamcorper pulvinar. Sed at ipsum a nunc dapibus porta. Cras eleifend augue a facilisis dapibus.  Fusce congue est in enim dapibus luctus. Phasellus ex lorem, suscipit et felis nec, fringilla egestas mi. Vestibulum aliquet metus lorem, maximus lobortis orci molestie eu. Quisque sed purus nec ante rhoncus vulputate ut sit amet enim. Phasellus fermentum varius scelerisque. Phasellus blandit imperdiet tellus, nec maximus dui tempus sed. Mauris iaculis nunc non varius pretium. Aenean suscipit tellus est, finibus lacinia justo varius vel.</pre>
             </div>
         </div>
+        <div class="container-fluid">
+            <h2>Admin emails</h2>
+            <div id="admin-html-email">
+                <h3>HTML email</h3>
+                <iframe
+                        srcdoc="{% filter force_escape %}{% include "tickets/new_question_email.html" with question=question admin_url=settings.SITE_URL %}{% endfilter %}">
+                </iframe>
+            </div>
+            <div id="admin-plain-email">
+                <h3>Plain email</h3>
+                <pre>{% filter force_escape %}{% include "tickets/new_question_email.txt" with question=question admin_url=settings.SITE_URL %}{% endfilter %}</pre>
+            </div>
+        </div>
     </body>
 </html>

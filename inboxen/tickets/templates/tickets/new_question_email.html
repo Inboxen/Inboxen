@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
+    <body>
+        <p>Admins,</p>
+        <p>{{ question.author }} has a question:</p>
+        <p>Subject: {{ question.subject }}</p>
+        <p>Link: <a href="{{ admin_url }}">{{ admin_url }}</a></p>
+        <p>Message:</p>
+        <p>{{ question.render_body }}</p>
+</body>
+</html>

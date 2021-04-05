@@ -32,6 +32,7 @@ ratelimits:
         window: 60
 server_email: "django@localhost"
 site_name: "LazyAdmin.com's Inboxen"
+site_url: ""
 source_link: "https://github.com/Inboxen/Inboxen"
 static_root: "static_content"
 tasks:
