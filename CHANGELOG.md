@@ -1,5 +1,21 @@
 # Releases
 
+Deploy for 2021-04-05T20-51-52
+------------------------------
+
+- Add monitors for Celery and Salmon (#555)
+- Rework stats page (#534)
+- Remove CSP report URL (#562)
+- Allow partial parsing of badly encoded emails (#262)
+- Add link to issue tracker to error pages (#209)
+- Add inbox description to breadcrumbs (#552)
+- Add unicode filename to downloaded parts (#206)
+- Add auto-complete to attributes to various forms (#539)
+- Scrub Question and Response models rather than delete when user is deleted (#271)
+- Enable "remember me" feature for two-factor authentication (#576)
+- Add links to ticket emails for admins (#326)
+- Fix quota bar and disappearing text (#550)
+
 Deploy for 2020-10-10T00-21-00
 ------------------------------
 
