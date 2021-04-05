@@ -25,7 +25,7 @@ from django.template.response import TemplateResponse
 from django.urls import URLResolver, reverse
 from django.urls.resolvers import RegexPattern
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 from mptt.querysets import TreeQuerySet
@@ -61,7 +61,6 @@ class HelpAbstractPage(MPTTModel):
 
     class Meta:
         abstract = True
-        manager_inheritance_from_future = True
 
 
 class HelpBasePage(HelpAbstractPage):
@@ -204,7 +203,6 @@ class HelpBasePage(HelpAbstractPage):
         return super(HelpBasePage, self).save(*args, **kwargs)
 
     class Meta:
-        manager_inheritance_from_future = True
         unique_together = ("slug", "parent")
 
 
@@ -216,9 +214,6 @@ class HelpIndex(HelpBasePage):
         context["menu"] = self.get_children().live().in_menu()
 
         return context
-
-    class Meta:
-        manager_inheritance_from_future = True
 
 
 class AppPage(HelpBasePage):
@@ -251,9 +246,6 @@ class AppPage(HelpBasePage):
         """Gives reverse URL for view name relative to page"""
         return reverse(viewname, urlconf=self.APP_PREFIX + self.app, args=args, kwargs=kwargs)
 
-    class Meta:
-        manager_inheritance_from_future = True
-
 
 class HelpPage(HelpBasePage):
     body = RichTextField(
@@ -267,9 +259,6 @@ class HelpPage(HelpBasePage):
     template = "cms/help_page.html"
 
     admin_fields = HelpBasePage.admin_fields + ("body",)
-
-    class Meta:
-        manager_inheritance_from_future = True
 
 
 ##
@@ -286,9 +275,6 @@ class PeoplePage(HelpBasePage):
     template = "cms/people_page.html"
 
     admin_fields = HelpBasePage.admin_fields + ("intro_paragraph",)
-
-    class Meta:
-        manager_inheritance_from_future = True
 
 
 class PersonInfo(models.Model):

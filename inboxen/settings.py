@@ -24,7 +24,7 @@ import string
 from celery.schedules import crontab
 from django import urls
 from django.contrib.messages import constants as message_constants
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from kombu.common import Broadcast, Exchange, Queue
 
 from inboxen.config import *  # noqa

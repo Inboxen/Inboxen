@@ -22,5 +22,5 @@ from django.conf import urls
 from inboxen.search.views import search_api
 
 urlpatterns = [
-    urls.url(r'^searchapi/$', search_api, name='api'),
+    urls.re_path(r'^searchapi/$', search_api, name='api'),
 ]

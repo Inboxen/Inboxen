@@ -33,14 +33,15 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        "Django>=2.2,<2.3",
+        "Django>=3.1rc1,<4.0",
         "Markdown",
         "celery<5,!=4.4.7",
         "django-annoying",
         "django-bootstrap-form",
         "django-celery-results",
         "django-csp>3.0",
-        "django-cursor-pagination",
+        # vendored until 0.1.5 has been released
+        # "django-cursor-pagination",
         "django-elevate",
         "django-extensions",
         "django-mptt",

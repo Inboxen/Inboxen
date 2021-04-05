@@ -28,7 +28,7 @@ from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils import html as html_utils
 from django.utils import safestring
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from lxml import etree
 from lxml import html as lxml_html
 from lxml.html.clean import Cleaner

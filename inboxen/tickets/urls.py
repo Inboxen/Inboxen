@@ -22,22 +22,22 @@ from django.conf import urls
 from inboxen.tickets import views
 
 urlpatterns = [
-    urls.url(
+    urls.re_path(
         r'^$',
         views.QuestionHomeView.as_view(),
         name='tickets-index'
     ),
-    urls.url(
+    urls.re_path(
         r'^status/(?P<status>[!]?\w+)/$',
         views.QuestionListView.as_view(),
         name='tickets-list'
     ),
-    urls.url(
+    urls.re_path(
         r'^status/(?P<status>[!]?\w+)/(?P<page>\d+)/$',
         views.QuestionListView.as_view(),
         name='tickets-list'
     ),
-    urls.url(
+    urls.re_path(
         r'^ticket/(?P<pk>\d+)/$',
         views.QuestionDetailView.as_view(),
         name='tickets-detail'

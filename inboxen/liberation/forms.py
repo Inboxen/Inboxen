@@ -19,7 +19,7 @@
 
 from django import forms
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from inboxen import models
 from inboxen.liberation.tasks import liberate as data_liberate

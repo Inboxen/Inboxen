@@ -22,7 +22,7 @@ from django.conf import urls
 from inboxen.redirect import views
 
 urlpatterns = [
-    urls.url(
+    urls.re_path(
         r'^$',
         views.RedirectView.as_view(permanent=False),
         name='redirect',

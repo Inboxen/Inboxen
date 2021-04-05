@@ -81,7 +81,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Liberation',
             fields=[
-                ('user', inboxen.fields.DeferAutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion)),
+                ('user', inboxen.fields.DeferAutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
                 ('flags', models.BigIntegerField(default=0)),
                 ('data', inboxen.fields.LargeObjectField(null=True)),
                 ('content_type', models.PositiveSmallIntegerField(default=0)),
@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('user', annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion)),
+                ('user', annoying.fields.AutoOneToOneField(primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE)),
                 ('pool_amount', models.IntegerField(default=500)),
                 ('flags', models.BigIntegerField(default=5)),
                 ('prefered_domain', models.ForeignKey(blank=True, to='inboxen.Domain', null=True, on_delete=models.CASCADE)),

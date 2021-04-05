@@ -22,7 +22,7 @@ from django.conf import urls
 from inboxen.views import admin as views
 
 urlpatterns = [
-    urls.url(r'^$', views.domain_admin_index, name='index'),
-    urls.url(r'^create/$', views.domain_admin_create, name='create'),
-    urls.url(r'^edit/(?P<domain_pk>\d+)/$', views.domain_admin_edit, name='edit'),
+    urls.re_path(r'^$', views.domain_admin_index, name='index'),
+    urls.re_path(r'^create/$', views.domain_admin_create, name='create'),
+    urls.re_path(r'^edit/(?P<domain_pk>\d+)/$', views.domain_admin_edit, name='edit'),
 ]

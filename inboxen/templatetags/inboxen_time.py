@@ -23,19 +23,19 @@ import calendar
 from django import template
 from django.utils import timezone
 from django.utils.html import avoid_wrapping
-from django.utils.translation import ugettext as _
-from django.utils.translation import ungettext_lazy
+from django.utils.translation import gettext as _
+from django.utils.translation import ngettext_lazy
 
 register = template.Library()
 
 
 TIMESINCE_CHUNKS = (
-    (60 * 60 * 24 * 365, ungettext_lazy('a year ago', '%d years ago')),
-    (60 * 60 * 24 * 30, ungettext_lazy('a month ago', '%d months ago')),
-    (60 * 60 * 24 * 7, ungettext_lazy('a week ago', '%d weeks ago')),
-    (60 * 60 * 24, ungettext_lazy('a day ago', '%d days ago')),
-    (60 * 60, ungettext_lazy('a hour ago', '%d hours ago')),
-    (60, ungettext_lazy('a minute ago', '%d minutes ago'))
+    (60 * 60 * 24 * 365, ngettext_lazy('a year ago', '%d years ago')),
+    (60 * 60 * 24 * 30, ngettext_lazy('a month ago', '%d months ago')),
+    (60 * 60 * 24 * 7, ngettext_lazy('a week ago', '%d weeks ago')),
+    (60 * 60 * 24, ngettext_lazy('a day ago', '%d days ago')),
+    (60 * 60, ngettext_lazy('a hour ago', '%d hours ago')),
+    (60, ngettext_lazy('a minute ago', '%d minutes ago'))
 )
 
 
