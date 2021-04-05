@@ -34,13 +34,14 @@
                     {{ form.auto_delete|bootstrap }}
                     {% if form.quota_options %}
                         <hr>
+                        <p>{% blocktrans with quota_percent_usage=form.instance.quota_percent_usage %}
+                            You have used {{ quota_percent_usage }}% of your quota.
+                        {% endblocktrans %}</p>
                         <div class="progress">
                             <div class="progress-bar width-{{ form.instance.quota_percent_usage }}"
                                  role="progressbar"
-                                 aria-valuenow="{{ form.instance.quota_percent_usage }}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"
-                            >{{ form.instance.quota_percent_usage }}%</div>
+                                 aria-hidden="true"
+                            >&nbsp;</div>
                         </div>
                         {{ form.quota_options|bootstrap }}
                     {% endif %}
