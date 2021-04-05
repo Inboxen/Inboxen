@@ -6,7 +6,7 @@ TODAY := $(shell date "+%Y-%m-%dT%H-%M-%S" -u)
 
 .PHONY: setup-node
 setup-node:
-	nodeenv -p -n 8.16.0 --with-npm
+	nodeenv -p -n 8.16.0 --with-npm --npm=6.14.11
 
 .PHONY: install-watermelon-py-deps
 install-watermelon-py-deps:
