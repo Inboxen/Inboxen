@@ -5,8 +5,8 @@
 {% block headline %}{% trans "Blog" %}{% endblock %}
 
 {% block header %}
-    <link href="{% url 'blog-feed-rss' %}" rel="alternate" type="application/rss+xml" title="{% blocktrans with settings.SITE_NAME as name %}{{ name }}  Blog {% endblocktrans %}" />
-    <link href="{% url 'blog-feed-atom' %}" rel="alternate" type="application/atom+xml" title="{% blocktrans with settings.SITE_NAME as name %}{{ name }} Blog {% endblocktrans %} (Atom)" />
+    <link href="{% url 'blog-feed-rss' %}" rel="alternate" type="application/rss+xml" title="{% blocktrans trimmed with settings.SITE_NAME as name %}{{ name }}  Blog {% endblocktrans %}" />
+    <link href="{% url 'blog-feed-atom' %}" rel="alternate" type="application/atom+xml" title="{% blocktrans trimmed with settings.SITE_NAME as name %}{{ name }} Blog {% endblocktrans %} (Atom)" />
 {% endblock %}
 
 {% block content %}

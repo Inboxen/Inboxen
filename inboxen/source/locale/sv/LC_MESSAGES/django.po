@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-09 15:52+0000\n"
+"POT-Creation-Date: 2021-04-05 19:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,14 +39,11 @@ msgstr ""
 
 #: inboxen/source/templates/source/index.html:13
 msgid ""
-"\n"
-"            That means you have the right to read our source code (either as "
-"a user of this service or someone who has already received a copy),\n"
-"            send it to your friends, makes changes to it and run it on your "
-"own server. You also have a responsibility to grant these same rights\n"
-"            to your users. The full text of this licence can be found with "
-"the source code linked to on this page.\n"
-"        "
+"That means you have the right to read our source code (either as a user of "
+"this service or someone who has already received a copy), send it to your "
+"friends, makes changes to it and run it on your own server. You also have a "
+"responsibility to grant these same rights to your users. The full text of "
+"this licence can be found with the source code linked to on this page."
 msgstr ""
 
 #: inboxen/source/templates/source/index.html:18
@@ -56,11 +53,9 @@ msgstr ""
 #: inboxen/source/templates/source/index.html:19
 #, python-format
 msgid ""
-"\n"
-"            %(SITE_NAME)s uses a number of third party libraries (we don't "
-"believe in reinventing the wheel). Checkout our source code to see their "
-"respective licences.\n"
-"        "
+"%(SITE_NAME)s uses a number of third party libraries (we don't believe in "
+"reinventing the wheel). Checkout our source code to see their respective "
+"licences."
 msgstr ""
 
 #: inboxen/source/templates/source/index.html:26

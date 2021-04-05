@@ -8,11 +8,11 @@
 
 {% block breadcrumbs %}
     <ul id="{{ inbox }}@{{ domain }}" class="breadcrumb">
-        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li><a href="{% url 'user-home' %}">{% blocktrans trimmed %} {{ user }}'s Home {% endblocktrans %}</a></li>
         {% if inbox %}
             {% if query %}
             <li><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></li>
-            <li class="active">{% blocktrans %}Search: {{ query }}{% endblocktrans %}</li>
+            <li class="active">{% blocktrans trimmed %}Search: {{ query }}{% endblocktrans %}</li>
             {% else %}
             <li class="active">{{ inbox }}@{{ domain }}
                 {% if inbox_obj.description %}<i>({{ inbox_obj.description }})</i>{% endif %}
@@ -21,7 +21,7 @@
         {% else %}
             {% if query %}
             <li><a href="{% url "unified-inbox" %}">{% trans "Unified Inbox" %}</a></li>
-            <li class="active">{% blocktrans %}Search: {{ query }}{% endblocktrans %}</li>
+            <li class="active">{% blocktrans trimmed %}Search: {{ query }}{% endblocktrans %}</li>
             {% else %}
             <li class="active">{% trans "Unified Inbox" %}</li>
             {% endif %}
@@ -64,9 +64,9 @@
             {% empty %}
                 <div class="row empty-message"><div class="col-xs-12">
                 {% if query %}
-                    {% blocktrans %}No emails containing <i>{{ query }}</i>.{% endblocktrans %}
+                    {% blocktrans trimmed %}No emails containing <i>{{ query }}</i>.{% endblocktrans %}
                 {% else %}
-                    {% blocktrans %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}
+                    {% blocktrans trimmed %}This Inbox is <span title="The opposite of full.">empty</span>.{% endblocktrans %}
                 {% endif %}
                 </div></div>
             {% endfor %}

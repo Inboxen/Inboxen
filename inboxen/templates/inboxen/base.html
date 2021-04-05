@@ -64,7 +64,7 @@
     <main id="contentstart" class="container-fluid">{% block content %}{% endblock %} </main>
     <footer id="footer">{% block footer %}
         <ul>
-            <li><a href="{% url 'source-index' %}">{% blocktrans with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a></li>
+            <li><a href="{% url 'source-index' %}">{% blocktrans trimmed with SITE_NAME=settings.SITE_NAME%}{{ SITE_NAME }} is Free Software{% endblocktrans %}</a></li>
             <li><a href="{% url 'stats' %}">{% trans "Stats for nerds" %}</a></li>
         </ul>
     {% endblock %}</footer>

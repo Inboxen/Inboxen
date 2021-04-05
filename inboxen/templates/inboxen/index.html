@@ -7,7 +7,7 @@
 {% block extra-messages %}
     {% if user.is_authenticated %}
         {% url 'user-home' as home_url %}
-        <div class="alert alert-info">{% blocktrans %}You're already signed up and logged in. <a class="alert-link" href="{{ home_url }}">Click here</a> to view your inboxes{% endblocktrans %}</div>
+        <div class="alert alert-info">{% blocktrans trimmed %}You're already signed up and logged in. <a class="alert-link" href="{{ home_url }}">Click here</a> to view your inboxes{% endblocktrans %}</div>
     {% endif %}
 {% endblock %}
 
@@ -21,8 +21,8 @@
     </div>
     <div class="text-center row">
         <div class="col-xs-12 col-sm-6 col-sm-offset-3">
-            <h2>{% blocktrans with SITE_NAME=settings.SITE_NAME %}What Is {{SITE_NAME }}?{% endblocktrans %}</h2>
-            <p>{% blocktrans with SITE_NAME=settings.SITE_NAME %}{{ SITE_NAME }} is a
+            <h2>{% blocktrans trimmed with SITE_NAME=settings.SITE_NAME %}What Is {{SITE_NAME }}?{% endblocktrans %}</h2>
+            <p>{% blocktrans trimmed with SITE_NAME=settings.SITE_NAME %}{{ SITE_NAME }} is a
             service that provides you with an infinite number of unique inboxes.  It's not
             designed to replace your personal email address, but rather complement it.
             Every time a website asks for your email, click the "Add Inbox" button to

@@ -10,7 +10,7 @@
             {% if not pg.is_root %}<li><a href="{{ pg.url }}">{{ pg.title }}</a></li>{% endif %}
         {% endfor %}
         <li><a href="{% app_url 'tickets-index' %}">{{ request.page.title }}</a></li>
-        <li class="active">{% blocktrans %}Status: {{ status }}{% endblocktrans %}</li>
+        <li class="active">{% blocktrans trimmed %}Status: {{ status }}{% endblocktrans %}</li>
     </ul>
 {% endblock %}
 

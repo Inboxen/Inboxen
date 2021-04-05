@@ -5,12 +5,12 @@
 {% block headline %}{% trans "Disable Two Factor Authentication" %}{% endblock %}
 
 {% block form %}
-<p>{% blocktrans %}
+<p>{% blocktrans trimmed %}
     You are about to disable two-factor authentication. You can re-enalbe it at
     any time.
 {% endblocktrans %}</p>
 
-<p class="alert alert-warning">{% blocktrans %}
+<p class="alert alert-warning">{% blocktrans trimmed %}
     This will also delete any backup tokens you have generated.
 {% endblocktrans %}</p>
 

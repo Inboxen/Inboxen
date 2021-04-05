@@ -2,7 +2,7 @@
 {% extends "cms/admin/base.html" %}
 {% load i18n bootstrap %}
 
-{% block headline %}{% blocktrans with domain=domain.domain %}Editing {{ domain }}{% endblocktrans %}{% endblock %}
+{% block headline %}{% blocktrans trimmed with domain=domain.domain %}Editing {{ domain }}{% endblocktrans %}{% endblock %}
 
 {% block breadcrumbs %}
 <ul class="breadcrumb">

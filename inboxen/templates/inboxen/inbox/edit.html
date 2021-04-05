@@ -2,12 +2,12 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n bootstrap %}
 
-{% block headline %}{% blocktrans %}{{ inbox }} Options{% endblocktrans %}{% endblock %}
+{% block headline %}{% blocktrans trimmed %}{{ inbox }} Options{% endblocktrans %}{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
-        <li class="active">{% blocktrans with inbox=inbox.inbox domain=inbox.domain.domain %}
+        <li><a href="{% url 'user-home' %}">{% blocktrans trimmed %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li class="active">{% blocktrans trimmed with inbox=inbox.inbox domain=inbox.domain.domain %}
             {{ inbox }}@{{ domain }} Options
         {% endblocktrans %}</li>
     </ul>

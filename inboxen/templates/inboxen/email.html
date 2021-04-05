@@ -13,7 +13,7 @@
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li><a href="{% url 'user-home' %}">{% blocktrans trimmed %} {{ user }}'s Home {% endblocktrans %}</a></li>
         <li><a href="{% url 'single-inbox' inbox=email.inbox.inbox domain=email.inbox.domain.domain %}">{{ email.inbox }}</a></li>
         <li class="active">{{ email.headers.Subject|default:_("No Subject") }}</li>
     </ul>

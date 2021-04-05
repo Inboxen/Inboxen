@@ -7,7 +7,7 @@
 {% block breadcrumbs %}
 <ul class="breadcrumb">
     <li><a href="{% url "admin:tickets:index" %}">{% trans "Questions" %}</a></li>
-    <li class="active">{% blocktrans with subject=question.subject %}{{ subject }}{% endblocktrans %}</li>
+    <li class="active">{% blocktrans trimmed with subject=question.subject %}{{ subject }}{% endblocktrans %}</li>
 </ul>
 {% endblock %}
 

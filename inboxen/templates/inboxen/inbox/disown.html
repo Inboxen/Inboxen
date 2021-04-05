@@ -2,12 +2,12 @@
 {% extends 'inboxen/base.html' %}
 {% load i18n bootstrap %}
 
-{% block headline %}{% blocktrans %}{{ inbox }} Disown{% endblocktrans %}{% endblock %}
+{% block headline %}{% blocktrans trimmed %}{{ inbox }} Disown{% endblocktrans %}{% endblock %}
 
 {% block breadcrumbs %}
     <ul class="breadcrumb">
-        <li><a href="{% url 'user-home' %}">{% blocktrans %} {{ user }}'s Home {% endblocktrans %}</a></li>
-        <li class="active">{% blocktrans with inbox=inbox.inbox domain=inbox.domain.domain %}
+        <li><a href="{% url 'user-home' %}">{% blocktrans trimmed %} {{ user }}'s Home {% endblocktrans %}</a></li>
+        <li class="active">{% blocktrans trimmed with inbox=inbox.inbox domain=inbox.domain.domain %}
             Delete {{ inbox }}@{{ domain }}
         {% endblocktrans %}</li>
     </ul>
@@ -19,10 +19,10 @@
         <div class="panel panel-danger">
             <div class="panel-heading">{% trans "Are you sure?" %}</div>
             <div class="panel-body">
-                <p>{% blocktrans %}Once you delete this Inbox, you'll never be able to get it back again. A record will be kept that is Inbox was assigned to someone at some point, but it won't say who or when.{% endblocktrans %}</p>
-                <p>{% blocktrans %}All emails associated with this inbox will also be deleted!{% endblocktrans %}</p>
+                <p>{% blocktrans trimmed %}Once you delete this Inbox, you'll never be able to get it back again. A record will be kept that is Inbox was assigned to someone at some point, but it won't say who or when.{% endblocktrans %}</p>
+                <p>{% blocktrans trimmed %}All emails associated with this inbox will also be deleted!{% endblocktrans %}</p>
                 {% url 'inbox-edit' inbox=inbox.inbox domain=inbox.domain.domain as edit_url %}
-                <p>{% blocktrans %}Please consider using the <a href="{{ edit_url }}">"Disable Inbox" option</a> if you think you might want to use this Inbox again in future!{% endblocktrans %}</p>
+                <p>{% blocktrans trimmed %}Please consider using the <a href="{{ edit_url }}">"Disable Inbox" option</a> if you think you might want to use this Inbox again in future!{% endblocktrans %}</p>
                 <form class="form" action="{% url 'inbox-disown' inbox=inbox.inbox domain=inbox.domain.domain %}" method="POST">
                     {% csrf_token %}
                     {{ form|bootstrap }}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-09 15:52+0000\n"
+"POT-Creation-Date: 2021-04-05 19:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,10 +55,7 @@ msgstr ""
 
 #: inboxen/liberation/templates/liberation/liberate.html:10
 #, python-format
-msgid ""
-"\n"
-"        Liberation was requested %(started)s and is still pending.\n"
-"    "
+msgid "Liberation was requested %(started)s and is still pending."
 msgstr ""
 
 #: inboxen/liberation/templates/liberation/liberate.html:13
@@ -87,11 +84,7 @@ msgstr ""
 
 #: inboxen/liberation/templates/liberation/liberate.html:24
 #, python-format
-msgid ""
-"\n"
-"                Your data is available for download. It was generated "
-"%(finished)s.\n"
-"            "
+msgid "Your data is available for download. It was generated %(finished)s."
 msgstr ""
 
 #: inboxen/liberation/templates/liberation/liberate.html:27

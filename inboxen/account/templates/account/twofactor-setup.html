@@ -6,23 +6,23 @@
 
 {% block form %}
 {% if wizard.steps.current == 'welcome' %}
-    <p>{% blocktrans %}
+    <p>{% blocktrans trimmed %}
         You are about to take your account security to the next level. Follow
         the steps in this wizard to enable two-factor authentication.
     {% endblocktrans %}</p>
 {% elif wizard.steps.current == 'method' %}
-    <p>{% blocktrans %}
+    <p>{% blocktrans trimmed %}
         Please select which authentication method you would like to use.
     {% endblocktrans %}</p>
 {% elif wizard.steps.current == 'generator' %}
-    <p>{% blocktrans %}
+    <p>{% blocktrans trimmed %}
         To start using a token generator you will need an application that read
         TOTP QR codes. <i>FreeOTP</i> is a good example and is Free Software
         too! Scan in the image below and enter the token your
         applications displays.
     {% endblocktrans %}</p>
     <p><img src="{{ QR_URL }}" alt="QR Code" /></p>
-    <p>{% blocktrans %}
+    <p>{% blocktrans trimmed %}
         Alternatively, if you can't scan the QR code, you can copy and paste
         the code below:
     {% endblocktrans %}</p>

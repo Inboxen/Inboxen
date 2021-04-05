@@ -2,12 +2,12 @@
 {% extends "cms/admin/base.html" %}
 {% load i18n bootstrap %}
 
-{% block headline %}{% blocktrans with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}{% endblock %}
+{% block headline %}{% blocktrans trimmed with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}{% endblock %}
 
 {% block breadcrumbs %}
 <ul class="breadcrumb">
     <li><a href="{% url "admin:blog:index" %}">{% trans "Blog" %}</a></li>
-    <li class="active">{% blocktrans with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}</li>
+    <li class="active">{% blocktrans trimmed with subject=post.subject %}Editing {{ subject }}{% endblocktrans %}</li>
 </ul>
 {% endblock %}
 

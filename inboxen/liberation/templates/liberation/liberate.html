@@ -7,7 +7,7 @@
 {% block form %}
 {% if object.running %}
     <h4>{% trans "Data liberation is currently running" %}</h4>
-    <p>{% blocktrans with started=object.started|inboxentime %}
+    <p>{% blocktrans trimmed with started=object.started|inboxentime %}
         Liberation was requested {{ started }} and is still pending.
     {% endblocktrans %}</p>
     <p>{% trans "What's happening right now:" %}</p>
@@ -21,7 +21,7 @@
     {% if object.last_finished %}
     <div class="panel panel-primary">
         <div class="panel-body">
-            <p>{% blocktrans with finished=object.last_finished|inboxentime %}
+            <p>{% blocktrans trimmed with finished=object.last_finished|inboxentime %}
                 Your data is available for download. It was generated {{ finished }}.
             {% endblocktrans %}</p>
             <a class="btn btn-primary" href="{% url 'user-liberate-get' %}">{% trans "Download" %}</a>

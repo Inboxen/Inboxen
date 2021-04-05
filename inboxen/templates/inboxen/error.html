@@ -7,5 +7,5 @@
 {% block content %}
     <h2>{{ headline }} <small>{{ error_code }}</small></h2>
     <p>{{ error_message }}</p>
-    <p>{% blocktrans with issue_link=settings.ISSUE_LINK %}If you believe this error is in error, please report it to us via {{ issue_link }}{% endblocktrans %}</p>
+    <p>{% blocktrans trimmed with issue_link=settings.ISSUE_LINK %}If you believe this error is in error, please report it to us via {{ issue_link }}{% endblocktrans %}</p>
 {% endblock %}

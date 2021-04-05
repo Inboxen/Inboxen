@@ -49,7 +49,7 @@
                 <th>{% trans "Total" %}</th>
                 <td>
                     {{ object.inboxes.total|intcomma }}
-                    <i>({% blocktrans with total_possible=object.inboxes.total_possible|intcomma %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
+                    <i>({% blocktrans trimmed with total_possible=object.inboxes.total_possible|intcomma %}Total possible: {{ total_possible }}{% endblocktrans %})</i>
                 </td>
             </tr>
             <tr>
@@ -90,7 +90,7 @@
             </tr>
             <tr>
                 <th>{% trans "Total emails processed" %}</th>
-                <td>{% blocktrans with first_date=first_stat.date|date:"jS F Y" running_total=object.emails.running_total|intcomma %}{{ running_total }} since {{ first_date }}{% endblocktrans %}</td>
+                <td>{% blocktrans trimmed with first_date=first_stat.date|date:"jS F Y" running_total=object.emails.running_total|intcomma %}{{ running_total }} since {{ first_date }}{% endblocktrans %}</td>
             </tr>
         </table>
     </div>
