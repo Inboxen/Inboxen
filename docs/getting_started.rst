@@ -83,9 +83,6 @@ with your favourite text editor and add the following:
 
 .. code-block:: yaml
 
-   [general]
-   # some_random_string should be replaced by an actual random string, it is
-   # used for various cryptographic functions and should be kept secret
    secret_key: some_random_string
 
 Now we've got some configuration, let's finish the setup:
