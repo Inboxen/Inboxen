@@ -74,18 +74,18 @@ def statistics():
     }
 
     inbox_aggregate = {
-        "inbox_count__avg": Coalesce(Avg("inbox_count"), 0),
+        "inbox_count__avg": Coalesce(Avg("inbox_count"), 0.0),
         "inbox_count__max": Coalesce(Max("inbox_count"), 0),
         "inbox_count__min": Coalesce(Min("inbox_count"), 0),
-        "inbox_count__stddev": Coalesce(StdDev("inbox_count"), 0),
+        "inbox_count__stddev": Coalesce(StdDev("inbox_count"), 0.0),
         "inbox_count__sum": Coalesce(Sum("inbox_count"), 0),
     }
 
     email_aggregate = {
-        "email_count__avg": Coalesce(Avg("email_count"), 0),
+        "email_count__avg": Coalesce(Avg("email_count"), 0.0),
         "email_count__max": Coalesce(Max("email_count"), 0),
         "email_count__min": Coalesce(Min("email_count"), 0),
-        "email_count__stddev": Coalesce(StdDev("email_count"), 0),
+        "email_count__stddev": Coalesce(StdDev("email_count"), 0.0),
         "email_count__sum": Coalesce(Sum("email_count"), 0),
     }
 

@@ -120,6 +120,8 @@ USER_SUSPENDED_SESSION_KEY = "inboxen-suspended-user-redirected"
 # Django options
 ##
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
