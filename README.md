@@ -163,4 +163,4 @@ touch #234
 ```
 
 If you are committing on `main`, then make sure to end your commit message
-with "AM MAIN" so we know who to blame when stuff breaks.
+with "IN MAIN" so we know who to blame when stuff breaks.
