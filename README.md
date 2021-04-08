@@ -3,6 +3,7 @@ Inboxen
 
 [![Tests](https://github.com/Inboxen/Inboxen/actions/workflows/tests.yml/badge.svg)](https://github.com/Inboxen/Inboxen/actions/workflows/tests.yml)
 [![Test coverage](http://codecov.io/github/Inboxen/Inboxen/coverage.svg)](http://codecov.io/github/Inboxen/Inboxen)
+[![Documentation Status](https://readthedocs.org/projects/inboxen/badge/?version=latest)](https://inboxen.readthedocs.io/en/latest/?badge=latest)
 
 This is the complete system with everything you need to set up Inboxen.
 
