@@ -80,14 +80,13 @@ npx grunt jshint
 
 ### Local HTTP server
 
-You'll need a `settings.ini` file, for example:
+You'll need a `inboxen.config` file, for example:
 
 ```
-[general]
-secret_key = some_random_string
-debug=true
-[tasks]
-always_eager=true
+secret_key: some_random_string
+debug: true
+tasks:
+  always_eager: true
 ```
 
 If you want to start a local HTTP server to test out your changes, run the following:
@@ -163,5 +162,5 @@ fix #345
 touch #234
 ```
 
-If you are committing on `main , then make sure to end your commit message
+If you are committing on `main`, then make sure to end your commit message
 with "AM MAIN" so we know who to blame when stuff breaks.
