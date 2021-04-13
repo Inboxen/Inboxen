@@ -11,10 +11,10 @@
         <li><a href="{% url 'user-home' %}">{% blocktrans trimmed %} {{ user }}'s Home {% endblocktrans %}</a></li>
         {% if inbox %}
             {% if query %}
-            <li><a href="{% url 'single-inbox' inbox=inbox domain=domain %}">{{ inbox }}@{{ domain }}</a></li>
+            <li><a href="{% url 'single-inbox' inbox=inbox domain=domain %}"><span class="inbox-crumb">{{ inbox }}@{{ domain }}</span></a></li>
             <li class="active">{% blocktrans trimmed %}Search: {{ query }}{% endblocktrans %}</li>
             {% else %}
-            <li class="active">{{ inbox }}@{{ domain }}
+            <li class="active"><span class="inbox-crumb">{{ inbox }}@{{ domain }}</span>
                 {% if inbox_obj.description %}<i>({{ inbox_obj.description }})</i>{% endif %}
             </li>
             {% endif %}
@@ -45,7 +45,7 @@
     </div>
 </form>
 {% if not waiting %}
-    <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}" data-inbox-name=".breadcrumb .active" data-button-container=".inbox-btn-group" data-button-classes="btn btn-default" data-button-text="{% trans "Copy inbox address" %}">
+    <form id="email-list" action="{{ request.path }}" method="POST" data-url="{% url 'form-inbox-email' %}" data-inbox-name=".breadcrumb .active span.inbox-crumb" data-button-container=".inbox-btn-group" data-button-classes="btn btn-default" data-button-text="{% trans "Copy inbox address" %}">
         {% csrf_token %}
         <div class="inbox-btn-group">
         <button class="btn btn-default" type="submit" name="important"><span class="fa fa-star" aria-hidden="true"></span>{% trans "Important" %}</button>
