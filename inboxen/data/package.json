@@ -22,6 +22,7 @@
         "karma-coverage": "^2.0.3",
         "karma-firefox-launcher": "^2.1.0",
         "karma-jasmine": "^4.0.1",
+        "karma-jasmine-html-reporter": "^1.6.0",
         "sass": "^1.32.13",
         "uglify-js": "^3.13.6"
     }

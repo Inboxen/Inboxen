@@ -3,6 +3,30 @@
  * Licensed under AGPLv3 (https://github.com/Inboxen/Inboxen/blob/main/LICENSE)
  */
 
+(function($, window) {
+    'use strict';
+    var data;
+
+    window.snippet = async function(snip) {
+        var output;
+        if (data === undefined) {
+            var url = $("#snippetLink").attr("href");
+            await fetch(url, {method: "GET"})
+                .then(function(resp) {
+                    return resp.json();
+                })
+                .then(function(json_data) {
+                    data = json_data;
+                });
+        }
+        output = data[snip];
+        if (output === undefined) {
+            throw "Snippet not found!";
+        }
+        return output;
+    };
+})(jQuery, window);
+
 (function($){
     'use strict';
 
@@ -47,10 +71,10 @@
 
 (function($) {
     'use strict';
-    // TODO: string needs translation
     // alert close buttons, but only when JS is enabled
-    var button = '<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button>';
-    $("div[role=alert]").each(function() {
-        $(this).append(button);
+    window.snippet("close-alert-button").then(function(button) {
+        $("div[role=alert]").each(function() {
+            $(this).append(button);
+        });
     });
 })(jQuery);

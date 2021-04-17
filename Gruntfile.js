@@ -1,6 +1,11 @@
 module.exports = function(grunt) {
     var sass = require('sass');
 
+    var preprocessors = {};
+    if (!process.env.SKIP_COVERAGE) {
+        preprocessors["<%= dirs.js %>/src/*.js"] = ["coverage"];
+    }
+
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
         dirs: {
@@ -56,9 +61,6 @@ module.exports = function(grunt) {
                 sourceMap: {
                     includeSources: true
                 },
-                sourceMapIn: function(path) {
-                    return path + ".map";
-                },
                 output: {
                     comments: /^!/
                 }
@@ -95,8 +97,17 @@ module.exports = function(grunt) {
                     }
                 },
                 configFile: "karma.conf.js",
-                preprocessors: {"<%= dirs.js %>/src/*.js": ["coverage"]},
+                preprocessors: preprocessors,
                 files: [
+                    {
+                        pattern: "<%= dirs.js %>/data/*.html",
+                        type: "dom"
+                    },
+                    {
+                        pattern: "<%= dirs.js %>/data/*.json",
+                        included: false,
+                        served: true,
+                    },
                     "<%= dirs.thirdparty %>/jquery/dist/jquery.js",
                     "<%= dirs.thirdparty %>/chart.js/dist/Chart.js",
                     "<%= dirs.js %>/src/*.js",
