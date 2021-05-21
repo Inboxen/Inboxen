@@ -38,7 +38,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tox_env: [lint, isort, docs]
+        tox_env:
+            - lint
+            - isort
+            - docs
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -54,7 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        script: ["karma:firefox", "karma:chrome", "jshint"]
+        script:
+            - "karma:firefox"
+            #- "karma:chrome"
+            - "jshint"
     env:
       MOZ_HEADLESS: 1
     steps:
