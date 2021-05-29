@@ -14,13 +14,18 @@ module.exports = function(config) {
         };
     }
 
+    var reporters = ['progress', 'kjhtml'];
+    if (!process.env.SKIP_COVERAGE) {
+        reporters.push("coverage");
+    }
+
     config.set({
         logLevel: config.LOG_INFO,
         frameworks: ['jasmine'],
         customLaunchers: {
             ChromeMaybeHeadless: chromeOpts
         },
-        reporters: ['progress', 'coverage'],
+        reporters: reporters,
         coverageReporter: {
             reporters: [
                 {

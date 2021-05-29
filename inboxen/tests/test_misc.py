@@ -23,6 +23,8 @@ from importlib import reload
 from io import StringIO
 from unittest import mock
 import ipaddress
+import pathlib
+import shutil
 import sys
 
 from django import urls
@@ -46,7 +48,9 @@ from inboxen.utils import inbox as inbox_utils
 from inboxen.utils import ip
 from inboxen.utils import misc as misc_utils
 from inboxen.utils import ratelimit
+from inboxen.utils.static import generate_maintenance_page
 from inboxen.validators import ProhibitNullCharactersValidator
+from inboxen.views import i18n as i18n_views
 from inboxen.views.error import ErrorView
 
 
@@ -731,3 +735,24 @@ class SetDefaultDeepTestCase(InboxenTestCase):
         new_cfg["hi"] = 3
 
         self.assertEqual(cfg, new_cfg)
+
+
+class I18nViewTestCase(InboxenTestCase):
+    def test_view(self):
+        response = self.client.get(urls.reverse("inboxen-i18n"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json().keys(), i18n_views.SNIPPETS.keys())
+
+
+class GenerateMainenancePageTestCase(InboxenTestCase):
+    def setUp(self):
+        shutil.rmtree(pathlib.Path(dj_settings.STATIC_ROOT, "pages"), ignore_errors=True)
+
+    def test_page_is_generated(self):
+        self.assertFalse(pathlib.Path(dj_settings.STATIC_ROOT, "pages").exists())
+        self.assertFalse(pathlib.Path(dj_settings.STATIC_ROOT, "pages", "maintenance.html").exists())
+
+        generate_maintenance_page()
+
+        self.assertTrue(pathlib.Path(dj_settings.STATIC_ROOT, "pages").exists())
+        self.assertTrue(pathlib.Path(dj_settings.STATIC_ROOT, "pages", "maintenance.html").exists())

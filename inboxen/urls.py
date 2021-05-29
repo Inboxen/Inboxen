@@ -20,7 +20,7 @@
 from django.conf import settings, urls
 from django.conf.urls.static import static
 
-from inboxen.views import attachment, email, error, home, index, manifest, stats, styleguide
+from inboxen.views import attachment, email, error, home, i18n, index, manifest, stats, styleguide
 from inboxen.views.inbox import add as inbox_add
 from inboxen.views.inbox import edit as inbox_edit
 from inboxen.views.inbox import inbox
@@ -34,6 +34,7 @@ urls.handler500 = error.server_error
 urlpatterns = [
     urls.re_path(r'^$', index.Index.as_view(), name='index'),
     urls.re_path(r'^manifest.json$', manifest.manifest, name='inboxen-manifest'),
+    urls.re_path(r'^i18n.json$', i18n.i18n, name='inboxen-i18n'),
 
     urls.re_path(r'^stats/$', stats.stats, name='stats'),
     urls.re_path(r'^stats_recent.json$', stats.stats_recent, name='stats_recent'),

@@ -6,17 +6,7 @@
 (function($){
     'use strict';
 
-    var pinned_label = '<span class="label label-warning" title="Inbox has been pinned">Pinned</span>';
-
-    function togglePinned($row) {
-        if ($row.find("span.label-warning").length === 0) {
-           $row.find("div.inbox-flags").append(pinned_label);
-        } else {
-            $row.find("span.label-warning").remove();
-        }
-    }
-
-    $(".inbox-options button[type=submit]").click(function(event) {
+    $(".inbox-options button[name=pin-inbox]").click(function(event) {
         event.preventDefault();
 
         var $this = $(this);
@@ -38,16 +28,23 @@
             complete: function(xhr, statusText) {
                 if (xhr.status === 204) {
                     var $row = $("#" + $form.data("inbox-selector"));
-                    if (button.name === "pin-inbox") {
-                        togglePinned($row);
+                    if ($row.find("span.label-warning").length === 0) {
+                        window.snippet("pinned-flag").then(function(pinned) {
+                            $row.find("div.inbox-flags").append(pinned);
+                        });
                     } else {
-                        // don't know what was pressed
-                        return;
+                        $row.find("span.label-warning").remove();
                     }
                 } else {
                     var $messageBlock = $("#alertmessages");
-                    var message = '<div class="alert alert-warning" role="alert">Something went wrong!<button type="button" class="close" data-dismiss="alert"><span class="fa fa-times" aria-hidden="true"></span><span class="sr-only">Close</span></button></div>';
-                    $messageBlock.append(message);
+                    var $msg;
+                    window.snippet("generic-error").then(function(message) {
+                        $msg = message;
+                        $messageBlock.append($msg);
+                        return window.snippet("button");
+                    }).then(function(button) {
+                        $msg.append(button);
+                    });
                 }
 
                 // finally, re-enable button
@@ -101,12 +98,16 @@
             if (is_disabled && !$inbox_row.hasClass("inbox-disabled")) {
                 $inbox_row.addClass("inbox-disabled");
                 $inbox_row.find(".inbox-flags").empty();
-                $inbox_row.find(".inbox-flags").append("<div class=\"inline-block__wrapper\"><span class=\"label label-default\" title=\"Inbox has been disabled\">Disabled</span></div>");
+                window.snippet("disabled-flag").then(function(flag) {
+                    $inbox_row.find(".inbox-flags").append(flag);
+                });
             } else if (!is_disabled && $inbox_row.hasClass("inbox-disabled")) {
                 $inbox_row.removeClass("inbox-disabled");
                 $inbox_row.find(".inbox-flags").empty();
             } else if (is_pinned && !is_disabled && $inbox_row.find("span.label-warning").length === 0) {
-               $inbox_row.find(".inbox-flags").append('<div class=\"inline-block__wrapper\"><span class="label label-warning" title="Inbox has been pinned">Pinned</span></div>');
+                window.snippet("pinned-flag").then(function(flag) {
+                    $inbox_row.find(".inbox-flags").append(flag);
+                });
             } else if (!is_pinned && !is_disabled) {
                 $inbox_row.find("span.label-warning").remove();
             }
@@ -119,8 +120,10 @@
                 $row.remove();
             });
         } else {
-            $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-            console.log("Form for " + inboxSelector + " failed to POST (" + xhr.status + ")");
+            window.snippet("generic-error").then(function(error) {
+                $this.$form.replaceWith(error);
+                console.log("Form for " + inboxSelector + " failed to POST (" + xhr.status + ")");
+            });
         }
     }
 
@@ -135,8 +138,10 @@
                     $this.$form.parents(".inbox-edit-form-row").remove();
                 }.bind(null, $this));
             } else {
-                $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-                console.log("Form failed to POST (" + xhr.status + ")");
+                window.snippet("generic-error").then(function(error) {
+                    $this.$form.replaceWith(error);
+                    console.log("Form failed to POST (" + xhr.status + ")");
+                });
             }
         }
     }
@@ -154,8 +159,10 @@
                     $("#inbox-add-form").remove();
                 });
             } else {
-                $this.$form.html("<div class=\"alert alert-info\">Sorry, something went wrong.</div>");
-                console.log("Form failed to POST (" + xhr.status + ")");
+                window.snippet("generic-error").then(function(error) {
+                    $this.$form.replaceWith(error);
+                    console.log("Form failed to POST (" + xhr.status + ")");
+                });
             }
         }
     }

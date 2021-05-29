@@ -93,3 +93,23 @@ describe("The Spinner Toggle plugin", function() {
         });
     });
 });
+
+describe("The snippet function", function() {
+    it("should be available on the window variable", function() {
+        expect(window.snippet).toBeDefined();
+    });
+
+    it("should return a string", function() {
+        return window.snippet("search-timed-out").then(function(value) {
+            expect(value).toBe("The search timed out. Please try again.");
+        });
+    });
+
+    it("should throw an error if the key does not exist", function() {
+        return window.snippet("princess").then(function(value) {
+            return Promise.reject(new Error('Promise should not be resolved:' + value));
+        }).catch(function(error) {
+            expect(error).toEqual("Snippet not found!");
+        });
+    });
+});
