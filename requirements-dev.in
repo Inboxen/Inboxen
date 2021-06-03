@@ -1,5 +1,0 @@
--r inboxen/data/requirements.in
-coverage
-django-debug-toolbar
-tox
-isort

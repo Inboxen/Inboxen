@@ -1,40 +1,31 @@
-PID_FOLDER := /var/run/inboxen
-
-##
-# Dev
-##
-
 # this rule should be the default
 .PHONY: dev-setup
-dev-setup: install-dev-deps
+dev-setup: install-deps
 	mkdir -p logs run
-	$(MAKE) static
-	./manage.py
+	$(MAKE) static-local
 	./manage.py migrate
 	touch inboxen/wsgi.py
-	echo "You're now set for Inboxen development."
-	echo "If you require salmon, run 'make salmon-start'"
-	echo "If you require celery, run 'make celery-start'"
+	$(info You're now set for Inboxen development)
 
-.PHONY: install-dev-deps
-install-dev-deps: install-dev-py-deps install-js-deps
+.PHONY: install-deps
+install-deps: install-py-deps install-js-deps
 
-.PHONY: install-dev-py-deps
-install-dev-py-deps:
-	pip-sync requirements-dev.txt || pip install -r requirements-dev.txt
+.PHONY: install-py-deps
+install-py-deps:
+	pip install -U -e .
 
 .PHONY: install-js-deps
 install-js-deps:
 	npm install
 
 .PHONY: tests-py
-tests-py: install-dev-deps
-	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
-	./manage.py test --noinput
+tests-py: install-deps
+	DJANGO_SETTINGS_MODULE=inboxen.tests.settings$(MAKE) static-local
+	./manage.py test
 
 .PHONY: tests-py-coverage
-tests-py-coverage: install-dev-deps
-	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
+tests-py-coverage: install-deps
+	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static-local
 	pip install coverage
 	coverage run --branch ./manage.py test
 	coverage report
@@ -42,76 +33,33 @@ tests-py-coverage: install-dev-deps
 	coverage xml
 
 .PHONY: tests-js
-tests-js: install-dev-deps
+tests-js: install-deps
 	npx grunt tests
-
-##
-# Update requirements
-##
-
-.PHONY: udpate-requirements
-update-requirements: update-py-requirements update-js-requirements
-
-.PHONY: update-py-requirements
-update-py-requirements:
-	pip-compile -U -o requirements.txt inboxen/data/requirements.in
-	pip-compile -U -o requirements-dev.txt requirements-dev.in
-	pip-compile -U -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
-
-.PHONY: new-py-requirements
-new-py-requirements:
-	pip-compile -o requirements.txt inboxen/data/requirements.in
-	pip-compile -o requirements-dev.txt requirements-dev.in
-	pip-compile -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
 
 .PHONY: update-js-requirements
 update-js-requirements:
 	npm update
 	npm audit fix
 
-##
-# Static assets
-##
-
 .PHONY: static
 static:
 	npx grunt
+
+.PHONY: static-local
+static-local: static
 	./manage.py compilemessages
 	./manage.py collectstatic --clear --noinput
 
-##
-# Daemon control
-##
+.PHONY: release
+release: install-deps
+	[[ -z `git status --porcelain` ]] || (echo "git repo is dirty, commit your changes first!"; exit 1)
+	_scripts/release-prep.sh
+	$(MAKE) static
+	# maybe in the future
+	#python setup.py sdist
+	#twine check dist/*
+	#twine upload dist/*
 
-.PHONY: celery-stop
-celery-stop:
-	-kill `cat $(PID_FOLDER)/worker.pid`
-	-kill `cat $(PID_FOLDER)/beat.pid`
-	sleep 5
-	test ! -f $(PID_FOLDER)/worker.pid
-	test ! -f $(PID_FOLDER)/beat.pid
-
-
-.PHONY: celery-start
-celery-start:
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn --events --detach -Ofair -f logs/celery-worker.log --pidfile $(PID_FOLDER)/worker.pid
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warn --detach -f logs/celery-beat.log --pidfile $(PID_FOLDER)/beat.pid
-
-.PHONY: salmon-stop
-salmon-stop:
-	-SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon stop --pid $(PID_FOLDER)/router.pid
-	sleep 5
-	test ! -f $(PID_FOLDER)/router.pid
-
-.PHONY: salmon-start
-salmon-start:
-	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon start --pid $(PID_FOLDER)/router.pid --boot inboxen.router.config.boot
-	sleep 5
-	SALMON_SETTINGS_MODULE=inboxen.router.config.settings salmon status --pid $(PID_FOLDER)/router.pid
-
-##
-# Includes
-##
-
-include extra/makefiles/watermleon.mk
--include local.mk
+.PHONY: version
+version:
+	git describe --dirty
