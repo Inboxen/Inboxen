@@ -22,57 +22,29 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from inboxen import models
+from inboxen.liberation import models
 from inboxen.liberation.tasks import liberate as data_liberate
 
 
 class LiberationForm(forms.ModelForm):
     class Meta:
         model = models.Liberation
-        fields = []
+        fields = ["compression_type", "storage_type"]
 
-    STORAGE_TYPES = (
-        (0, _("Maildir")),
-        (1, _("Mailbox .mbox")),
-    )
-
-    # Could we support zip files?
-    COMPRESSION_TYPES = (
-        (0, _("Tarball (gzip compressed)")),
-        (1, _("Tarball (bzip2 compression)")),
-        (2, _("Tarball (no compression)")),
-    )
-
-    storage_type = forms.ChoiceField(choices=STORAGE_TYPES)
-    compression_type = forms.ChoiceField(choices=COMPRESSION_TYPES)
-
-    def __init__(self, user, initial=None, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.user = user
         self.user = user
-        if not initial:
-            initial = {
-                "storage_type": 0,
-                "compression_type": 0,
-            }
-
-        super().__init__(initial=initial, *args, **kwargs)
 
     def clean(self):
         cleaned_data = super().clean()
-        if not self.user.liberation.can_request_another:
+        if not self.user.liberation_set.all().can_request_another():
             raise ValidationError("You cannot request another archive so soon!")
         return cleaned_data
 
     def save(self):
-        lib_status = self.user.liberation
-        lib_status.running = True
-        lib_status.started = timezone.now()
-
-        result = data_liberate.apply_async(
-            kwargs={"user_id": self.user.id, "options": self.cleaned_data},
+        self.instance.save()
+        data_liberate.apply_async(
+            kwargs={"liberation_id": self.instance.id},
             countdown=10
         )
-
-        lib_status.async_result = result.id
-        lib_status.save()
-
-        return self.user

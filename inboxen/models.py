@@ -87,6 +87,17 @@ class UserProfile(models.Model):
     quota_percent_usage = models.PositiveSmallIntegerField(default=0)
     receiving_emails = models.BooleanField(default=True)
 
+    def get_liberation_data(self):
+        return {
+            "prefer_html_email": self.prefer_html_email,
+            "prefered_domain": str(self.prefered_domain) if self.prefered_domain else None,
+            "display_images": self.display_images,
+            "auto_delete": self.auto_delete,
+            "quota_options": self.quota_options,
+            "quota_percent_usage": self.quota_percent_usage,
+            "receiving_emails": self.receiving_emails,
+        }
+
     def get_bools_for_labels(self):
         yield ("new", self.unified_has_new_messages)
 
@@ -104,50 +115,6 @@ class Statistic(models.Model):
 
     def __str__(self):
         return str(self.date)
-
-
-class Liberation(models.Model):
-    """Liberation data
-
-    `async_result` is the UUID of Celery result object, which may or may not be valid
-    `_path` is relative to settings.SENDFILE_ROOT
-    """
-    user = AutoOneToOneField(settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE)
-    content_type = models.PositiveSmallIntegerField(default=0)
-    async_result = models.UUIDField(null=True)
-    started = models.DateTimeField(null=True)
-    last_finished = models.DateTimeField(null=True)
-    _path = models.CharField(max_length=255, null=True, unique=True,
-                             validators=[validators.ProhibitNullCharactersValidator()])
-
-    running = models.BooleanField(default=False)
-    errored = models.BooleanField(default=False)
-
-    TIME_BETWEEN = timedelta(days=7)
-
-    @property
-    def path(self):
-        if self._path is None:
-            return None
-        return os.path.join(settings.SENDFILE_ROOT, self._path)
-
-    @path.setter
-    def path(self, path):
-        assert path[0] != "/", "path should be relative, not absolute"
-        self._path = os.path.join(settings.SENDFILE_ROOT, path)
-
-    @property
-    def can_request_another(self):
-        if self.running:
-            return False
-        elif self.started is None or self.last_finished is None:
-            return True
-
-        now = timezone.now()
-        return now - self.started > self.TIME_BETWEEN and now - self.last_finished > self.TIME_BETWEEN
-
-    def __str__(self):
-        return u"Liberation for %s" % self.user
 
 
 ##

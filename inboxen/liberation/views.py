@@ -19,55 +19,45 @@
 
 from django import http
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views import generic
 from django_sendfile import sendfile
 
-from inboxen.liberation import forms
-from inboxen.liberation.tasks import TAR_TYPES
+from inboxen.liberation import forms, models
 
 
-class LiberationView(LoginRequiredMixin, generic.UpdateView):
-    form_class = forms.LiberationForm
-    success_url = reverse_lazy('user-home')
-    template_name = "liberation/liberate.html"
+@login_required
+def liberation(request):
+    if request.method == "POST":
+        form = forms.LiberationForm(request.POST, user=request.user)
+        if form.is_valid():
+            messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
+            return http.HttpRedirectResponse(reverse('user-home'))
+    else:
+        form = forms.LiberationForm(user=requset.user)
 
-    def get_object(self, queryset=None):
-        return self.request.user.liberation
-
-    def get_form_kwargs(self, **kwargs):
-        kwargs = super(LiberationView, self).get_form_kwargs(**kwargs)
-        kwargs.setdefault("user", self.request.user)
-        return kwargs
-
-    def form_valid(self, form, *args, **kwargs):
-        output = super(LiberationView, self).form_valid(form, *args, **kwargs)
-        messages.success(self.request, _("Fetching all your data. This may take a while, so check back later!"))
-        return output
+    lib_obj = request.user.liberation_set.all().first()
+    can_request_another = request.user.liberation_set.all().can_request_another()
+    return TemplateResponse(request, "liberation/liberate.html", {"form": form,
+                                                                  "object": lib_obj,
+                                                                  "can_request_another": can_request_another})
 
 
-class LiberationDownloadView(LoginRequiredMixin, generic.detail.BaseDetailView):
-    def get_object(self):
-        liberation = self.request.user.liberation
+@login_required
+def liberation_download(request):
+    lib_obj = request.user.liberation_set.all().finished().first()
+    if lib_obj is None:
+        raise http.Http404
+    content_type = models.Liberation.ARCHIVE_TYPES[lib_obj.content_type]["mime-type"]
+    filename = "liberated_data.{ext}".format(ext=models.Liberation.ARCHIVE_TYPES[lib_obj.content_type]["ext"])
 
-        if liberation.path is None:
-            raise http.Http404
-
-        return liberation
-
-    def render_to_response(self, context):
-        content_type = TAR_TYPES[str(self.object.content_type)]["mime-type"]
-
-        filename = "liberated_data.{ext}".format(ext=TAR_TYPES[str(self.object.content_type)]["ext"])
-
-        response = sendfile(
-            request=self.request,
-            filename=self.object.path,
-            attachment=True,
-            attachment_filename=filename,
-            mimetype=content_type
-        )
-        del response["Content-Encoding"]
-        return response
+    response = sendfile(
+        request=self.request,
+        filename=lib_obj.path,
+        attachment=True,
+        attachment_filename=filename,
+        mimetype=content_type
+    )
+    return response
