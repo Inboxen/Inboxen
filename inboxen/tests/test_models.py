@@ -128,7 +128,6 @@ class ModelTestCase(InboxenTestCase):
             other_user.inbox_set.from_string(email=email)
 
     def test_inbox_receiving(self):
-
         # all the permutations of Inboxes that can receive
         params = (
             [True, False],  # domain enabled
@@ -282,6 +281,29 @@ class ModelTestCase(InboxenTestCase):
         self.assertEqual(body1[0].id, body2[0].id)
         self.assertTrue(body1[1])
         self.assertFalse(body2[1])
+
+    def test_liberation_can_request_another(self):
+        # it's just a smoke test for now
+        now = timezone.now()
+        user = factories.UserFactory()
+        params = (
+            [True, False],  # running
+            [None, now - datetime.timedelta(days=8), now - datetime.timedelta(days=6)],  # started
+            [None, now - datetime.timedelta(days=8), now - datetime.timedelta(days=6)],  # last_finished
+        )
+        results = []
+        for args in itertools.product(*params):
+            lib = models.Liberation(
+                user=user,
+                running=args[0],
+                started=args[1],
+                last_finished=args[2],
+            )
+            results.append(lib.can_request_another)
+
+        self.assertEqual(len(results), 18)
+        self.assertEqual(results.count(True), 6)
+        self.assertEqual(results.count(False), 12)
 
 
 class ModelReprTestCase(InboxenTestCase):

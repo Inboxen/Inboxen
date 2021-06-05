@@ -28,10 +28,14 @@
         </div>
     </div>
     {% endif %}
-    <form class="form" action="{% url 'user-liberate' %}" method="POST">
-        {% csrf_token %}
-        {{ form|bootstrap }}
-        <button class="btn btn-primary">{% trans "Liberate!" %}</button>
-    </form>
+    {% if object.can_request_another %}
+        <form class="form" action="{% url 'user-liberate' %}" method="POST">
+            {% csrf_token %}
+            {{ form|bootstrap }}
+            <button class="btn btn-primary">{% trans "Liberate!" %}</button>
+        </form>
+    {% else %}
+    <p>{% trans "You've already made a request for your archive recently" %}</p>
+    {% endif %}
 {% endif %}
 {% endblock %}
