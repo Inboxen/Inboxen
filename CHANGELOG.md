@@ -1,5 +1,13 @@
 # Releases
 
+Deploy for 2021-06-25T22-51-26
+------------------------------
+
+- Update to Django 3.2
+- Fix copying inbox address (#584)
+- Strings in JS are now translatable
+- Data liberation is now limited to once a week per user
+
 Deploy for 2021-04-05T20-51-52
 ------------------------------
 
