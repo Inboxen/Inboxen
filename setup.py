@@ -38,7 +38,7 @@ setup(
         "celery<5,!=4.4.7",
         "django-annoying",
         "django-bootstrap-form",
-        "django-celery-results",
+        "django-celery-results<2.1",
         "django-csp>3.0",
         # vendored until 0.1.5 has been released
         # "django-cursor-pagination",
