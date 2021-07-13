@@ -49,6 +49,8 @@ from inboxen.test import InboxenTestCase, MockRequest
 from inboxen.tests import factories
 from inboxen.tests.example_emails import (EXAMPLE_ALT, EXAMPLE_DIGEST, EXAMPLE_MISSING_CTE,
                                           EXAMPLE_PREMAILER_BROKEN_CSS, EXAMPLE_SIGNED_FORWARDED_DIGEST)
+from inboxen.tickets.models import Question
+from inboxen.tickets.tests import QuestionFactory, ResponseFactory
 
 
 class LiberateTestCase(InboxenTestCase):
@@ -154,8 +156,11 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
             profile_data = json.load(profile_file)
         with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
             inbox_data = json.load(inbox_file)
+        with open(os.path.join(self.mail_dir, "questions.json")) as questions_file:
+            question_data = json.load(questions_file)
 
         self.assertEqual(inbox_data, {})
+        self.assertEqual(question_data, [])
         self.assertEqual(profile_data, {
             "id": self.user.id,
             "username": self.user.username,
@@ -179,7 +184,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
             profile_data = json.load(profile_file)
         with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
             inbox_data = json.load(inbox_file)
+        with open(os.path.join(self.mail_dir, "questions.json")) as questions_file:
+            questions_data = json.load(questions_file)
 
+        self.assertEqual(questions_data, [])
         self.assertEqual(inbox_data, {
             str(box): {
                 "created": box.created.isoformat(),
@@ -218,7 +226,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
             profile_data = json.load(profile_file)
         with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
             inbox_data = json.load(inbox_file)
+        with open(os.path.join(self.mail_dir, "questions.json")) as questions_file:
+            question_data = json.load(questions_file)
 
+        self.assertEqual(question_data, [])
         self.assertEqual(inbox_data, {})
         self.assertEqual(profile_data, {
             "id": self.user.id,
@@ -245,7 +256,10 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
             profile_data = json.load(profile_file)
         with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
             inbox_data = json.load(inbox_file)
+        with open(os.path.join(self.mail_dir, "questions.json")) as questions_file:
+            question_data = json.load(questions_file)
 
+        self.assertEqual(question_data, [])
         self.assertEqual(inbox_data, {})
         self.assertEqual(profile_data, {
             "id": self.user.id,
@@ -260,6 +274,110 @@ class LiberateFetchInfoTestCase(InboxenTestCase):
                 "display_images": 0,
             }
         })
+
+    def test_liberate_fetch_questions(self):
+        other_user = factories.UserFactory(username="notme")
+        QuestionFactory.create_batch(2, author=self.user, status=Question.NEW)
+        QuestionFactory.create_batch(2, author=other_user, status=Question.RESOLVED)
+
+        questions = Question.objects.filter(author=self.user)
+        response = ResponseFactory(question=questions[0], author=other_user)
+        response.save()
+
+        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
+        with open(os.path.join(self.mail_dir, "profile.json")) as profile_file:
+            profile_data = json.load(profile_file)
+        with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
+            inbox_data = json.load(inbox_file)
+        with open(os.path.join(self.mail_dir, "questions.json")) as questions_file:
+            question_data = json.load(questions_file)
+
+        self.assertEqual(inbox_data, {})
+        self.assertEqual(profile_data, {
+            "id": self.user.id,
+            "username": self.user.username,
+            "is_active": self.user.is_active,
+            "join_date": self.user.date_joined.isoformat(),
+            "groups": [],
+            "errors": [],
+            "preferences": {
+                "prefer_html_email": True,
+                "prefered_domain": None,
+                "display_images": 0,
+            }
+        })
+        self.assertEqual(question_data, [
+            {
+                "subject": questions[0].subject,
+                "author": self.user.username,
+                "date": questions[0].date.isoformat(),
+                "last_modified": questions[0].last_modified.isoformat(),
+                "status": questions[0].get_status_display(),
+                "body": questions[0].body,
+                "responses": [
+                    {
+                        "author": other_user.username,
+                        "date": response.date.isoformat(),
+                        "body": response.body,
+                    }
+                ]
+            },
+            {
+                "subject": questions[1].subject,
+                "author": self.user.username,
+                "date": questions[1].date.isoformat(),
+                "last_modified": questions[1].last_modified.isoformat(),
+                "status": questions[1].get_status_display(),
+                "body": questions[1].body,
+                "responses": []
+            }
+        ])
+
+    def test_liberate_fetch_questions_user_deleted(self):
+        other_user = factories.UserFactory(username="notme")
+        question = QuestionFactory(author=self.user, status=Question.NEW)
+        question.save()
+
+        response = ResponseFactory(question=question, author=other_user)
+        response.save()
+
+        other_user.delete()
+
+        tasks.liberate_fetch_info(None, {"user": self.user.id, "path": self.mail_dir})
+        with open(os.path.join(self.mail_dir, "profile.json")) as profile_file:
+            profile_data = json.load(profile_file)
+        with open(os.path.join(self.mail_dir, "inbox.json")) as inbox_file:
+            inbox_data = json.load(inbox_file)
+        with open(os.path.join(self.mail_dir, "questions.json")) as questions_file:
+            question_data = json.load(questions_file)
+
+        self.assertEqual(inbox_data, {})
+        self.assertEqual(profile_data, {
+            "id": self.user.id,
+            "username": self.user.username,
+            "is_active": self.user.is_active,
+            "join_date": self.user.date_joined.isoformat(),
+            "groups": [],
+            "errors": [],
+            "preferences": {
+                "prefer_html_email": True,
+                "prefered_domain": None,
+                "display_images": 0,
+            }
+        })
+        self.assertEqual(question_data, [{
+            "subject": question.subject,
+            "author": self.user.username,
+            "date": question.date.isoformat(),
+            "last_modified": question.last_modified.isoformat(),
+            "status": question.get_status_display(),
+            "body": question.body,
+            "responses": [{
+                "author": None,
+                "date": response.date.isoformat(),
+                "body": response.body,
+            }]
+        }])
 
 
 class LiberateNewUserTestCase(InboxenTestCase):
