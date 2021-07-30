@@ -38,10 +38,7 @@ class SettingsTestCase(InboxenTestCase):
         for args in itertools.product([True, False], [self.user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self):
         return urls.reverse("user-settings")
@@ -102,8 +99,7 @@ class SettingsTestCase(InboxenTestCase):
         form = SettingsForm(request)
 
         for domain in form.fields["prefered_domain"].queryset:
-            if domain.owner != self.user and domain.owner is not None:
-                self.fail("Domain shouldn't be available")
+            self.assertTrue(domain.owner == self.user or domain.owner is None)
 
 
 class UsernameChangeTestCase(InboxenTestCase):
@@ -111,10 +107,7 @@ class UsernameChangeTestCase(InboxenTestCase):
         super(UsernameChangeTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self):
         return urls.reverse("user-username")
@@ -201,10 +194,7 @@ class DeleteTestCase(InboxenTestCase):
         super(DeleteTestCase, self).setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self):
         return urls.reverse("user-delete")
@@ -244,10 +234,7 @@ class PasswordChangeTestCase(InboxenTestCase):
         super().setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self):
         return urls.reverse("user-password")
@@ -289,10 +276,7 @@ class SudoTestCase(InboxenTestCase):
         super().setUp()
         self.user = factories.UserFactory()
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.sudo_protected_url = urls.reverse("user-delete")
         self.sudo_url = urls.reverse("user-sudo")

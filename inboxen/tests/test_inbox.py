@@ -148,11 +148,7 @@ class SingleInboxTestCase(InboxTestAbstract, InboxenTestCase):
     """Test Inbox specific views"""
     def setUp(self):
         self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.inbox = factories.InboxFactory(user=self.user)
         self.emails = factories.EmailFactory.create_batch(30, inbox=self.inbox)
@@ -173,11 +169,7 @@ class UnifiedInboxTestCase(InboxTestAbstract, InboxenTestCase):
     """Test Unified Inbox specific views"""
     def setUp(self):
         self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.emails = factories.EmailFactory.create_batch(30, inbox__user=self.user)
         self.not_mine = factories.EmailFactory.create()
@@ -196,15 +188,12 @@ class InboxAddTestCase(InboxenTestCase):
     def setUp(self):
         """Create the client and grab the user"""
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.other_user = factories.UserFactory(username="lalna")
 
         for args in itertools.product([True, False], [self.user, self.other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return urls.reverse("inbox-add")
@@ -306,15 +295,12 @@ class InboxAddInlineTestCase(InboxenTestCase):
     def setUp(self):
         """Create the client and grab the user"""
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         other_user = factories.UserFactory(username="lalna")
 
         for args in itertools.product([True, False], [self.user, other_user, None]):
             factories.DomainFactory(enabled=args[0], owner=args[1])
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return urls.reverse("form-inbox-add")
@@ -344,12 +330,9 @@ class InboxEditTestCase(InboxenTestCase):
         """Create the client and grab the user"""
         super(InboxEditTestCase, self).setUp()
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.inbox = factories.InboxFactory(user=self.user)
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return urls.reverse("inbox-edit",
@@ -410,12 +393,9 @@ class InboxInlineEditTestCase(InboxenTestCase):
         """Create the client and grab the user"""
         super(InboxInlineEditTestCase, self).setUp()
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.inbox = factories.InboxFactory(user=self.user)
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return urls.reverse("form-inbox-edit",
@@ -474,11 +454,7 @@ class InboxEmailEditTestCase(InboxenTestCase):
     """Test the post only email edit view"""
     def setUp(self):
         self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.inbox = factories.InboxFactory(user=self.user)
         self.emails = factories.EmailFactory.create_batch(30, inbox=self.inbox)
@@ -608,17 +584,14 @@ class InboxDeleteTestCase(InboxenTestCase):
 class SearchViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-        self.inbox = factories.InboxFactory(user=self.user)
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+        self.inbox = factories.InboxFactory(user=self.user)
 
         self.url = urls.reverse("single-inbox-search", kwargs={"q": "cheddär",
                                                                "inbox": self.inbox.inbox,
                                                                "domain": self.inbox.domain.domain})
         self.key = create_search_cache_key(self.user.id, "cheddär", "inbox:{}".format(self.inbox), None, None)
-
-        if not login:
-            raise Exception("Could not log in")
 
     def test_context(self):
         cache.set(self.key, {"results": []})

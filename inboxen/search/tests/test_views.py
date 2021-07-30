@@ -33,17 +33,13 @@ from inboxen.tests import factories
 class SearchApiViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.key = create_search_cache_key(self.user.id, "cheddår", "inboxen.Inbox",  None, None)
         self.url = "%s?token=%s" % (
             urls.reverse("search:api"),
             self.key,
         )
-
-        if not login:
-            raise Exception("Could not log in")
 
     def test_no_get(self):
         response = self.client.get(self.url)

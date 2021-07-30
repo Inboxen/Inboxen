@@ -36,13 +36,11 @@ class HomeViewTestCase(InboxenTestCase):
     def setUp(self):
         super(HomeViewTestCase, self).setUp()
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         domain = factories.DomainFactory()
         self.inboxes = factories.InboxFactory.create_batch(30, domain=domain, user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return urls.reverse("user-home")
@@ -211,14 +209,10 @@ class HomeViewTestCase(InboxenTestCase):
 class SearchViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         self.url = urls.reverse("user-home-search", kwargs={"q": "cheddär"})
         self.key = create_search_cache_key(self.user.id, "cheddär", "home", None, None)
-
-        if not login:
-            raise Exception("Could not log in")
 
     def test_context(self):
         cache.set(self.key, {"results": []})

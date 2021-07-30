@@ -291,11 +291,7 @@ class LiberateNewUserTestCase(InboxenTestCase):
 class LiberateViewTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self):
         return urls.reverse("user-liberate")
@@ -358,10 +354,7 @@ class MakeMessageUtilTestCase(InboxenTestCase):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def test_digest(self):
         msg = mail.MailRequest("", "", "", EXAMPLE_DIGEST)
@@ -437,6 +430,7 @@ class MakeMessageUtilTestCase(InboxenTestCase):
             "x-uue": check_uu,
         }
         ascii_encodings = {
+            None: check_noop,
             "7-bit": check_noop,
             "8-bit": check_noop,
             "9-bit": check_unknown,  # unknown encoding
@@ -464,11 +458,7 @@ class MakeMessageUtilTestCase(InboxenTestCase):
         for message_part in message_object.walk():
             ct = message_part.get("Content-Type", None)
             cte = message_part.get("Content-Transfer-Encoding", None)
-            if ct is None:
-                # default is to assume 7-bit
-                check_noop(message_part, ascii_body_data)
-                self.assertEqual(message_part.get_payload(decode=True), ascii_body_data)
-            elif ct.startswith("multipart/mixed"):
+            if ct.startswith("multipart/mixed"):
                 pass
             elif cte in ascii_encodings:
                 encodings[cte](message_part, ascii_body_data)
@@ -499,10 +489,7 @@ def check_unknown(msg, data):
 
 def check_base64(msg, data):
     assert msg._payload.encode() != data, "Payload has not been transformed"
-    try:
-        payload = base64.standard_b64decode(msg._payload)
-    except TypeError:
-        assert False, "Payload could not be decoded"
+    payload = base64.standard_b64decode(msg._payload)
     assert payload == data, "Decoded payload does not match input data"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"
@@ -519,11 +506,8 @@ def check_uu(msg, data):
     assert msg._payload.encode() != data, "Payload has not been transformed"
 
     outfile = BytesIO()
-    try:
-        uu.decode(BytesIO(msg._payload.encode()), outfile)
-        payload = outfile.getvalue()
-    except uu.Error:
-        assert False, "Payload could not be decoded"
+    uu.decode(BytesIO(msg._payload.encode()), outfile)
+    payload = outfile.getvalue()
     assert payload == data, "Decoded payload does not match input data"
 
     assert INBOXEN_ENCODING_ERROR_HEADER_NAME not in msg.keys(), "Unexpected error header"

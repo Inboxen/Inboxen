@@ -26,10 +26,7 @@ from inboxen.tests import factories
 class OtpTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def test_sudo_required(self):
         test_urls = [
@@ -44,20 +41,14 @@ class OtpTestCase(InboxenTestCase):
 
         for url in test_urls:
             response = self.client.get(url)
-            try:
-                self.assertEqual(response.status_code, 302)
-                self.assertEqual(response["Location"], "{}?next={}".format(urls.reverse("user-sudo"), url))
-            except AssertionError as exp:
-                raise AssertionError("{} did not redirect correcrlty: {}".format(url, exp))
+            self.assertEqual(response["Location"], "{}?next={}".format(urls.reverse("user-sudo"), url))
+            self.assertEqual(response.status_code, 302)
 
         grant_sudo(self.client)
 
         for url in test_urls:
             response = self.client.get(url)
-            try:
-                self.assertIn(response.status_code, [200, 404])
-            except AssertionError as exp:
-                raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
+            self.assertIn(response.status_code, [200, 404])
 
     def test_otp_required(self):
         test_urls = [
@@ -70,20 +61,14 @@ class OtpTestCase(InboxenTestCase):
 
         for url in test_urls:
             response = self.client.get(url)
-            try:
-                self.assertEqual(response.status_code, 302)
-                self.assertEqual(response["Location"], "{}?next={}".format(urls.reverse("user-login"), url))
-            except AssertionError as exp:
-                raise AssertionError("{} did not give an expected response code: {}".format(url, exp))
+            self.assertEqual(response["Location"], "{}?next={}".format(urls.reverse("user-login"), url))
+            self.assertEqual(response.status_code, 302)
 
 
 class SetupTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def test_missing_mgmt_data(self):
         grant_sudo(self.client)
@@ -108,10 +93,7 @@ class SetupTestCase(InboxenTestCase):
 class BackupDownloadTestCase(InboxenTestCase):
     def setUp(self):
         self.user = factories.UserFactory()
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         grant_sudo(self.client)
         grant_otp(self.client, self.user)

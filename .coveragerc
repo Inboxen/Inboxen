@@ -2,13 +2,12 @@
 source = .
 omit =
     */migrations/*
-    */tests.py
-    */tests/*
     docs/*
     env/*
     env3/*
     inboxen/_vendor
     inboxen/_version.py
+    inboxen/wsgi.py
     lib/*
     lib64/*
     manage.py

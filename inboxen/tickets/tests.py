@@ -64,17 +64,14 @@ class QuestionViewTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionViewTestCase, self).setUp()
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.other_user = factories.UserFactory(username="tester")
 
         QuestionFactory.create_batch(11, author=self.user, status=models.Question.NEW)
         QuestionFactory.create_batch(3, author=self.other_user, status=models.Question.RESOLVED)
 
         self.page = AppPage.objects.get(app="tickets.urls")
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return app_reverse(self.page, "tickets-index")
@@ -154,15 +151,12 @@ class QuestionDetailTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionDetailTestCase, self).setUp()
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.other_user = factories.UserFactory(username="tester")
 
         self.question = QuestionFactory(author=self.user, status=models.Question.NEW)
         self.page = AppPage.objects.get(app="tickets.urls")
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return app_reverse(self.page, "tickets-detail", kwargs={"pk": self.question.pk})
@@ -197,15 +191,11 @@ class QuestionListTestCase(InboxenTestCase):
     def setUp(self):
         super(QuestionListTestCase, self).setUp()
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
         QuestionFactory.create_batch(30, author=self.user, status=models.Question.NEW)
 
         self.page = AppPage.objects.get(app="tickets.urls")
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         return app_reverse(self.page, "tickets-list", kwargs={"status": "open"})

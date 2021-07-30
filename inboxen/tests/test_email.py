@@ -47,17 +47,14 @@ class EmailViewTestCase(InboxenTestCase):
         super(EmailViewTestCase, self).setUp()
 
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.email = factories.EmailFactory(inbox__user=self.user)
         body = factories.BodyFactory(data=BODY)
         part = factories.PartListFactory(email=self.email, body=body)
         factories.HeaderFactory(part=part, name="From")
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"utf-8\"")
-
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def get_url(self):
         kwargs = {
@@ -249,10 +246,7 @@ class BadEmailTestCase(InboxenTestCase):
         factories.HeaderFactory(part=part, name="Subject")
         factories.HeaderFactory(part=part, name="Content-Type", data="text/html; charset=\"ascii\"")
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self, email=None):
         if email is None:
@@ -329,10 +323,7 @@ class RealExamplesTestCase(InboxenTestCase):
         self.user = factories.UserFactory()
         self.inbox = factories.InboxFactory(user=self.user)
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def get_url(self):
         kwargs = {
@@ -432,10 +423,7 @@ class AttachmentTestCase(InboxenTestCase):
         self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type",
                                                               data="text/html; charset=\"utf-8\"")
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
 
     def test_no_name(self):
         url = urls.reverse("email-attachment", kwargs={"attachmentid": self.part.id})
@@ -615,16 +603,14 @@ class DownloadTestCase(InboxenTestCase):
         super().setUp()
 
         self.user = factories.UserFactory()
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
         self.email = factories.EmailFactory(inbox__user=self.user)
         body = factories.BodyFactory(data=BODY)
         self.part = factories.PartListFactory(email=self.email, body=body)
         self.content_type_header, _ = factories.HeaderFactory(part=self.part, name="Content-Type",
                                                               data="text/html; charset=\"utf-8\"")
 
-        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
-
-        if not login:
-            raise Exception("Could not log in")
 
     def test_not_email(self):
         url = urls.reverse("download-email-view", kwargs={"email": self.email.eid + "1",  # not a valid eid
