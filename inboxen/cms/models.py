@@ -282,32 +282,6 @@ class PersonInfo(models.Model):
     ordinal = models.IntegerField(null=True, blank=True, editable=False)
     name = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
     body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])
-    image = models.ForeignKey(
-        "cms.Image",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )
 
     class Meta:
         ordering = ["ordinal"]
-
-
-class Image(models.Model):
-    title = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
-
-    file = models.ImageField(width_field="width", height_field="height")
-    width = models.IntegerField(editable=False)
-    height = models.IntegerField(editable=False)
-
-    created = models.DateTimeField(auto_now_add=True)
-    collection = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
-    uploaded_by_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        null=True,
-        blank=True,
-        editable=False,
-        on_delete=models.SET_NULL,
-        related_name="cms_images",
-    )
