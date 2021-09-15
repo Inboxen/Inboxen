@@ -94,8 +94,8 @@ celery-stop:
 
 .PHONY: celery-start
 celery-start:
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn --events --detach -Ofair -f logs/celery-worker.log --pidfile $(PID_FOLDER)/worker.pid
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warn --detach -f logs/celery-beat.log --pidfile $(PID_FOLDER)/beat.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warning --events --detach -Ofair -f logs/celery-worker.log --pidfile $(PID_FOLDER)/worker.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warning --detach -f logs/celery-beat.log --pidfile $(PID_FOLDER)/beat.pid
 
 .PHONY: salmon-stop
 salmon-stop:
