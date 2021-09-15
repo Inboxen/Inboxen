@@ -26,7 +26,7 @@ certifi==2021.5.30
     # via requests
 chardet==4.0.0
     # via salmon-mail
-charset-normalizer==2.0.4
+charset-normalizer==2.0.5
     # via requests
 click==7.1.2
     # via
@@ -83,7 +83,7 @@ django-js-asset==1.2.2
     # via django-mptt
 django-mptt==0.13.3
     # via inboxen
-django-otp==1.1.0
+django-otp==1.1.1
     # via
     #   django-two-factor-auth
     #   inboxen
@@ -99,7 +99,7 @@ docutils==0.17.1
     # via python-daemon
 factory-boy==3.2.0
     # via inboxen
-faker==8.12.1
+faker==8.12.2
     # via factory-boy
 filelock==3.0.12
     # via

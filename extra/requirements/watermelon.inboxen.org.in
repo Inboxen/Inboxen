@@ -2,3 +2,6 @@
 pylibmc
 lxml<4.3.0
 nodeenv==1.3.3
+setuptools
+wheel
+dnspython<2.1
