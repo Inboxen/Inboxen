@@ -114,7 +114,7 @@ module.exports = function(grunt) {
                     "<%= dirs.js %>/tests/*.js"
                 ]
             },
-            chrome: {
+            chromium: {
                 singleRun: true,
                 browsers: ["ChromiumMaybeHeadless"]
             },
@@ -122,7 +122,7 @@ module.exports = function(grunt) {
                 singleRun: true,
                 browsers: ["Firefox"]
             },
-            chromeDebug: {
+            chromiumDebug: {
                 singleRun: false,
                 browsers: ["ChromiumMaybeHeadless"]
             },
