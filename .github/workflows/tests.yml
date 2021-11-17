@@ -61,7 +61,7 @@ jobs:
       matrix:
         script:
             - "karma:firefox"
-            - "karma:chrome"
+            - "karma:chromium"
             - "jshint"
     env:
       MOZ_HEADLESS: 1
@@ -71,6 +71,6 @@ jobs:
         with:
           node-version: '10'
       - run: npm install
-      - run: npx grunt ${{ matrix.script }}
+      - run: CHROMIUM_BIN=$(which chrome) npx grunt ${{ matrix.script }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1

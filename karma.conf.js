@@ -4,12 +4,12 @@ function browserNormaliser(browser) {
 
 module.exports = function(config) {
     var chromeOpts = {
-        base: "Chrome"
+        base: "Chromium"
     };
 
     if (process.env.CI) {
         chromeOpts = {
-            base: "ChromeHeadless",
+            base: "ChromiumHeadless",
             flags: ["--no-sandbox"]
         };
     }
@@ -23,7 +23,7 @@ module.exports = function(config) {
         logLevel: config.LOG_INFO,
         frameworks: ['jasmine'],
         customLaunchers: {
-            ChromeMaybeHeadless: chromeOpts
+            ChromiumMaybeHeadless: chromeOpts
         },
         reporters: reporters,
         coverageReporter: {

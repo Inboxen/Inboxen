@@ -116,7 +116,7 @@ module.exports = function(grunt) {
             },
             chrome: {
                 singleRun: true,
-                browsers: ["ChromeMaybeHeadless"]
+                browsers: ["ChromiumMaybeHeadless"]
             },
             firefox: {
                 singleRun: true,
@@ -124,7 +124,7 @@ module.exports = function(grunt) {
             },
             chromeDebug: {
                 singleRun: false,
-                browsers: ["ChromeMaybeHeadless"]
+                browsers: ["ChromiumMaybeHeadless"]
             },
             firefoxDebug: {
                 singleRun: false,

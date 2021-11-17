@@ -43,7 +43,7 @@ tests-py-coverage: install-dev-deps
 
 .PHONY: tests-js
 tests-js: install-dev-deps
-	npx grunt tests
+	CHROMIUM_BIN=$(which chrome) npx grunt tests
 
 ##
 # Update requirements
