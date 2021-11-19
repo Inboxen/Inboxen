@@ -52,10 +52,15 @@
         <button class="btn btn-default" type="submit" name="unimportant"><span class="fa fa-star-o" aria-hidden="true"></span>{% trans "Unimportant" %}</button>
         <button class="btn btn-danger" type="submit" name="delete"><span class="fa fa-trash" aria-hidden="true"></span>{% trans "Delete" %}</button>
         {% if inbox %}
-            <a class="btn btn-default inbox-edit pull-right undo-pull-right-sm" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
+        <div class="pull-right undo-pull-right-sm">
+            <a class="btn btn-default inbox-qrcode" href="{% url 'inbox-qrcode' inbox=inbox domain=domain %}">
+                <span class="fa fa-qrcode" aria-hidden="true"></span>{% trans "QR Code" %}
+            </a>
+            <a class="btn btn-default inbox-edit" href="{% url 'inbox-edit' inbox=inbox domain=domain %}"
                     data-inbox-id="{{ inbox }}@{{ domain }}">
                 <span class="fa fa-cog" aria-hidden="true"></span>{% trans "Inbox Options" %}
             </a>
+        </div>
         {% endif %}
         </div>
         <div class="honeydew">

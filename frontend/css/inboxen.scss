@@ -436,3 +436,21 @@ a.soon {
 .inbox-description, ul.breadcrumb > li {
     word-break: break-all;
 }
+
+#inbox-qr-code-svg {
+    // full screen, minus 50px nav bar. this isn't 100% accurate, but we can't
+    // dynamically set the height without JS so we'll just do our best
+    max-width: calc(100vh - 70px);
+    margin-top: -20px;
+}
+
+.inbox-options form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    & > * {
+        flex: 1 0 36%;
+    }
+}

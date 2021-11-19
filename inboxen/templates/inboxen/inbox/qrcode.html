@@ -1,0 +1,13 @@
+{# Copyright (c) 2021 Jessica Tallon & Matt Molyneaux. This file is part of Inboxen. Licensed under the terms of the GNU AGPL, as published by the FSF, version 3 the or later #}
+{% extends 'inboxen/base.html' %}
+{% load i18n %}
+
+{% block headline %}{{ inbox }}@{{ domain }} QR Code{% endblock %}
+
+{% block content %}
+<p class="sr-only">{% blocktrans trimmed with inbox=inbox domain=domain %}
+    This page contains a QR code for {{ inbox }}@{{ domain }} that can be scanned
+    by a phone or other device.
+{% endblocktrans %}</p>
+<div id="inbox-qr-code-svg" role="presentation" class="center-block">{{ qrcode|safe }}</div>
+{% endblock %}

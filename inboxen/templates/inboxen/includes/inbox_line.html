@@ -16,7 +16,10 @@
                     data-inbox-selector="{{ inbox|escape_selector:True }}\@{{ domain|escape_selector:True }}">
                 {# form per line because we can't have forms within forms when inlining edit inbox forms #}
                 {% csrf_token %}
-                <a title="{% trans "Options" %} " class="close" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
+                <a title="{% trans "QR Code" %}" class="close btn inbox-qr" href="{% url 'inbox-qrcode' inbox=inbox domain=domain %}">
+                    <span class="fa fa-qrcode fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox QR Code" %}</span>
+                </a>
+                <a title="{% trans "Options" %}" class="close btn inbox-options-btn" href="{% url 'inbox-edit' inbox=inbox domain=domain %}">
                     <span class="fa fa-pencil fa-lg fa-fw" aria-hidden="true"></span><span class="sr-only">{% trans "Inbox Options" %}</span>
                 </a>
                 <button title="{% trans "Pin" %}" type="submit" name="pin-inbox" value="{{ inbox }}@{{ domain }}" class="close">

@@ -819,3 +819,29 @@ class SearchViewTestCase(InboxenTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["waiting"], False)
+
+
+class QRViewTestCase(InboxenTestCase):
+    def test_get(self):
+        user = factories.UserFactory()
+        inbox = factories.InboxFactory(user=user)
+        self.client.login(username=user.username, password="123456", request=MockRequest(user))
+        url = urls.reverse("inbox-qrcode", kwargs={"inbox": inbox.inbox, "domain": inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_inbox(self):
+        user = factories.UserFactory()
+        other_user = factories.UserFactory()
+        inbox = factories.InboxFactory(user=other_user)
+        self.client.login(username=user.username, password="123456", request=MockRequest(user))
+        url = urls.reverse("inbox-qrcode", kwargs={"inbox": inbox.inbox, "domain": inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_annoymous_user(self):
+        user = factories.UserFactory()
+        inbox = factories.InboxFactory(user=user)
+        url = urls.reverse("inbox-qrcode", kwargs={"inbox": inbox.inbox, "domain": inbox.domain.domain})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
