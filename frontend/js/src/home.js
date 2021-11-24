@@ -168,7 +168,7 @@
     }
 
     // adds event listeners for inline forms to be popped in
-    $("#inbox-list .inbox-options a").click(function() {
+    $("#inbox-list .inbox-options .inbox-options-btn").click(function() {
         // option buttons on inbox list
         var $this = $(this);
         var $row = $this.parents("div.row:has(.inbox-name)");

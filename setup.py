@@ -56,6 +56,7 @@ setup(
         "progress",
         "psycopg2",
         "pytz",
+        "qrcode",
         "ruamel.yaml",
         "salmon-mail>=3.2.0",
     ],

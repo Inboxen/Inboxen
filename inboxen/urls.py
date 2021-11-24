@@ -63,6 +63,8 @@ urlpatterns = [
                  inbox.SingleInboxView.as_view(), name='single-inbox-search'),
     urls.re_path(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/search/$',
                  inbox.SingleInboxView.as_view(), name='single-inbox-search'),
+    urls.re_path(r'^inbox/qr/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
+                 inbox.qr, name='inbox-qrcode'),
 
     # unified inbox view
     urls.re_path(r'^inbox/(?P<page>\d+)/$', inbox.UnifiedInboxView.as_view(), name='unified-inbox'),
