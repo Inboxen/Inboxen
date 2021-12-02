@@ -1,5 +1,11 @@
 # Releases
 
+Deploy for 2021-12-02T19-43-58
+------------------------------
+
+- Added a QR code view to each inbox
+- Upgrade dependencies for latest security updates
+
 Deploy for 2021-09-15T19-27-19
 ------------------------------
 
