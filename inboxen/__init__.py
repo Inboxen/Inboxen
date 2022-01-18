@@ -17,8 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from ._version import get_versions
+from . import _version
 from .celery import app as celery_app  # noqa
 
-__version__ = get_versions()['version']
-del get_versions
+__version__ = _version.get_versions()['version']

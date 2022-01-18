@@ -32,6 +32,7 @@ setup(
     license="AGPLv3",
     packages=find_packages(),
     include_package_data=True,
+    python_requires='>=3.10',
     install_requires=[
         "Django>=3.2rc1,<4.0",
         "Markdown",
