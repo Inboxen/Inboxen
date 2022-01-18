@@ -12,7 +12,12 @@ abandoned and you want it to be part of Inboxen, add it as a Django app i.e.
 
 ## How?
 
+First, move `pyproject.toml` to the project root dir. This file can't live
+there because Pip won't ignore it even if it has no build config and there's a
+`setup.py` just setting there. Also `vendoring` won't let you configure it via
+any other mechanism.
+
 Edit `vendor.txt` and run `vendoring sync` from the project root dir. Commit
-changes. Done.
+changes and you're done.
 
 Remember to rename imports and remove the dependency from `setup.py`!

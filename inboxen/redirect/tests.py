@@ -58,9 +58,9 @@ class RedirectTestCase(InboxenTestCase):
         # Not sure if this is a bug or not and even then I'm not sure if it's a
         # Django bug or a Python bug.
         self.assertEqual(response.status_code, 400)
-        #self.assertEqual(len(response.redirect_chain), 1)
-        #self.assertEqual(response.redirect_chain[0][0], "localhost:8080")
-        #self.assertEqual(response.redirect_chain[0][1], 302)
+        # self.assertEqual(len(response.redirect_chain), 1)
+        # self.assertEqual(response.redirect_chain[0][0], "localhost:8080")
+        # self.assertEqual(response.redirect_chain[0][1], 302)
 
     def test_proxy_url_http_proto(self):
         url = "http://localhost/?bizz=iss"
