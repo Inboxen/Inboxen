@@ -57,12 +57,14 @@ update-py-requirements:
 	pip-compile -U -o requirements.txt inboxen/data/requirements.in
 	pip-compile -U -o requirements-dev.txt requirements-dev.in
 	pip-compile -U -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
+	pip-compile -U -o extra/requirements/cantaloupe.inboxen.org.txt extra/requirements/cantaloupe.inboxen.org.in
 
 .PHONY: new-py-requirements
 new-py-requirements:
 	pip-compile -o requirements.txt inboxen/data/requirements.in
 	pip-compile -o requirements-dev.txt requirements-dev.in
 	pip-compile -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
+	pip-compile -o extra/requirements/cantaloupe.inboxen.org.txt extra/requirements/cantaloupe.inboxen.org.in
 
 .PHONY: update-js-requirements
 update-js-requirements:
@@ -113,5 +115,7 @@ salmon-start:
 # Includes
 ##
 
-include extra/makefiles/watermleon.mk
+include extra/makefiles/watermelon.mk
+include extra/makefiles/cantaloupe.mk
+include extra/makefiles/common.mk
 -include local.mk

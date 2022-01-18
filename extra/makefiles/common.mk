@@ -3,24 +3,16 @@
 ##
 
 TODAY := $(shell date "+%Y-%m-%dT%H-%M-%S" -u)
+server ?= $(shell hostname --short)
 
 .PHONY: setup-node
 setup-node:
 	nodeenv -p -n 8.16.0 --with-npm --npm=6.14.11
 
-.PHONY: install-watermelon-py-deps
-install-watermelon-py-deps:
-	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
-	pip-sync extra/requirements/watermelon.inboxen.org.txt || pip install -r extra/requirements/watermelon.inboxen.org.txt
-
-.PHONY: install-watermelon-deps
-install-watermelon-deps: install-watermelon-py-deps install-js-deps
-	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
-
 # common deployment stuff
 .PHONY: common-deploy
 common-deploy:
-	$(MAKE) install-watermelon-deps
+	$(MAKE) install-$(server)-deps
 	mkdir -p logs run
 	$(MAKE) static
 	./manage.py migrate

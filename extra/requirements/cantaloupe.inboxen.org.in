@@ -1,0 +1,4 @@
+-r ../../inboxen/data/requirements.in
+pylibmc
+setuptools
+wheel
