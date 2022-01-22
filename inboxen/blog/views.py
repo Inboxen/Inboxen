@@ -63,7 +63,7 @@ class RssFeed(Feed):
         return item.subject
 
     def item_description(self, item):
-        return item.rendered_body
+        return item.body.render
 
     def item_link(self, item):
         return reverse('blog-post', kwargs={"slug": item.slug})
