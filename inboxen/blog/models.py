@@ -20,17 +20,16 @@
 
 from django.conf import settings
 from django.db import models
-from django.utils import safestring
 from django_extensions.db.fields import AutoSlugField
-import markdown
 
 from inboxen import validators
+from inboxen.cms.fields import RichTextField
 
 
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])
-    body = models.TextField(validators=[validators.ProhibitNullCharactersValidator()])
+    body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])
     date = models.DateTimeField('posted', null=True, blank=True, editable=False, db_index=True)
     modified = models.DateTimeField('modified', auto_now=True, editable=False)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
@@ -38,11 +37,6 @@ class BlogPost(models.Model):
 
     slug = AutoSlugField(populate_from="subject", max_length=64,
                          validators=[validators.ProhibitNullCharactersValidator()])
-
-    @property
-    def rendered_body(self):
-        """Render MarkDown to HTML"""
-        return safestring.mark_safe(markdown.markdown(self.body))
 
     def __str__(self):
         draft = u""
