@@ -10,7 +10,7 @@ on:
     tags:
       - "*"
   schedule:
-    - cron: '02 08 * * *'
+    - cron: '02 09 * * 1'
 
 jobs:
   py-unit-tests:
