@@ -38,11 +38,10 @@ def is_reserved(inbox):
 
 class SvgPathImageTagOnly(SvgPathImage):
     def _write(self, stream):
-        self._img.append(self.make_path())
         etree = ElementTree(self._img)
         svg = etree.getroot()
         # fix the svg qrcode gives us so we can use it in a html page
         del svg.attrib["width"]
         del svg.attrib["height"]
         svg.attrib["preserveAspectRatio"] = "xMinYMin meet"
-        etree.write(stream, encoding="UTF-8")
+        etree.write(stream, encoding="UTF-8", xml_declaration=True)

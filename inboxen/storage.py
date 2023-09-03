@@ -25,14 +25,14 @@ from inboxen.utils.static import generate_maintenance_page
 class InboxenStaticFilesStorage(ManifestStaticFilesStorage):
     """Generatate maintenance page after collecting static files"""
 
-    patterns = ManifestStaticFilesStorage.patterns + (
-        ("*.css", (
-            (r"""(/\*#\s*sourceMappingURL=(.*)\s*\*/)""", """/*# sourceMappingURL=%s */"""),
-        )),
-        ("*.js", (
-            (r"""(//#\s*sourceMappingURL=(.*)$)""", """//# sourceMappingURL=%s"""),
-        )),
-    )
+    #patterns = ManifestStaticFilesStorage.patterns + (
+    #    ("*.css", (
+    #        (r"""(/\*#\s*sourceMappingURL=(.*)\s*\*/)""", """/*# sourceMappingURL=%s */"""),
+    #    )),
+    #    ("*.js", (
+    #        (r"""(//#\s*sourceMappingURL=(.*)$)""", """//# sourceMappingURL=%s"""),
+    #    )),
+    #)
 
     def post_process(self, *args, **kwargs):
         yield from super().post_process(*args, **kwargs)

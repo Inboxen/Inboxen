@@ -69,7 +69,7 @@ class MockRequest(HttpRequest):
 def grant_sudo(client_or_request):
     """Sets a cookie on the test client or request that django-elevate will use"""
     response = HttpResponse()
-    token = get_random_string()
+    token = get_random_string(elevate_settings.TOKEN_LENGTH)
 
     response.set_signed_cookie(
         elevate_settings.COOKIE_NAME,

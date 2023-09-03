@@ -25,7 +25,7 @@ from django.utils import timezone
 from salmon import encoding
 
 from inboxen.models import Body, Email, Header, PartList
-from inboxen.monitor.models import Check
+from inboxen.monitor.models import CheckItem
 
 log = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ def encode_body(part):
 
 def email_received_check(func):
     """
-    Creates a Check object if and only if the handler has not errored and a
+    Creates a CheckItem object if and only if the handler has not errored and a
     check hasn't been done within SALMON_CHECK_WINDOW
     """
     @wraps(func)
@@ -100,7 +100,7 @@ def email_received_check(func):
         now = timezone.now()
         if LAST_EMAIL_RECEIVED is None or LAST_EMAIL_RECEIVED < now - settings.SALMON_CHECK_WINDOW:
             LAST_EMAIL_RECEIVED = now
-            Check.objects.create_check(Check.SALMON)
+            CheckItem.objects.create_check(CheckItem.SALMON)
         return state
     return inner
 

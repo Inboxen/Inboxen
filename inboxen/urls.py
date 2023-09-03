@@ -17,7 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings, urls
+from django import urls
+from django.conf import settings
 from django.conf.urls.static import static
 
 from inboxen.views import attachment, email, error, home, i18n, index, manifest, stats, styleguide
