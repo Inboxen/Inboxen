@@ -30,7 +30,7 @@ install-js-deps:
 .PHONY: tests-py
 tests-py: install-dev-deps
 	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
-	./manage.py test --noinput
+	./manage.py test --noinput --parallel=$(shell nproc)
 
 .PHONY: tests-py-coverage
 tests-py-coverage: install-dev-deps
