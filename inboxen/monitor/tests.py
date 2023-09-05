@@ -24,48 +24,48 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
-from inboxen.monitor.models import Check
+from inboxen.monitor.models import CheckItem
 from inboxen.monitor.tasks import check_tasks
 from inboxen.test import InboxenTestCase
 
 
 class CheckModelTestCase(InboxenTestCase):
     def test_creation(self):
-        check = Check.objects.create_check(Check.SALMON)
+        check = CheckItem.objects.create_check(CheckItem.SALMON)
         self.assertEqual(check.good, True)
-        self.assertEqual(check.check, Check.SALMON)
+        self.assertEqual(check.check_type, CheckItem.SALMON)
 
     def test_creation_bad_check(self):
         with self.assertRaises(ValueError):
-            Check.objects.create_check("test")
+            CheckItem.objects.create_check("test")
 
     def test_creation_invalid_check(self):
         with self.assertRaises(ValueError):
-            Check.objects.create_check(120)
+            CheckItem.objects.create_check(120)
 
     def test_check_not_today(self):
-        check = Check.objects.create(check=Check.SALMON)
+        check = CheckItem.objects.create(check_type=CheckItem.SALMON)
         check.when = timezone.now() - timedelta(days=2)
         check.save()
-        self.assertEqual(Check.objects.check_ok(Check.SALMON), False)
+        self.assertEqual(CheckItem.objects.check_ok(CheckItem.SALMON), False)
 
     def test_check_not_good(self):
-        Check.objects.create(check=Check.SALMON, good=False)
-        self.assertEqual(Check.objects.check_ok(Check.SALMON), False)
+        CheckItem.objects.create(check_type=CheckItem.SALMON, good=False)
+        self.assertEqual(CheckItem.objects.check_ok(CheckItem.SALMON), False)
 
     def test_check_wrong_type(self):
-        Check.objects.create(check=Check.CELERY)
-        self.assertEqual(Check.objects.check_ok(Check.SALMON), False)
+        CheckItem.objects.create(check_type=CheckItem.CELERY)
+        self.assertEqual(CheckItem.objects.check_ok(CheckItem.SALMON), False)
 
     def test_check_good(self):
-        Check.objects.create_check(Check.SALMON)
-        self.assertEqual(Check.objects.check_ok(Check.SALMON), True)
+        CheckItem.objects.create_check(CheckItem.SALMON)
+        self.assertEqual(CheckItem.objects.check_ok(CheckItem.SALMON), True)
 
 
 class CheckTaskTestCase(InboxenTestCase):
     def test_task(self):
         check_tasks.apply_async()
-        self.assertEqual(Check.objects.check_ok(Check.CELERY), True)
+        self.assertEqual(CheckItem.objects.check_ok(CheckItem.CELERY), True)
 
     def test_cron(self):
         self.assertEqual(settings.CELERY_BEAT_SCHEDULE["monitor"]["task"], "inboxen.monitor.tasks.check_tasks")
@@ -73,12 +73,12 @@ class CheckTaskTestCase(InboxenTestCase):
 
 class CheckSalmonViewTestCase(InboxenTestCase):
     def test_good(self):
-        Check.objects.create_check(Check.SALMON)
+        CheckItem.objects.create_check(CheckItem.SALMON)
         response = self.client.get(reverse("monitor:salmon"))
         self.assertEqual(response.status_code, 200)
 
     def test_bad(self):
-        Check.objects.create_check(Check.CELERY)
+        CheckItem.objects.create_check(CheckItem.CELERY)
         response = self.client.get(reverse("monitor:salmon"))
         self.assertEqual(response.status_code, 404)
 
@@ -87,27 +87,27 @@ class CheckCeleryViewTestCase(InboxenTestCase):
     @mock.patch("inboxen.monitor.views.app")
     def test_no_rabbit(self, app_mock):
         app_mock.control.broadcast.side_effect = Exception
-        Check.objects.create_check(Check.CELERY)
+        CheckItem.objects.create_check(CheckItem.CELERY)
         response = self.client.get(reverse("monitor:celery"))
         self.assertEqual(response.status_code, 500)
 
     @mock.patch("inboxen.monitor.views.app")
     def test_no_workers(self, app_mock):
         app_mock.control.broadcast.return_value = None
-        Check.objects.create_check(Check.CELERY)
+        CheckItem.objects.create_check(CheckItem.CELERY)
         response = self.client.get(reverse("monitor:celery"))
         self.assertEqual(response.status_code, 502)
 
     @mock.patch("inboxen.monitor.views.app")
     def test_bad(self, app_mock):
         app_mock.control.broadcast.return_value = {}
-        Check.objects.create_check(Check.SALMON)
+        CheckItem.objects.create_check(CheckItem.SALMON)
         response = self.client.get(reverse("monitor:celery"))
         self.assertEqual(response.status_code, 404)
 
     @mock.patch("inboxen.monitor.views.app")
     def test_good(self, app_mock):
         app_mock.control.broadcast.return_value = {}
-        Check.objects.create_check(Check.CELERY)
+        CheckItem.objects.create_check(CheckItem.CELERY)
         response = self.client.get(reverse("monitor:celery"))
         self.assertEqual(response.status_code, 200)

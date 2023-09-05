@@ -1,5 +1,18 @@
 # Releases
 
+Deploy for 2021-12-02T19-43-58
+------------------------------
+
+- Added a QR code view to each inbox
+- Upgrade dependencies for latest security updates
+
+Deploy for 2021-09-15T19-27-19
+------------------------------
+
+- Update to Celery 5
+- Add question data to liberation (#591)
+- Update dependencies for various security fixes
+
 Deploy for 2021-06-25T22-51-26
 ------------------------------
 

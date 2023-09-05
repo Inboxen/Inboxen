@@ -16,9 +16,9 @@
 ##
 
 from inboxen.celery import app
-from inboxen.monitor.models import Check
+from inboxen.monitor.models import CheckItem
 
 
 @app.task(bind=True)
 def check_tasks(self):
-    Check.objects.create_check(Check.CELERY)
+    CheckItem.objects.create_check(CheckItem.CELERY)

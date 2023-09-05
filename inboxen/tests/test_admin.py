@@ -33,7 +33,7 @@ class DomainAdminIndexTestCase(InboxenTestCase):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)
@@ -62,7 +62,7 @@ class DomainAdminCreateTestCase(InboxenTestCase):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)
@@ -134,7 +134,7 @@ class DomainAdminEditTestCase(InboxenTestCase):
         self.domain = factories.DomainFactory()
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)

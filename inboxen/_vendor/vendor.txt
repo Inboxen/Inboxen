@@ -1,1 +1,1 @@
-git+https://github.com/photocrowd/django-cursor-pagination.git@f8aa41ff7c515511fccb79e33fb2ac22cb7af765#egg=django_cursor_pagination
+git+https://github.com/photocrowd/django-cursor-pagination.git@5cc09307548e152303e10c1e360c741c95bf1f7e#egg=django_cursor_pagination

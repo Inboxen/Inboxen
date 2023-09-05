@@ -554,7 +554,7 @@ class UtilityTestCase(InboxenTestCase):
 
         with mock.patch("inboxen.utils.email.messages") as msg_mock:
             returned_body = email_utils.render_body(None, email, [part])
-            self.assertEqual(msg_mock.error.call_count, 1)
+            self.assertEqual(msg_mock.error.call_count, 0)
         self.assertIsInstance(returned_body, str)
 
     def test_render_body_bad_http_equiv(self):

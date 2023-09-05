@@ -17,18 +17,24 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from io import BytesIO
+
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import Http404, HttpResponseNotAllowed, HttpResponseRedirect
+from django.template.response import TemplateResponse
 from django.utils.translation import gettext as _
 from django.views import generic
+import qrcode
 
 from inboxen import models
 from inboxen.search.tasks import search_single_inbox, search_unified_inbox
 from inboxen.search.utils import create_search_cache_key
 from inboxen.search.views import SearchMixin
 from inboxen.tasks import delete_inboxen_item, set_emails_to_seen
+from inboxen.utils.inbox import SvgPathImageTagOnly
 from inboxen.utils.tasks import task_group_skew
 
 
@@ -244,3 +250,24 @@ class SingleInboxView(InboxView):
             self.first_item,
             self.last_item,
         )
+
+
+@login_required
+def qr(request, inbox=None, domain=None):
+    if not models.Inbox.objects.viewable(request.user) \
+            .filter(inbox=inbox, domain__domain=domain).exists():
+        raise Http404
+
+    svg_str = BytesIO()
+    image = qrcode.make("{}@{}".format(inbox, domain), image_factory=SvgPathImageTagOnly)
+    image.save(svg_str)
+    svg_str.seek(0)
+    return TemplateResponse(
+        request,
+        "inboxen/inbox/qrcode.html",
+        {
+            "qrcode": svg_str.read().decode(),
+            "inbox": inbox,
+            "domain": domain,
+        },
+    )

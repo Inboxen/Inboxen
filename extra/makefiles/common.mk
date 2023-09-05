@@ -2,25 +2,13 @@
 #	Inboxen.org specific tasks
 ##
 
-TODAY := $(shell date "+%Y-%m-%dT%H-%M-%S" -u)
-
-.PHONY: setup-node
-setup-node:
-	nodeenv -p -n 8.16.0 --with-npm --npm=6.14.11
-
-.PHONY: install-watermelon-py-deps
-install-watermelon-py-deps:
-	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
-	pip-sync extra/requirements/watermelon.inboxen.org.txt || pip install -r extra/requirements/watermelon.inboxen.org.txt
-
-.PHONY: install-watermelon-deps
-install-watermelon-deps: install-watermelon-py-deps install-js-deps
-	$(warning This command is very specific to inboxen.org. It will be removed in the near future.)
+TODAY := $(shell date +'%-Y.%-m.%-d.%-H.%-M.%-S' -u)
+server ?= $(shell hostname --short)
 
 # common deployment stuff
 .PHONY: common-deploy
 common-deploy:
-	$(MAKE) install-watermelon-deps
+	$(MAKE) install-$(server)-deps
 	mkdir -p logs run
 	$(MAKE) static
 	./manage.py migrate
@@ -49,5 +37,5 @@ dev-deploy:
 make-deploy:
 	[[ -z `git status --porcelain` ]] || (echo "git repo is dirty, commit your changes first!"; exit 1)
 	extra/scripts/release-prep.sh $(TODAY)
-	git push origin deploy-$(TODAY)
-	git push
+	echo git push origin deploy-$(TODAY)
+	echo git push

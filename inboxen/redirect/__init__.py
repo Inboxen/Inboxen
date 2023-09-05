@@ -16,9 +16,9 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
+from urllib.parse import quote
 
 from django.urls import reverse
-from django.utils.http import urlquote
 
 ALLOW_URL_SCHEMES = [
     'http',
@@ -44,5 +44,5 @@ def proxy_url(url):
             return url
 
     proxy = reverse("redirect")
-    url = urlquote(url)
+    url = quote(url)
     return "{proxy}?url={url}".format(proxy=proxy, url=url)

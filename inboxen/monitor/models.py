@@ -20,7 +20,7 @@ from django.db import models
 from inboxen.monitor.managers import CheckQuerySet
 
 
-class Check(models.Model):
+class CheckItem(models.Model):
     SALMON = 0
     CELERY = 1
 
@@ -29,10 +29,10 @@ class Check(models.Model):
         (CELERY, "Celery"),
     )
     when = models.DateTimeField(auto_now_add=True)
-    check = models.SmallIntegerField(choices=CHECKS)
+    check_type = models.SmallIntegerField(choices=CHECKS)
     good = models.BooleanField(default=True)
 
     objects = CheckQuerySet.as_manager()
 
     class Meta:
-        indexes = [models.Index(fields=["check", "when"])]
+        indexes = [models.Index(fields=["check_type", "when"])]

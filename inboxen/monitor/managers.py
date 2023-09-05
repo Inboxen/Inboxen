@@ -23,9 +23,9 @@ from django.utils import timezone
 
 class CheckQuerySet(QuerySet):
     def check_ok(self, check, days=1):
-        return self.filter(good=True, check=check, when__gte=timezone.now() - timedelta(days=days)).exists()
+        return self.filter(good=True, check_type=check, when__gte=timezone.now() - timedelta(days=days)).exists()
 
     def create_check(self, check):
         if check not in [c[0] for c in self.model.CHECKS]:
             raise ValueError("Not a valid check")
-        return self.create(good=True, check=check)
+        return self.create(good=True, check_type=check)

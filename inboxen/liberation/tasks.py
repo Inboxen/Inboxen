@@ -32,6 +32,7 @@ from django import urls
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError, transaction
+from django.db.models import Prefetch
 from django.utils import safestring, timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext as _
@@ -42,6 +43,7 @@ from inboxen.celery import app
 from inboxen.liberation import utils
 from inboxen.liberation.models import Liberation
 from inboxen.models import Email, Inbox
+from inboxen.tickets.models import Question, Response
 from inboxen.utils.tasks import task_group_skew
 
 log = logging.getLogger(__name__)
@@ -170,16 +172,19 @@ def liberate_convert_box(result, *, liberation_id):
 
 
 @app.task(base=LiberationTask)
-def liberate_fetch_info(result, *, liberation_idi, inbox_results):
+def liberate_fetch_info(result, *, liberation_id, inbox_results):
     """Fetch user info and dump json to files"""
     lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).select_related("user").get(id=liberation_id)
     profile_json = get_user_profile(lib_status.user, result or [])
     inbox_json = json.dumps(inbox_results)
+    questions_json = liberate_user_questions(options['user'])
 
     with open(os.path.join(lib_status.tmp_dir, "profile.json"), "w") as profile:
         profile.write(profile_json)
     with open(os.path.join(lib_status.tmp_dir, "inbox.json"), "w") as inbox:
         inbox.write(inbox_json)
+    with open(os.path.join(options["path"], "questions.json"), "w") as questions:
+        questions.write(questions_json)
 
 
 @app.task(base=LiberationTask, default_retry_delay=600)
@@ -241,5 +246,35 @@ def get_user_profile(user, email_results):
     for result in email_results:
         if result:
             data["errors"].append(str(result))
+
+    return json.dumps(data)
+
+
+def liberate_user_questions(user_id):
+    """ Creates a json object of all the user's questions """
+    response_prefetch = Prefetch("response_set", queryset=Response.objects.all().select_related("author"))
+    questions = Question.objects.filter(author_id=user_id).prefetch_related(response_prefetch)
+    username = get_user_model().objects.get(id=user_id).username
+
+    data = []
+    for question in questions:
+        item = {
+            "subject": question.subject,
+            "author": username,
+            "date": question.date.isoformat(),
+            "last_modified": question.last_modified.isoformat(),
+            "status": question.get_status_display(),
+            "body": question.body,
+            "responses": []
+        }
+
+        for response in response_prefetch.queryset.filter(question=question):
+            item["responses"].append({
+                "author": response.author.username if response.author else None,
+                "date": response.date.isoformat(),
+                "body": response.body
+            })
+
+        data.append(item)
 
     return json.dumps(data)

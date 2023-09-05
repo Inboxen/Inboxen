@@ -30,7 +30,7 @@ install-js-deps:
 .PHONY: tests-py
 tests-py: install-dev-deps
 	DJANGO_SETTINGS_MODULE=inboxen.tests.settings $(MAKE) static
-	./manage.py test --noinput
+	./manage.py test --noinput --parallel=$(shell nproc)
 
 .PHONY: tests-py-coverage
 tests-py-coverage: install-dev-deps
@@ -43,7 +43,7 @@ tests-py-coverage: install-dev-deps
 
 .PHONY: tests-js
 tests-js: install-dev-deps
-	npx grunt tests
+	CHROMIUM_BIN=$(which chrome) npx grunt tests
 
 ##
 # Update requirements
@@ -56,13 +56,13 @@ update-requirements: update-py-requirements update-js-requirements
 update-py-requirements:
 	pip-compile -U -o requirements.txt inboxen/data/requirements.in
 	pip-compile -U -o requirements-dev.txt requirements-dev.in
-	pip-compile -U -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
+	pip-compile -U -o extra/requirements/cantaloupe.inboxen.org.txt extra/requirements/cantaloupe.inboxen.org.in
 
 .PHONY: new-py-requirements
 new-py-requirements:
 	pip-compile -o requirements.txt inboxen/data/requirements.in
 	pip-compile -o requirements-dev.txt requirements-dev.in
-	pip-compile -o extra/requirements/watermelon.inboxen.org.txt extra/requirements/watermelon.inboxen.org.in
+	pip-compile -o extra/requirements/cantaloupe.inboxen.org.txt extra/requirements/cantaloupe.inboxen.org.in
 
 .PHONY: update-js-requirements
 update-js-requirements:
@@ -94,8 +94,8 @@ celery-stop:
 
 .PHONY: celery-start
 celery-start:
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warn --events --detach -Ofair -f logs/celery-worker.log --pidfile $(PID_FOLDER)/worker.pid
-	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warn --detach -f logs/celery-beat.log --pidfile $(PID_FOLDER)/beat.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen worker -l warning --events --detach -Ofair -f logs/celery-worker.log --pidfile $(PID_FOLDER)/worker.pid
+	DJANGO_SETTINGS_MODULE=inboxen.settings celery -A inboxen beat -l warning --detach -f logs/celery-beat.log --pidfile $(PID_FOLDER)/beat.pid
 
 .PHONY: salmon-stop
 salmon-stop:
@@ -113,5 +113,6 @@ salmon-start:
 # Includes
 ##
 
-include extra/makefiles/watermleon.mk
+include extra/makefiles/cantaloupe.mk
+include extra/makefiles/common.mk
 -include local.mk

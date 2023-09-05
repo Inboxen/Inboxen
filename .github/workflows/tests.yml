@@ -7,8 +7,10 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
   schedule:
-    - cron: '02 08 * * *'
+    - cron: '02 09 * * 1'
 
 jobs:
   py-unit-tests:
@@ -20,11 +22,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: "3.10"
       - name: Install GNU gettext
         run: sudo apt install gettext
       - name: Start PostgreSQL
-        # TODO this is the wrong version of Postgres
         run: |
           sudo systemctl start postgresql.service
           pg_isready
@@ -47,7 +48,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: "3.10"
       - name: Install tox
         run: pip install tox
       - name: Run tox
@@ -59,16 +60,14 @@ jobs:
       matrix:
         script:
             - "karma:firefox"
-            - "karma:chrome"
+            - "karma:chromium"
             - "jshint"
     env:
       MOZ_HEADLESS: 1
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-        with:
-          node-version: '10'
       - run: npm install
-      - run: npx grunt ${{ matrix.script }}
+      - run: CHROMIUM_BIN=$(which chrome) npx grunt ${{ matrix.script }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1

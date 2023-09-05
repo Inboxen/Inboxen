@@ -1,3 +1,6 @@
+/venv
+/env
+
 # Docs
 docs/_build
 

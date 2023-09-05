@@ -17,7 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import settings, urls
+from django import urls
+from django.conf import settings
 from django.conf.urls.static import static
 
 from inboxen.views import attachment, email, error, home, i18n, index, manifest, stats, styleguide
@@ -63,6 +64,8 @@ urlpatterns = [
                  inbox.SingleInboxView.as_view(), name='single-inbox-search'),
     urls.re_path(r'^inbox/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/search/$',
                  inbox.SingleInboxView.as_view(), name='single-inbox-search'),
+    urls.re_path(r'^inbox/qr/(?P<inbox>[a-zA-Z0-9\.]+)@(?P<domain>[a-zA-Z0-9\.]+)/$',
+                 inbox.qr, name='inbox-qrcode'),
 
     # unified inbox view
     urls.re_path(r'^inbox/(?P<page>\d+)/$', inbox.UnifiedInboxView.as_view(), name='unified-inbox'),
