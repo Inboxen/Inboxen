@@ -5,10 +5,6 @@
 TODAY := $(shell date +'%-Y.%-m.%-d.%-H.%-M.%-S' -u)
 server ?= $(shell hostname --short)
 
-.PHONY: setup-node
-setup-node:
-	nodeenv -p -n 8.16.0 --with-npm --npm=6.14.11
-
 # common deployment stuff
 .PHONY: common-deploy
 common-deploy:
