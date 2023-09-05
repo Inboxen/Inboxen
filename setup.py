@@ -34,9 +34,9 @@ setup(
     include_package_data=True,
     python_requires='>=3.10',
     install_requires=[
-        "Django>=3.2rc1,<4.0",
+        "Django>=3.2rc1",
         "Markdown",
-        "celery<6, >=5",
+        "celery>=5",
         "django-annoying",
         "django-bootstrap-form",
         "django-celery-results",

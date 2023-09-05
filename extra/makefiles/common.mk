@@ -2,12 +2,8 @@
 #	Inboxen.org specific tasks
 ##
 
-TODAY := $(shell date "+%Y-%m-%dT%H-%M-%S" -u)
+TODAY := $(shell date +'%-Y.%-m.%-d.%-H.%-M.%-S' -u)
 server ?= $(shell hostname --short)
-
-.PHONY: setup-node
-setup-node:
-	nodeenv -p -n 8.16.0 --with-npm --npm=6.14.11
 
 # common deployment stuff
 .PHONY: common-deploy
@@ -41,5 +37,5 @@ dev-deploy:
 make-deploy:
 	[[ -z `git status --porcelain` ]] || (echo "git repo is dirty, commit your changes first!"; exit 1)
 	extra/scripts/release-prep.sh $(TODAY)
-	git push origin deploy-$(TODAY)
-	git push
+	echo git push origin deploy-$(TODAY)
+	echo git push

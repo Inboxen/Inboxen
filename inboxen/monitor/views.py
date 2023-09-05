@@ -18,7 +18,7 @@
 from django.http import HttpResponse
 
 from inboxen.celery import app
-from inboxen.monitor.models import Check
+from inboxen.monitor.models import CheckItem
 
 
 def celery(request):
@@ -30,14 +30,14 @@ def celery(request):
     if response is None:
         return HttpResponse(status=502)
 
-    if Check.objects.check_ok(Check.CELERY):
+    if CheckItem.objects.check_ok(CheckItem.CELERY):
         return HttpResponse()
     else:
         return HttpResponse(status=404)
 
 
 def salmon(request):
-    if Check.objects.check_ok(Check.SALMON):
+    if CheckItem.objects.check_ok(CheckItem.SALMON):
         return HttpResponse()
     else:
         return HttpResponse(status=404)

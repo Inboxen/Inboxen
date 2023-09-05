@@ -63,15 +63,15 @@ class RedirectTestCase(InboxenTestCase):
         # self.assertEqual(response.redirect_chain[0][1], 302)
 
     def test_proxy_url_http_proto(self):
-        url = "http://localhost/?bizz=iss"
+        url = "https://localhost/?bizz=iss"
         proxied = redirect.proxy_url(url)
 
-        self.assertEqual("/click/?url=http%3A//localhost/%3Fbizz%3Diss", proxied)
+        self.assertEqual("/click/?url=https%3A//localhost/%3Fbizz%3Diss", proxied)
 
         response = self.client.get(proxied, follow=True)
 
         self.assertEqual(len(response.redirect_chain), 1)
-        self.assertEqual(response.redirect_chain[0][0], "http://localhost/?bizz=iss")
+        self.assertEqual(response.redirect_chain[0][0], "https://localhost/?bizz=iss")
         self.assertEqual(response.redirect_chain[0][1], 302)
 
     def test_proxy_url_wrong_proto(self):

@@ -17,8 +17,8 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+from django import urls
 from django.conf import settings as dj_settings
-from django.conf import urls
 from django.views.generic import TemplateView
 
 from inboxen.account.decorators import anonymous_required

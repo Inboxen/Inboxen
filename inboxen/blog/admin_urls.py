@@ -17,7 +17,7 @@
 #    along with Inboxen.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django import urls
 
 from inboxen.blog import views
 

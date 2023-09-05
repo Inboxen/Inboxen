@@ -15,17 +15,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-from django.conf import urls
+from django import urls
 
 from inboxen.monitor import views
 
 urlpatterns = [
-    urls.url(
+    urls.re_path(
         r'^celery$',
         views.celery,
         name='celery',
     ),
-    urls.url(
+    urls.re_path(
         r'^salmon$',
         views.salmon,
         name='salmon',
