@@ -185,7 +185,7 @@ class HelpBasePage(HelpAbstractPage):
                 raise Http404
 
     def serve(self, request, *args, **kwargs):
-        assert type(self) != HelpBasePage, "serve method was called directly on a HelpBasePage object"
+        assert type(self) is not HelpBasePage, "serve method was called directly on a HelpBasePage object"
 
         return TemplateResponse(
             request,

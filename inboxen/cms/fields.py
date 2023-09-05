@@ -76,7 +76,7 @@ class TextDescriptor(object):
             instance.refresh_from_db(fields=[self.field.name])
             text = getattr(instance, self.field.name)
 
-        if type(text) != HTML:
+        if not isinstance(text, HTML):
             text = HTML(text, allow_tags=self.field.allow_tags, safe_attrs=self.field.safe_attrs,
                         extensions=self.field.extensions)
             instance.__dict__[self.field.name] = text

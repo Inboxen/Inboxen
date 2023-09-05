@@ -142,7 +142,7 @@ class BlogAdminIndexTestCase(InboxenTestCase):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)
@@ -171,7 +171,7 @@ class BlogAdminCreateTestCase(InboxenTestCase):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)
@@ -217,7 +217,7 @@ class BlogAdminEditTestCase(InboxenTestCase):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)
@@ -270,7 +270,7 @@ class BlogAdminDeleteTestCase(InboxenTestCase):
         self.user = factories.UserFactory(is_superuser=True)
 
     def test_url(self):
-        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)),\
+        assert self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user)), \
                 "Could not log in"
 
         grant_otp(self.client, self.user)
