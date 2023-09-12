@@ -1,5 +1,12 @@
 # Releases
 
+Deploy for 2023.9.12.15.59.8
+----------------------------
+
+- Change version string to be compatible with PEP 440
+- Upgrade to Django 4.2
+- Update Python and JS dependencies
+
 Deploy for 2021-12-02T19-43-58
 ------------------------------
 
