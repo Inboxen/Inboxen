@@ -23,13 +23,17 @@ from django.db import models
 from django_extensions.db.fields import AutoSlugField
 
 from inboxen import validators
-from inboxen.cms.fields import RichTextField
+from inboxen.cms.fields import DEFAULT_ALLOW_TAGS, DEFAULT_SAFE_ATTRS, RichTextField
+
+BLOG_ALLOW_TAGS = DEFAULT_ALLOW_TAGS + ["img"]
+BLOG_SAFE_ATTRS = DEFAULT_SAFE_ATTRS + ["src", "alt"]
 
 
 class BlogPost(models.Model):
     """Basic blog post, body stored as MarkDown"""
     subject = models.CharField(max_length=512, validators=[validators.ProhibitNullCharactersValidator()])
-    body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()])
+    body = RichTextField(validators=[validators.ProhibitNullCharactersValidator()],
+                         allow_tags=BLOG_ALLOW_TAGS, safe_attrs=BLOG_SAFE_ATTRS)
     date = models.DateTimeField('posted', null=True, blank=True, editable=False, db_index=True)
     modified = models.DateTimeField('modified', auto_now=True, editable=False)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)

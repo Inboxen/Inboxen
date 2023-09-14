@@ -38,6 +38,8 @@ This is a test post:
 * And another
 
 Bye!
+
+![Cool Image](cool.jpg)
 """
 SUBJECT = """A Test Post For You And Me"""
 
@@ -135,6 +137,12 @@ class BlogTestCase(InboxenTestCase):
         self.assertIn('<span class="label label-default"', output)
         self.assertIn("Live", output)
         self.assertNotIn("Draft", output)
+
+    def test_blog_img_allowed(self):
+        user = factories.UserFactory()
+        models.BlogPost.objects.create(author=user, subject=SUBJECT, body=BODY)
+        post = models.BlogPost.objects.get()
+        self.assertIn("<img alt=\"Cool Image\" src=\"cool.jpg\">", post.body.render)
 
 
 class BlogAdminIndexTestCase(InboxenTestCase):
