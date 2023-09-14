@@ -25,7 +25,7 @@ install-dev-py-deps:
 
 .PHONY: install-js-deps
 install-js-deps:
-	npm install
+	npm install --no-save
 
 .PHONY: tests-py
 tests-py: install-dev-deps
