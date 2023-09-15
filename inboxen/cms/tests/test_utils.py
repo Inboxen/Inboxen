@@ -61,20 +61,8 @@ class GetRootPageTestCase(InboxenTestCase):
     def test_multiple_roots(self):
         root_page = HelpBasePage.objects.get(parent__isnull=True)
 
-        # create a second parallel tree, which should be ignored
-        HelpBasePageFactory(
-            tree_id=2,
-            parent=None,
-            lft=root_page.lft,
-            rght=root_page.rght,
-            level=root_page.level,
-        )
-        page = get_root_page()
-        self.assertEqual(page, root_page)
-
         # force a broken tree
         HelpBasePageFactory(
-            tree_id=1,
             parent=None,
             lft=root_page.lft,
             rght=root_page.rght,

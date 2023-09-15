@@ -29,11 +29,11 @@ from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.functional import cached_property
 from django.utils.translation import gettext as _
-from mptt.models import MPTTModel, TreeForeignKey
 
 from inboxen import validators
 from inboxen.managers import BodyQuerySet, DomainQuerySet, EmailQuerySet, HeaderQuerySet, InboxQuerySet
 from inboxen.search.models import SearchableAbstract
+from inboxen.tree.models import NestedSet
 from inboxen.utils.email import unicode_damnit
 
 HEADER_PARAMS = re.compile(r'([a-zA-Z0-9]+)=["\']?([^"\';=]+)["\']?[;]?')
@@ -317,18 +317,16 @@ class Body(models.Model):
         return self.hashed
 
 
-class PartList(MPTTModel):
+class PartList(NestedSet):
     """Part model
 
     non-MIME part or MIME part(s)
-
-    See MPTT docs on how to use this model
-
-    email is passed to Email as a workaround for https://github.com/django-mptt/django-mptt/issues/189
     """
     email = models.ForeignKey(Email, related_name='parts', on_delete=models.CASCADE)
     body = models.ForeignKey(Body, on_delete=models.PROTECT)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["email", "lft"]
 
     def __str__(self):
         return str(self.id)

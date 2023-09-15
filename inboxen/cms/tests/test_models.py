@@ -31,18 +31,22 @@ from inboxen.tickets import views as ticket_views
 
 
 class HelpQuerySetTestCase(InboxenTestCase):
-    def test_in_menu(self):
-        is_menu = factories.HelpBasePageFactory(tree_id=2, in_menu=True)
-        factories.HelpBasePageFactory(tree_id=2, in_menu=False)
+    def setUp(self):
+        # delete pages that are set up by migrations
+        models.HelpBasePage.objects.all().delete()
 
-        qs = models.HelpBasePage.objects.filter(tree_id=2).in_menu()
+    def test_in_menu(self):
+        is_menu = factories.HelpBasePageFactory(in_menu=True)
+        factories.HelpBasePageFactory(in_menu=False)
+
+        qs = models.HelpBasePage.objects.in_menu()
         self.assertEqual(list(qs), [is_menu])
 
     def test_live(self):
-        is_live = factories.HelpBasePageFactory(tree_id=2, live=True)
-        factories.HelpBasePageFactory(tree_id=2, live=False)
+        is_live = factories.HelpBasePageFactory(live=True)
+        factories.HelpBasePageFactory(live=False)
 
-        qs = models.HelpBasePage.objects.filter(tree_id=2).live()
+        qs = models.HelpBasePage.objects.live()
         self.assertEqual(list(qs), [is_live])
 
 
@@ -145,7 +149,8 @@ class HelpBasePageTestCase(InboxenTestCase):
 
     def test_manager(self):
         # test correct manager inherited
-        self.assertEqual(type(models.HelpBasePage.objects), models.HelpManager)
+        self.assertEqual(models.HelpBasePage.objects._built_with_as_manager, True)
+        self.assertEqual(models.HelpBasePage.objects._queryset_class, models.HelpQuerySet)
 
     def test_unique_columns(self):
         root_page = models.HelpBasePage.objects.get(parent__isnull=True)
@@ -181,7 +186,8 @@ class HelpIndexTestCase(InboxenTestCase):
 
     def test_manager(self):
         # test correct manager inherited
-        self.assertEqual(type(models.HelpIndex.objects), models.HelpManager)
+        self.assertEqual(models.HelpIndex.objects._built_with_as_manager, True)
+        self.assertEqual(models.HelpIndex.objects._queryset_class, models.HelpQuerySet)
 
 
 class AppPageTestCase(InboxenTestCase):
@@ -228,7 +234,8 @@ class AppPageTestCase(InboxenTestCase):
 
     def test_manager(self):
         # test correct manager inherited
-        self.assertEqual(type(models.AppPage.objects), models.HelpManager)
+        self.assertEqual(models.AppPage.objects._built_with_as_manager, True)
+        self.assertEqual(models.AppPage.objects._queryset_class, models.HelpQuerySet)
 
 
 class HelpPageTestCase(InboxenTestCase):
@@ -242,7 +249,8 @@ class HelpPageTestCase(InboxenTestCase):
 
     def test_manager(self):
         # test correct manager inherited
-        self.assertEqual(type(models.HelpPage.objects), models.HelpManager)
+        self.assertEqual(models.HelpPage.objects._built_with_as_manager, True)
+        self.assertEqual(models.HelpPage.objects._queryset_class, models.HelpQuerySet)
 
 
 @expectedFailure

@@ -45,7 +45,6 @@ setup(
         # "django-cursor-pagination",
         "django-elevate",
         "django-extensions",
-        "django-mptt",
         "django-otp",
         "django-sendfile2",
         "django-two-factor-auth>=1.5.0",
