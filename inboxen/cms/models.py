@@ -26,13 +26,12 @@ from django.urls import URLResolver, reverse
 from django.urls.resolvers import RegexPattern
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from mptt.managers import TreeManager
-from mptt.models import MPTTModel, TreeForeignKey
-from mptt.querysets import TreeQuerySet
 
 from inboxen import validators
 from inboxen.cms.fields import (DEFAULT_ALLOW_TAGS, DEFAULT_MARKDOWN_EXTENSION_CONFIGS, DEFAULT_MARKDOWN_EXTENSIONS,
                                 DEFAULT_SAFE_ATTRS, RichTextField)
+from inboxen.tree.models import NestedSet
+from inboxen.tree.queryset import NestedSetQuerySet
 
 HELP_PAGE_TAGS = DEFAULT_ALLOW_TAGS + ["h%s" % i for i in range(1, 6)]
 HELP_PAGE_ATTRS = DEFAULT_SAFE_ATTRS + ["id"]
@@ -43,7 +42,7 @@ for k, v in DEFAULT_MARKDOWN_EXTENSION_CONFIGS.items():
     HELP_PAGE_EXTENSION_CONFIGS.set_default(k, v)
 
 
-class HelpQuerySet(TreeQuerySet):
+class HelpQuerySet(NestedSetQuerySet):
     def in_menu(self):
         return self.filter(in_menu=True)
 
@@ -51,13 +50,9 @@ class HelpQuerySet(TreeQuerySet):
         return self.filter(live=True)
 
 
-class HelpManager(models.Manager.from_queryset(HelpQuerySet), TreeManager):
-    pass
-
-
-class HelpAbstractPage(MPTTModel):
+class HelpAbstractPage(NestedSet):
     # managers on abstract models are inherited, managers on concrete models are not!
-    objects = HelpManager()
+    objects = HelpQuerySet.as_manager()
 
     class Meta:
         abstract = True
@@ -94,7 +89,6 @@ class HelpBasePage(HelpAbstractPage):
     # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
     title = models.CharField(max_length=255, validators=[validators.ProhibitNullCharactersValidator()])
     description = models.TextField(blank=True, validators=[validators.ProhibitNullCharactersValidator()])
 

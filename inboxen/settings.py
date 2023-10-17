@@ -235,6 +235,7 @@ INSTALLED_APPS = (
     'inboxen.search',
     'inboxen.source',
     'inboxen.tickets',
+    'inboxen.tree',
 
     # third party
     'bootstrapform',

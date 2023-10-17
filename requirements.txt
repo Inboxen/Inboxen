@@ -52,7 +52,6 @@ django==4.2.4
     #   django-csp
     #   django-extensions
     #   django-formtools
-    #   django-js-asset
     #   django-otp
     #   django-phonenumber-field
     #   django-sendfile2
@@ -72,10 +71,6 @@ django-extensions==3.2.3
     # via inboxen
 django-formtools==2.4.1
     # via django-two-factor-auth
-django-js-asset==2.1.0
-    # via django-mptt
-django-mptt==0.14.0
-    # via inboxen
 django-otp==1.2.2
     # via
     #   django-two-factor-auth

@@ -30,7 +30,7 @@ def app_reverse(page, viewname, args=None, kwargs=None):
 
 
 def get_root_page():
-    root_pages = HelpBasePage.objects.filter(tree_id=1).get_cached_trees()
+    root_pages = HelpBasePage.objects.get_cached_trees()
 
     assert len(root_pages) <= 1, "Expected to find a single tree, found %s" % len(root_pages)
 

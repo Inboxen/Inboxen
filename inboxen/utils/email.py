@@ -316,7 +316,7 @@ def find_bodies(part):
     except ValueError:
         # if there isn't a content type and it's the root part, then this is a
         # plain email
-        if part.is_leaf_node() and part.get_level() == 0:
+        if part.is_leaf_node() and part.level == 0:
             yield [part]
             return
         # whether or not this is the root part, return now as there's nothing
@@ -360,7 +360,7 @@ def print_tree(part, func=str):
     func should be a callable that accepts a PartList object as its only
     argument and returns a string
     """
-    indent = "\t" * part.get_level()
+    indent = "\t" * part.level
     print("{}{}".format(indent, func(part)))
 
     for child in part.get_children():

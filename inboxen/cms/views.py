@@ -43,7 +43,7 @@ def page(request, path):
 
 @is_secure_admin
 def index(request, page_pk=None):
-    page_qs = HelpBasePage.objects.filter(tree_id=1)
+    page_qs = HelpBasePage.objects.all()
 
     # either of these should result in a QuerySet with one result
     if page_pk is not None:

@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import mptt.fields
 import inboxen.fields
 from django.conf import settings
 import django.db.models.deletion
@@ -101,7 +100,7 @@ class Migration(migrations.Migration):
                 ('level', models.PositiveIntegerField(editable=False, db_index=True)),
                 ('body', models.ForeignKey(to='inboxen.Body', on_delete=django.db.models.deletion.PROTECT)),
                 ('email', models.ForeignKey(related_name='parts', to='inboxen.Email', on_delete=models.CASCADE)),
-                ('parent', mptt.fields.TreeForeignKey(related_name='children', blank=True, to='inboxen.PartList', null=True, on_delete=models.CASCADE)),
+                ('parent', models.ForeignKey(related_name='children', blank=True, to='inboxen.PartList', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
