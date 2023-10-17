@@ -3,7 +3,7 @@
     "devDependencies": {
         "bootstrap-sass": "^3.4.1",
         "chart.js": "^2.9.4",
-        "font-awesome": "^4.7.0",
+        "fork-awesome": "^1.2.0",
         "grunt": "^1.4.1",
         "grunt-contrib-clean": "^2.0.0",
         "grunt-contrib-concat": "^2.0.0",
