@@ -12,11 +12,11 @@ asgiref==3.7.2
     # via django
 billiard==4.1.0
     # via celery
-build==1.0.0
+build==1.0.3
     # via pip-tools
 cachetools==5.3.1
     # via premailer
-celery==5.3.1
+celery==5.3.4
     # via
     #   django-celery-results
     #   inboxen
@@ -24,7 +24,7 @@ certifi==2023.7.22
     # via requests
 chardet==5.2.0
     # via salmon-mail
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via requests
 click==8.1.7
     # via
@@ -42,9 +42,9 @@ click-repl==0.3.0
     # via celery
 cssselect==1.2.0
     # via premailer
-cssutils==2.7.1
+cssutils==2.9.0
     # via premailer
-django==4.2.4
+django==4.2.6
     # via
     #   django-annoying
     #   django-bootstrap-form
@@ -71,15 +71,15 @@ django-extensions==3.2.3
     # via inboxen
 django-formtools==2.4.1
     # via django-two-factor-auth
-django-otp==1.2.2
+django-otp==1.2.4
     # via
     #   django-two-factor-auth
     #   inboxen
-django-phonenumber-field==6.4.0
+django-phonenumber-field==7.2.0
     # via django-two-factor-auth
 django-sendfile2==0.7.0
     # via inboxen
-django-two-factor-auth==1.15.4
+django-two-factor-auth==1.15.5
     # via inboxen
 dnspython==2.4.2
     # via salmon-mail
@@ -87,7 +87,7 @@ docutils==0.20.1
     # via python-daemon
 factory-boy==3.3.0
     # via inboxen
-faker==19.3.1
+faker==19.11.0
     # via factory-boy
 idna==3.4
     # via requests
@@ -101,11 +101,11 @@ lxml==4.9.3
     # via
     #   inboxen
     #   premailer
-markdown==3.4.4
+markdown==3.5
     # via inboxen
-packaging==23.1
+packaging==23.2
     # via build
-phonenumberslite==8.13.19
+phonenumberslite==8.13.23
     # via inboxen
 pip-tools==7.3.0
     # via -r extra/requirements/../../inboxen/data/requirements.in
@@ -115,7 +115,7 @@ progress==1.6
     # via inboxen
 prompt-toolkit==3.0.39
     # via click-repl
-psycopg2==2.9.7
+psycopg2==2.9.9
     # via inboxen
 pylibmc==1.6.3
     # via -r extra/requirements/cantaloupe.inboxen.org.in
@@ -129,7 +129,7 @@ python-dateutil==2.8.2
     # via
     #   celery
     #   faker
-pytz==2023.3
+pytz==2023.3.post1
     # via inboxen
 qrcode==7.4.2
     # via
@@ -137,9 +137,9 @@ qrcode==7.4.2
     #   inboxen
 requests==2.31.0
     # via premailer
-ruamel-yaml==0.17.32
+ruamel-yaml==0.17.40
     # via inboxen
-ruamel-yaml-clib==0.2.7
+ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
 salmon-mail==3.2.0
     # via inboxen
@@ -155,20 +155,20 @@ tomli==2.0.1
     #   build
     #   pip-tools
     #   pyproject-hooks
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via
     #   asgiref
     #   qrcode
 tzdata==2023.3
     # via celery
-urllib3==2.0.4
+urllib3==2.0.7
     # via requests
 vine==5.0.0
     # via
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.2.6
+wcwidth==0.2.8
     # via prompt-toolkit
 wheel==0.41.2
     # via

@@ -34,7 +34,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.10',
     install_requires=[
-        "Django>=3.2rc1",
+        "Django>=3.2rc1,<5",
         "Markdown",
         "celery>=5",
         "django-annoying",
