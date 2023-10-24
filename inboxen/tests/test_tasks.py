@@ -18,10 +18,12 @@
 ##
 
 from datetime import datetime, timedelta
+from random import randint
 from unittest import mock
 import itertools
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.db.models import Q
 from django.test import override_settings
@@ -399,26 +401,34 @@ class AutoDeleteEmailsTaskTestCase(InboxenTestCase):
 
 
 class CalculateQuotaTaskTestCase(InboxenTestCase):
-    def test_task_empty(self):
-        tasks.calculate_quota.delay()
+    @override_settings(PER_USER_EMAIL_QUOTA=10)
+    def test_task_no_users(self):
+        with self.assertNumQueries(1):
+            tasks.calculate_quota()
+
+    @override_settings(PER_USER_EMAIL_QUOTA=0)
+    def test_task_no_quota(self):
+        user = factories.UserFactory()
+        with self.assertNumQueries(0):
+            tasks.calculate_quota()
+            tasks.calculate_user_quota(user.id)
 
     @mock.patch("inboxen.tasks.calculate_user_quota")
     @mock.patch("inboxen.tasks.task_group_skew")
+    @override_settings(PER_USER_EMAIL_QUOTA=0)
     def test_skip_subtask_generation(self, skew_mock, task_mock):
-        # check default value
-        self.assertEqual(settings.PER_USER_EMAIL_QUOTA, 0)
         tasks.calculate_quota.delay()
         # tasks should be skipped
         self.assertEqual(task_mock.chunks.call_count, 0)
 
         with override_settings(PER_USER_EMAIL_QUOTA=10):
-            # if there are no suers, skip skewing the group
+            # if there are no users, skip skewing the group
             tasks.calculate_quota.delay()
             self.assertEqual(task_mock.chunks.call_count, 0)
             self.assertEqual(skew_mock.call_count, 0)
 
     @override_settings(PER_USER_EMAIL_QUOTA=10)
-    def test_full_run(self):
+    def test_calculate_quota(self):
         # create users and emails, check user profiles
         user1 = factories.UserFactory()
         user2 = factories.UserFactory()
@@ -452,23 +462,63 @@ class CalculateQuotaTaskTestCase(InboxenTestCase):
         self.assertEqual(models.Inbox.objects.filter(new=True).count(),
                          user1_email_count + user2_email_count + other_users_email_count)
 
-        # now enable deleting
+    @override_settings(PER_USER_EMAIL_QUOTA=10)
+    def test_calculate_quota_and_delete(self):
+        # create users and emails, check user profiles
+        user1 = factories.UserFactory()
+        user2 = factories.UserFactory()
+
+        user1_email_count = 11
+        user2_email_count = 4
+        other_users_email_count = 9
+
+        factories.EmailFactory.create_batch(user1_email_count, inbox__user=user1)
+        factories.EmailFactory.create_batch(user2_email_count, inbox__user=user2)
+        factories.EmailFactory.create_batch(other_users_email_count)
+
+        models.Email.objects.update(seen=True)
+        models.Inbox.objects.update(new=True)
+        user1.inboxenprofile.unified_has_new_messages = True
+        user1.inboxenprofile.save()
+        user2.inboxenprofile.unified_has_new_messages = True
+        user2.inboxenprofile.save()
         models.UserProfile.objects.update(quota_options=models.UserProfile.DELETE_MAIL)
+
         tasks.calculate_quota.delay()
 
         user1.inboxenprofile.refresh_from_db()
         user2.inboxenprofile.refresh_from_db()
-        self.assertEqual(user1.inboxenprofile.quota_percent_usage, 100)
+        self.assertEqual(user1.inboxenprofile.quota_percent_usage, 90)
         self.assertEqual(user1.inboxenprofile.unified_has_new_messages, False)
         self.assertEqual(user2.inboxenprofile.quota_percent_usage, 40)
         self.assertEqual(user2.inboxenprofile.unified_has_new_messages, True)
-        self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count - 1)
+        self.assertEqual(models.Email.objects.filter(inbox__user=user1).count(), user1_email_count - 2)
         self.assertEqual(models.Email.objects.filter(inbox__user=user2).count(), user2_email_count)
         self.assertEqual(models.Inbox.objects.count(), user1_email_count + user2_email_count + other_users_email_count)
         self.assertEqual(models.Inbox.objects.filter(new=True).count(),
-                         user1_email_count + user2_email_count + other_users_email_count - 1)
+                         user1_email_count + user2_email_count + other_users_email_count - 2)
 
+    @override_settings(PER_USER_EMAIL_QUOTA=10)
+    @mock.patch("inboxen.tasks.chain")
+    def test_delete_not_done_twice(self, chain_mock):
+        user = factories.UserFactory()
+        user.inboxenprofile.quota_options = models.UserProfile.DELETE_MAIL
+        user.inboxenprofile.save()
+        factories.EmailFactory.create_batch(11, inbox__user=user)
+
+        tasks.calculate_user_quota(user.id)
+        self.assertEqual(chain_mock.call_count, 1)
+        # expect last item in chain to be calculate_user_quota with deleting disabled
+        self.assertEqual(chain_mock.call_args[0][-1]["task"], "inboxen.tasks.calculate_user_quota")
+        self.assertEqual(chain_mock.call_args[0][-1]["args"], (user.id, False))
+
+        tasks.calculate_user_quota(user.id, False)
+        self.assertEqual(chain_mock.call_count, 1)
+
+    @override_settings(PER_USER_EMAIL_QUOTA=10)
     def test_user_deleted(self):
         # check that calculate_user_quota can cope with a deleted user
-        user_id = "this can never be a user id, (hopefully)"
-        tasks.calculate_user_quota(user_id)
+        user_id = randint(1, 1000000)
+        get_user_model().objects.all().delete()
+        with self.assertNumQueries(1):
+            tasks.calculate_user_quota(user_id)

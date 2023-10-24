@@ -287,7 +287,7 @@ def calculate_quota(batch_number=500, chunk_size=10000, delay=20):
 
 
 @app.task
-def calculate_user_quota(user_id):
+def calculate_user_quota(user_id, enable_delete=True):
     if not settings.PER_USER_EMAIL_QUOTA:
         return
 
@@ -296,15 +296,20 @@ def calculate_user_quota(user_id):
     except get_user_model().DoesNotExist:
         return
 
+    # 90% of the value of per user email quota. Users who have opted to delete
+    # old mail when they reach quota limit need space for new mail to come in
+    quota_ninety_percent_value = (settings.PER_USER_EMAIL_QUOTA // 10) * 9
+
     email_count = models.Email.objects.filter(inbox__user_id=user_id).count()
 
     profile.quota_percent_usage = min((email_count * 100) / settings.PER_USER_EMAIL_QUOTA, 100)
     profile.save(update_fields=["quota_percent_usage"])
 
-    if profile.quota_options == profile.DELETE_MAIL and email_count > settings.PER_USER_EMAIL_QUOTA:
+    if enable_delete and profile.quota_options == profile.DELETE_MAIL and email_count > quota_ninety_percent_value:
         chain(
             batch_mark_as_deleted.si("email", kwargs={"important": False, "inbox__user_id": user_id},
-                                     skip_items=settings.PER_USER_EMAIL_QUOTA),
+                                     skip_items=quota_ninety_percent_value),
             batch_set_new_flags.si(user_id=user_id, kwargs={"email__deleted": True}),
             batch_delete_items.si("email", kwargs={"deleted": True, "inbox__user_id": user_id}),
+            calculate_user_quota.si(user_id, False),
         ).apply_async()
