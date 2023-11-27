@@ -37,5 +37,5 @@ dev-deploy:
 make-deploy:
 	[[ -z `git status --porcelain` ]] || (echo "git repo is dirty, commit your changes first!"; exit 1)
 	extra/scripts/release-prep.sh $(TODAY)
-	echo git push origin deploy-$(TODAY)
-	echo git push
+	git push origin deploy-$(TODAY)
+	git push
