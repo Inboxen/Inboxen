@@ -1,5 +1,12 @@
 # Releases
 
+Deploy for 2023.11.27.20.52.7
+-----------------------------
+
+- Only keep 90% of quota amount when deleting emails is enabled (#601)
+- Drop django-mptt and use our own nested sets implementation (#600)
+- Allow img tag in blog posts (#603)
+
 Deploy for 2023.9.12.15.59.8
 ----------------------------
 
