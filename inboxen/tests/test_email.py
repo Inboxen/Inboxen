@@ -20,6 +20,7 @@
 
 from tempfile import NamedTemporaryFile
 from unittest import mock
+import itertools
 import mailbox
 
 from django import urls
@@ -226,7 +227,73 @@ class EmailViewTestCase(InboxenTestCase):
         self.assertIn(u"<p style=\"color:#fff\">Click me!</p>", body)
         self.assertNotIn(u"<p id=\"email-17\">", body)
 
-    # TODO: test body choosing with multipart emails
+
+class PreferHtmlTestCase(InboxenTestCase):
+    def setUp(self):
+        self.user = factories.UserFactory()
+        self.inbox = factories.InboxFactory(user=self.user)
+        self.msg = mail.MailRequest("", "", "", EXAMPLE_ALT)
+        make_email(self.msg, self.inbox)
+        self.email = models.Email.objects.get()
+
+        login = self.client.login(username=self.user.username, password="123456", request=MockRequest(self.user))
+
+        if not login:
+            raise Exception("Could not log in")
+
+    def get_url(self):
+        kwargs = {
+            "inbox": self.email.inbox.inbox,
+            "domain": self.email.inbox.domain.domain,
+            "id": self.email.eid,
+        }
+        return urls.reverse("email-view", kwargs=kwargs)
+
+    def test_profile_prefer_html_true(self):
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["email"]["prefer_html"], True)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertTrue(response.context["email"]["bodies"][0].startswith("<div>"))
+
+    def test_profile_prefer_html_false(self):
+        self.user.inboxenprofile.prefer_html_email = False
+        self.user.inboxenprofile.save()
+
+        response = self.client.get(self.get_url())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["email"]["prefer_html"], False)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertTrue(response.context["email"]["bodies"][0].startswith("<pre>"))
+
+    def test_param_prefer_html_true(self):
+        response = self.client.get(f"{self.get_url()}?preferHtml=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["email"]["prefer_html"], True)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertTrue(response.context["email"]["bodies"][0].startswith("<div>"))
+
+    def test_param_prefer_html_false(self):
+        response = self.client.get(f"{self.get_url()}?preferHtml=0")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["email"]["prefer_html"], False)
+        self.assertEqual(len(response.context["email"]["bodies"]), 1)
+        self.assertTrue(response.context["email"]["bodies"][0].startswith("<pre>"))
+
+    def test_all_combinations(self):
+        params = [
+            [True, False],                          # profile prefer_html_email
+            ["preferHtml=1", "preferHtml=0", ""],   # GET param
+        ]
+        expected_results = [True, False, True, True, False, False]
+        base_url = self.get_url()
+        for args, result in zip(itertools.product(*params), expected_results):
+            with self.subTest(args=args):
+                self.user.inboxenprofile.prefer_html_email = args[0]
+                self.user.inboxenprofile.save()
+                response = self.client.get(f"{base_url}?{args[1]}")
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.context["email"]["prefer_html"], result)
 
 
 class BadEmailTestCase(InboxenTestCase):

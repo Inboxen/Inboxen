@@ -244,7 +244,7 @@ def render_body(request, email, attachments):
         plain_message = False
     elif html.parent_id == plain.parent_id:
         # basically multiple/alternative
-        plain_message = not request.user.inboxenprofile.prefer_html_email
+        plain_message = not email["prefer_html"]
     # which ever has the lower lft value will win
     elif html.lft < plain.lft:
         plain_message = False
