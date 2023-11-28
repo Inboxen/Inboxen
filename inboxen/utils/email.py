@@ -194,7 +194,6 @@ def _clean_html_body(request, email, body, charset):
             try:
                 # try to delete src first - we don't want to add a src where there wasn't one already
                 del img.attrib["src"]
-                # replace image with 1px png
                 img.attrib["src"] = staticfiles_storage.url("imgs/placeholder.svg")
                 email["has_images"] = True
             except KeyError:
