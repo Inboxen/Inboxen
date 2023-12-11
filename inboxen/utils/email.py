@@ -194,7 +194,6 @@ def _clean_html_body(request, email, body, charset):
             try:
                 # try to delete src first - we don't want to add a src where there wasn't one already
                 del img.attrib["src"]
-                # replace image with 1px png
                 img.attrib["src"] = staticfiles_storage.url("imgs/placeholder.svg")
                 email["has_images"] = True
             except KeyError:
@@ -245,7 +244,7 @@ def render_body(request, email, attachments):
         plain_message = False
     elif html.parent_id == plain.parent_id:
         # basically multiple/alternative
-        plain_message = not request.user.inboxenprofile.prefer_html_email
+        plain_message = not email["prefer_html"]
     # which ever has the lower lft value will win
     elif html.lft < plain.lft:
         plain_message = False

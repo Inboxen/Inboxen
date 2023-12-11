@@ -99,7 +99,7 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
         email_dict["eid"] = self.object.eid
 
         # GET params for users with `ask_image` set in their profile
-        if "imgDisplay" in self.request.GET and int(self.request.GET["imgDisplay"]) == 1:
+        if self.request.GET.get("imgDisplay") == "1":
             email_dict["display_images"] = True
             email_dict["ask_images"] = False
         elif self.request.user.inboxenprofile.display_images == models.UserProfile.ASK:
@@ -108,6 +108,14 @@ class EmailView(LoginRequiredMixin, generic.DetailView):
         else:
             email_dict["display_images"] = self.request.user.inboxenprofile.display_images == models.UserProfile.DISPLAY
             email_dict["ask_images"] = False
+
+        # prefer html or plaintext
+        if self.request.GET.get("preferHtml") == "1":
+            email_dict["prefer_html"] = True
+        elif self.request.GET.get("preferHtml") == "0":
+            email_dict["prefer_html"] = False
+        else:
+            email_dict["prefer_html"] = self.request.user.inboxenprofile.prefer_html_email
 
         # iterate over MIME parts
         root_part = self.object.get_parts()

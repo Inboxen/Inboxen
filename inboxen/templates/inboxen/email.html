@@ -49,6 +49,13 @@
         <a class="btn btn-default" href="{{ request.path }}?all-headers=1">
             <span class="fa fa-eye" aria-hidden="true"></span>{% trans "Show headers" %}
         {% endif %}
+        {% if email.prefer_html %}
+        <a class="btn btn-default" href="{{ request.path }}?preferHtml=0">
+            <span class="fa fa-refresh" aria-hidden="true"></span>{% trans "Prefer plain text" %}
+        {% else %}
+        <a class="btn btn-default" href="{{ request.path }}?preferHtml=1">
+            <span class="fa fa-refresh" aria-hidden="true"></span>{% trans "Prefer HTML" %}
+        {% endif %}
         </a>
     </p>
 </div></div>
