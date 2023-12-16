@@ -1,3 +1,7 @@
+# Migrated to [Codeberg](https://codeberg.org/Inboxen/Inboxen)
+
+This repo is no longer used as we have migrated to Codeberg
+
 Inboxen
 =======
 
