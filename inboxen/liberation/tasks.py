@@ -27,7 +27,7 @@ import string
 import tarfile
 import time
 
-from celery import chain, chord
+from celery import chain, chord, Task
 from django import urls
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -41,135 +41,102 @@ from inboxen import tasks
 from inboxen.async_messages import message_user
 from inboxen.celery import app
 from inboxen.liberation import utils
+from inboxen.liberation.models import Liberation
 from inboxen.models import Email, Inbox
 from inboxen.tickets.models import Question, Response
 from inboxen.utils.tasks import task_group_skew
 
 log = logging.getLogger(__name__)
 
-TAR_TYPES = {
-    '0': {'ext': 'tar.gz', 'writer': 'w:gz', 'mime-type': 'application/x-gzip'},
-    '1': {'ext': 'tar.bz2', 'writer': 'w:bz2', 'mime-type': 'application/x-bzip2'},
-    '2': {'ext': 'tar', 'writer': 'w:', 'mime-type': 'application/x-tar'}
-}
+
+FILE_NAME_TEMPLATE = "liberation_{id}_{created}"
+TMP_SUBDIR = "tmp"
 
 
-@app.task(rate_limit='4/h')
-def liberate(user_id, options):
-    """ Get set for liberation, expects User object """
-    options['user'] = user_id
-    user = get_user_model().objects.get(id=user_id)
-    lib_status = user.liberation
+class LiberationTask(Task):
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        if not isinstance(exc, Liberation.DoesNotExist):
+            Liberation.objects.filter(id=kwargs["liberation_id"]).update(
+                errored=True,
+                error_message=str(exc),
+                error_traceback=str(einfo),
+                finished=timezone.now(),
+            )
 
-    tar_type = TAR_TYPES[options.get('compression_type', '0')]
 
-    rstr = get_random_string(7, string.ascii_letters)
-    username = user.username + rstr
-    username = username.encode("utf-8")
-    basename = "%s_%s_%s_%s" % (time.time(), os.getpid(), rstr, hashlib.sha256(username).hexdigest()[:50])
-    path = os.path.join(settings.SENDFILE_ROOT, basename)
-    tarname = "%s.%s" % (basename, tar_type["ext"])
-
-    # Is this safe enough?
+@transaction.atomic
+@app.task(base=LiberationTask, rate_limit='4/h')
+def liberate(*, liberation_id):
+    lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).get(id=liberation_id)
     try:
-        os.mkdir(path, 0o700)
+        lib_status.tmp_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     except (IOError, OSError) as error:
-        log.info("Couldn't create dir at %s", path)
+        log.info("Couldn't create dir at %s", lib_status.tmp_dir)
         raise liberate.retry(exc=error)
 
-    try:
-        lib_status.path = tarname
-        lib_status.save()
-    except IntegrityError:
-        os.rmdir(path)
-        raise
-
-    options["path"] = path
-    options["tarname"] = tarname
-
-    mail_path = os.path.join(path, 'emails')
-    # make maildir
-    mailbox.Maildir(mail_path, factory=None)
-
-    inbox_tasks = [liberate_inbox.s(mail_path, inbox.id) for inbox in
-                   Inbox.objects.filter(user=user, deleted=False).only('id').iterator()]
-    if len(inbox_tasks) > 0:
-        tasks = chord(
-                    inbox_tasks,
-                    liberate_collect_emails.s(mail_path, options)
-                    )
-    else:
-        options["noEmails"] = True
-        data = {"results": []}
-        tasks = chain(
-                    liberate_fetch_info.s(data, options),
-                    liberate_tarball.s(options),
-                    liberation_finish.s(options)
-                )
-
-    async_result = tasks.apply_async()
-
-    lib_status.async_result = async_result.id
+    lib_status.started = timezone.now()
     lib_status.save()
+    inbox_tasks = [liberate_inbox.s(liberation_id, inbox) for inbox in
+                   Inbox.objects.filter(user=user, deleted=False).values_list("id", flat=True)]
+    chord(
+        inbox_tasks,
+        liberate_collect_emails.s(liberation_id=liberation_id)
+    ).apply_async()
 
 
 @app.task(rate_limit='100/m')
-def liberate_inbox(mail_path, inbox_id):
+def liberate_inbox(*, liberation_id, inbox_id):
     """ Gather email IDs """
-    inbox = Inbox.objects.get(id=inbox_id, deleted=False)
-    maildir = mailbox.Maildir(mail_path, factory=None)
-    maildir.add_folder(str(inbox))
+    lib_status = Liberation.objects.pending().get(id=liberation_id)
+    inbox = Inbox.objects.get(id=inbox_id, deleted=False, user=lib_status.user_id)
+    lib_status.maildir.add_folder(str(inbox))
 
     return {
         'folder': str(inbox),
-        'ids': [email.id for email in Email.objects.filter(inbox=inbox, deleted=False).only('id')
-                .iterator()]
+        'ids': list(Email.objects.filter(inbox=inbox, deleted=False).values_list('id', flat=True)),
+        "created": inbox.created.isoformat(),
+        "description": inbox.description,
+        "flags": {
+            "deleted": inbox.deleted,
+            "new": inbox.new,
+            "exclude_from_unified": inbox.exclude_from_unified,
+            "disabled": inbox.disabled,
+            "pinned": inbox.pinned,
+        },
     }
 
 
-@app.task()
-def liberate_collect_emails(results, mail_path, options):
+@app.task(base=LiberationTask)
+def liberate_collect_emails(results, *, liberation_id):
     """ Send off data mining tasks """
+    lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).get(id=liberation_id)
     msg_tasks = []
     results = results or []
+    inbox_data = {}
     for result in results:
-        inbox = [(mail_path, result['folder'], email_id) for email_id in result['ids']]
-        msg_tasks.extend(inbox)
+        for email_id in result["ids"]:
+            msg_tasks.append((liberation_id, result['folder'], email_id))
+        inbox = result["folder"]
+        result["email_count"] = len(result["ids"])
+        del result["ids"]
+        del result["folder"]
 
-    task_len = len(msg_tasks)
-
-    if task_len > 0:
-        msg_tasks = liberate_message.chunks(msg_tasks, 100).group()
-        task_group_skew(msg_tasks, step=10)
-        msg_tasks = chain(
-                        msg_tasks,
-                        liberate_convert_box.s(mail_path, options),
-                        liberate_fetch_info.s(options),
-                        liberate_tarball.s(options),
-                        liberation_finish.s(options)
-                        )
-    else:
-        options["noEmails"] = True
-        data = {"results": []}
-        msg_tasks = chain(
-                        liberate_convert_box.s(data, mail_path, options),
-                        liberate_fetch_info.s(options),
-                        liberate_tarball.s(options),
-                        liberation_finish.s(options)
-                        )
-
-    async_result = msg_tasks.apply_async()
-
-    lib_status = get_user_model().objects.get(id=options["user"]).liberation
-    lib_status.async_result = async_result.id
-    lib_status.save()
+    msg_tasks = liberate_message.chunks(msg_tasks, 100).group()
+    task_group_skew(msg_tasks, step=10)
+    chain(
+        msg_tasks,
+        liberate_convert_box.s(liberation_id),
+        liberate_fetch_info.s(liberation_id, results),
+        liberate_tarball.s(liberation_id),
+        liberation_finish.s(liberation_id)
+    ).apply_async()
 
 
 @app.task(rate_limit='1000/m')
 @transaction.atomic()
 def liberate_message(mail_path, inbox, email_id):
     """ Take email from database and put on filesystem """
-    maildir = mailbox.Maildir(mail_path, factory=None).get_folder(inbox)
+    lib_status = Liberation.objects.pending().get(id=liberation_id)
 
     try:
         msg = Email.objects.get(id=email_id, deleted=False)
@@ -181,11 +148,12 @@ def liberate_message(mail_path, inbox, email_id):
         return msg_id
 
 
-@app.task()
-def liberate_convert_box(result, mail_path, options):
+@app.task(base=LiberationTask)
+def liberate_convert_box(result, *, liberation_id):
     """ Convert maildir to mbox if needed """
-    if options['storage_type'] == '1':
-        maildir = mailbox.Maildir(mail_path, factory=None)
+    lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).select_related("user").get(id=liberation_id)
+    if lib_status.storage_type == Liberation.MAILBOX:
+        maildir = lib_status.maildir
         mbox = mailbox.mbox(mail_path + '.mbox')
         mbox.lock()
 
@@ -203,65 +171,56 @@ def liberate_convert_box(result, mail_path, options):
     return result
 
 
-@app.task()
-def liberate_fetch_info(result, options):
+@app.task(base=LiberationTask)
+def liberate_fetch_info(result, *, liberation_id, inbox_results):
     """Fetch user info and dump json to files"""
-    inbox_json = liberate_inbox_metadata(options['user'])
-    profile_json = liberate_user_profile(options['user'], result or [])
+    lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).select_related("user").get(id=liberation_id)
+    profile_json = get_user_profile(lib_status.user, result or [])
+    inbox_json = json.dumps(inbox_results)
     questions_json = liberate_user_questions(options['user'])
 
-    with open(os.path.join(options["path"], "profile.json"), "w") as profile:
+    with open(os.path.join(lib_status.tmp_dir, "profile.json"), "w") as profile:
         profile.write(profile_json)
-    with open(os.path.join(options["path"], "inbox.json"), "w") as inbox:
+    with open(os.path.join(lib_status.tmp_dir, "inbox.json"), "w") as inbox:
         inbox.write(inbox_json)
     with open(os.path.join(options["path"], "questions.json"), "w") as questions:
         questions.write(questions_json)
 
 
-@app.task(default_retry_delay=600)
-def liberate_tarball(result, options):
+@app.task(base=LiberationTask, default_retry_delay=600)
+def liberate_tarball(result, *, liberation_id):
     """ Tar up and delete the dir """
-
-    tar_type = TAR_TYPES[options.get('compression_type', '0')]
-    tar_name = os.path.join(settings.SENDFILE_ROOT, options["tarname"])
+    lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).get(id=liberation_id)
+    tar_type = Liberation.ARCHIVE_TYPES[lib_status.compression_type]
 
     try:
-        tar = tarfile.open(tar_name, tar_type['writer'])
+        tar = tarfile.open(lib_status.path, tar_type['writer'])
     except (IOError, OSError) as error:
-        log.debug("Couldn't open tarfile at %s", tar_name)
+        log.debug("Couldn't open tarfile at %s", lib_status.path)
         raise liberate_tarball.retry(exc=error)
-
-    user = get_user_model().objects.get(id=options['user'])
-    lib_status = user.liberation
 
     date = str(lib_status.started)
     dir_name = "inboxen-%s" % date
 
     try:
         # directories are added recursively by default
-        tar.add("%s/" % options["path"], dir_name)
+        tar.add("%s/" % lib_status.tmp_dir, dir_name)
     finally:
         tar.close()
-    rmtree(options["path"])
-
-    return tar_name
+    rmtree(lib_status.tmp_dir, ignore_errors=True)
 
 
-@app.task(ignore_result=True)
+@app.task(base=LiberationTask, ignore_result=True)
 @transaction.atomic()
-def liberation_finish(result, options):
+def liberation_finish(result, *, liberation_id):
     """ Create email to send to user """
-    user = get_user_model().objects.get(id=options['user'])
-    lib_status = user.liberation
-    lib_status.running = False
-    lib_status.last_finished = timezone.now()
-    lib_status.content_type = int(options.get('compression_type', '0'))
-
+    lib_status = Liberation.objects.pending().select_for_update(skip_locked=True).select_related("user").get(id=liberation_id)
+    lib_status.finished = timezone.now()
     lib_status.save()
 
     message = _("Your request for your personal data has been completed. Click "
                 "<a class=\"alert-link\" href=\"%s\">here</a> to download your archive.")
-    message_user(user, safestring.mark_safe(message % urls.reverse("user-liberate-get")))
+    message_user(lib_status.user, safestring.mark_safe(message % urls.reverse("user-liberate-get")))
 
     log.info("Finished liberation for %s", options['user'])
 
@@ -269,25 +228,18 @@ def liberation_finish(result, options):
     tasks.force_garbage_collection.delay()
 
 
-def liberate_user_profile(user_id, email_results):
+def get_user_profile(user, email_results):
     """User profile data"""
-    data = {
-        "preferences": {}
-    }
-    user = get_user_model().objects.get(id=user_id)
+    data = {}
 
     # user's preferences
-    profile = user.inboxenprofile
-    data["preferences"]["prefer_html_email"] = profile.prefer_html_email
-    data["preferences"]["prefered_domain"] = str(profile.prefered_domain) if profile.prefered_domain else None
-    data["preferences"]["display_images"] = profile.display_images
+    data["preferences"] = user.inboxenprofile.get_liberation_data()
 
     # user data
     data["id"] = user.id
     data["username"] = user.username
     data["is_active"] = user.is_active
     data["join_date"] = user.date_joined.isoformat()
-    data["groups"] = [str(groups) for groups in user.groups.all()]
 
     data["errors"] = []
     email_results = email_results or []
@@ -324,26 +276,5 @@ def liberate_user_questions(user_id):
             })
 
         data.append(item)
-
-    return json.dumps(data)
-
-
-def liberate_inbox_metadata(user_id):
-    """ Grab metadata from inboxes """
-    data = {}
-
-    inboxes = Inbox.objects.filter(user__id=user_id)
-    for inbox in inboxes:
-        data[str(inbox)] = {
-            "created": inbox.created.isoformat(),
-            "flags": {
-                "deleted": inbox.deleted,
-                "new": inbox.new,
-                "exclude_from_unified": inbox.exclude_from_unified,
-                "disabled": inbox.disabled,
-                "pinned": inbox.pinned,
-            },
-            "description": inbox.description,
-        }
 
     return json.dumps(data)

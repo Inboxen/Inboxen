@@ -18,7 +18,7 @@
     </ul>
     <p>{% trans "If you have a lot of emails, this could take a while. We will notify you once your data is ready for downloading." %}</p>
 {% else %}
-    {% if object.last_finished %}
+    {% if object.finished %}
     <div class="panel panel-primary">
         <div class="panel-body">
             <p>{% blocktrans trimmed with finished=object.last_finished|inboxentime %}
@@ -28,7 +28,7 @@
         </div>
     </div>
     {% endif %}
-    {% if object.can_request_another %}
+    {% if can_request_another %}
         <form class="form" action="{% url 'user-liberate' %}" method="POST">
             {% csrf_token %}
             {{ form|bootstrap }}
